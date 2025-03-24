@@ -5,8 +5,20 @@
     import TelaGeral from './Telas/TelaGeral/telaGeral';
     import TelaCadastro from './Telas/TelaCadastro/telaCadastro';
     import './App.css'
+    import {email,senha} from './Telas/TelaCadastro';
+    import TelaLogin from './Telas/TelaLoginADM/TelaLogin';
+
 
     function App() {
+
+        const [email, setEmail] = useState(email);
+        const [senha, setsenha] = useState(senha);
+        if( !(email && senha) )
+        {
+            const [email, setEmail] = useState('');
+            const [senha, setsenha] = useState('');
+        }
+
         return (
             <Router>
                 <div className="app-background"> 
