@@ -14,8 +14,9 @@ export default class TurmaDAO {
             const conexao = await conectar(); //retorna uma conexão
             const sql = `
             CREATE TABLE IF NOT EXISTS turma(
+                turm_cod INT NOT NULL AUTO_INCREMENT,
                 turm_cor VARCHAR(40) NOT NULL,
-                CONSTRAINT pk_turma PRIMARY KEY(turm_cor)
+                CONSTRAINT pk_turma PRIMARY KEY(turm_cod, turm_cor)
             );
         `;
             await conexao.execute(sql);
@@ -35,7 +36,8 @@ export default class TurmaDAO {
             let parametros = [
                 turma.cor
             ]; //dados do produto
-            await conexao.execute(sql, parametros);
+            const resultado = await conexao.execute(sql, parametros);
+            turma.codigo = resultado[0].insertId;
             await conexao.release(); //libera a conexão
         }
     }
@@ -44,10 +46,11 @@ export default class TurmaDAO {
         if (turma instanceof Turma) {
             const conexao = await conectar();
             const sql = `UPDATE turma SET turm_cor=?
-                WHERE  turm_cor = ?
+                WHERE  turm_cod = ?
             `;
             let parametros = [
-                turma.cor
+                turma.cor,
+                turma.codigo
             ]; 
             await conexao.execute(sql, parametros);
             await conexao.release(); //libera a conexão
@@ -59,20 +62,21 @@ export default class TurmaDAO {
         const conexao = await conectar();
         let sql = "";
         let parametros = [];
-        if (!termo) {
+        if (isNaN(parseInt(termo))) {
             sql = `SELECT * FROM turma t
                    WHERE turm_cor LIKE ?`;
             parametros = ['%' + termo + '%'];
         }
         else {
             sql = `SELECT * FROM turma t
-                   WHERE turm_cor = ?`
+                   WHERE turm_cod = ?`
             parametros = [termo];
         }
         const [linhas, campos] = await conexao.execute(sql, parametros);
         let listaTurma = [];
         for (const linha of linhas) {
             const turma = new Turma(
+                linha['turm_cod'],
                 linha['turm_cor']
             );
             listaTurma.push(turma);
@@ -84,9 +88,9 @@ export default class TurmaDAO {
     async excluir(turma) {
         if (turma instanceof Turma) {
             const conexao = await conectar();
-            const sql = `DELETE FROM turma WHERE turm_cor = ?`;
+            const sql = `DELETE FROM turma WHERE turm_cod = ?`;
             let parametros = [
-                turma.cor
+                turma.codigo
             ]; //dados do produto
             await conexao.execute(sql, parametros);
             await conexao.release(); //libera a conexão

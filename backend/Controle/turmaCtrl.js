@@ -13,13 +13,13 @@ export default class TurmaCtrl {
             if (cor)
             {
                 //gravar a categoria
-                const turma = new Turma(cor);
+                const turma = new Turma(0,cor);
                 turma.incluir()
                 .then(()=>{
                     resposta.status(200).json({
                         "status":true,
                         "mensagem":"Turma adicionada com sucesso!",
-                        "cor": turma.cor
+                        "cor": turma.cor + turma.codigo
                     });
                 })
                 .catch((erro)=>{
@@ -57,13 +57,13 @@ export default class TurmaCtrl {
         //Verificando se o método da requisição é POST e conteúdo é JSON
         if ((requisicao.method == 'PUT' || requisicao.method == 'PATCH') && requisicao.is("application/json")){
             //o código será extraída da URL (padrão REST)
-            const cor  = requisicao.params.cor;
+            const codigo = requisicao.params.codigo;
+            const cor  = requisicao.body.cor;
         
-            //pseudo validação
-            if (cor)
+            if (codigo > 0 && cor)
             {
                 //alterar a categoria
-                const turma = new Turma(cor);
+                const turma = new Turma(codigo, cor);
                 turma.alterar().then(()=>{
                     resposta.status(200).json({
                         "status":true,
@@ -103,11 +103,11 @@ export default class TurmaCtrl {
         //Verificando se o método da requisição é POST e conteúdo é JSON
         if (requisicao.method == 'DELETE') {
             //o código será extraída da URL (padrão REST)
-            const cor = requisicao.params.cor;
+            const codigo = requisicao.params.codigo;
             //pseudo validação
-            if (cor) {
+            if (codigo >0) {
                 //alterar o produto
-                const turma = new Turma(cor);
+                const turma = new Turma(codigo);
                 turma.excluir()
                     .then(() => {
                         resposta.status(200).json({
@@ -144,16 +144,16 @@ export default class TurmaCtrl {
     consultar(requisicao, resposta) {
         resposta.type("application/json");
         if (requisicao.method == "GET") {
-            let cor = requisicao.params.cor;
+            let codigo = requisicao.params.codigo;
 
             //evitar que código tenha valor undefined
-            if (!cor) {
-                cor = "";
+            if (isNaN(codigo)) {
+                codigo = "";
             }
 
             const turma = new Turma();
             //método consultar retorna uma lista de produtos
-            turma.consultar(cor)
+            turma.consultar(codigo)
                 .then((listaTurma) => {
                     resposta.status(200).json(listaTurma
                     );

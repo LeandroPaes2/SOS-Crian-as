@@ -13,7 +13,7 @@ export async function gravarTurma(turma){
 }
 
 export async function alterarTurma(turma){
-    const resposta = await fetch(urlBase + "/" + turma.cor,{
+    const resposta = await fetch(urlBase + "/" + turma.codigo,{
         'method':"PUT",
         'headers': { 
             'Content-Type':"application/json"
@@ -25,7 +25,7 @@ export async function alterarTurma(turma){
 }
 
 export async function excluirTurma(turma){
-    const resposta = await fetch(urlBase + "/" + turma.cor,{
+    const resposta = await fetch(urlBase + "/" + turma.codigo,{
         'method':"DELETE",
     });
     const resultado = await resposta.json();
