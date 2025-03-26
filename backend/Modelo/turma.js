@@ -5,6 +5,7 @@ export default class Turma{
     //atributos privados
     #codigo;
     #cor;
+    #periodo;
     //#aluno
 
     get codigo(){
@@ -24,6 +25,14 @@ export default class Turma{
         this.#cor = novaCor;
     }
 
+    get periodo(){
+        return this.#periodo;
+    }
+
+    set periodo(novoPeriodo){
+        this.#periodo=novoPeriodo;
+    }
+
     /*get categoria(){
         return this.#aluno
     }
@@ -35,9 +44,10 @@ export default class Turma{
     }*/
 
     //construtor (criador de um produto)
-    constructor(codigo=0, cor=""){
+    constructor(codigo=0, cor="", periodo=""){
         this.#codigo=codigo;
         this.#cor=cor;
+        this.#periodo=this.#periodo;
     }
 
     //override do método toJSON
@@ -47,6 +57,7 @@ export default class Turma{
         return {
             "codigo":this.#codigo,
             "cor":this.#cor,
+            "periodo":this.#periodo
         }
     }
 

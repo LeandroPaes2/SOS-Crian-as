@@ -9,17 +9,18 @@ export default class TurmaCtrl {
         //Verificando se o método da requisição é POST e conteúdo é JSON
         if (requisicao.method == 'POST' && requisicao.is("application/json")){
             const cor  = requisicao.body.cor;
+            const periodo = requisicao.body.periodo;
             //pseudo validação
-            if (cor)
+            if (cor && periodo)
             {
                 //gravar a categoria
-                const turma = new Turma(0,cor);
+                const turma = new Turma(0,cor, periodo);
                 turma.incluir()
                 .then(()=>{
                     resposta.status(200).json({
                         "status":true,
                         "mensagem":"Turma adicionada com sucesso!",
-                        "cor": turma.cor + turma.codigo
+                        "cor": turma.cor +" "+ turma.codigo
                     });
                 })
                 .catch((erro)=>{
@@ -59,11 +60,12 @@ export default class TurmaCtrl {
             //o código será extraída da URL (padrão REST)
             const codigo = requisicao.params.codigo;
             const cor  = requisicao.body.cor;
+            const periodo = requisicao.body.periodo;
         
-            if (codigo > 0 && cor)
+            if (codigo > 0 && cor && periodo)
             {
                 //alterar a categoria
-                const turma = new Turma(codigo, cor);
+                const turma = new Turma(codigo, cor, periodo);
                 turma.alterar().then(()=>{
                     resposta.status(200).json({
                         "status":true,
@@ -155,8 +157,7 @@ export default class TurmaCtrl {
             //método consultar retorna uma lista de produtos
             turma.consultar(codigo)
                 .then((listaTurma) => {
-                    resposta.status(200).json(listaTurma
-                    );
+                    resposta.status(200).json(listaTurma);
                 })
                 .catch((erro) => {
                     resposta.status(500).json(

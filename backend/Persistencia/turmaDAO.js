@@ -16,7 +16,8 @@ export default class TurmaDAO {
             CREATE TABLE IF NOT EXISTS turma(
                 turm_cod INT NOT NULL AUTO_INCREMENT,
                 turm_cor VARCHAR(40) NOT NULL,
-                CONSTRAINT pk_turma PRIMARY KEY(turm_cod, turm_cor)
+                turm_per VARCHAR(30) NOT NULL,
+                CONSTRAINT pk_turma PRIMARY KEY(turm_cod, turm_cor, turm_per)
             );
         `;
             await conexao.execute(sql);
@@ -30,11 +31,12 @@ export default class TurmaDAO {
     async incluir(turma) {
         if (turma instanceof Turma) {
             const conexao = await conectar();
-            const sql = `INSERT INTO turma(turm_cor)
-                VALUES (?)
+            const sql = `INSERT INTO turma(turm_cor, turm_per)
+                VALUES (?, ?)
             `;
             let parametros = [
-                turma.cor
+                turma.cor,
+                turma.periodo
             ]; //dados do produto
             const resultado = await conexao.execute(sql, parametros);
             turma.codigo = resultado[0].insertId;
@@ -45,11 +47,12 @@ export default class TurmaDAO {
     async alterar(turma) {
         if (turma instanceof Turma) {
             const conexao = await conectar();
-            const sql = `UPDATE turma SET turm_cor=?
+            const sql = `UPDATE turma SET turm_cor=?, turm_per =?
                 WHERE  turm_cod = ?
             `;
             let parametros = [
                 turma.cor,
+                turma.periodo,
                 turma.codigo
             ]; 
             await conexao.execute(sql, parametros);
@@ -77,7 +80,8 @@ export default class TurmaDAO {
         for (const linha of linhas) {
             const turma = new Turma(
                 linha['turm_cod'],
-                linha['turm_cor']
+                linha['turm_cor'],
+                linha['turm_per']
             );
             listaTurma.push(turma);
         }
