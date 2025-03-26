@@ -1,0 +1,13 @@
+.botaoMenu{
+    width: 400px;
+    background-color: #e3436b;
+    border-color: #81233b;
+    margin: 5px;
+}
+
+.divBotao{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
