@@ -12,7 +12,7 @@ export default function Menu(props){
                 <Navbar.Brand  as={Link} to="/" href="#home">SOS Home</Navbar.Brand>
                 <Nav className="me-auto">
                         <NavDropdown title="Cadastros" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="#" >Alunos</NavDropdown.Item>
+                            <NavDropdown.Item href="#" as={Link} to="/telaAluno" >Alunos</NavDropdown.Item>
                             <NavDropdown.Item href="#" >Funcionarios</NavDropdown.Item>
                             <NavDropdown.Item href="#" as={Link} to="/telaTurma">Turmas</NavDropdown.Item>
                             <NavDropdown.Item href="#" >Materias</NavDropdown.Item>
