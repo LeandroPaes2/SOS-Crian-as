@@ -1,25 +1,33 @@
-    // App.js
-    import 'bootstrap/dist/css/bootstrap.min.css';
-    import React from 'react';
-    import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-    import TelaMenu from './componentes/Telas/TelaMenu';
-    //import TelaCadastro from './componentes/Telas/telaCadastro';
-    import './App.css'
-    import TelaCadastroTurma from './componentes/Telas/TelaCadastroTurma';
-    import FormCadTurma from './componentes/Telas/Formularios/FormCadTurma';
+// App.js
+import 'bootstrap/dist/css/bootstrap.min.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import TelaMenu from './componentes/Telas/TelaMenu';
+import './App.css'
+import TelaCadastroTurma from './componentes/Telas/TelaCadastroTurma';
+import FormCadTurma from './componentes/Telas/Formularios/FormCadTurma';
+import TelaCadastroEscola from './componentes/Telas/talaCadastroEscola';
+import FormCadEscola from './componentes/Telas/Formularios/FormCadEscola';
+import RelatorioTurmas from './componentes/Telas/Relatorios/RelatorioTurmas';
+import RelatorioEscolas from './componentes/Telas/Relatorios/RelatorioEscolas';
 
-    function App() {
-        return (
-            <Router>
-                <div className="app-background"> 
-                    <Routes>
-                        <Route path="/" element={<TelaMenu />} />
-                        <Route path="/telaTurma" element={<TelaCadastroTurma />} />
-                        <Route path="/cadastroTurma" element={<FormCadTurma />} />
-                    </Routes>
-                </div>
-            </Router>
-        );
-    }
+function App() {
+    return (
+        <Router>
+            <div className="app-background"> 
+                <Routes>
+                    <Route path="/" element={<TelaMenu />} />
+                    <Route path="/telaTurma" element={<TelaCadastroTurma />} />
+                    <Route path="/cadastroTurma" element={<FormCadTurma />} />
+                    <Route path="/telaEscola" element={< TelaCadastroEscola/>}/>
+                    <Route path="/cadastroEscola" element={<FormCadEscola />} />
+                    <Route path="/relatorioTurma" element={<RelatorioTurmas />} />
+                    <Route path="/relatorioEscola" element={<RelatorioEscolas />} />
 
-    export default App;
+                </Routes>
+            </div>
+        </Router>
+    );
+}
+
+export default App;

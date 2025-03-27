@@ -22,7 +22,7 @@ export default function MenuInicial(props){
                 Matérias
             </Button>
             <br />
-            <Button className='botaoMenu' variant="secondary" size="lg">
+            <Button as={Link} to="/telaEscola" className='botaoMenu' variant="secondary" size="lg">
                 Escolas
             </Button>
         </div>

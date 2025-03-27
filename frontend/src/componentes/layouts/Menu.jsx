@@ -14,9 +14,9 @@ export default function Menu(props){
                         <NavDropdown title="Cadastros" id="basic-nav-dropdown">
                             <NavDropdown.Item href="#" >Alunos</NavDropdown.Item>
                             <NavDropdown.Item href="#" >Funcionarios</NavDropdown.Item>
-                            <NavDropdown.Item href="#" as={Link} to="/cadastroTurma">Turmas</NavDropdown.Item>
+                            <NavDropdown.Item href="#" as={Link} to="/telaTurma">Turmas</NavDropdown.Item>
                             <NavDropdown.Item href="#" >Materias</NavDropdown.Item>
-                            <NavDropdown.Item href="#" >Escolas</NavDropdown.Item>
+                            <NavDropdown.Item href="#" as={Link} to="/telaEscola">Escolas</NavDropdown.Item>
                         </NavDropdown>
                     
                         <NavDropdown title="Relatórios" id="basic-nav-dropdown">
