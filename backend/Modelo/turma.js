@@ -3,18 +3,9 @@ import TurmaDAO from "../Persistencia/turmaDAO.js";
 
 export default class Turma{
     //atributos privados
-    #codigo;
     #cor;
     #periodo;
     //#aluno
-
-    get codigo(){
-        return this.#codigo;
-    }
-
-    set codigo(novaCodigo){
-        this.#codigo = novaCodigo;
-    }
 
 
     get cor(){
@@ -44,10 +35,9 @@ export default class Turma{
     }*/
 
     //construtor (criador de um produto)
-    constructor(codigo=0, cor="", periodo=""){
-        this.#codigo=codigo;
+    constructor(cor="", periodo=""){
         this.#cor=cor;
-        this.#periodo=this.#periodo;
+        this.#periodo=periodo;
     }
 
     //override do método toJSON
@@ -55,7 +45,6 @@ export default class Turma{
     //precisar ser convertido no formato JSON
     toJSON(){
         return {
-            "codigo":this.#codigo,
             "cor":this.#cor,
             "periodo":this.#periodo
         }
