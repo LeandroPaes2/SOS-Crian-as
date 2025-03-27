@@ -1,5 +1,5 @@
 import TurmaDAO from "../Persistencia/turmaDAO.js";
-//import Aluno from "./aluno.js";
+import Aluno from "./aluno.js";
 
 export default class Turma{
     //atributos privados
