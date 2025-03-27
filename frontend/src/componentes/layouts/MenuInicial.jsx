@@ -6,7 +6,8 @@ export default function MenuInicial(props){
 
     return(
         <div className="divBotao">
-            <Button  as={Link} to="/telaAluno" className='botaoMenu' variant="secondary" size="lg">
+
+            <Button  as={Link}  to="/telaAluno" className='botaoMenu' variant="secondary" size="lg">
                 Alunos
             </Button>
             <br />
@@ -25,6 +26,7 @@ export default function MenuInicial(props){
             <Button as={Link} to="/telaEscola" className='botaoMenu' variant="secondary" size="lg">
                 Escolas
             </Button>
+            
         </div>
     )
 }

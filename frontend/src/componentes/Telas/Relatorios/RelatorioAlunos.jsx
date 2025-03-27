@@ -26,6 +26,7 @@ export default function RelatorioAlunos() {
 
         buscarAlunos();
     }, []);
+    
 
     const excluirAluno = async (aluno) => {
         if (window.confirm("Deseja realmente excluir o aluno " + aluno.nome)) {
