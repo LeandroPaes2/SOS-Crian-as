@@ -4,6 +4,7 @@ import conectar from './Persistencia/Conexao.js';
 import dotenv from 'dotenv';
 import rotaTurma from './Rotas/rotaTurma.js'
 import rotaEscola from './Rotas/rotaEscola.js';
+import rotaMateria from './Rotas/rotaMateria.js';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use(express.static('./publico'));
 
 app.use("/turmas", rotaTurma);
 app.use("/escolas", rotaEscola);
+app.use("/materias", rotaMateria);
 
 app.get('/teste-conexao', async (req, res) => {
   try {
