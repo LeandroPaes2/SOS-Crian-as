@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TelaMenu from './componentes/Telas/TelaMenu';
-import './App.css'
+import './App.css';
 import TelaCadastroTurma from './componentes/Telas/TelaCadastroTurma';
 import FormCadTurma from './componentes/Telas/Formularios/FormCadTurma';
 import TelaCadastroEscola from './componentes/Telas/talaCadastroEscola';

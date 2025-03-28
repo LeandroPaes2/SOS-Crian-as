@@ -1,5 +1,4 @@
 import { Alert, Form, Button } from "react-bootstrap";
-import "../../css/telamateria.css";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
 import { Link } from "react-router-dom";
@@ -80,7 +79,7 @@ export default function FormCadmateria() {
                         type="text"
                         placeholder="Digite a descrição"
                         value={materia.descricao}
-                        onChange={(e) => setNome(e.target.value)}
+                        onChange={(e) => setDescricao(e.target.value)}
                         disabled={editando}
                     />
                 </Form.Group>

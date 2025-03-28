@@ -1,7 +1,6 @@
 import PaginaGeral from "../layouts/PaginaGeral"
 import { Alert, Form, Button, InputGroup} from "react-bootstrap";
 import {Link} from 'react-router-dom';
-import "../css/telaMateria.css";
 import RelatorioMateria from "./Relatorios/RelatorioMaterias.jsx";
 
 export default function TelaCadastroMateria(props){

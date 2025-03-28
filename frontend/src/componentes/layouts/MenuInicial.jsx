@@ -19,7 +19,7 @@ export default function MenuInicial(props){
                 Turmas
             </Button>
             <br />
-            <Button className='botaoMenu' variant="secondary" size="lg">
+            <Button as={Link} to="/telaMateria"  className='botaoMenu' variant="secondary" size="lg">
                 Matérias
             </Button>
             <br />
