@@ -11,6 +11,10 @@ export default function MenuInicial(props){
                 Alunos
             </Button>
             <br />
+            <Button as={Link} to="/telaResponsavel" className='botaoMenu' variant="secondary" size="lg">
+                Responsaveis
+            </Button>
+            <br />
             <Button className='botaoMenu' variant="secondary" size="lg">
                 Funcionarios
             </Button>
