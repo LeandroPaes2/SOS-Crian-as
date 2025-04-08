@@ -11,3 +11,64 @@
     align-items: center;
     justify-content: center;
 }
+
+.navbar-custom {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    border-radius: 0 0 12px 12px;
+    padding: 0.8rem 1.5rem;
+    z-index: 1000;
+  }
+  
+  /* Marca "SOS Home" */
+  .navbar-brand {
+    font-weight: 600;
+    font-size: 1.6rem;
+    color: #800020 !important; /* bordô escuro */
+  }
+  
+  /* Links de navegação */
+  .nav-link, .dropdown-toggle {
+    color: #333 !important;
+    font-weight: 500;
+    margin-right: 15px;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-link:hover, .dropdown-toggle:hover {
+    color: #800020 !important; /* dourado */
+    text-decoration: underline;
+  }
+  
+  /* Menu dropdown */
+  .dropdown-menu {
+    background-color: #fff;
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Itens do dropdown */
+  .dropdown-item {
+    color: #444;
+    font-weight: 500;
+    padding: 10px 15px;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #f0f0f0;
+    color: #800020;
+  }
+  
+  /* Responsivo */
+  @media (max-width: 768px) {
+    .navbar-custom {
+      border-radius: 0;
+    }
+  
+    .nav-link {
+      margin-right: 0;
+      margin-bottom: 10px;
+    }
+  }

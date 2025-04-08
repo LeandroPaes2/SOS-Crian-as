@@ -45,7 +45,7 @@ export default class ResponsavelDAO {
     async alterar(responsavel) {
         if (responsavel instanceof Responsavel) {
             const conexao = await conectar();
-            const sql = `UPDATE responsavel SET resp_nome =?, resp_telefone=?, resp_cpf=?
+            const sql = `UPDATE responsavel SET resp_nome=?, resp_telefone=?
                 WHERE  resp_cpf = ?
             `;
             let parametros = [

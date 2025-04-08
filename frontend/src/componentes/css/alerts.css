@@ -1,0 +1,17 @@
+.alert-custom {
+    background-color: rgba(255, 255, 255, 0.9); /* Levemente translúcido */
+    border: 2px solid #343a40; /* Cor escura elegante */
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    max-width: 800px;
+    height: 85px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  .titulo-alert {
+    font-weight: 600;
+    color: #343a40; /* Cor que combina com seu menu */
+    font-size: 2rem;
+    letter-spacing: 1px;
+  }

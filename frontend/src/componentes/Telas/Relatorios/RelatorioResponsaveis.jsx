@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { Container, Table, Button, Form, InputGroup, Alert } from "react-bootstrap";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import {Link} from 'react-router-dom';
+import FormCadResponsavel from "../Formularios/FormCadResponsavel";
+import { useNavigate } from "react-router-dom";
+import "../../css/alerts.css";
 
 export default function RelatorioResponsaveis(){
 
@@ -11,6 +14,8 @@ export default function RelatorioResponsaveis(){
     const [nome, setNome] = useState("");
     const [telefone, setTelefone]=useState("");
     const [pesquisaNome, setPesquisaNome] = useState("");
+    const navigate = useNavigate();
+    const [editando, setEditando] = useState(false);
 
     useEffect(() => {
         const buscarResponsaveis = async () => {
@@ -31,9 +36,11 @@ export default function RelatorioResponsaveis(){
 
     const excluirResponsavel = async (responsavel) => {
 
-        if(window.confirm("Deseja realmente excluir o responsavel " + responsavel.cpf)){
-            if (!responsavel || !responsavel.cpf || !responsavel.nome || responsavel.telefone) {
+        if(window.confirm("Deseja realmente excluir o responsavel " + responsavel.nome + responsavel.cpf)){
+            if (!responsavel || !responsavel.cpf || !responsavel.nome || !responsavel.telefone) {
+                console.log(responsavel.cpf, responsavel.nome, responsavel.telefone);
                 setMensagem("Erro: responsavel inválido!");
+                setTimeout(() => setMensagem(""), 5000);
                 return;
             }
 
@@ -44,9 +51,11 @@ export default function RelatorioResponsaveis(){
 
                 if (response.ok) {
                     setMensagem("Responsavel excluido com sucesso!");
+                    setTimeout(() => setMensagem(""), 3000);
                     setListaDeResponsaveis(listaDeResponsaveis.filter(r => r.cpf !== responsavel.cpf));
                 } else {
                     setMensagem("Erro ao excluir o responsavel.");
+                    setTimeout(() => setMensagem(""), 3000);
                 }
             } catch (error) {
                 console.error("Erro ao conectar com o backend:", error);
@@ -56,41 +65,14 @@ export default function RelatorioResponsaveis(){
         window.location.reload()
     };
 
-    const editarResponsaveis = async () => {
-
-        if (!cpf || !nome || !telefone) {
-            setMensagem("Preencha todos os campos!");
-            return;
-        }
-
-        const responsavel = { cpf, nome, telefone };
-
-        try {
-            // Verifica se estamos editando ou criando uma nova turma
-            const response = responsavel.cpf
-                ? await fetch("http://localhost:3000/responsaveis/"+responsavel.cpf, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(responsavel),
-                })
-                : await fetch("http://localhost:3000/responsaveis", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(responsavel),
-                });
-
-            if (response.ok) {
-                setMensagem("Responsavel salvo com sucesso!");
-                setCpf(""); 
-                setNome(""); 
-                setTelefone("");
-            } else {
-                setMensagem("Erro ao salvar o responsavel.");
+    const editarResponsaveis = async (responsavel) => {
+        navigate("/cadastroResponsavel", {
+            state: {
+                cpf: responsavel.cpf,
+                nome: responsavel.nome,
+                telefone: responsavel.telefone
             }
-        } catch (error) {
-            console.error("Erro ao conectar com o backend:", error);
-            setMensagem("Erro de conexão com o servidor.");
-        }
+        });
     };
 
     const responsaveisFiltrados = pesquisaNome
@@ -100,18 +82,18 @@ export default function RelatorioResponsaveis(){
     return (
         <>
             <PaginaGeral>
-                    <br />
-                    <Alert className="mt-02 mb-02 dark text-center" variant="dark">
-                        <h2>
-                            Responsaveis
-                        </h2>
-                    </Alert>
+                    
+                    <p></p>
+                    <Alert className="alert-custom text-center mt-4 mb-4">
+                <h2 className="titulo-alert">Relatório dos Responsáveis</h2>
+            </Alert>
+               
                 <Form>
                     <Form.Group className="form" controlId="exampleForm.ControlInput1">
-                        <Form.Label>PESQUISE O RESPONSAVEL PELO NOME</Form.Label>
+                        <Form.Label style={{fontWeight:400, color:'white'}}>PESQUISE O RESPONSAVEL PELO NOME</Form.Label>
                             <InputGroup className="divInput">
                                 <div>
-                                    <Form.Control className="formInput" type="text" placeholder="Cpf dos responsavel"
+                                    <Form.Control className="formInput" type="text" placeholder="Pesquise o nome do responsavel"
                                     value={pesquisaNome} 
                                     onChange={(e) => setPesquisaNome(e.target.value)}  />
                                 </div>
@@ -124,6 +106,15 @@ export default function RelatorioResponsaveis(){
                         </Form.Group>
                     </Form>
                     <br />
+                {mensagem && <Alert className="mt-02 mb-02 green text-center" variant={
+                    mensagem.includes("sucesso")
+                    ? "success"
+                    : mensagem.includes("Erro") || mensagem.includes("erro")
+                    ? "danger"
+                    : "warning"
+                    }>
+                    {mensagem}
+                    </Alert>}
                 <Container>
                     <Table striped bordered hover>
                         <thead>
@@ -144,11 +135,9 @@ export default function RelatorioResponsaveis(){
                                             <td>{responsavel.nome}</td>
                                             <td>{responsavel.telefone}</td>
                                             <td>
-                                                <Button 
-                                                    as={Link} 
-                                                    to={{
-                                                        pathname: "/cadastroResponsavel",
-                                                        state: { cpf: responsavel.cpf, nome: responsavel.nome, telefone: responsavel.telefone}}}variant="warning">
+                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                                                <Button onClick={() => editarResponsaveis(responsavel)}
+                                                    variant="warning">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16">
                                                         <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                                                         <path fillRule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
@@ -162,6 +151,7 @@ export default function RelatorioResponsaveis(){
                                                         <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
                                                     </svg>           
                                                 </Button>
+                                                </div>
                                             </td>
                                         </tr>
                                     )

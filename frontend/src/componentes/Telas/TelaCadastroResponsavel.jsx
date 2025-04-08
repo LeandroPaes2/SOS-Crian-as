@@ -1,31 +1,27 @@
 import PaginaGeral from "../layouts/PaginaGeral"
 import { Alert, Form, Button, InputGroup} from "react-bootstrap";
 import {Link} from 'react-router-dom';
-import "../css/telaTurma.css";
-import RelatorioResponsaveis from "./Relatorios/RelatorioResponsaveis";
+import "../css/alerts.css";
+import "../css/telaResponsavel.css";
 
 export default function TelaCadastroResponsavel(props){
 
     return(
         <div>
             <PaginaGeral>
-                <br />
-                <Alert className="mt-02 mb-02 dark text-center" variant="dark">
-                    <h2>
-                        Responsaveis
-                    </h2>
-                </Alert>
+                <p></p>
+                <Alert className="alert-custom text-center mt-4 mb-4">
+                <h2 className="titulo-alert">Responsáveis</h2>
+            </Alert>
 
-                <div>
-                    <Button as={Link} to="/cadastroResponsavel" className="botaoPesquisa" variant="secondary">
-                        Cadastrar responsavel
-                    </Button>
-                </div>
-                <div>
-                    <Button as={Link} to="/relatorioResponsavel" className="botaoPesquisa" variant="secondary">
-                        Relatorio dos responsaveis
-                    </Button>
-                </div>
+            <div className="botoes-container">
+                <Button as={Link} to="/cadastroResponsavel" className="botaoMenu" variant="secondary">
+                    Cadastrar responsável
+                </Button>
+                <Button as={Link} to="/relatorioResponsavel" className="botaoMenu" variant="secondary">
+                    Relatório dos responsáveis
+                </Button>
+            </div>
             </PaginaGeral>
         </div>
     )

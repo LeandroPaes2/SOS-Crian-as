@@ -4,19 +4,27 @@ import { useState, useEffect } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import "../../css/alerts.css";
+import { useNavigate } from 'react-router-dom';
 
-export default function FormCadResponsavel() {
-    const [cor, setCor] = useState("");
-    const [periodo, setPeriodo] = useState("");
+
+export default function FormCadResponsavel(props) {
+    const [cpf, setCpf] = useState("");
+    const [nome, setNome] = useState("");
+    const [telefone, setTelefone] = useState("");
     const [mensagem, setMensagem] = useState("");
     const location = useLocation();
     const [editando, setEditando] = useState(false);
-    const [turma, setTurma] = useState(cor, periodo);
+    const [responsavel, setResponsavel] = useState(cpf, nome, telefone);
+    const navigate = useNavigate();
+    const rotaVoltar = editando ? "/relatorioResponsavel" : "/telaResponsavel";
+
 
     useEffect(() => {
-        if (location.state && location.state.cor && location.state.periodo) {
-            setCor(location.state.cor);
-            setPeriodo(location.state.periodo);
+        if (location.state && location.state.cpf && location.state.nome && location.state.telefone) {
+            setCpf(location.state.cpf);
+            setNome(location.state.nome);
+            setTelefone(location.state.telefone);
             setEditando(true);  // Ativa o modo de edição
         }
     }, [location.state]);
@@ -25,28 +33,46 @@ export default function FormCadResponsavel() {
         event.preventDefault(); // Evita recarregar a página
 
         // Verifica se os campos estão preenchidos
-        if (!cor || !periodo) {
+        if (!cpf || !nome || !telefone) {
             setMensagem("Preencha todos os campos!");
             return;
         }
 
-        const turma = { cor, periodo }; // Monta o objeto para enviar ao backend
-        const url = editando ? `http://localhost:3000/turmas/${cor}` : "http://localhost:3000/turmas";
+        if(cpf[3]!="." || cpf[7]!="." || cpf[11]!="-" || cpf.length!=14){
+            setMensagem("CPF invalido");
+            setTimeout(() => setMensagem(""), 5000);
+            return;
+        }
+
+        const responsavel = { cpf, nome, telefone }; // Monta o objeto para enviar ao backend
+        const url = editando ? `http://localhost:3000/responsaveis/${cpf}` : "http://localhost:3000/responsaveis";
         const method = editando ? "PUT" : "POST";
 
         try {
+            if(editando){
+                if(!window.confirm("Deseja realmente alterar o responsavel: " + responsavel.cpf)){
+                    return;
+                }
+            }
             const response = await fetch(url, {
                 method: method,
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(turma),
+                body: JSON.stringify(responsavel),
             });
 
             if (response.ok) {
-                setMensagem(editando ? "Turma atualizada com sucesso!" : "Turma cadastrada com sucesso!");
-                /*setCor(""); 
-                setPeriodo("");*/
+                setMensagem(editando ? "Responsavel atualizado com sucesso!" : "Responsavel cadastrado com sucesso!");
+                setTimeout(() =>setCpf(""), 3000);
+                setTimeout(() => setNome(""), 3000);
+                setTimeout(()=> setTelefone(""), 3000); 
+
+                setTimeout(() => setMensagem(""), 3000);
+                setEditando(false);
+                setTimeout(() => {
+                    navigate("/relatorioResponsavel"); 
+                }, 3000); 
             } else {
-                setMensagem("Erro ao cadastrar a turma.");
+                setMensagem(editando ? "Erro ao atualizar responsavel!": "Erro ao cadastrar o responsavel.");
             }
         } catch (error) {
             console.error("Erro ao conectar com o backend:", error);
@@ -57,37 +83,53 @@ export default function FormCadResponsavel() {
     return (
         <div>
             <PaginaGeral>
-            <Alert className="mt-2 mb-2 text-center" variant="dark">
-                <h2>Turmas</h2>
+            <Alert className="alert-custom text-center mt-4 mb-4">
+                <h2 className="titulo-alert"> Cadastro de Responsáveis</h2>
             </Alert>
 
-            {mensagem && <Alert variant="info">{mensagem}</Alert>}
+            {mensagem && <Alert className="mt-02 mb-02 success text-center" variant={
+                mensagem.includes("sucesso")
+                ? "success"
+                : mensagem.includes("Erro") || mensagem.includes("erro") || mensagem.includes("Preencha") || mensagem.includes("invalido")
+                ? "danger"
+                : "warning"
+                    }>
+                {mensagem}
+                </Alert>} 
 
             <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3">
-                    <Form.Label>Cor</Form.Label>
+                <Form.Group className="mb-3" id="cpf">
+                    <Form.Label>CPF</Form.Label>
                     <Form.Control
                         type="text"
-                        placeholder="Digite a cor"
-                        value={turma.cor}
-                        onChange={(e) => setCor(e.target.value)}
+                        placeholder="Digite o CPF"
+                        value={cpf}
+                        onChange={(e) => setCpf(e.target.value)}
                         disabled={editando}
                     />
                 </Form.Group>
 
-                <Form.Group className="mb-3">
-                    <Form.Label>Período</Form.Label>
-                    <Form.Select
-                        value={turma.periodo}
-                        onChange={(e) => setPeriodo(e.target.value)}
-                    >
-                        <option value="">Selecione um período</option>
-                        <option value="manha">Manhã</option>
-                        <option value="tarde">Tarde</option>
-                    </Form.Select>
+                <Form.Group className="mb-3" id="nome">
+                    <Form.Label>Nome Completo</Form.Label>
+                        <Form.Control
+                        type="text"
+                        placeholder="Digite o nome"
+                        value={nome}
+                        onChange={(e) => setNome(e.target.value)}
+                    />
                 </Form.Group>
 
-                <Button as={Link} to="/telaResponsavel" className="botaoPesquisa" variant="secondary">
+                <Form.Group className="mb-3" id="telefone">
+                    <Form.Label>Telefone</Form.Label>
+                    <Form.Control
+                        type="text"
+                        placeholder="Digite o telefone"
+                        value={telefone}
+                        onChange={(e) => setTelefone(e.target.value)}
+                    />
+                </Form.Group>
+
+                <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
                                 Voltar
                         </Button>
                 <Button className="botaoPesquisa" variant="primary" type="submit">
