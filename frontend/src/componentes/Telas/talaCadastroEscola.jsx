@@ -1,5 +1,5 @@
 import PaginaGeral from "../layouts/PaginaGeral"
-import { Alert, Button} from "react-bootstrap";
+import { Alert, Form, Button, InputGroup} from "react-bootstrap";
 import {Link} from 'react-router-dom';
 import "../css/telaEscola.css";
 
