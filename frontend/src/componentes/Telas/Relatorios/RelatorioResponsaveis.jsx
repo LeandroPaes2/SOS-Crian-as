@@ -2,51 +2,60 @@ import { useState, useEffect } from "react";
 import { Container, Table, Button, Form, InputGroup, Alert } from "react-bootstrap";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import {Link} from 'react-router-dom';
+import FormCadResponsavel from "../Formularios/FormCadResponsavel";
 import { useNavigate } from "react-router-dom";
+import "../../css/alerts.css";
 
-export default function RelatorioEscolas(){
+export default function RelatorioResponsaveis(){
 
-    const [listaDeEscolas, setListaDeEscolas] = useState([]);
+    const [listaDeResponsaveis, setListaDeResponsaveis] = useState([]); 
     const [mensagem, setMensagem] = useState("");
+    const [cpf, setCpf] = useState("");
     const [nome, setNome] = useState("");
-    const [endereco, setEndereco] = useState("");
+    const [telefone, setTelefone]=useState("");
     const [pesquisaNome, setPesquisaNome] = useState("");
     const navigate = useNavigate();
+    const [editando, setEditando] = useState(false);
+
     useEffect(() => {
-        const buscarEscolas = async () => {
+        const buscarResponsaveis = async () => {
             try {
-                const response = await fetch("http://localhost:3000/escolas");
-                if (!response.ok) throw new Error("Erro ao buscar escolas");
+                const response = await fetch("http://localhost:3000/responsaveis");
+                if (!response.ok) throw new Error("Erro ao buscar responsaveis");
                 
                 const dados = await response.json();
-                setListaDeEscolas(dados); // Atualiza o estado com os dados do backend
+                setListaDeResponsaveis(dados); // Atualiza o estado com os dados do backend
             } catch (error) {
-                console.error("Erro ao buscar escolas:", error);
-                setMensagem("Erro ao carregar as escolas.");
+                console.error("Erro ao buscar responsaveis:", error);
+                setMensagem("Erro ao carregar os responsaveis.");
             }
         };
 
-        buscarEscolas();
+        buscarResponsaveis();
     }, []);
 
-    const excluirEscolas = async (escola) => {
+    const excluirResponsavel = async (responsavel) => {
 
-        if(window.confirm("Deseja realmente excluir a escola " + escola.nome)){
-            if (!escola || !escola.nome || !escola.endereco) {
-                setMensagem("Erro: escola inválida!");
+        if(window.confirm("Deseja realmente excluir o responsavel " + responsavel.nome + responsavel.cpf)){
+            if (!responsavel || !responsavel.cpf || !responsavel.nome || !responsavel.telefone) {
+                console.log(responsavel.cpf, responsavel.nome, responsavel.telefone);
+                setMensagem("Erro: responsavel inválido!");
+                setTimeout(() => setMensagem(""), 5000);
                 return;
             }
 
             try {
-                const response = await fetch("http://localhost:3000/escolas/" + escola.nome, {
+                const response = await fetch("http://localhost:3000/responsaveis/" + responsavel.cpf, {
                     method: "DELETE"
                 });
 
                 if (response.ok) {
-                    setMensagem("Escola excluida com sucesso!");
-                    setListaDeEscolas(listaDeEscolas.filter(e => e.id !== escola.id));
+                    setMensagem("Responsavel excluido com sucesso!");
+                    setTimeout(() => setMensagem(""), 3000);
+                    setListaDeResponsaveis(listaDeResponsaveis.filter(r => r.cpf !== responsavel.cpf));
                 } else {
-                    setMensagem("Erro ao excluir a escola.");
+                    setMensagem("Erro ao excluir o responsavel.");
+                    setTimeout(() => setMensagem(""), 3000);
                 }
             } catch (error) {
                 console.error("Erro ao conectar com o backend:", error);
@@ -56,34 +65,35 @@ export default function RelatorioEscolas(){
         window.location.reload()
     };
 
-    const editarEscolas = async (escola) => {
-        navigate("/cadastroEscola", {
+    const editarResponsaveis = async (responsavel) => {
+        navigate("/cadastroResponsavel", {
             state: {
-                nome: escola.nome,
-                endereco: escola.endereco
+                cpf: responsavel.cpf,
+                nome: responsavel.nome,
+                telefone: responsavel.telefone
             }
         });
     };
-    
-    const escolasFiltradas = pesquisaNome
-    ? listaDeEscolas.filter((escola) => escola.nome.toLowerCase().includes(pesquisaNome.toLowerCase()))
-    : listaDeEscolas;
+
+    const responsaveisFiltrados = pesquisaNome
+        ? listaDeResponsaveis.filter((responsavel) => responsavel.nome.toLowerCase().includes(pesquisaNome.toLowerCase()))
+        : listaDeResponsaveis;
 
     return (
         <>
             <PaginaGeral>
-                    <br />
-                    <Alert className="alert-custom text-center mt-4 mb-4" variant="dark">
-                        <h2 className="titulo-alert">
-                            Escolas
-                        </h2>
-                    </Alert>
+                    
+                    <p></p>
+                    <Alert className="alert-custom text-center mt-4 mb-4">
+                <h2 className="titulo-alert">Relatório dos Responsáveis</h2>
+            </Alert>
+               
                 <Form>
                     <Form.Group className="form" controlId="exampleForm.ControlInput1">
-                        <Form.Label>PESQUISE A ESCOLA PELO NOME</Form.Label>
+                        <Form.Label style={{fontWeight:400, color:'white'}}>PESQUISE O RESPONSAVEL PELO NOME</Form.Label>
                             <InputGroup className="divInput">
                                 <div>
-                                    <Form.Control className="formInput" type="text" placeholder="Nome da escola"
+                                    <Form.Control className="formInput" type="text" placeholder="Pesquise o nome do responsavel"
                                     value={pesquisaNome} 
                                     onChange={(e) => setPesquisaNome(e.target.value)}  />
                                 </div>
@@ -96,7 +106,7 @@ export default function RelatorioEscolas(){
                         </Form.Group>
                     </Form>
                     <br />
-                    {mensagem && <Alert className="mt-02 mb-02 green text-center" variant={
+                {mensagem && <Alert className="mt-02 mb-02 green text-center" variant={
                     mensagem.includes("sucesso")
                     ? "success"
                     : mensagem.includes("Erro") || mensagem.includes("erro")
@@ -109,34 +119,39 @@ export default function RelatorioEscolas(){
                     <Table striped bordered hover>
                         <thead>
                             <tr>
-                                <th>Nome</th>
-                                <th>Endereço</th>
-                                <th>Ações</th>
+                                <th>CPF</th>
+                                <th>NOME</th>
+                                <th>TELEFONE</th>
+                                <th>AÇÕES</th>
                             </tr>
                         </thead>
                         <tbody>
                             {
-                                escolasFiltradas?.map((escola) => {
+                                responsaveisFiltrados?.map((responsavel) => {
                                 
                                     return (
                                         <tr> 
-                                            <td>{escola.nome}</td>
-                                            <td>{escola.endereco}</td>
+                                            <td>{responsavel.cpf}</td>
+                                            <td>{responsavel.nome}</td>
+                                            <td>{responsavel.telefone}</td>
                                             <td>
-                                                <Button onClick={() => editarEscolas(escola)} variant="warning"
-                                                    >
+                                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                                                <Button onClick={() => editarResponsaveis(responsavel)}
+                                                    variant="warning">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16">
                                                         <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                                                         <path fillRule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
                                                     </svg>
-                                                </Button> <Button onClick={ ()=> {
-                                                    excluirEscolas(escola);
+                                                </Button> 
+                                                <Button onClick={ ()=> {
+                                                    excluirResponsavel(responsavel);
                                                 }} variant="danger">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
                                                         <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
                                                         <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
                                                     </svg>           
                                                 </Button>
+                                                </div>
                                             </td>
                                         </tr>
                                     )
@@ -144,15 +159,14 @@ export default function RelatorioEscolas(){
                             }
                         </tbody>
                     </Table>
-                    <p>Quatidade de escolas cadastradas: {listaDeEscolas.length}</p>
+                    <p>Quatidade de responsaveis cadastrados: {listaDeResponsaveis.length}</p>
                 </Container>
                 <div>
-                        <Button as={Link} to="/telaEscola" className="botaoPesquisa" variant="secondary">
+                        <Button as={Link} to="/telaResponsavel" className="botaoPesquisa" variant="secondary">
                                 Voltar
                         </Button>
                 </div>
             </PaginaGeral>
         </>
     );
-
 }
