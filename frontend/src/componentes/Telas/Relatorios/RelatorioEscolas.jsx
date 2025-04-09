@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Container, Table, Button, Form, InputGroup, Alert } from "react-bootstrap";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import {Link} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export default function RelatorioEscolas(){
 
@@ -10,7 +11,7 @@ export default function RelatorioEscolas(){
     const [nome, setNome] = useState("");
     const [endereco, setEndereco] = useState("");
     const [pesquisaNome, setPesquisaNome] = useState("");
-
+    const navigate = useNavigate();
     useEffect(() => {
         const buscarEscolas = async () => {
             try {
@@ -56,30 +57,12 @@ export default function RelatorioEscolas(){
     };
 
     const editarEscolas = async (escola) => {
-        if (!escola || !escola.nome || !escola.endereco) {
-            setMensagem("Preencha todos os campos!");
-            return;
-        }
-    
-        try {
-            const response = await fetch(`http://localhost:3000/escolas/${escola.id}`, { // Certifique-se de usar o ID
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(escola),
-            });
-    
-            if (response.ok) {
-                setMensagem("Escola editada com sucesso!");
-                
-                // Atualizar a lista sem recarregar a página
-                setListaDeEscolas(listaDeEscolas.map(e => (e.id === escola.id ? escola : e)));
-            } else {
-                setMensagem("Erro ao editar a escola.");
+        navigate("/cadastroEscola", {
+            state: {
+                nome: escola.nome,
+                endereco: escola.endereco
             }
-        } catch (error) {
-            console.error("Erro ao conectar com o backend:", error);
-            setMensagem("Erro de conexão com o servidor.");
-        }
+        });
     };
     
     const escolasFiltradas = pesquisaNome
@@ -90,8 +73,8 @@ export default function RelatorioEscolas(){
         <>
             <PaginaGeral>
                     <br />
-                    <Alert className="mt-02 mb-02 dark text-center" variant="dark">
-                        <h2>
+                    <Alert className="alert-custom text-center mt-4 mb-4" variant="dark">
+                        <h2 className="titulo-alert">
                             Escolas
                         </h2>
                     </Alert>
@@ -113,6 +96,15 @@ export default function RelatorioEscolas(){
                         </Form.Group>
                     </Form>
                     <br />
+                    {mensagem && <Alert className="mt-02 mb-02 green text-center" variant={
+                    mensagem.includes("sucesso")
+                    ? "success"
+                    : mensagem.includes("Erro") || mensagem.includes("erro")
+                    ? "danger"
+                    : "warning"
+                    }>
+                    {mensagem}
+                    </Alert>}
                 <Container>
                     <Table striped bordered hover>
                         <thead>
@@ -131,11 +123,7 @@ export default function RelatorioEscolas(){
                                             <td>{escola.nome}</td>
                                             <td>{escola.endereco}</td>
                                             <td>
-                                                <Button onClick={()=>{
-                                                    editarEscolas({id: escola.id, 
-                                                        nome: nome || escola.nome, 
-                                                        endereco: endereco || escola.endereco});
-                                                }} variant="danger"
+                                                <Button onClick={() => editarEscolas(escola)} variant="warning"
                                                     >
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16">
                                                         <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
