@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import rotaTurma from './Rotas/rotaTurma.js'
 import rotaEscola from './Rotas/rotaEscola.js';
 import rotaResponsavel from './Rotas/rotaResponsavel.js';
+import rotaAluno from './Rotas/rotaAluno.js';
 
 dotenv.config();
 
@@ -26,6 +27,9 @@ app.use(express.static('./publico'));
 app.use("/turmas", rotaTurma);
 app.use("/escolas", rotaEscola);
 app.use("/responsaveis", rotaResponsavel); 
+app.use("/alunos", rotaAluno);
+
+
 
 app.get('/teste-conexao', async (req, res) => {
   try {
