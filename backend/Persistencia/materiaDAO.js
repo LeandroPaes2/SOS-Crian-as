@@ -72,7 +72,7 @@ export default class MateriaDAO {
         const [linhas, campos] = await conexao.execute(sql, parametros);
         let listamateria = [];
         for (const linha of linhas) {
-            const materia = new materia(
+            const materia = new Materia(
                 linha['mat_nome'],
                 linha['mat_desc']
             );
