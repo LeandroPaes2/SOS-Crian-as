@@ -90,10 +90,13 @@ export default class AlunoCtrl {
         res.type("application/json");
     
         if (req.method === "GET") {
-            let nome = req.params.nome;
-    
+            let id = req.params.id;
+            if(!id)
+            {
+                id="";
+            }
             const aluno = new Aluno();
-            aluno.consultar(nome).then((listaAluno) => {
+            aluno.consultar(id).then((listaAluno) => {
                 res.status(200).json(listaAluno);
             }).catch((erro) => {
                 res.status(500).json({ "status": false, "mensagem": "Erro ao consultar alunos: " + erro.message });

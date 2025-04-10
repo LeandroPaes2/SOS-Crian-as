@@ -25,11 +25,6 @@ export default function FormCadAluno() {
 
     const rotaVoltar = editando ? "/relatorioAluno" : "/telaAluno";
 
-
-
-
-
-
     useEffect(() => {
         if (location.state && location.state.id && location.state.nome && location.state.idade && location.state.responsavel && location.state.endereco && location.state.telefone && location.state.periodoEscola && location.state.periodoProjeto) {
             setId(location.state.id);
@@ -108,6 +103,20 @@ export default function FormCadAluno() {
             {mensagem && <Alert className="mt-02 mb-02 success text-center" variant="info">{mensagem}</Alert>}
 
             <Form onSubmit={handleSubmit}>
+
+            <Form.Group className="mb-3" id="id" >
+                    <Form.Label>id</Form.Label>
+                    <Form.Control
+                        type="text"
+                        placeholder="Digite o id"
+                        name="id"
+                        value={id}
+                        onChange={(e) => setId(e.target.value)}
+                        disabled
+
+                    />
+                </Form.Group>
+
 
                 <Form.Group className="mb-3" id="nome" >
                     <Form.Label>Nome</Form.Label>

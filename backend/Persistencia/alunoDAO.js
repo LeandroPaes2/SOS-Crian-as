@@ -9,6 +9,8 @@ export default class AlunoDAO {
     async init() {
         try {
             const conexao = await conectar();
+            //const sql2="DROP TABLE aluno";
+            //await conexao.execute(sql2);
             const sql = `CREATE TABLE IF NOT EXISTS aluno (
                 alu_id INT AUTO_INCREMENT PRIMARY KEY,
                 alu_nome VARCHAR(100) NOT NULL,
@@ -30,10 +32,11 @@ export default class AlunoDAO {
         if (aluno instanceof Aluno) {
             const conexao = await conectar();
             const sql = `INSERT INTO aluno 
-    (alu_nome, alu_idade, alu_responsavel, alu_endereco, alu_telefone, alu_periodoProjeto, alu_periodoEscola)
-    VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    (alu_id,alu_nome, alu_idade, alu_responsavel, alu_endereco, alu_telefone, alu_periodoProjeto, alu_periodoEscola)
+    VALUES (?,?, ?, ?, ?, ?, ?, ?)`;
 
             const parametros = [
+                aluno.id,
                 aluno.nome, aluno.idade, aluno.responsavel,
                 aluno.endereco, aluno.telefone,
                 aluno.periodoProjeto, aluno.periodoEscola
@@ -52,11 +55,11 @@ export default class AlunoDAO {
             parametros = [termo];
         }
 
-
+        /*
         if(termo){
             sql = `SELECT * FROM aluno WHERE alu_nome LIKE ?`;
             parametros = ['%' + termo + '%'];
-        }
+        }*/
         else
         {
             termo="";
@@ -70,14 +73,14 @@ export default class AlunoDAO {
         let listaAluno = [];
         for (const registro of registros) {
             const aluno = new Aluno(
-                registro['alu_id'],
                 registro['alu_nome'],
                 registro['alu_idade'],
                 registro['alu_responsavel'],
                 registro['alu_endereco'],
                 registro['alu_telefone'],
                 registro['alu_periodoProjeto'],
-                registro['alu_periodoEscola']
+                registro['alu_periodoEscola'],
+                registro['alu_id'],
             );
             listaAluno.push(aluno);
         }

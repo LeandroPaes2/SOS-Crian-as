@@ -7,13 +7,25 @@ export default function RelatorioAlunos() {
     const [listaDeAlunos, setListaDeAlunos] = useState([]);
     const [pesquisaNome, setPesquisaNome] = useState("");
     const [mensagem, setMensagem] = useState("");
+
+    const [id, setId] = useState(0);
+    const [nome, setNome] = useState("");
+    const [idade, setIdade] = useState(0);
+    const [responsavel, setResponsavel] = useState("");
+    const [endereco, setEndereco] = useState("");
+    const [telefone, setTelefone] = useState("");
+    const [periodoEscola, setPeriodoEscola] = useState("");
+    const [periodoProjeto, setPeriodoProjeto] = useState("");
     const navigate = useNavigate();
+
+
 
     useEffect(() => {
         const buscarAlunos = async () => {
             try {
                 const res = await fetch("http://localhost:3000/alunos");
                 if (!res.ok) throw new Error("Erro ao buscar alunos");
+
                 const dados = await res.json();
                 setListaDeAlunos(dados);
             } catch (error) {
@@ -26,6 +38,14 @@ export default function RelatorioAlunos() {
 
     const excluirAluno = async (aluno) => {
         if (window.confirm(`Deseja realmente excluir o aluno ${aluno.nome}?`)) {
+            if(!aluno || !aluno.id || !aluno.nome || !aluno.idade || aluno.responsavel|| aluno.endereco || aluno.telefone || aluno.periodoEscola || aluno.periodoProjeto )
+            {
+                console.log(aluno.id,aluno.nome);
+                setMensagem("Erro: aluno inválido!");
+                setTimeout(() => setMensagem(""), 5000);
+                return;
+            }
+
             try {
                 const res = await fetch(`http://localhost:3000/alunos/${aluno.id}`, {
                     method: "DELETE"
@@ -70,14 +90,17 @@ export default function RelatorioAlunos() {
                 <Table striped bordered hover>
                     <thead>
                         <tr>
+                            <th>Id</th>
                             <th>Nome</th>
                             <th>Período</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {alunosFiltrados.map(aluno => (
-                            <tr key={aluno.id}>
+                        {listaDeAlunos.map((aluno) => (
+                            <tr> 
+                                {console.log(aluno)}
+                                <td>{aluno.id}</td>
                                 <td>{aluno.nome}</td>
                                 <td>{aluno.periodoProjeto}</td>
                                 <td className="d-flex gap-2">

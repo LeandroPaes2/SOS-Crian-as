@@ -94,9 +94,9 @@ export default function FormCadResponsavel(props) {
 
                 setTimeout(() => setMensagem(""), 3000);
                 setEditando(false);
-                setTimeout(() => {
+                /*setTimeout(() => {
                     navigate("/relatorioResponsavel"); 
-                }, 3000); 
+                }, 3000); */
             } else {
                 setMensagem(editando ? "Erro ao atualizar responsavel!": "Erro ao cadastrar o responsavel.");
             }
