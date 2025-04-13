@@ -6,7 +6,8 @@ export default class Funcionario{
     #cpf;
     #cargo;
     #nivel;
-
+    #email;
+    #senha;
 
     get nome(){
         return this.#nome;
@@ -24,12 +25,13 @@ export default class Funcionario{
         this.#cpf=novoCPF;
     }
 
+
     get cargo(){
         return this.#cargo;
     }
 
     set cargo(novoCargo){
-        this.#cargo=novoCargo;
+        this.#cargo = novoCargo;
     }
 
     get nivel(){
@@ -40,30 +42,47 @@ export default class Funcionario{
         this.#nivel=novoNivel;
     }
 
-    //construtor (criador de um produto)
-    constructor(nome="", cpf="", cargo="", nivel=""){
+    get email(){
+        return this.#email;
+    }
+
+    set email(novoEmail){
+        this.#email = novoEmail;
+    }
+
+    get senha(){
+        return this.#senha;
+    }
+
+    set senha(novaSenha){
+        this.#senha=novaSenha;
+    }
+
+
+    constructor(nome="", cpf=0, cargo = "", nivel="",email="",senha=""){
         this.#nome=nome;
         this.#cpf=cpf;
         this.#cargo = cargo;
-        this.#nivel = nivel;
+        this.#nivel=nivel;
+        this.#email = email;
+        this.#senha = senha;
+
     }
 
-    //override do método toJSON
-    //o método toJSON é chamado automaticamente quando um produto
-    //precisar ser convertido no formato JSON
     toJSON(){
         return {
             "nome":this.#nome,
             "cpf":this.#cpf,
             "cargo":this.#cargo,
-            "nivel":this.#nivel
+            "nivel":this.#nivel,
+            "email":this.#email,
+            "senha":this.#senha
         }
     }
 
     async incluir(){
-        //instanciar a camada de persistencia do produto
         const funcDAO = new FuncionarioDAO();
-        await funcDAO.incluir(this); //this referência a si mesmo
+        await funcDAO.incluir(this); 
     }
 
     async consultar(termo){

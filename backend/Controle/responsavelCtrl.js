@@ -1,36 +1,33 @@
 //É a classe responsável por traduzir requisições HTTP e produzir respostas HTTP
-import Funcionario from "../Modelo/funcionario.js";
+import Responsavel from "../Modelo/responsavel.js";
 
-export default class FuncionarioCtrl {
+export default class ResponsavelCtrl {
 
     gravar(requisicao, resposta){
         //preparar o destinatário que a resposta estará no formato JSON
         resposta.type("application/json");
         //Verificando se o método da requisição é POST e conteúdo é JSON
         if (requisicao.method == 'POST' && requisicao.is("application/json")){
-            const nome  = requisicao.body.nome;
-            const cpf = requisicao.body.cpf;
-            const cargo = requisicao.body.cargo;
-            const nivel = requisicao.body.nivel;
-            const email = requisicao.body.email;
-            const senha = requisicao.body.senha;
+            const cpf  = requisicao.body.cpf;
+            const nome = requisicao.body.nome;
+            const telefone = requisicao.body.telefone;
             //pseudo validação
-            if (nome && cpf && cargo && nivel && email && senha)
+            if (cpf && nome && telefone)
             {
                 //gravar a categoria
-                const funcionario = new Funcionario(nome, cpf, cargo, nivel, email, senha);
-                funcionario.incluir()
+                const responsavel = new Responsavel(cpf, nome, telefone);
+                responsavel.incluir()
                 .then(()=>{
                     resposta.status(200).json({
                         "status":true,
-                        "mensagem":"Funcionario adicionada com sucesso!",
-                        "cor": funcionario.cor
+                        "mensagem":"Responsavel adicionado com sucesso!",
+                        "cpf": responsavel.cpf
                     });
                 })
                 .catch((erro)=>{
                     resposta.status(500).json({
                         "status":false,
-                        "mensagem":"Não foi possível incluir a funcionario: " + erro.message
+                        "mensagem":"Não foi possível incluir o responsavel: " + erro.message
                     });
                 });
             }
@@ -39,7 +36,7 @@ export default class FuncionarioCtrl {
                 resposta.status(400).json(
                     {
                         "status":false,
-                        "mensagem":"Informe corretamente todos os dados de uma funcionario conforme documentação da API."
+                        "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
                     }
                 );
             }
@@ -56,53 +53,52 @@ export default class FuncionarioCtrl {
 
     }
 
-    editar(requisicao, resposta) {
+    editar(requisicao, resposta){
+        //preparar o destinatário que a resposta estará no formato JSON
         resposta.type("application/json");
-    
-        if ((requisicao.method == 'PUT' || requisicao.method == 'PATCH') && requisicao.is("application/json")) {
-            const cpf = requisicao.params.cpf; // CPF vem da URL (padrão REST)
+        //Verificando se o método da requisição é POST e conteúdo é JSON
+        if ((requisicao.method == 'PUT' || requisicao.method == 'PATCH') && requisicao.is("application/json")){
+            //o código será extraída da URL (padrão REST)
+            const cpf  = requisicao.params.cpf;
             const nome = requisicao.body.nome;
-            const cargo = requisicao.body.cargo;
-            const nivel = requisicao.body.nivel;
-            const email = requisicao.body.email;
-            const senha = requisicao.body.senha;
-    
-            if (nome && cargo && nivel && email && senha) {
-                // Verifica se o CPF enviado no corpo da requisição é o mesmo da URL
-                if (requisicao.body.cpf && requisicao.body.cpf !== cpf) {
-                    return resposta.status(400).json({
-                        "status": false,
-                        "mensagem": "O CPF não pode ser alterado.   222222"
-                    });
-                }
-    
-                const funcionario = new Funcionario(nome, cpf, cargo, nivel, email, senha);
-                funcionario.alterar().then(() => {
+            const telefone = requisicao.body.telefone;
+        
+            if (cpf && nome && telefone)
+            {
+                //alterar a categoria
+                const responsavel = new Responsavel(cpf, nome, telefone);
+                responsavel.alterar().then(()=>{
                     resposta.status(200).json({
-                        "status": true,
-                        "mensagem": "Funcionário alterado com sucesso!",
+                        "status":true,
+                        "mensagem":"Responsavel alterado com sucesso!",
                     });
                 })
-                .catch((erro) => {
+                .catch((erro)=>{
                     resposta.status(500).json({
-                        "status": false,
-                        "mensagem": "Não foi possível alterar o funcionário: " + erro.message
+                        "status":false,
+                        "mensagem":"Não foi possível alterar o responsavel: " + erro.message
                     });
                 });
-            } else {
-                resposta.status(400).json({
-                    "status": false,
-                    "mensagem": "Informe corretamente todos os dados de um funcionário conforme documentação da API."
-                });
             }
-        } else {
+            else
+            {
+                resposta.status(400).json(
+                    {
+                        "status":false,
+                        "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                    }
+                );
+            }
+        }
+        else
+        {
             resposta.status(400).json({
-                "status": false,
-                "mensagem": "Requisição inválida! Consulte a documentação da API."
+                "status":false,
+                "mensagem":"Requisição inválida! Consulte a documentação da API."
             });
+
         }
     }
-    
 
     excluir(requisicao, resposta) {
         //preparar o destinatário que a resposta estará no formato JSON
@@ -114,18 +110,18 @@ export default class FuncionarioCtrl {
             //pseudo validação
             if (cpf) {
                 //alterar o produto
-                const funcionario = new Funcionario("", cpf, "", "", "", "");
-                funcionario.excluir()
+                const responsavel = new Responsavel(cpf);
+                responsavel.excluir()
                     .then(() => {
                         resposta.status(200).json({
                             "status": true,
-                            "mensagem": "Funcionario excluído com sucesso!",
+                            "mensagem": "Responsável excluído com sucesso!",
                         });
                     })
                     .catch((erro) => {
                         resposta.status(500).json({
                             "status": false,
-                            "mensagem": "Não foi possível excluir a funcionario: " + erro.message
+                            "mensagem": "Não foi possível excluir o responsavel: " + erro.message
                         });
                     });
             }
@@ -133,7 +129,7 @@ export default class FuncionarioCtrl {
                 resposta.status(400).json(
                     {
                         "status": false,
-                        "mensagem": "Informe um código válido de um produto conforme documentação da API."
+                        "mensagem": "Informe um cpf válido de um responsavel conforme documentação da API."
                     }
                 );
             }
@@ -151,24 +147,24 @@ export default class FuncionarioCtrl {
     consultar(requisicao, resposta) {
         resposta.type("application/json");
         if (requisicao.method == "GET") {
-            let nome = requisicao.params.nome;
+            let cpf = requisicao.params.cpf;
 
             //evitar que código tenha valor undefined
-            if (!nome) {
-                nome = "";
+            if (!cpf) {
+                cpf = "";
             }
 
-            const funcionario = new Funcionario();
+            const responsavel = new Responsavel();
             //método consultar retorna uma lista de produtos
-            funcionario.consultar(nome)
-                .then((listaFuncionario) => {
-                    resposta.status(200).json(listaFuncionario);
+            responsavel.consultar(cpf)
+                .then((listaResponsavel) => {
+                    resposta.status(200).json(listaResponsavel);
                 })
                 .catch((erro) => {
                     resposta.status(500).json(
                         {
                             "status": false,
-                            "mensagem": "Erro ao consultar funcionarios: " + erro.message
+                            "mensagem": "Erro ao consultar responsaveis: " + erro.message
                         }
                     );
                 });

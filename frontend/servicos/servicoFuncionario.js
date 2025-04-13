@@ -13,7 +13,7 @@ export async function gravarFuncionario(funcionario){
 }
 
 export async function alterarFuncionario(funcionario){
-    const resposta = await fetch(urlBase + "/" + funcionario.nome,{
+    const resposta = await fetch(urlBase + "/" + funcionario.cpf,{
         'method':"PUT",
         'headers': { 
             'Content-Type':"application/json"
@@ -25,7 +25,7 @@ export async function alterarFuncionario(funcionario){
 }
 
 export async function excluirFuncionario(funcionario){
-    const resposta = await fetch(urlBase + "/" + funcionario.nome,{
+    const resposta = await fetch(urlBase + "/" + funcionario.cpf,{
         'method':"DELETE",
     });
     const resultado = await resposta.json();

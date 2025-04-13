@@ -1,9 +1,8 @@
 import PaginaGeral from "../layouts/PaginaGeral"
-import { Alert, Form, Button, InputGroup} from "react-bootstrap";
+import { Alert, Button } from "react-bootstrap";
 import {Link} from 'react-router-dom';
 import "../css/telaFuncionario.css";
 import RelatorioFuncionarios from "./Relatorios/RelatorioFuncionarios";
-
 export default function TelaCadastroFuncionario(props){
 
     return(
@@ -18,12 +17,12 @@ export default function TelaCadastroFuncionario(props){
 
                 <div>
                     <Button as={Link} to="/cadastroFuncionario" className="botaoPesquisa" variant="secondary">
-                        Cadastrar Funcionario
+                        Cadastrar funcionario
                     </Button>
                 </div>
                 <div>
                     <Button as={Link} to="/relatorioFuncionario" className="botaoPesquisa" variant="secondary">
-                        Relatorio das Funcionarios
+                        Relatorio das funcionarios
                     </Button>
                 </div>
             </PaginaGeral>
