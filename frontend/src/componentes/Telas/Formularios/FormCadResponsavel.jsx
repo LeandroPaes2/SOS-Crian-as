@@ -29,6 +29,32 @@ export default function FormCadResponsavel(props) {
         }
     }, [location.state]);
 
+    function validarCPF(cpf) {
+        cpf = cpf.replace(/[^\d]+/g, '');
+        if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+        let soma = 0, resto;
+
+        for (let i = 1; i <= 9; i++) {
+            soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+        }
+
+        resto = (soma * 10) % 11;
+        if (resto === 10 || resto === 11) resto = 0;
+        if (resto !== parseInt(cpf.charAt(9))) return false;
+
+        soma = 0;
+        for (let i = 1; i <= 10; i++) {
+            soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+        }
+
+        resto = (soma * 10) % 11;
+        if (resto === 10 || resto === 11) resto = 0;
+        if (resto !== parseInt(cpf.charAt(10))) return false;
+
+        return true;
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault(); // Evita recarregar a página
 
@@ -38,7 +64,7 @@ export default function FormCadResponsavel(props) {
             return;
         }
 
-        if(cpf[3]!="." || cpf[7]!="." || cpf[11]!="-" || cpf.length!=14){
+        if(!validarCPF(cpf) || cpf[3]!="." || cpf[7]!="." || cpf[11]!="-" || cpf.length!=14){
             setMensagem("CPF invalido");
             setTimeout(() => setMensagem(""), 5000);
             return;
@@ -68,9 +94,9 @@ export default function FormCadResponsavel(props) {
 
                 setTimeout(() => setMensagem(""), 3000);
                 setEditando(false);
-                setTimeout(() => {
+                /*setTimeout(() => {
                     navigate("/relatorioResponsavel"); 
-                }, 3000); 
+                }, 3000); */
             } else {
                 setMensagem(editando ? "Erro ao atualizar responsavel!": "Erro ao cadastrar o responsavel.");
             }

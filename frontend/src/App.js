@@ -18,9 +18,14 @@ import RelatorioMateria from './componentes/Telas/Relatorios/RelatorioMaterias';
 import RelatorioResponsaveis from './componentes/Telas/Relatorios/RelatorioResponsaveis';
 import TelaCadastroResponsavel from './componentes/Telas/TelaCadastroResponsavel';
 import FormCadResponsavel from './componentes/Telas/Formularios/FormCadResponsavel';
+import TelaEvento from './componentes/Telas/TelaEvento';
+import FormCadEvento from './componentes/Telas/Formularios/FormCadEvento';
+import RelatorioEventos from './componentes/Telas/Relatorios/RelatorioEventos';
+import RelatorioAlunos from './componentes/Telas/Relatorios/RelatorioAlunos';
 
 function App() {
     return (
+        <EventosProvider>
         <Router>
             <div className="app-background"> 
                 <Routes>
@@ -31,6 +36,7 @@ function App() {
                     <Route path="/cadastroEscola" element={<FormCadEscola />} />
                     <Route path="/telaAluno" element={<TelaCadastroAluno />} />
                     <Route path="/cadastroAluno" element={<FormCadAluno />} />
+                    <Route path="/relatorioAluno" element={<RelatorioAlunos />} />
                     <Route path="/relatorioTurma" element={<RelatorioTurmas />} />
                     <Route path="/relatorioEscola" element={<RelatorioEscolas />} />
                     <Route path="/telaMateria" element={<TelaCadastroMateria />} />
@@ -39,10 +45,17 @@ function App() {
                     <Route path="/telaResponsavel" element={<TelaCadastroResponsavel />} />
                     <Route path="/cadastroResponsavel" element={<FormCadResponsavel />} />
                     <Route path="/relatorioResponsavel" element={<RelatorioResponsaveis/>}/>
-
+                    <Route path="/relatorioEvento" element={
+                            <RelatorioEventos />
+                       }/>
+                    <Route path="/telaEvento" element={<TelaEvento/>}/>
+                    <Route path="/cadastroEvento" element={
+                            <FormCadEvento />
+                        }/>
                 </Routes>
             </div>
         </Router>
+        </EventosProvider>
     );
 }
 
