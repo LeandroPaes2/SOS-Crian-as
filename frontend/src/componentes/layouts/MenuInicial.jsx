@@ -30,6 +30,10 @@ export default function MenuInicial(props){
             <Button as={Link} to="/telaEscola" className='botaoMenu' variant="secondary" size="lg">
                 Escolas
             </Button>
+
+            <Button as={Link} to="/telaEvento" className='botaoMenu' variant="secondary" size="lg">
+                Eventos
+            </Button>
             
         </div>
     )

@@ -15,9 +15,14 @@ import FormCadAluno from './componentes/Telas/Formularios/FormCadAluno';
 import RelatorioResponsaveis from './componentes/Telas/Relatorios/RelatorioResponsaveis';
 import TelaCadastroResponsavel from './componentes/Telas/TelaCadastroResponsavel';
 import FormCadResponsavel from './componentes/Telas/Formularios/FormCadResponsavel';
+import TelaEvento from './componentes/Telas/TelaEvento';
+import FormCadEvento from './componentes/Telas/Formularios/FormCadEvento';
+import RelatorioEventos from './componentes/Telas/Relatorios/RelatorioEventos';
+import { EventosProvider } from './EventosContext';
 
 function App() {
     return (
+        <EventosProvider>
         <Router>
             <div className="app-background"> 
                 <Routes>
@@ -33,10 +38,17 @@ function App() {
                     <Route path="/telaResponsavel" element={<TelaCadastroResponsavel />} />
                     <Route path="/cadastroResponsavel" element={<FormCadResponsavel />} />
                     <Route path="/relatorioResponsavel" element={<RelatorioResponsaveis/>}/>
-
+                    <Route path="/relatorioEvento" element={
+                            <RelatorioEventos />
+                       }/>
+                    <Route path="/telaEvento" element={<TelaEvento/>}/>
+                    <Route path="/cadastroEvento" element={
+                            <FormCadEvento />
+                        }/>
                 </Routes>
             </div>
         </Router>
+        </EventosProvider>
     );
 }
 
