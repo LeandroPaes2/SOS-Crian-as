@@ -2,30 +2,28 @@ import PaginaGeral from "../layouts/PaginaGeral";
 import { Alert, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-import RelatorioAlunos from "./Relatorios/RelatorioAlunos";
-
-export default function TelaCadastroAluno(props) {
+export default function TelaCadastroAluno() {
     return (
         <div>
             <PaginaGeral>
                 <br />
-                <Alert className="mt-02 mb-02 dark text-center" variant="dark">
-                    <h2>
-                        Alunos
-                    </h2>
+                <Alert className="alert-custom text-center mt-4 mb-4" >
+                    <h2 className="titulo-alert">Alunos</h2>
                 </Alert>
 
-                <div>
-                    <Button as={Link} to="/cadastroAluno" className="botaoPesquisa" variant="secondary">
-                        Cadastrar aluno
+                <div className="botoes-container">
+                    <Button as={Link} to="/cadastroAluno" variant="secondary" className="botaoMenu">
+                        Cadastrar Aluno
                     </Button>
-                </div>
-                <div>
-                    <Button as={Link} to="/relatorioAluno" className="botaoPesquisa" variant="secondary">
-                        Relatório dos alunos
+
+                    <Button as={Link} to="/relatorioAluno" variant="secondary" className="botaoMenu">
+                        Relatório dos Alunos
                     </Button>
                 </div>
             </PaginaGeral>
+
+
         </div>
+
     );
 }
