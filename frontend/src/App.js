@@ -22,6 +22,7 @@ import TelaEvento from './componentes/Telas/TelaEvento';
 import FormCadEvento from './componentes/Telas/Formularios/FormCadEvento';
 import RelatorioEventos from './componentes/Telas/Relatorios/RelatorioEventos';
 import RelatorioAlunos from './componentes/Telas/Relatorios/RelatorioAlunos';
+import { EventosProvider } from './EventosContext';
 
 function App() {
     return (
