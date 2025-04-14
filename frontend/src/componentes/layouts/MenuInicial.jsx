@@ -30,6 +30,12 @@ export default function MenuInicial() {
                 <FaSchool style={{ marginRight: "10px" }} />
                 Escolas
             </Button>
+
+            <Button as={Link} to="/telaEvento" className='botaoMenu' variant="secondary" size="lg">
+                Eventos
+            </Button>
+            
+
         </div>
     );
 }
