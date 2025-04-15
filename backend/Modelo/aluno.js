@@ -18,8 +18,9 @@ export default class Aluno {
     #periodoEscola;
     #realizaAcompanhamento;
     #possuiSindrome;
+    #status;// 0  aluno Desligado 1 aluno matriculado e 2 para aluno na fila de espera;
 
-    constructor(numProtocolo=0, nome="", dataNascimento="", responsavel={},rua="", bairro="", cidade="", cep="", numero="", escola={} ,telefone="", periodoProjeto="", periodoEscola="", realizaAcompanhamento="", possuiSindrome="") {
+    constructor(numProtocolo=0, nome="", dataNascimento="", responsavel={},rua="", bairro="", cidade="", cep="", numero="", escola={} ,telefone="", periodoProjeto="", periodoEscola="", realizaAcompanhamento="", possuiSindrome="",status=0) {
         this.#numProtocolo = numProtocolo;
         this.#nome = nome;
         this.#dataNascimento = dataNascimento;
@@ -35,6 +36,7 @@ export default class Aluno {
         this.#periodoEscola = periodoEscola;
         this.#realizaAcompanhamento = realizaAcompanhamento;
         this.#possuiSindrome = possuiSindrome;
+        this.#status = status;
     }
 
     get numProtocolo() { return this.#numProtocolo; }
@@ -85,7 +87,8 @@ export default class Aluno {
     get possuiSindrome() { return this.#possuiSindrome; }
     set possuiSindrome(valor) { this.#possuiSindrome = valor; }
 
-
+    get status() { return this.#status; }
+    set status(valor) { this.#status = valor; }
 
 
 
@@ -105,27 +108,28 @@ export default class Aluno {
             periodoProjeto: this.#periodoProjeto,
             periodoEscola: this.#periodoEscola,
             realizaAcompanhamento: this.#realizaAcompanhamento,
-            possuiSindrome: this.#possuiSindrome
+            possuiSindrome: this.#possuiSindrome,
+            status: this.#status
         };
     }
 
-    async incluir() {
+    async incluir(conexao) {
         const dao = new AlunoDAO();
-        await dao.incluir(this);
+        await dao.incluir(this,conexao);
     }
 
-    async alterar() {
+    async alterar(conexao) {
         const dao = new AlunoDAO();
-        await dao.alterar(this);
+        await dao.alterar(this,conexao);
     }
 
-    async excluir() {
+    async excluir(conexao) {
         const dao = new AlunoDAO();
-        await dao.excluir(this);
+        await dao.excluir(this,conexao);
     }
 
-    async consultar(termo) {
+    async consultar(termo,conexao) {
         const dao = new AlunoDAO();
-        return await dao.consultar(termo);
+        return await dao.consultar(termo,conexao);
     }
 }
