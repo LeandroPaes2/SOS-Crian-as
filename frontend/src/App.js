@@ -23,10 +23,14 @@ import FormCadEvento from './componentes/Telas/Formularios/FormCadEvento';
 import RelatorioEventos from './componentes/Telas/Relatorios/RelatorioEventos';
 import RelatorioAlunos from './componentes/Telas/Relatorios/RelatorioAlunos';
 import { EventosProvider } from './EventosContext';
+import TelaPresenca from './componentes/Telas/telaPresenca';
+import FormCadPresenca from './componentes/Telas/Formularios/FormCadPresenca';
+import { PresencasProvider } from './PresencaContext';
 
 function App() {
     return (
         <EventosProvider>
+        <PresencasProvider>
         <Router>
             <div className="app-background"> 
                 <Routes>
@@ -53,9 +57,12 @@ function App() {
                     <Route path="/cadastroEvento" element={
                             <FormCadEvento />
                         }/>
+                    <Route path="/telaPresenca" element={<TelaPresenca/>}/>
+                    <Route path="/cadastroPresenca" element={<FormCadPresenca/>}/>
                 </Routes>
             </div>
         </Router>
+        </PresencasProvider>
         </EventosProvider>
     );
 }

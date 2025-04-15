@@ -8,9 +8,9 @@ export const PresencasProvider = ({ children }) => {
     const [listaDePresencas, setListaDePresencas] = useState([]);
 
     return (
-        <EventosContext.Provider value={{ listaDePresencas, setListaDePresencas }}>
+        <PresencasContext.Provider value={{ listaDePresencas, setListaDePresencas }}>
             {children}
-        </EventosContext.Provider>
+        </PresencasContext.Provider>
     );
 };
 
