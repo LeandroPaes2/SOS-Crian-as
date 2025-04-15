@@ -1,8 +1,11 @@
 import Escola from "../Modelo/escola.js";
+import conectar from "../Persistencia/Conexao.js";
 
 export default class EscolaCtrl {
 
-    gravar(requisicao, resposta) {
+    async gravar(requisicao, resposta) {
+        const conexao = await conectar();
+
         resposta.type("application/json");
 
         if (requisicao.method == 'POST' && requisicao.is("application/json")) {
@@ -13,7 +16,41 @@ export default class EscolaCtrl {
 
             if (nome && endereco && telefone && tipo) {
                 const escola = new Escola(nome, endereco, telefone, tipo);
-                escola.incluir()
+
+                try {
+                    await conexao.query("BEGIN");
+                    if (escola.incluir(conexao)) {
+                        resposta.status(200).json({
+                            "status": true,
+                            "mensagem": "Escola adicionada com sucesso!",
+                            "nome": escola.nome
+                        });
+                    }
+                    else
+                    {
+                        await conexao.query("ROLLBACK");
+
+                        resposta.status(500).json({
+                            "status": false,
+                            "mensagem": "Não foi possível incluir a escola: " + erro.message
+                        });
+                    }
+
+                } catch (e) {
+                    
+                    resposta.status(500).json({
+                        "status": false,
+                        "mensagem": "Não foi possível incluir a escola: " + erro.message
+                    });
+                }
+                finally{
+                    conexao.release();
+                    
+                }
+
+
+
+                escola.incluir(conexao)
                     .then(() => {
                         resposta.status(200).json({
                             "status": true,
