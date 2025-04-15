@@ -1,16 +1,16 @@
 //DAO - Data Access Object
 import Funcionario from "../Modelo/funcionario.js";
-import conectar from "./Conexao.js";
+//import conectar from "../Controle/Conexao.js";
 
 export default class FuncionarioDAO {
 
-    constructor() {
+   /* constructor() {
         this.init();
     }
 
         async init() {
             try {
-                const conexao = await conectar();
+            //    const conexao = await conectar();
 
                 await conexao.execute(`
                     CREATE TABLE IF NOT EXISTS funcionario (
@@ -24,18 +24,18 @@ export default class FuncionarioDAO {
                     )
                 `);
 
-                await conexao.release();
+            //    await conexao.release();
                 console.log("Tabela 'funcionario' foi recriada com sucesso.");
             } catch (e) {
                 console.log("Não foi possível iniciar o banco de dados: " + e.message);
             }
         }
-        
+        */
 
-    async incluir(funcionario) {
+    async incluir(funcionario, conexao) {
         if (funcionario instanceof Funcionario) {
             try {
-                const conexao = await conectar();
+             //   const conexao = await conectar();
                 const sql = `INSERT INTO funcionario(func_nome, func_cpf, func_cargo, func_nivel, func_email, func_senha)
                              VALUES (?, ?, ?, ?, ?, ?)`;
                 const parametros = [
@@ -47,17 +47,17 @@ export default class FuncionarioDAO {
                     funcionario.senha
                 ];
                 await conexao.execute(sql, parametros);
-                await conexao.release();
+             //   await conexao.release();
             } catch (e) {
                 throw new Error("Erro ao incluir funcionário: " + e.message);
             }
         }
     }
 
-    async alterar(funcionario) {
+    async alterar(funcionario, conexao) {
         if (funcionario instanceof Funcionario) {
             try {
-                const conexao = await conectar();
+            //    const conexao = await conectar();
                 const sql = `UPDATE funcionario 
                              SET func_nome = ?, func_cargo = ?, func_nivel = ?, func_email = ?, func_senha = ? 
                              WHERE func_cpf = ?`;
@@ -70,52 +70,53 @@ export default class FuncionarioDAO {
                     funcionario.cpf
                 ];
                 await conexao.execute(sql, parametros);
-                await conexao.release();
+             //   await conexao.release();
             } catch (e) {
                 throw new Error("Erro ao alterar funcionário: " + e.message);
             }
         }
     }
 
-    async excluir(funcionario) {
+    async excluir(funcionario, conexao) {
         if (funcionario instanceof Funcionario) {
             try {
-                const conexao = await conectar();
+             //   const conexao = await conectar();
                 const sql = `DELETE FROM funcionario WHERE func_cpf = ?`;
                 await conexao.execute(sql, [funcionario.cpf]);
-                await conexao.release();
+             //   await conexao.release();
             } catch (e) {
                 throw new Error("Erro ao excluir funcionário: " + e.message);
             }
         }
     }
-        async consultar(termo) {
-            try {
-                const conexao = await conectar();
-                let sql = "";
-                let parametros = [];
-        
-                if (!termo) {
-                    sql = `SELECT * FROM funcionario ORDER BY func_nome`;
-                } else {
-                    sql = `SELECT * FROM funcionario WHERE func_nome LIKE ? ORDER BY func_nome`;
-                    parametros = ['%' + termo + '%'];
-                }
-        
-                const [linhas] = await conexao.execute(sql, parametros);
-                const listaFuncionario = linhas.map(linha => new Funcionario(
-                    linha['func_nome'],
-                    linha['func_cpf'],
-                    linha['func_cargo'],
-                    linha['func_nivel'],
-                    linha['func_email'],
-                    linha['func_senha']
-                ));
-                await conexao.release();
-                return listaFuncionario;
-            } catch (e) {
-                throw new Error("Erro ao consultar funcionários: " + e.message);
+    
+    async consultar(termo, conexao) {
+        try {
+            //   const conexao = await conectar();
+            let sql = "";
+            let parametros = [];
+    
+            if (!termo) {
+                sql = `SELECT * FROM funcionario ORDER BY func_nome`;
+            } else {
+                sql = `SELECT * FROM funcionario WHERE func_nome LIKE ? ORDER BY func_nome`;
+                parametros = ['%' + termo + '%'];
             }
+    
+            const [linhas] = await conexao.execute(sql, parametros);
+            const listaFuncionario = linhas.map(linha => new Funcionario(
+                linha['func_nome'],
+                linha['func_cpf'],
+                linha['func_cargo'],
+                linha['func_nivel'],
+                linha['func_email'],
+                linha['func_senha']
+            ));
+            //   await conexao.release();
+            return listaFuncionario;
+        } catch (e) {
+            throw new Error("Erro ao consultar funcionários: " + e.message);
         }
+    }
         
 }

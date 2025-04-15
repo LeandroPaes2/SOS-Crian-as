@@ -80,24 +80,24 @@ export default class Funcionario{
         }
     }
 
-    async incluir(){
+    async incluir(conexao){
         const funcDAO = new FuncionarioDAO();
-        await funcDAO.incluir(this); 
+        await funcDAO.incluir(this, conexao); //this,conexao
     }
 
-    async consultar(termo){
+    async consultar(termo, conexao){
         const funcDAO = new FuncionarioDAO();
-        return await funcDAO.consultar(termo);
+        return await funcDAO.consultar(termo, conexao);
     }
 
-    async excluir(){
+    async excluir(conexao){
         const funcDAO = new FuncionarioDAO();
-        await funcDAO.excluir(this);
+        await funcDAO.excluir(this, conexao);
     }
 
-    async alterar(){
+    async alterar(conexao){
         const funcDAO = new FuncionarioDAO();
-        await funcDAO.alterar(this);
+        await funcDAO.alterar(this, conexao);
     }
 }
 

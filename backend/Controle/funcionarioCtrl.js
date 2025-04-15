@@ -1,9 +1,13 @@
 //É a classe responsável por traduzir requisições HTTP e produzir respostas HTTP
 import Funcionario from "../Modelo/funcionario.js";
+import conectar from "./Conexao.js";
 
 export default class FuncionarioCtrl {
 
-    gravar(requisicao, resposta){
+    async gravar(requisicao, resposta){
+
+        const conexao = await conectar();
+
         //preparar o destinatário que a resposta estará no formato JSON
         resposta.type("application/json");
         //Verificando se o método da requisição é POST e conteúdo é JSON
@@ -17,22 +21,34 @@ export default class FuncionarioCtrl {
             //pseudo validação
             if (nome && cpf && cargo && nivel && email && senha)
             {
-                //gravar a categoria
                 const funcionario = new Funcionario(nome, cpf, cargo, nivel, email, senha);
-                funcionario.incluir()
-                .then(()=>{
-                    resposta.status(200).json({
-                        "status":true,
-                        "mensagem":"Funcionario adicionada com sucesso!",
-                        "cor": funcionario.cor
-                    });
-                })
-                .catch((erro)=>{
-                    resposta.status(500).json({
-                        "status":false,
-                        "mensagem":"Não foi possível incluir a funcionario: " + erro.message
-                    });
-                });
+                try{
+                    await conexao.query('BEGIN');
+                        if(funcionario.incluir(conexao)){
+                        await conexao.query('COMMIT');
+                        //await conexao.release();
+
+                        resposta.status(200).json({
+                            "status":true,
+                            "mensagem":"Funcionario adicionado com sucesso!"
+                        });
+                    }
+                    else{
+                        await conexao.query('ROLLBACK');
+                        //await conexao.release();
+                        resposta.status(500).json({
+                            "status":false,
+                            "mensagem":"Não foi possível incluir o funcionario: "
+                        });
+                    }
+                }
+                catch (e) {
+                    await conexao.query('ROLLBACK');
+                    throw e
+                }
+                finally {
+                    conexao.release();
+                }
             }
             else
             {
@@ -53,12 +69,14 @@ export default class FuncionarioCtrl {
             });
 
         }
-
+       // await conexao.query('END;');
     }
 
-    editar(requisicao, resposta) {
+    async editar(requisicao, resposta) {
+        
+        const conexao = await conectar();
+
         resposta.type("application/json");
-    
         if ((requisicao.method == 'PUT' || requisicao.method == 'PATCH') && requisicao.is("application/json")) {
             const cpf = requisicao.params.cpf; // CPF vem da URL (padrão REST)
             const nome = requisicao.body.nome;
@@ -72,23 +90,38 @@ export default class FuncionarioCtrl {
                 if (requisicao.body.cpf && requisicao.body.cpf !== cpf) {
                     return resposta.status(400).json({
                         "status": false,
-                        "mensagem": "O CPF não pode ser alterado.   222222"
+                        "mensagem": "O CPF não pode ser alterado."
                     });
                 }
     
                 const funcionario = new Funcionario(nome, cpf, cargo, nivel, email, senha);
-                funcionario.alterar().then(() => {
-                    resposta.status(200).json({
-                        "status": true,
-                        "mensagem": "Funcionário alterado com sucesso!",
-                    });
-                })
-                .catch((erro) => {
-                    resposta.status(500).json({
-                        "status": false,
-                        "mensagem": "Não foi possível alterar o funcionário: " + erro.message
-                    });
-                });
+                try{
+                    await conexao.query('BEGIN');
+                        if(funcionario.alterar(conexao)){
+                        await conexao.query('COMMIT');
+                        //await conexao.release();
+
+                        resposta.status(200).json({
+                            "status": true,
+                            "mensagem": "Funcionário alterado com sucesso!",
+                        });
+                    }
+                    else{
+                        await conexao.query('ROLLBACK');
+                        //await conexao.release();
+                        resposta.status(500).json({
+                            "status": false,
+                            "mensagem": "Não foi possível alterar o funcionário: "
+                        });
+                    }
+                }
+                catch (e) {
+                    await conexao.query('ROLLBACK');
+                    throw e
+                } 
+                finally {
+                    conexao.release();
+                  }
             } else {
                 resposta.status(400).json({
                     "status": false,
@@ -104,7 +137,10 @@ export default class FuncionarioCtrl {
     }
     
 
-    excluir(requisicao, resposta) {
+    async excluir(requisicao, resposta) {
+
+        const conexao = await conectar();
+
         //preparar o destinatário que a resposta estará no formato JSON
         resposta.type("application/json");
         //Verificando se o método da requisição é POST e conteúdo é JSON
@@ -115,19 +151,33 @@ export default class FuncionarioCtrl {
             if (cpf) {
                 //alterar o produto
                 const funcionario = new Funcionario("", cpf, "", "", "", "");
-                funcionario.excluir()
-                    .then(() => {
+                try{
+                    await conexao.query('BEGIN');
+                        if(funcionario.excluir(conexao)){
+                        await conexao.query('COMMIT');
+                        //await conexao.release();
+
                         resposta.status(200).json({
-                            "status": true,
-                            "mensagem": "Funcionario excluído com sucesso!",
+                            "status":true,
+                            "mensagem":"Funcionario excluido com sucesso!"
                         });
-                    })
-                    .catch((erro) => {
+                    }
+                    else{
+                        await conexao.query('ROLLBACK');
+                        //await conexao.release();
                         resposta.status(500).json({
-                            "status": false,
-                            "mensagem": "Não foi possível excluir a funcionario: " + erro.message
+                            "status":false,
+                            "mensagem":"Não foi possível excluir o funcionario: "
                         });
-                    });
+                    }
+                }
+                catch (e) {
+                    await conexao.query('ROLLBACK');
+                    throw e
+                }
+                finally {
+                    conexao.release();
+                }
             }
             else {
                 resposta.status(400).json(
@@ -148,7 +198,10 @@ export default class FuncionarioCtrl {
         }
     }
 
-    consultar(requisicao, resposta) {
+    async consultar(requisicao, resposta) {
+
+        const conexao = await conectar();
+
         resposta.type("application/json");
         if (requisicao.method == "GET") {
             let nome = requisicao.params.nome;
@@ -160,19 +213,39 @@ export default class FuncionarioCtrl {
 
             const funcionario = new Funcionario();
             //método consultar retorna uma lista de produtos
-            funcionario.consultar(nome)
-                .then((listaFuncionario) => {
+            try{
+                await conexao.query('BEGIN');
+                const listaFuncionario = await funcionario.consultar(nome, conexao);
+                if (Array.isArray(listaFuncionario)) {
+                    await conexao.query('COMMIT');
                     resposta.status(200).json(listaFuncionario);
-                })
-                .catch((erro) => {
-                    resposta.status(500).json(
-                        {
-                            "status": false,
-                            "mensagem": "Erro ao consultar funcionarios: " + erro.message
-                        }
-                    );
-                });
-
+                } else {
+                    await conexao.query('ROLLBACK');
+                    resposta.status(500).json({ status: false, mensagem: "Formato inesperado na resposta" });
+                }
+                
+               /* if(listaFuncionario){
+                    await conexao.query('COMMIT');
+                    //await conexao.release();
+                        
+                    resposta.status(200).json(listaFuncionario);
+                }
+                else{
+                    await conexao.query('ROLLBACK');
+                    //await conexao.release();
+                    resposta.status(500).json({
+                        "status": false,
+                        "mensagem": "Erro ao consultar funcionarios: "
+                    });
+                }*/
+            }
+            catch (e) {
+                await conexao.query('ROLLBACK');
+                throw e
+            }
+            finally {
+                conexao.release();
+            }
         }
         else {
             resposta.status(400).json(
