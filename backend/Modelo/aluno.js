@@ -12,7 +12,7 @@ export default class Aluno {
     #cidade;
     #cep;
     #numero;
-    #escola
+    #escola;
     #telefone;
     #periodoProjeto;
     #periodoEscola;
@@ -70,7 +70,10 @@ export default class Aluno {
     set numero(valor) { this.#numero = valor; }
 
     get escola() { return this.#escola; }
-    set escola(novaEscola) { this.#escola = novaEscola; }
+    set escola(novaEscola) {
+        if(novaEscola instanceof Escola)
+         this.#escola = novaEscola;
+         }
     
     get telefone() { return this.#telefone; }
     set telefone(valor) { this.#telefone = valor; }
