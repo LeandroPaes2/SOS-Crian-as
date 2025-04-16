@@ -48,22 +48,48 @@ export default function FormCadEvento(props) {
             const mesmoDia = evento.data === data;
             const mesmoPeriodo = evento.periodo === periodo;
             const outroEvento = !editando || evento.id !== id;
+
+            const inicioA = horaParaNumero(evento.horaInicio);
+            const fimA = horaParaNumero(evento.horaFim);
+            const inicioB = horaParaNumero(horaInicio);
+            const fimB = horaParaNumero(horaFim);
         
             if (mesmoDia && mesmoPeriodo && outroEvento) {
-                const inicioA = horaParaNumero(evento.horaInicio);
-                const fimA = horaParaNumero(evento.horaFim);
-                const inicioB = horaParaNumero(horaInicio);
-                const fimB = horaParaNumero(horaFim);
         
-                return inicioA < fimB && fimA > inicioB;
+                const foraDoHorario = (inicioA < fimB && inicioA>inicioB) || (fimA > inicioB && fimA < fimB) || inicioA==inicioB || fimA==fimB;
+                return foraDoHorario;
             }
         
             return false;
         });
+
+        const conflitoHorario = listaDeEventos.some(evento => {
+            const outroEvento = !editando || evento.id !== id;
+            const inicioA = horaParaNumero(horaInicio);
+            const fimA = horaParaNumero(horaFim);
         
-        if (conflito) {
-            setMensagem("Conflito de horário! Já existe um evento nesse dia, período e horário.");
+            
+                const foraDoHorario = inicioA < horaParaNumero("08:00") || inicioA > horaParaNumero("17:00") || fimA < horaParaNumero("08:00") || fimA > horaParaNumero("17:00");
+                
+
+                return foraDoHorario;
+        });
+        
+        if(conflitoHorario){
+            setMensagem("Não é permitido eventos neste horario!");
             return;
+        }
+        else{
+            if(horaInicio === horaFim || horaParaNumero(horaFim)<horaParaNumero(horaInicio)){
+                setMensagem("Horario de inicio e fim iguais ou término de evento antes do inicio.");
+                return;
+            }
+            else{
+                if (conflito) {
+                    setMensagem("Conflito de horário! Já existe um evento nesse dia, período e horário.");
+                    return;
+                }
+            }
         }
 
         const novoId = listaDeEventos.length > 0
@@ -109,7 +135,6 @@ export default function FormCadEvento(props) {
         const [h, m] = hora.split(":").map(Number);
         return h * 60 + m;
     }
-
     
     return (
         <div>
