@@ -2,11 +2,9 @@ import { Alert, Form, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
 import { Link, useLocation } from "react-router-dom";
-
+import '../../css/aluno.css'
 
 import { useNavigate } from 'react-router-dom';
-
-
 
 export default function FormCadAluno() {
     const location = useLocation();
@@ -43,7 +41,7 @@ export default function FormCadAluno() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if ( !nome || !idade || !responsavel || !endereco || !telefone || !periodoEscola || !periodoProjeto) {
+        if (!nome || !idade || !responsavel || !endereco || !telefone || !periodoEscola || !periodoProjeto) {
             setMensagem("Preencha todos os campos!");
             return;
         }
@@ -95,111 +93,113 @@ export default function FormCadAluno() {
     };
 
     return (
-        <PaginaGeral>
-            <Alert className="text-center mt-2 mb-4">
-                <h2>{editando ? "Editar Aluno" : "Cadastro de Aluno"}</h2>
-            </Alert>
+        <div className="div1">
+            
+                <PaginaGeral>
+                    <Alert className="text-center mt-2 mb-4">
+                        <h2>{editando ? "Editar Aluno" : "Cadastro de Aluno"}</h2>
+                    </Alert>
 
-            {mensagem && <Alert className="mt-02 mb-02 success text-center" variant="info">{mensagem}</Alert>}
+                    {mensagem && <Alert className="mt-02 mb-02 success text-center" variant="info">{mensagem}</Alert>}
 
-            <Form onSubmit={handleSubmit}>
+                    <Form onSubmit={handleSubmit}>
 
-            <Form.Group className="mb-3" id="id" >
-                    <Form.Label>id</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Digite o id"
-                        name="id"
-                        value={id}
-                        onChange={(e) => setId(e.target.value)}
-                        disabled
+                        <Form.Group className="mb-3" id="id" >
+                            <Form.Label>id</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Digite o id"
+                                name="id"
+                                value={id}
+                                onChange={(e) => setId(e.target.value)}
+                                disabled
 
-                    />
-                </Form.Group>
-
-
-                <Form.Group className="mb-3" id="nome" >
-                    <Form.Label>Nome</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Digite o nome"
-                        name="nome"
-                        value={nome}
-                        onChange={(e) => setNome(e.target.value)}
-                    />
-                </Form.Group>
-
-                <Form.Group className="mb-3" id="idade" >
-                    <Form.Label>Idade</Form.Label>
-                    <Form.Control
-                        type="number"
-                        placeholder="Digite a idade"
-                        name="idade"
-                        value={idade}
-                        onChange={(e) => setIdade(e.target.value)}
-                    />
-                </Form.Group>
-
-                <Form.Group className="mb-3" id="responsavel" >
-                    <Form.Label>Responsável</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Digite o nome do responsável"
-                        name="responsavel"
-                        value={responsavel}
-                        onChange={(e) => setResponsavel(e.target.value)}
-                    />
-                </Form.Group>
-
-                <Form.Group className="mb-3" id="endereco" >
-                    <Form.Label>Endereço</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Digite o endereço"
-                        name="endereco"
-                        value={endereco}
-                        onChange={(e) => setEndereco(e.target.value)}
-                    />
-                </Form.Group>
-
-                <Form.Group className="mb-3" id="telefone" >
-                    <Form.Label>Telefone</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Digite o telefone"
-                        name="telefone"
-                        value={telefone}
-                        onChange={(e) => setTelefone(e.target.value)}
-                    />
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                    <Form.Label>Período do Projeto</Form.Label>
-                    <Form.Select name="periodoProjeto" value={periodoProjeto} onChange={(e) => setPeriodoProjeto(e.target.value)}>
-                        <option value="">Selecione o período</option>
-                        <option value="manha">Manhã</option>
-                        <option value="tarde">Tarde</option>
-                    </Form.Select>
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                    <Form.Label>Período Escolar</Form.Label>
-                    <Form.Select name="periodoEscola" value={periodoEscola} onChange={(e) => setPeriodoEscola(e.target.value)}>
-                        <option value="">Selecione o período escolar</option>
-                        <option value="manha">Manhã</option>
-                        <option value="tarde">Tarde</option>
-                    </Form.Select>
-                </Form.Group>
+                            />
+                        </Form.Group>
 
 
-                <Button as={Link} to={rotaVoltar}className="botaoPesquisa" variant="secondary">
-                    Voltar
-                </Button>
-                <Button className="botaoPesquisa" variant="primary" type="submit">
-                    {editando ? "Atualizar" : "Cadastrar"}
-                </Button>
+                        <Form.Group className="mb-3" id="nome" >
+                            <Form.Label>Nome</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Digite o nome"
+                                name="nome"
+                                value={nome}
+                                onChange={(e) => setNome(e.target.value)}
+                            />
+                        </Form.Group>
 
-            </Form>
-        </PaginaGeral>
+                        <Form.Group className="mb-3" id="idade" >
+                            <Form.Label>Idade</Form.Label>
+                            <Form.Control
+                                type="number"
+                                placeholder="Digite a idade"
+                                name="idade"
+                                value={idade}
+                                onChange={(e) => setIdade(e.target.value)}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" id="responsavel" >
+                            <Form.Label>Responsável</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Digite o nome do responsável"
+                                name="responsavel"
+                                value={responsavel}
+                                onChange={(e) => setResponsavel(e.target.value)}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" id="endereco" >
+                            <Form.Label>Endereço</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Digite o endereço"
+                                name="endereco"
+                                value={endereco}
+                                onChange={(e) => setEndereco(e.target.value)}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" id="telefone" >
+                            <Form.Label>Telefone</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Digite o telefone"
+                                name="telefone"
+                                value={telefone}
+                                onChange={(e) => setTelefone(e.target.value)}
+                            />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Período do Projeto</Form.Label>
+                            <Form.Select name="periodoProjeto" value={periodoProjeto} onChange={(e) => setPeriodoProjeto(e.target.value)}>
+                                <option value="">Selecione o período</option>
+                                <option value="manha">Manhã</option>
+                                <option value="tarde">Tarde</option>
+                            </Form.Select>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Período Escolar</Form.Label>
+                            <Form.Select name="periodoEscola" value={periodoEscola} onChange={(e) => setPeriodoEscola(e.target.value)}>
+                                <option value="">Selecione o período escolar</option>
+                                <option value="manha">Manhã</option>
+                                <option value="tarde">Tarde</option>
+                            </Form.Select>
+                        </Form.Group>
+
+
+                        <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
+                            Voltar
+                        </Button>
+                        <Button className="botaoPesquisa" variant="primary" type="submit">
+                            {editando ? "Atualizar" : "Cadastrar"}
+                        </Button>
+                    </Form>
+                </PaginaGeral>
+            </div>
     );
 }
