@@ -2,16 +2,17 @@ import conectar from "./Conexao.js";
 import Aluno from "../Modelo/aluno.js";
 
 export default class AlunoDAO {
-    constructor() {
-        this.init();
-    }
 
+
+
+    constructor() {
+    }
+    /*
     async init() {
         try {
-            const conexao = await conectar();
-            //const sql2="DROP TABLE aluno";
-            //await conexao.execute(sql2);
-            const sql = `CREATE TABLE IF NOT EXISTS aluno (
+            const sql2="DROP TABLE aluno";
+            await conexao.execute(sql2);
+           /* const sql = `CREATE TABLE IF NOT EXISTS aluno (
                 alu_id INT AUTO_INCREMENT PRIMARY KEY,
                 alu_nome VARCHAR(100) NOT NULL,
                 alu_idade INT NOT NULL,
@@ -22,15 +23,13 @@ export default class AlunoDAO {
                 alu_periodoEscola VARCHAR(50) NOT NULL
             );`;
             await conexao.execute(sql);
-            await conexao.release();
         } catch (e) {
             console.log("Erro ao iniciar banco de dados: " + e.message);
         }
     }
-
-    async incluir(aluno) {
+    */
+    async incluir(aluno,conexao) {
         if (aluno instanceof Aluno) {
-            const conexao = await conectar();
             const sql = `INSERT INTO aluno 
     (alu_id,alu_nome, alu_idade, alu_responsavel, alu_endereco, alu_telefone, alu_periodoProjeto, alu_periodoEscola)
     VALUES (?,?, ?, ?, ?, ?, ?, ?)`;
@@ -42,24 +41,17 @@ export default class AlunoDAO {
                 aluno.periodoProjeto, aluno.periodoEscola
             ];
             await conexao.execute(sql, parametros);
-            await conexao.release();
         }
     }
 
-    async consultar(termo) {
-        const conexao = await conectar();
+    async consultar(termo,conexao) {
+        
         let sql = ``;
         let parametros= [];
         if(parseInt(termo)){
-            sql = `SELECT * FROM aluno WHERE alu_id = ?`;
+            sql = `SELECT * FROM aluno WHERE alu_numProtocolo = ?`;
             parametros = [termo];
         }
-
-        /*
-        if(termo){
-            sql = `SELECT * FROM aluno WHERE alu_nome LIKE ?`;
-            parametros = ['%' + termo + '%'];
-        }*/
         else
         {
             termo="";
@@ -69,7 +61,6 @@ export default class AlunoDAO {
         }
 
         const [registros,campos] = await conexao.execute(sql, parametros);
-        await conexao.release();
         let listaAluno = [];
         for (const registro of registros) {
             const aluno = new Aluno(
@@ -87,21 +78,18 @@ export default class AlunoDAO {
         return listaAluno;
     }
 
-    async excluir(aluno) {
+    async excluir(aluno,conexao) {
         if (aluno instanceof Aluno) {
-            const conexao = await conectar();
             const sql = `DELETE FROM aluno WHERE alu_id = ?`;
             let parametros =[
                 aluno.id
             ];
             await conexao.execute(sql, parametros);
-            await conexao.release();
         }
     }
 
-    async alterar(aluno) {
+    async alterar(aluno,conexao) {
         if (aluno instanceof Aluno) {
-            const conexao = await conectar();
             const sql = `
                 UPDATE aluno SET 
                     alu_nome = ?, 
@@ -120,7 +108,6 @@ export default class AlunoDAO {
                 aluno.id
             ];
             await conexao.execute(sql, parametros);
-            await conexao.release();
         }
     }
 }
