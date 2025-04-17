@@ -14,16 +14,17 @@ export default function Menu(props){
                         <NavDropdown title="Cadastros" id="basic-nav-dropdown">
                             <NavDropdown.Item href="#" as={Link} to="/telaAluno" >Alunos</NavDropdown.Item>
                             <NavDropdown.Item href="#" as={Link} to="/telaResponsavel" >Responsaveis</NavDropdown.Item>
-                            <NavDropdown.Item href="#" >Funcionarios</NavDropdown.Item>
+                            <NavDropdown.Item href="#" as={Link} to="/telaFuncionario" >Funcionarios</NavDropdown.Item>
                             <NavDropdown.Item href="#" as={Link} to="/telaTurma">Turmas</NavDropdown.Item>
                             <NavDropdown.Item href="#" >Materias</NavDropdown.Item>
                             <NavDropdown.Item href="#" as={Link} to="/telaEscola">Escolas</NavDropdown.Item>
+                            <NavDropdown.Item href="#" as={Link} to="/telaEvento">Eventos</NavDropdown.Item>
                         </NavDropdown>
                     
                         <NavDropdown title="Relatórios" id="basic-nav-dropdown">
                             <NavDropdown.Item href="#action/3.1">Alunos</NavDropdown.Item>
                             <NavDropdown.Item href="#" as={Link} to="/relatorioResponsavel" >Responsaveis</NavDropdown.Item>
-                            <NavDropdown.Item href="#action/3.1">Funcionarios</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.1" as={Link} to="/relatorioFuncionario" >Funcionarios</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.1">Turmas</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.1">Materias</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.1">Escolas</NavDropdown.Item>

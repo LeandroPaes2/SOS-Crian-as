@@ -1,36 +1,41 @@
 import { Button } from 'react-bootstrap';
 import "../css/menu.css";
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { FaUserGraduate, FaUsers, FaChalkboardTeacher, FaSchool, FaBook, FaUserTie } from 'react-icons/fa';
 
-export default function MenuInicial(props){
-
-    return(
+export default function MenuInicial() {
+    return (
         <div className="divBotao">
-
-            <Button  as={Link}  to="/telaAluno" className='botaoMenu' variant="secondary" size="lg">
+            <Button as={Link} to="/telaAluno" className='botaoMenu' variant="secondary" size="lg">
+                <FaUserGraduate style={{ marginRight: "10px" }} />
                 Alunos
             </Button>
-            <br />
             <Button as={Link} to="/telaResponsavel" className='botaoMenu' variant="secondary" size="lg">
-                Responsaveis
+                <FaUsers style={{ marginRight: "10px" }} />
+                Responsáveis
             </Button>
-            <br />
             <Button as={Link} to="/telaFuncionario" className='botaoMenu' variant="secondary" size="lg">
-                Funcionarios
+                <FaUserTie style={{ marginRight: "10px" }} />
+                Funcionários
             </Button>
-            <br />
             <Button as={Link} to="/telaTurma" className='botaoMenu' variant="secondary" size="lg">
+                <FaChalkboardTeacher style={{ marginRight: "10px" }} />
                 Turmas
             </Button>
-            <br />
-            <Button className='botaoMenu' variant="secondary" size="lg">
+            <Button as={Link} to="/telaMateria"  className='botaoMenu' variant="secondary" size="lg">
+                <FaBook style={{ marginRight: "10px" }} />
                 Matérias
             </Button>
-            <br />
             <Button as={Link} to="/telaEscola" className='botaoMenu' variant="secondary" size="lg">
+                <FaSchool style={{ marginRight: "10px" }} />
                 Escolas
             </Button>
+
+            <Button as={Link} to="/telaEvento" className='botaoMenu' variant="secondary" size="lg">
+                Eventos
+            </Button>
             
+
         </div>
-    )
+    );
 }

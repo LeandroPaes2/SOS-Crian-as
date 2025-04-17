@@ -4,6 +4,7 @@ import conectar from './Persistencia/Conexao.js';
 import dotenv from 'dotenv';
 import rotaTurma from './Rotas/rotaTurma.js'
 import rotaEscola from './Rotas/rotaEscola.js';
+import rotaMateria from './Rotas/rotaMateria.js';
 import rotaResponsavel from './Rotas/rotaResponsavel.js';
 import rotaAluno from './Rotas/rotaAluno.js';
 import rotaFuncionario from './Rotas/rotaFuncionario.js';
@@ -27,6 +28,7 @@ app.use(express.static('./publico'));
 
 app.use("/turmas", rotaTurma);
 app.use("/escolas", rotaEscola);
+app.use("/materias", rotaMateria);
 app.use("/responsaveis", rotaResponsavel); 
 app.use("/alunos", rotaAluno);
 app.use("/funcionarios", rotaFuncionario);
