@@ -3,10 +3,10 @@ import Responsavel from "../Modelo/responsavel.js";
 import conectar from "./Conexao.js";
 export default class ResponsavelDAO {
     constructor() {
-        this.init();
+        //this.init();
     }
 
-    async init() {
+    /*async init() {
         try 
         {
             const conexao = await conectar(); //retorna uma conexão
@@ -24,11 +24,10 @@ export default class ResponsavelDAO {
         catch (e) {
             console.log("Não foi possível iniciar o banco de dados: " + e.message);
         }
-    }
+    }*/
 
-    async incluir(responsavel) {
+    async incluir(responsavel, conexao) {
         if (responsavel instanceof Responsavel) {
-            const conexao = await conectar();
             const sql = `INSERT INTO responsavel(resp_cpf, resp_nome,resp_telefone)
                 VALUES (?, ?,?)
             `;
@@ -36,15 +35,13 @@ export default class ResponsavelDAO {
                 responsavel.cpf,
                 responsavel.nome,
                 responsavel.telefone
-            ]; //dados do produto
+            ];
             await conexao.execute(sql, parametros);
-            await conexao.release(); //libera a conexão
         }
     }
 
-    async alterar(responsavel) {
+    async alterar(responsavel, conexao) {
         if (responsavel instanceof Responsavel) {
-            const conexao = await conectar();
             const sql = `UPDATE responsavel SET resp_nome=?, resp_telefone=?
                 WHERE  resp_cpf = ?
             `;
@@ -54,13 +51,10 @@ export default class ResponsavelDAO {
                 responsavel.cpf
             ]; 
             await conexao.execute(sql, parametros);
-            await conexao.release(); //libera a conexão
         }
     }
     
-    async consultar(termo) {
-        //resuperar as linhas da tabela produto e transformá-las de volta em produtos
-        const conexao = await conectar();
+    async consultar(termo, conexao) {
         let sql = "";
         let parametros = [];
         if (!termo) {
@@ -83,19 +77,16 @@ export default class ResponsavelDAO {
             );
             listaResponsavel.push(responsavel);
         }
-        await conexao.release();
         return listaResponsavel;
     }
 
-    async excluir(responsavel) {
+    async excluir(responsavel, conexao) {
         if (responsavel instanceof Responsavel) {
-            const conexao = await conectar();
             const sql = `DELETE FROM responsavel WHERE resp_cpf = ?`;
             let parametros = [
                 responsavel.cpf
-            ]; //dados do produto
+            ]; 
             await conexao.execute(sql, parametros);
-            await conexao.release(); //libera a conexão
         }
     }
 }
