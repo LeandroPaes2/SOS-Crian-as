@@ -28,19 +28,19 @@ export default function RelatorioEscolas() {
 
     const excluirEscolas = async (escola) => {
         if (window.confirm("Deseja realmente excluir a escola " + escola.nome)) {
-            if (!escola || !escola.nome) {
+            if (!escola || !escola.id) {
                 setMensagem("Erro: escola inválida!");
                 return;
             }
 
             try {
-                const response = await fetch("http://localhost:3000/escolas/" + escola.nome, {
+                const response = await fetch(`http://localhost:3000/escolas/${escola.id}`, {
                     method: "DELETE"
                 });
 
                 if (response.ok) {
                     setMensagem("Escola excluída com sucesso!");
-                    setListaDeEscolas(listaDeEscolas.filter(e => e.nome !== escola.nome));
+                    setListaDeEscolas(listaDeEscolas.filter(e => e.id !== escola.id));
                 } else {
                     setMensagem("Erro ao excluir a escola.");
                 }
@@ -54,6 +54,7 @@ export default function RelatorioEscolas() {
     const editarEscolas = (escola) => {
         navigate("/cadastroEscola", {
             state: {
+                id: escola.id,
                 nome: escola.nome,
                 endereco: escola.endereco,
                 telefone: escola.telefone,
@@ -120,7 +121,7 @@ export default function RelatorioEscolas() {
                         </thead>
                         <tbody>
                             {escolasFiltradas?.map((escola) => (
-                                <tr key={escola.nome}>
+                                <tr key={escola.id}>
                                     <td>{escola.nome}</td>
                                     <td>{escola.endereco}</td>
                                     <td>{escola.telefone}</td>

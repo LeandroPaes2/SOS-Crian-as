@@ -9,6 +9,7 @@ export default function FormCadEscola() {
     const [endereco, setEndereco] = useState("");
     const [telefone, setTelefone] = useState("");
     const [tipo, setTipo] = useState("");
+    const [id, setId] = useState(null);
     const [mensagem, setMensagem] = useState("");
     const [editando, setEditando] = useState(false);
     const location = useLocation();
@@ -17,7 +18,8 @@ export default function FormCadEscola() {
     const rotaVoltar = editando ? "/relatorioEscola" : "/telaEscola";
 
     useEffect(() => {
-        if (location.state?.nome && location.state?.endereco) {
+        if (location.state?.id) {
+            setId(location.state.id);
             setNome(location.state.nome);
             setEndereco(location.state.endereco);
             setTelefone(location.state.telefone || "");
@@ -42,8 +44,9 @@ export default function FormCadEscola() {
         };
 
         const url = editando
-            ? `http://localhost:3000/escolas/${encodeURIComponent(nome)}`
+            ? `http://localhost:3000/escolas/${id}`
             : "http://localhost:3000/escolas";
+
         const method = editando ? "PUT" : "POST";
 
         try {
@@ -64,6 +67,7 @@ export default function FormCadEscola() {
                     : "Escola cadastrada com sucesso!");
 
                 setTimeout(() => {
+                    setId(null);
                     setNome("");
                     setEndereco("");
                     setTelefone("");
