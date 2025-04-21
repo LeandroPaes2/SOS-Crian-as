@@ -27,6 +27,7 @@ import RelatorioAlunos from './componentes/Telas/Relatorios/RelatorioAlunos';
 import RelatorioFuncionarios from './componentes/Telas/Relatorios/RelatorioFuncionarios';
 import TelaCadastroFuncionario from './componentes/Telas/TelaCadastroFuncionario';
 import FormCadFuncionario from './componentes/Telas/Formularios/FormCadFuncionario';
+import RelatorioListaEspera from './componentes/Telas/Relatorios/RelatorioListaEspera';
 
 import { EventosProvider } from './EventosContext';
 
@@ -42,6 +43,7 @@ function App() {
                     <Route path="/telaFuncionario" element={<TelaCadastroFuncionario />} />
                     <Route path="/cadastroFuncionario" element={<FormCadFuncionario />} />
                     <Route path="/relatorioFuncionario" element={<RelatorioFuncionarios />} />
+                    <Route path="/relatorioListaEspera" element={<RelatorioListaEspera />} />
                     <Route path="/telaEscola" element={< TelaCadastroEscola/>}/>
                     <Route path="/cadastroEscola" element={<FormCadEscola />} />
                     <Route path="/telaAluno" element={<TelaCadastroAluno />} />

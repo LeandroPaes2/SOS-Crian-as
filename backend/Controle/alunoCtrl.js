@@ -98,7 +98,7 @@ export default class AlunoCtrl {
                 res.status(400).json({ status: false, mensagem: "Dados incompletos ou inválidos. Verifique a requisição." });
             }
         } else {
-            res.status(400).json({ "status": false, "mensagem": "Requisição inválida!" });
+            res.status(400).json({ status: false, mensagem: "Requisição inválida!" });
         }
     }
 
@@ -271,5 +271,4 @@ export default class AlunoCtrl {
             res.status(400).json({ status: false, mensagem: "Requisição inválida! Use o método GET." });
         }
     }
-
 }

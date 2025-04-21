@@ -2,7 +2,6 @@ import AlunoDAO from "../Persistencia/alunoDAO.js";
 import Responsavel from "./responsavel.js";
 import Escola from "./escola.js";
 
-
 export default class Aluno {
     #numProtocolo;
     #nome;

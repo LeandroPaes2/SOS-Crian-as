@@ -197,6 +197,9 @@ export default function RelatorioFuncionarios(){
                         <Button as={Link} to="/telaFuncionario" className="botaoPesquisa" variant="secondary">
                                 Voltar
                         </Button>
+                        <Button as={Link} to="/cadastroFuncionario" className="botaoPesquisa" variant="secondary">
+                                                        Cadastrar novo Funcionario
+                        </Button>
                 </div>
             </PaginaGeral>
         </>
