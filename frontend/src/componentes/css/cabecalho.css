@@ -19,3 +19,14 @@
 .topoc{
   padding-top: 30px;
 }
+
+.tituloMenu {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 10px 30px;
+  margin-bottom: 30px;
+  border-radius: 15px;
+  box-shadow: 0px 0px 15px rgba(0,0,0,0.3);
+}

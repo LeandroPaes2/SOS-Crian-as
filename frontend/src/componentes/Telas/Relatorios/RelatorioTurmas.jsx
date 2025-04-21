@@ -71,7 +71,7 @@ export default function RelatorioTurmas(){
         : listaDeTurmas;
 
     return (
-        <div className="topot">
+        <div className="topo">
         <>
             <PaginaGeral>
             <Container className="form-container mt-4">

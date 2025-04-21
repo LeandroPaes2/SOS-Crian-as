@@ -7,7 +7,7 @@ import RelatorioTurmas from "./Relatorios/RelatorioTurmas";
 export default function TelaCadastroTurma(props){
 
     return(
-        <div className="topo">
+        <div className="topot">
             <PaginaGeral>
                 <br />
                 <Alert className="alert-custom mt-02 mb-02 dark text-center" variant="dark">
