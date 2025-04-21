@@ -165,6 +165,10 @@ export default function RelatorioResponsaveis(){
                         <Button as={Link} to="/telaResponsavel" className="botaoPesquisa" variant="secondary">
                                 Voltar
                         </Button>
+
+                        <Button as={Link} to="/cadastroResponsavel" className="botaoPesquisa" variant="secondary">
+                                Cadastrar novo responsável
+                        </Button>
                 </div>
             </PaginaGeral>
         </>

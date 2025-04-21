@@ -5,7 +5,7 @@ import conectar from "../Persistencia/Conexao.js";
 export default class ResponsavelCtrl {
 
     async gravar(requisicao, resposta){
-        //preparar o destinatário que a resposta estará no formato JSON
+        const conexao = await conectar();
         resposta.type("application/json");
         //Verificando se o método da requisição é POST e conteúdo é JSON
         if (requisicao.method == 'POST' && requisicao.is("application/json")){
@@ -15,13 +15,11 @@ export default class ResponsavelCtrl {
             //pseudo validação
             if (cpf && nome && telefone)
             {
-                let conexao;
-                try{
                 const responsavel = new Responsavel(cpf, nome, telefone);
-                conexao = await conectar();
+                try{
                 await conexao.query("BEGIN");
-                const resultado = await responsavel.incluir(conexao);
-                if(resultado){
+                //const resultado = await responsavel.incluir(conexao);
+                if(responsavel.incluir(conexao)){
                     await conexao.query("COMMIT");
                     resposta.status(200).json({
                         "status":true,
@@ -37,15 +35,13 @@ export default class ResponsavelCtrl {
                     });
                 }
                 }catch(erro){
-                    if(conexao)
-                        await conexao.query("ROLLBACK");
+                    await conexao.query("ROLLBACK");
                     resposta.status(500).json({
                         "status":false,
                         "mensagem":"Não foi possível incluir o responsavel: " + erro.message
                     });
                 }finally {
-                    if(conexao)
-                        conexao.release();
+                    conexao.release();
                 }
             }
             else
@@ -71,6 +67,7 @@ export default class ResponsavelCtrl {
     }
 
     async editar(requisicao, resposta){
+        const conexao = await conectar();
     
         resposta.type("application/json");
         if ((requisicao.method == 'PUT' || requisicao.method == 'PATCH') && requisicao.is("application/json")){
@@ -81,13 +78,12 @@ export default class ResponsavelCtrl {
         
             if (cpf && nome && telefone)
             {
-                let conexao;
+                const responsavel = new Responsavel(cpf, nome, telefone);
+                
                 try{
-                    const responsavel = new Responsavel(cpf, nome, telefone);
-                    conexao = await conectar();
                     await conexao.query("BEGIN");
-                    const resultado = await responsavel.alterar(conexao);
-                    if(resultado){
+                    //const resultado = await responsavel.alterar(conexao);
+                    if(responsavel.alterar(conexao)){
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
                             "status":true,
@@ -103,14 +99,13 @@ export default class ResponsavelCtrl {
                     }
                 }
                 catch(erro){
-                    if(conexao)
-                        await conexao.query("ROLLBACK");
+                    await conexao.query("ROLLBACK");
                     resposta.status(500).json({
                         "status":false,
                         "mensagem":"Não foi possível alterar o responsavel: " + erro.message
                     });
                 }finally{
-                    if (conexao) conexao.release();
+                    conexao.release();
                 }
             }
             else
@@ -134,7 +129,8 @@ export default class ResponsavelCtrl {
     }
 
     async excluir(requisicao, resposta) {
-        //preparar o destinatário que a resposta estará no formato JSON
+        
+        const conexao = await conectar();
         resposta.type("application/json");
         //Verificando se o método da requisição é POST e conteúdo é JSON
         if (requisicao.method == 'DELETE') {
@@ -142,15 +138,15 @@ export default class ResponsavelCtrl {
             const cpf = requisicao.params.cpf;
             //pseudo validação
             if (cpf) {
-                let conexao;
+                
+                const responsavel = new Responsavel(cpf);
                 try{
-                    const responsavel = new Responsavel(cpf);
-                    conexao = await conectar();
+                   
                     await conexao.query("BEGIN");
-                    const resultado = await responsavel.excluir(conexao);
+                    //const resultado = await responsavel.excluir(conexao);
                 
                 
-                    if(resultado){
+                    if(responsavel.excluir(conexao)){
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
                             "status": true,
@@ -165,14 +161,13 @@ export default class ResponsavelCtrl {
                         });
                     }
                 }catch(erro) {
-                    if(conexao)
-                        await conexao.query("ROLLBACK");
+                    await conexao.query("ROLLBACK");
                     resposta.status(500).json({
                         "status": false,
                         "mensagem": "Não foi possível excluir o responsavel: " + erro.message
                     });
                 }finally{
-                    if (conexao) conexao.release();
+                    conexao.release();
                 }
             }
             else {
@@ -195,6 +190,7 @@ export default class ResponsavelCtrl {
     }
 
     async consultar(requisicao, resposta) {
+        const conexao = await conectar();
         resposta.type("application/json");
         if (requisicao.method == "GET") {
             let cpf = requisicao.params.cpf;
@@ -205,17 +201,18 @@ export default class ResponsavelCtrl {
             }
 
             const responsavel = new Responsavel();
-            let conexao;
             
             try{
-                conexao = await conectar();
-                await conexao.query("BEGIN");
-                const listaResponsavel = responsavel.consultar(cpf, conexao);
                 
-                if(Array.isArray(listaResponsavel) && listaResponsavel.length > 0){
+                await conexao.query("BEGIN");
+                const listaResponsavel = await responsavel.consultar(cpf, conexao);
+                
+                if(Array.isArray(listaResponsavel)){
+                    await conexao.query('COMMIT');
                     resposta.status(200).json(listaResponsavel);
                 }
                 else{
+                    await conexao.query('ROLLBACK');
                     resposta.status(404).json(
                         {
                             "status": false,
@@ -225,6 +222,7 @@ export default class ResponsavelCtrl {
                 }
                     
             }catch(erro) {
+                await conexao.query('ROLLBACK');
                     resposta.status(500).json(
                         {
                             "status": false,
@@ -232,7 +230,7 @@ export default class ResponsavelCtrl {
                         }
                     );
             }finally{
-                if (conexao) 
+
                     conexao.release();
             }
 

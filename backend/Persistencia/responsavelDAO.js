@@ -1,10 +1,9 @@
 import Responsavel from "../Modelo/responsavel.js";
 
-import conectar from "./Conexao.js";
 export default class ResponsavelDAO {
-    constructor() {
-        //this.init();
-    }
+    /*constructor() {
+        this.init();
+    }*/
 
     /*async init() {
         try 
@@ -28,6 +27,7 @@ export default class ResponsavelDAO {
 
     async incluir(responsavel, conexao) {
         if (responsavel instanceof Responsavel) {
+            try{
             const sql = `INSERT INTO responsavel(resp_cpf, resp_nome,resp_telefone)
                 VALUES (?, ?,?)
             `;
@@ -37,11 +37,15 @@ export default class ResponsavelDAO {
                 responsavel.telefone
             ];
             await conexao.execute(sql, parametros);
+            }catch(e){
+                throw new Error("Erro ao incluir funcionário: " + e.message);
+            }
         }
     }
 
     async alterar(responsavel, conexao) {
         if (responsavel instanceof Responsavel) {
+            try{
             const sql = `UPDATE responsavel SET resp_nome=?, resp_telefone=?
                 WHERE  resp_cpf = ?
             `;
@@ -51,15 +55,18 @@ export default class ResponsavelDAO {
                 responsavel.cpf
             ]; 
             await conexao.execute(sql, parametros);
+            }catch(e){
+                throw new Error("Erro ao alterar funcionário: " + e.message);
+            }
         }
     }
     
     async consultar(termo, conexao) {
+        try{
         let sql = "";
         let parametros = [];
         if (!termo) {
-            sql = `SELECT * FROM responsavel r
-                   WHERE resp_nome LIKE ?`;
+            sql = `SELECT * FROM responsavel`;
             parametros = ['%' + termo + '%'];
         }
         else {
@@ -78,15 +85,22 @@ export default class ResponsavelDAO {
             listaResponsavel.push(responsavel);
         }
         return listaResponsavel;
+        }catch(e){
+            throw new Error("Erro ao consultar funcionários: " + e.message);
+        }
     }
 
     async excluir(responsavel, conexao) {
         if (responsavel instanceof Responsavel) {
+            try{
             const sql = `DELETE FROM responsavel WHERE resp_cpf = ?`;
             let parametros = [
                 responsavel.cpf
             ]; 
             await conexao.execute(sql, parametros);
+            }catch(e){
+                throw new Error("Erro ao excluir funcionário: " + e.message);
+            }
         }
     }
 }
