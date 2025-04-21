@@ -37,7 +37,7 @@ export default function MenuInicial() {
                 Matérias
             </Button>
             <Button as={Link} to="/telaEscola" className='botaoMenu' variant="primary" size="lg">
-                <img src={escolas} style={{width: '100px'}} />
+                <img src={escolas} style={{width: '130px'}} />
                 <br/>
                 Escolas
             </Button>

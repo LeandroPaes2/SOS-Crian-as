@@ -2,7 +2,7 @@ import { Alert, Form, Button } from "react-bootstrap";
 import "../../css/telaTurma.css";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 export default function FormCadTurma() {
@@ -12,42 +12,65 @@ export default function FormCadTurma() {
     const location = useLocation();
     const [editando, setEditando] = useState(false);
     const [turma, setTurma] = useState(cor, periodo);
-
+    const [id, setId] = useState(null);
+    const navigate = useNavigate();
     useEffect(() => {
-        if (location.state && location.state.cor && location.state.periodo) {
+        if (location.state?.id) {
+            setId(location.state.id);
             setCor(location.state.cor);
             setPeriodo(location.state.periodo);
-            setEditando(true);  // Ativa o modo de edição
+            setEditando(true); 
         }
     }, [location.state]);
 
     const handleSubmit = async (event) => {
-        event.preventDefault(); // Evita recarregar a página
+        event.preventDefault(); 
 
-        // Verifica se os campos estão preenchidos
-        if (!cor || !periodo) {
-            setMensagem("Preencha todos os campos!");
+       
+        if (!cor.trim || !periodo.trim) {
+            setMensagem("Preencha todos os campos obrigatórios!");
             return;
         }
 
-        const turma = { cor, periodo }; // Monta o objeto para enviar ao backend
-        const url = editando ? `http://localhost:3000/turmas/${cor}` : "http://localhost:3000/turmas";
+        const turma = { 
+            cor: cor.trim(), 
+            periodo: periodo.trim()
+        }; 
+        const url = editando 
+        ? `http://localhost:3000/turmas/${id}` 
+        : "http://localhost:3000/turmas";
         const method = editando ? "PUT" : "POST";
 
         try {
+            if(editando){
+                const confirmar = window.confirm(`Deseja realmente atualizar a turma: ${turma.cor}?`);
+                if(!confirmar) return;
+            }
+
             const response = await fetch(url, {
-                method: method,
+                method,
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(turma),
+                body: JSON.stringify(turma)
             });
 
             if (response.ok) {
-                setMensagem(editando ? "Turma atualizada com sucesso!" : "Turma cadastrada com sucesso!");
-                /*setCor(""); 
-                setPeriodo("");*/
+                setMensagem(editando 
+                    ? "Turma atualizada com sucesso!" 
+                    : "Turma cadastrada com sucesso!");
+
+                    setTimeout(() => {
+                        setId(null);
+                        setCor("");
+                        setPeriodo("");
+                        setEditando(false);
+                        navigate("/relatorioTurma");
+                    }, 2000);
             } else {
-                setMensagem("Erro ao cadastrar a turma.");
+                setMensagem(editando 
+                    ? "Erro ao atualizar a turma." 
+                    : "Erro ao cadastrar a turma.");
             }
+
         } catch (error) {
             console.error("Erro ao conectar com o backend:", error);
             setMensagem("Erro de conexão com o servidor.");
@@ -55,7 +78,7 @@ export default function FormCadTurma() {
     };
 
     return (
-        <div>
+        <div className="cadastroTurma">
             <PaginaGeral>
             <Alert className="mt-2 mb-2 text-center" variant="dark">
                 <h2>Turmas</h2>
@@ -87,12 +110,14 @@ export default function FormCadTurma() {
                     </Form.Select>
                 </Form.Group>
 
+                <div className="d-flex justify-content-between">
                 <Button as={Link} to="/telaTurma" className="botaoPesquisa" variant="secondary">
                                 Voltar
                         </Button>
                 <Button className="botaoPesquisa" variant="primary" type="submit">
                     {editando ? "Atualizar" : "Cadastrar"}
                 </Button>
+                </div>
             </Form>
             </PaginaGeral>
         </div>
