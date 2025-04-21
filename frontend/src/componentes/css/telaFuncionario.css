@@ -1,27 +1,18 @@
-.botaoPesquisa{
-    width: 400px;
+.botaoMenu {
+    width: 300px;
     background-color: #e3436b;
     border-color: #81233b;
-    margin: 5px;
-    width: 150px;
-}
-
-.divInput{
+    color: white;
+    font-weight: arial;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .botoes-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-direction: row;
-    gap: 10px;
-}
-
-.formInput{
-    width: 400px;
-}
-
-.form{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
+    margin-top: 20px;
+  }

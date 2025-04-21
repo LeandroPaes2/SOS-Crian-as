@@ -22,14 +22,14 @@ import TelaEvento from './componentes/Telas/TelaEvento';
 import FormCadEvento from './componentes/Telas/Formularios/FormCadEvento';
 import RelatorioEventos from './componentes/Telas/Relatorios/RelatorioEventos';
 import RelatorioAlunos from './componentes/Telas/Relatorios/RelatorioAlunos';
-import { EventosProvider } from './EventosContext';
-
 
 
 import RelatorioFuncionarios from './componentes/Telas/Relatorios/RelatorioFuncionarios';
 import TelaCadastroFuncionario from './componentes/Telas/TelaCadastroFuncionario';
 import FormCadFuncionario from './componentes/Telas/Formularios/FormCadFuncionario';
 import RelatorioListaEspera from './componentes/Telas/Relatorios/RelatorioListaEspera';
+
+import { EventosProvider } from './EventosContext';
 
 function App() {
     return (
@@ -40,6 +40,10 @@ function App() {
                     <Route path="/" element={<TelaMenu />} />
                     <Route path="/telaTurma" element={<TelaCadastroTurma />} />
                     <Route path="/cadastroTurma" element={<FormCadTurma />} />
+                    <Route path="/telaFuncionario" element={<TelaCadastroFuncionario />} />
+                    <Route path="/cadastroFuncionario" element={<FormCadFuncionario />} />
+                    <Route path="/relatorioFuncionario" element={<RelatorioFuncionarios />} />
+                    <Route path="/relatorioListaEspera" element={<RelatorioListaEspera />} />
                     <Route path="/telaEscola" element={< TelaCadastroEscola/>}/>
                     <Route path="/cadastroEscola" element={<FormCadEscola />} />
                     <Route path="/telaAluno" element={<TelaCadastroAluno />} />
@@ -53,12 +57,6 @@ function App() {
                     <Route path="/telaResponsavel" element={<TelaCadastroResponsavel />} />
                     <Route path="/cadastroResponsavel" element={<FormCadResponsavel />} />
                     <Route path="/relatorioResponsavel" element={<RelatorioResponsaveis/>}/>
-
-                    <Route path="/telaFuncionario" element={<TelaCadastroFuncionario />} />
-                    <Route path="/cadastroFuncionario" element={<FormCadFuncionario />} />
-                    <Route path="/relatorioFuncionario" element={<RelatorioFuncionarios />} />
-                    <Route path="/relatorioListaEspera" element={<RelatorioListaEspera />} />
-
                     <Route path="/relatorioEvento" element={
                             <RelatorioEventos />
                        }/>

@@ -1,30 +1,27 @@
 import PaginaGeral from "../layouts/PaginaGeral"
-import { Alert, Button } from "react-bootstrap";
+import { Alert, Form, Button, InputGroup} from "react-bootstrap";
 import {Link} from 'react-router-dom';
+import "../css/alerts.css";
 import "../css/telaFuncionario.css";
-import RelatorioFuncionarios from "./Relatorios/RelatorioFuncionarios";
+
 export default function TelaCadastroFuncionario(props){
 
     return(
         <div>
             <PaginaGeral>
-                <br />
-                <Alert className="mt-02 mb-02 dark text-center" variant="dark">
-                    <h2>
-                        Funcionarios
-                    </h2>
-                </Alert>
+                <p></p>
+                <Alert className="alert-custom text-center mt-4 mb-4">
+                <h2 className="titulo-alert">Funcionarios</h2>
+            </Alert>
 
-                <div>
-                    <Button as={Link} to="/cadastroFuncionario" className="botaoPesquisa" variant="secondary">
-                        Cadastrar funcionario
-                    </Button>
-                </div>
-                <div>
-                    <Button as={Link} to="/relatorioFuncionario" className="botaoPesquisa" variant="secondary">
-                        Relatorio das funcionarios
-                    </Button>
-                </div>
+            <div className="botoes-container">
+                <Button as={Link} to="/cadastroFuncionario" className="botaoMenu" variant="secondary">
+                    Cadastrar Funcionario
+                </Button>
+                <Button as={Link} to="/relatorioFuncionario" className="botaoMenu" variant="secondary">
+                    Relatório dos Funcionarios
+                </Button>
+            </div>
             </PaginaGeral>
         </div>
     )
