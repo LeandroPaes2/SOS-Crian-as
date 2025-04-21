@@ -7,7 +7,7 @@ export default class ResponsavelCtrl {
     async gravar(requisicao, resposta){
         const conexao = await conectar();
         resposta.type("application/json");
-        //Verificando se o método da requisição é POST e conteúdo é JSON
+        
         if (requisicao.method == 'POST' && requisicao.is("application/json")){
             const cpf  = requisicao.body.cpf;
             const nome = requisicao.body.nome;

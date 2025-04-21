@@ -1,9 +1,38 @@
 import Evento from "../Modelo/evento.js";
 
+/*function dataISOparaBR(dataISO) {
+    const data = new Date(dataISO);
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, '0'); // mês começa do zero
+    const ano = data.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+}*/
+
+
 export default class EventoDAO {
-    constructor() {
-        //this.init();
+
+    static async verificarConflito(evento, conexao) {
+        const sql = `
+            SELECT * FROM evento 
+            WHERE eve_data = ? 
+            AND NOT (? >= eve_horaFim OR ? <= eve_horaInicio)
+        `;
+
+        //eve_data = ?: Filtra os eventos para trazer apenas os que acontecem no mesmo dia (eve_data). Esse ? será substituído pela data do evento que está tentando inserir.
+        //eve_periodo = ?: Filtra os eventos para trazer apenas os que acontecem no mesmo periodo(eve_data). Esse ? será substituído pela data do evento que está tentando inserir.
+    
+        const parametros = [
+            evento.data,
+            evento.horaInicio,
+            evento.horaFim
+        ];
+    
+        const [linhas] = await conexao.execute(sql, parametros);
+        return linhas.length > 0; // Se tiver algum resultado, há conflito
     }
+    /*constructor() {
+        //this.init();
+    }*/
 
     /*async init() {
         try 
@@ -27,9 +56,14 @@ export default class EventoDAO {
 
     async incluir(evento, conexao) {
         if (evento instanceof Evento) {
+            try{
             const sql = `INSERT INTO evento(eve_nome, eve_data,eve_periodo, eve_horaInicio, eve_horaFim)
-                VALUES (?, str_to_date(?, '%Y-%m-%d'),?,?,?)
+                VALUES (?,?,?,?,?)
             `;
+
+            /*const [dia, mes, ano] = evento.data.split('/');
+            const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;*/
+
             let parametros = [
                 evento.nome,
                 evento.data,
@@ -39,12 +73,16 @@ export default class EventoDAO {
             ];
             const resultado = await conexao.execute(sql, parametros);
             evento.id = resultado[0].insertId;
+            }catch(e){
+                throw new Error("Erro ao incluir evento: " + e.message);
+            }
         }
     }
 
     async alterar(evento, conexao) {
         if (evento instanceof Evento) {
-            const sql = `UPDATE evento SET eve_nome=?, eve_data=?, eve_periodo=?, eve_dataInicio=?, eve_horaFim=?
+            try{
+            const sql = `UPDATE evento SET eve_nome=?, eve_data=?, eve_periodo=?, eve_horaInicio=?, eve_horaFim=?
                 WHERE  eve_id = ?
             `;
             let parametros = [
@@ -56,10 +94,15 @@ export default class EventoDAO {
                 evento.id
             ]; 
             await conexao.execute(sql, parametros);
+            }catch(e){
+                throw new Error("Erro ao alterar evento: " + e.message);
+            }
         }
     }
     
+    
     async consultar(termo, conexao) {
+        try{
         let sql = "";
         let parametros = [];
         if (isNaN(parseInt(termo))) {
@@ -86,15 +129,22 @@ export default class EventoDAO {
             listaEvento.push(evento);
         }
         return listaEvento;
+        }catch(e){
+            throw new Error("Erro ao consultar eventos: " + e.message);
+        }
     }
 
     async excluir(evento, conexao) {
         if (evento instanceof Evento) {
+            try{
             const sql = `DELETE FROM evento WHERE eve_id = ?`;
             let parametros = [
                 evento.id
             ]; 
             await conexao.execute(sql, parametros);
+            }catch(e){
+                throw new Error("Erro ao excluir evento: " + e.message);
+            }
         }
     }
 }

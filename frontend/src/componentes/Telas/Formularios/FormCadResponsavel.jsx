@@ -91,8 +91,8 @@ export default function FormCadResponsavel(props) {
                 setTimeout(() =>setCpf(""), 3000);
                 setTimeout(() => setNome(""), 3000);
                 setTimeout(()=> setTelefone(""), 3000); 
-
                 setTimeout(() => setMensagem(""), 3000);
+                
                 if(editando){
                     setTimeout(() => {
                         navigate("/relatorioResponsavel"); 

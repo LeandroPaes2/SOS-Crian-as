@@ -15,121 +15,86 @@ export default function FormCadEvento(props) {
     const [mensagem, setMensagem] = useState("");
     const [id, setId] = useState(0);
     const [editando, setEditando] = useState(false);
-
+    const [evento, setEvento] = useState(id, nome, data, periodo, horaInicio, horaFim);
     const location = useLocation();
     const navigate = useNavigate();
-
-    // Pega a lista de eventos da navegação anterior ou inicia vazia
-    const { listaDeEventos, setListaDeEventos } = useEventos();
-
     const rotaVoltar = editando ? "/relatorioEvento" : "/telaEvento";
 
     useEffect(() => {
-        if (location.state && location.state.nome && location.state.data && location.state.periodo && location.state.horaFim && location.state.horaInicio) {
+        if (location.state && location.state.id && location.state.nome && location.state.data && location.state.periodo && location.state.horaFim && location.state.horaInicio) {
+            
+            setId(location.state.id);
             setNome(location.state.nome);
             setData(location.state.data);
-            setId(location.state.id);
             setPeriodo(location.state.periodo);
             setHoraFim(location.state.horaFim);
             setHoraInicio(location.state.horaInicio);
             setEditando(true);
+            console.log("Data recebida do location.state:", location.state.data);
         }
     }, [location.state]);
 
     const handleSubmit = async (event) => {
-        event.preventDefault();
-    
-        if (!data || !nome || !periodo || !horaFim || !horaInicio) {
-            setMensagem("Preencha todos os campos!");
-            return;
-        }
+    event.preventDefault();
 
-        const conflito = listaDeEventos.some(evento => {
-            const mesmoDia = evento.data === data;
-            const mesmoPeriodo = evento.periodo === periodo;
-            const outroEvento = !editando || evento.id !== id;
+    // Validação básica
+    if (!data || !nome || !periodo || !horaFim || !horaInicio) {
+        setMensagem("Preencha todos os campos!");
+        return;
+    }
 
-            const inicioA = horaParaNumero(evento.horaInicio);
-            const fimA = horaParaNumero(evento.horaFim);
-            const inicioB = horaParaNumero(horaInicio);
-            const fimB = horaParaNumero(horaFim);
-        
-            if (mesmoDia && mesmoPeriodo && outroEvento) {
-        
-                const foraDoHorario = (inicioA < fimB && inicioA>inicioB) || (fimA > inicioB && fimA < fimB) || inicioA==inicioB || fimA==fimB;
-                return foraDoHorario;
-            }
-        
-            return false;
-        });
+    if (horaInicio === horaFim || horaParaNumero(horaFim) < horaParaNumero(horaInicio)) {
+        setMensagem("Horário de início e fim inválido.");
+        return;
+    }
 
-        const conflitoHorario = listaDeEventos.some(evento => {
-            const outroEvento = !editando || evento.id !== id;
-            const inicioA = horaParaNumero(horaInicio);
-            const fimA = horaParaNumero(horaFim);
-        
-            
-                const foraDoHorario = inicioA < horaParaNumero("08:00") || inicioA > horaParaNumero("17:00") || fimA < horaParaNumero("08:00") || fimA > horaParaNumero("17:00");
-                
+    const evento = { id, nome, data, periodo, horaInicio, horaFim };
+    const url = editando ? `http://localhost:3000/eventos/${id}` : "http://localhost:3000/eventos";
+    const method = editando ? "PUT" : "POST";
 
-                return foraDoHorario;
-        });
-        
-        if(conflitoHorario){
-            setMensagem("Não é permitido eventos neste horario!");
-            return;
-        }
-        else{
-            if(horaInicio === horaFim || horaParaNumero(horaFim)<horaParaNumero(horaInicio)){
-                setMensagem("Horario de inicio e fim iguais ou término de evento antes do inicio.");
+    try {
+        if (editando) {
+            if (!window.confirm("Deseja realmente alterar o evento: " + evento.nome)) {
                 return;
             }
-            else{
-                if (conflito) {
-                    setMensagem("Conflito de horário! Já existe um evento nesse dia, período e horário.");
-                    return;
-                }
-            }
         }
 
-        const novoId = listaDeEventos.length > 0
-        ? Math.max(...listaDeEventos.map((evento) => evento.id)) + 1
-        : 1;
-    
-        const novoEvento = {
-            id: editando ? id : novoId,
-            nome,
-            data,
-            periodo,
-            horaInicio,
-            horaFim
-        };
-    
-        let novaLista;
-        if (editando) {
-            novaLista = listaDeEventos.map((evento) => (evento.id === novoEvento.id ? novoEvento : evento));
-        } else {
-            novaLista = [...listaDeEventos, novoEvento];
-        }
-    
-        setListaDeEventos(novaLista); // Atualiza a lista de eventos no contexto
-        setMensagem(editando ? "Evento atualizado com sucesso!" : "Evento cadastrado com sucesso!");
-    
-        // Limpa os campos
-        setTimeout(() => {
-            setNome("");
-            setData("");
-            setPeriodo("");
-            setHoraInicio("");
-            setHoraFim("");
-            setMensagem("");
+        const response = await fetch(url, {
+            method: method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(evento),
+        });
+
+        const resultado = await response.json();
+
+        if (response.ok && resultado.status) {
+            setMensagem(editando ? "Evento atualizado com sucesso!" : "Evento cadastrado com sucesso!");
+
+            setTimeout(() => {
+                setNome("");
+                setData("");
+                setPeriodo("");
+                setHoraInicio("");
+                setHoraFim("");
+                setMensagem("");
+            }, 1000);
+
+            if (editando) {
+                setTimeout(() => {
+                    navigate("/relatorioEvento");
+                }, 3000);
+            }
+
             setEditando(false);
-    
-            navigate("/relatorioEvento", {
-                state: { eventos: novaLista }, 
-            });
-        }, 3000);
-    };
+        } else {
+            setMensagem(resultado.mensagem || "Erro ao salvar evento.");
+        }
+    } catch (error) {
+        console.error("Erro ao conectar com o backend:", error);
+        setMensagem("Erro de conexão com o servidor.");
+    }
+};
+
 
     function horaParaNumero(hora) {
         const [h, m] = hora.split(":").map(Number);
@@ -211,8 +176,11 @@ export default function FormCadEvento(props) {
                         />
                     </Form.Group>
 
-                    <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
-                        Voltar
+                    <Button as={Link} to="/telaEvento" className="botaoPesquisa" variant="secondary">
+                        Pagina inicial eventos
+                    </Button>
+                    <Button as={Link} to="/relatorioEvento" className="botaoPesquisa" variant="secondary">
+                        Eventos Agendados
                     </Button>
                     <Button className="botaoPesquisa" variant="primary" type="submit">
                         {editando ? "Atualizar" : "Cadastrar"}

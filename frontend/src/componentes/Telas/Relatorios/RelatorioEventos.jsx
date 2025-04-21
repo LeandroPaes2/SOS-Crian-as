@@ -4,28 +4,87 @@ import PaginaGeral from "../../layouts/PaginaGeral";
 import {Link} from 'react-router-dom';
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../css/alerts.css";
-import { useEventos } from "../../../EventosContext";
+
+function dataNova(dataISO) {
+    const data = new Date(dataISO);
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const ano = data.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+}
 
 export default function RelatorioEventos(){
 
-    const { listaDeEventos, setListaDeEventos } = useEventos();
+    const [listaDeEventos, setListaDeEventos ] = useState([]);
     const [mensagem, setMensagem] = useState("");
     const [pesquisaNome, setPesquisaNome] = useState("");
-
     const navigate = useNavigate();
     const location = useLocation();
+    const [editando, setEditando] = useState(false);
+    const [id, setId] = useState("");
+    const [nome, setNome] = useState("");
+    const [data, setData]=useState("");
+    const [periodo, setPeriodo] = useState("");
+    const [horaInicio, setHoraInicio] = useState("");
+    const [horaFim, setHoraFim]=useState("");
 
-    const excluirEvento = (evento) => {
+    useEffect(() => {  //é executado uma única vez quando o componente monta, ou seja, quando a página/carregamento do componente acontece pela primeira vez.
+        //Ele serve pra carregar os elementos que você precisa assim que a página abrir, como buscar dados no backend
+        const buscarEventos = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/eventos");
+                if (!response.ok) 
+                    throw new Error("Erro ao buscar eventos");
+                
+                const dados = await response.json();
+                setListaDeEventos(dados); // Atualiza o estado com os dados do backend
+            } catch (error) {
+                console.error("Erro ao buscar eventos:", error);
+                setMensagem("Erro ao carregar os eventos.");
+            }
+        };
+
+        buscarEventos();
+    }, []);  //Esse [] (array de dependências vazio) faz com que o efeito rode só uma vez, na "montagem" do componente — igual ao componentDidMount em classes React.
+
+    const excluirEvento = async (evento) => {
         if (window.confirm("Deseja realmente excluir o evento " + evento.nome)) {
-            setListaDeEventos(listaDeEventos.filter((r) => r.id !== evento.id));
-            setMensagem("Evento excluido com sucesso!");
-            setTimeout(() => setMensagem(""), 3000);
+            if(evento.id<=0 || !evento.nome || !evento.data || !evento.periodo || !evento.horaInicio || !evento.horaFim){
+                setMensagem("Erro: evento inválido!");
+                setTimeout(() => setMensagem(""), 5000);
+                return;
+            }
+            try{
+                const response = await fetch("http://localhost:3000/eventos/" + evento.id, {
+                    method: "DELETE"
+                });
+                if (response.ok) {
+                    setMensagem("Evento excluido com sucesso!");
+                    setTimeout(() => setMensagem(""), 3000);
+                    setListaDeEventos(listaDeEventos.filter((e) => e.id !== evento.id));
+                }
+                else{
+                    setMensagem("Erro ao excluir o evento.");
+                    setTimeout(() => setMensagem(""), 3000);
+                }
+            }catch(e){
+                console.error("Erro ao conectar com o backend:", e);
+                setMensagem("Erro de conexão com o servidor.");
+            }
         }
+        window.location.reload();
     };
 
-    const editarEventos = (evento) => {
+    const editarEventos = async (evento) => {
         navigate("/cadastroEvento", {
-            state: { ...evento }
+            state: { 
+                id: evento.id,
+                nome: evento.nome,
+                data: evento.data.split("T")[0],
+                periodo: evento.periodo,
+                horaInicio: evento.horaInicio,
+                horaFim: evento.horaFim
+             }
         });
     };
 
@@ -92,7 +151,7 @@ export default function RelatorioEventos(){
                                             <td>{evento.id}</td>
                                             <td>{evento.nome}</td>
                                             <td>{evento.periodo}</td>
-                                            <td>{evento.data}</td>
+                                            <td>{dataNova(evento.data)}</td>
                                             <td>{evento.horaInicio}</td>
                                             <td>{evento.horaFim}</td>
                                             <td>
