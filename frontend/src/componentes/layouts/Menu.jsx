@@ -3,7 +3,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import {Link} from 'react-router-dom';
-import logo from '../../logo.png';
+import logo from '../imagens/logo.png';
 import "../css/menu.css";
 export default function Menu(props){
     return(
