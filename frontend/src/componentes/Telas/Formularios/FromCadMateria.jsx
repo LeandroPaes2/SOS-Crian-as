@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import "../../css/telaTurma.css";
 
 export default function FormCadmateria() {
+    const [id, setId] = useState(""); // novo estado para id
     const [nome, setNome] = useState("");
     const [descricao, setDescricao] = useState("");
     const [mensagem, setMensagem] = useState("");
@@ -12,7 +14,8 @@ export default function FormCadmateria() {
     const [editando, setEditando] = useState(false);
 
     useEffect(() => {
-        if (location.state && location.state.nome && location.state.descricao) {
+        if (location.state && location.state.id && location.state.nome && location.state.descricao) {
+            setId(location.state.id); // seta o id recebido
             setNome(location.state.nome);
             setDescricao(location.state.descricao);
             setEditando(true);
@@ -27,8 +30,11 @@ export default function FormCadmateria() {
             return;
         }
 
-        const materia = { nome, descricao }; // objeto com dados corretos
-        const url = editando ? `http://localhost:3000/materias/${nome}` : "http://localhost:3000/materias";
+        const materia = { id, nome, descricao }; // inclui o id no objeto (mesmo que esteja vazio em inclusão)
+        // Se estiver editando, utiliza a URL com o id; caso contrário, a URL normal de cadastro
+        const url = editando 
+                      ? `http://localhost:3000/materias/${id}` 
+                      : "http://localhost:3000/materias";
         const method = editando ? "PUT" : "POST";
 
         try {
@@ -66,7 +72,6 @@ export default function FormCadmateria() {
                             placeholder="Digite o nome"
                             value={nome}
                             onChange={(e) => setNome(e.target.value)}
-                            readOnly={editando}  // use readOnly para manter o valor sem impedir o envio
                         />
                     </Form.Group>
 
@@ -91,4 +96,3 @@ export default function FormCadmateria() {
         </div>
     );
 }
-
