@@ -88,11 +88,32 @@ export default function FormCadEscola() {
         }
     };
 
+    const handleTelefoneChange = (e) => {
+        let input = e.target.value.replace(/\D/g, ""); 
+      
+        if (input.length > 11) input = input.slice(0, 11); 
+      
+        let formatted = input;
+      
+        if (input.length > 0) {
+          formatted = `(${input.slice(0, 2)}`;
+        }
+        if (input.length >= 3) {
+          formatted += `) ${input.slice(2, 7)}`;
+        }
+        if (input.length >= 8) {
+          formatted += `-${input.slice(7, 11)}`;
+        }
+      
+        setTelefone(formatted);
+      };
+      
+
     return (
-        <div>
+        <div className="cadastroEscola" >
             <PaginaGeral>
-                <Alert className="mt-2 mb-2 text-center" variant="dark">
-                    <h2>{editando ? "Editar Escola" : "Cadastro de Escola"}</h2>
+                <Alert className="mt-2 mb-2 text-center"  variant="dark">
+                    <h2 className="titulo-alert">{editando ? "Editar Escola" : "Cadastro de Escola"}</h2>
                 </Alert>
 
                 {mensagem && (
@@ -140,13 +161,14 @@ export default function FormCadEscola() {
                             type="tel"
                             placeholder="(99) 99999-9999"
                             value={telefone}
-                            onChange={(e) => setTelefone(e.target.value)}
+                            onChange={handleTelefoneChange}
                             isInvalid={mensagem && telefone.trim() === ""}
                         />
                         <Form.Control.Feedback type="invalid">
                             O telefone é obrigatório.
                         </Form.Control.Feedback>
                     </Form.Group>
+
 
                     <Form.Group className="mb-3">
                         <Form.Label>Tipo</Form.Label>
