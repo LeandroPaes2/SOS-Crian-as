@@ -8,10 +8,10 @@ const turmCtrl = new TurmaCtrl();
 const rotaTurma = Router();
 
 rotaTurma.post("/", turmCtrl.gravar);
-rotaTurma.put("/:cor", turmCtrl.editar);
-rotaTurma.patch("/:cor", turmCtrl.editar);
-rotaTurma.delete("/:cor", turmCtrl.excluir);
-rotaTurma.get("/:cor", turmCtrl.consultar);
+rotaTurma.put("/:id", turmCtrl.editar);
+rotaTurma.patch("/:id", turmCtrl.editar);
+rotaTurma.delete("/:id", turmCtrl.excluir);
+rotaTurma.get("/:id", turmCtrl.consultar);
 rotaTurma.get("/",turmCtrl.consultar);
 
 export default rotaTurma;

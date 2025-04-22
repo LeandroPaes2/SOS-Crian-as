@@ -9,6 +9,6 @@ rotaMateria.put("/:id", matCtrl.editar);
 rotaMateria.patch("/:id", matCtrl.editar);
 rotaMateria.delete("/:id", matCtrl.excluir);
 rotaMateria.get("/:id", matCtrl.consultar);
-rotaMateria.get("/", matCtrl.consultar);
+rotaMateria.get("/",matCtrl.consultar);
 
 export default rotaMateria;

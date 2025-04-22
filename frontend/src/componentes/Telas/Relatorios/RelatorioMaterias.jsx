@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Container, Table, Button, Form, InputGroup, Alert } from "react-bootstrap";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import { Link, useNavigate } from 'react-router-dom';
+import "../../css/telaTurma.css"
 
 export default function RelatorioMateria(){
     const [listaDenomes, setListaDeNomes] = useState([]); 
@@ -54,34 +55,30 @@ export default function RelatorioMateria(){
     };
 
     return (
+        <div className="topo">
         <>
             <PaginaGeral>
-                <br />
-                <Alert className="mt-02 mb-02 text-center" variant="dark">
-                    <h2>Matérias</h2>
-                </Alert>
-                <Form>
-                    <Form.Group className="form" controlId="exampleForm.ControlInput1">
-                        <Form.Label>PESQUISE A MATÉRIA PELO NOME</Form.Label>
-                        <InputGroup className="divInput">
-                            <div>
+                <Container className="form-container mt-4">
+                    <Alert className="alert-custom text-center" variant="dark">
+                    <h2 className="titulo-alert">Matéria</h2>
+                    </Alert>
+                <Form className="mb-4">
+                    <Form.Group controlId="formPesquisaNome">
+                        <Form.Label className="fw-semibold">Pesquise a matéria pelo nome</Form.Label>
+                        <InputGroup>
                                 <Form.Control
-                                    className="formInput"
                                     type="text"
-                                    placeholder="nome da matéria"
+                                    placeholder="Digite o nome da matéria..."
                                     value={pesquisaNome} 
                                     onChange={(e) => setPesquisaNome(e.target.value)}  
                                 />
-                            </div>
-                            <div>
-                                <Button className="botaoPesquisa" variant="secondary">
+                                <Button variant="secondary">
                                     Pesquisar
                                 </Button>
-                            </div>
                         </InputGroup>
                     </Form.Group>
                 </Form>
-                <br />
+
                 <Container>
                     <Table striped bordered hover>
                         <thead>
@@ -111,14 +108,19 @@ export default function RelatorioMateria(){
                                                     <Button 
                                                         onClick={() => navigate("/cadastroMateria",  { state: { id: materia.id, nome: materia.nome, descricao: materia.descricao } })}
                                                         variant="warning"
+                                                        size="sm"
+                                                        className="me-2"
+                                                        title="Editar"
                                                     >
-                                                        Editar
+                                                        ✏️
                                                     </Button> 
                                                     <Button 
                                                         onClick={() => excluirMaterias(materia)}
                                                         variant="danger"
+                                                        size="sm"
+                                                        title="Excluir"
                                                     >
-                                                        Excluir
+                                                        🗑️
                                                     </Button>
                                                 </td>
                                             </tr>
@@ -127,14 +129,15 @@ export default function RelatorioMateria(){
                             }
                         </tbody>
                     </Table>
-                    <p>Quantidade de matérias cadastradas: {listaDenomes.length}</p>
                 </Container>
                 <div>
                     <Button as={Link} to="/telaMateria" className="botaoPesquisa" variant="secondary">
                         Voltar
                     </Button>
                 </div>
+                </Container>
             </PaginaGeral>
         </>
+        </div>
     );
 }

@@ -5,7 +5,7 @@ import "../css/telaResponsavel.css";
 
 export default function TelaCadastroMateria(){
     return (
-        <div>
+        <div className="topo">
             <PaginaGeral>
                 <br />
                 <Alert className="alert-custom text-center mt-4 mb-4">

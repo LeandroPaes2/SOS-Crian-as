@@ -3,29 +3,6 @@ import Materia from "../Modelo/materia.js";
 //import conectar from "./Conexao.js";
 export default class MateriaDAO {
     
-    /*constructor() {
-        this.init();
-    }
-
-    async init() {
-        try 
-        {
-            const conexao = await conectar(); 
-            const sql = `
-            CREATE TABLE IF NOT EXISTS materia(
-                mat_id INT AUTO_INCREMENT NOT NULL,
-                mat_nome VARCHAR(40) NOT NULL,
-                mat_desc VARCHAR(30) NOT NULL,
-                CONSTRAINT pk_materia PRIMARY KEY(mat_id)
-            );
-            `;
-            await conexao.execute(sql);
-            await conexao.release();
-        }
-        catch (e) {
-            console.log("Não foi possível iniciar o banco de dados: " + e.message);
-        }
-    }*/
 
     async incluir(materia, conexao) {
         if (materia instanceof Materia) {

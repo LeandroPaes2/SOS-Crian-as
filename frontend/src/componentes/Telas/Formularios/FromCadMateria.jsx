@@ -56,7 +56,7 @@ export default function FormCadmateria() {
     };
 
     return (
-        <div>
+        <div className="cadastroTurma">
             <PaginaGeral>
                 <Alert className="mt-2 mb-2 text-center" variant="dark">
                     <h2>Matérias</h2>
