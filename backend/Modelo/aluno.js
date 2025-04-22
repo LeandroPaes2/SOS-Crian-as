@@ -18,7 +18,7 @@ export default class Aluno {
     #periodoEscola;
     #realizaAcompanhamento;
     #possuiSindrome;
-    #status;// 0  aluno Desligado 1 aluno matriculado e 2 para aluno na fila de espera;
+    #status //0 inativo e 1 ativo
 
     constructor(numProtocolo=0, nome="", dataNascimento="", responsavel={},rua="", bairro="", cidade="", cep="", numero="", escola={} ,telefone="", periodoProjeto="", periodoEscola="", realizaAcompanhamento="", possuiSindrome="",status=0) {
         this.#numProtocolo = numProtocolo;
@@ -90,10 +90,13 @@ export default class Aluno {
     get possuiSindrome() { return this.#possuiSindrome; }
     set possuiSindrome(valor) { this.#possuiSindrome = valor; }
 
-    get status() { return this.#status; }
-    set status(valor) { this.#status = valor; }
+    get status(){
+        return this.#status;
+    }
 
-
+    set status(NovoStatus){
+        this.#status = NovoStatus;
+    }
 
     toJSON() {
         return {
@@ -112,7 +115,7 @@ export default class Aluno {
             periodoEscola: this.#periodoEscola,
             realizaAcompanhamento: this.#realizaAcompanhamento,
             possuiSindrome: this.#possuiSindrome,
-            status: this.#status
+            status: this.#status,
         };
     }
 
