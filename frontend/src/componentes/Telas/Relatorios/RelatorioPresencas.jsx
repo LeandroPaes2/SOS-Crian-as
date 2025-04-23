@@ -22,7 +22,7 @@ export default function RelatorioPresenca() {
             } finally {
                 setCarregando(false);
             }
-        }
+        };
         carregarPresencas();
     }, []);
 

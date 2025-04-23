@@ -47,7 +47,7 @@ export default function MenuInicial() {
                 Eventos
             </Button>
             
-            <Button as={Link} to="/telaPresenca" className='botaoMenu' variant="secondary" size="lg">
+            <Button as={Link} to="/telaPresenca" className='botaoMenu' variant="primary" size="lg">
                 Presenças
             </Button>
         </div>

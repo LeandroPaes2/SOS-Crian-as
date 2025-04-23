@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Form, Button, Alert, Table } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
+import { Form, Button, Alert, Spinner, Row, Col, Table } from 'react-bootstrap';
+import PaginaGeral from '../../layouts/PaginaGeral';
 import { Link, useNavigate } from 'react-router-dom';
-import PaginaGeral from '../../componentes/layouts/PaginaGeral';
 
 export default function FormCadPresenca() {
     const [materias, setMaterias] = useState([]);
@@ -10,100 +10,212 @@ export default function FormCadPresenca() {
     const [selectedMateria, setSelectedMateria] = useState('');
     const [selectedTurma, setSelectedTurma] = useState('');
     const [presencas, setPresencas] = useState({});
+    const [carregando, setCarregando] = useState(false);
     const [mensagem, setMensagem] = useState('');
     const navigate = useNavigate();
 
+    // Carrega matérias e turmas ao iniciar
     useEffect(() => {
-        fetch('http://localhost:3000/materias')
-            .then(res => res.json())
-            .then(data => setMaterias(data));
-        
-        fetch('http://localhost:3000/turmas')
-            .then(res => res.json())
-            .then(data => setTurmas(data));
+        async function carregarDados() {
+            try {
+                setCarregando(true);
+                
+                // Carrega matérias
+                const resMaterias = await fetch('http://localhost:3000/materias');
+                const dataMaterias = await resMaterias.json();
+                setMaterias(dataMaterias);
+                
+                // Carrega turmas
+                const resTurmas = await fetch('http://localhost:3000/turmas');
+                const dataTurmas = await resTurmas.json();
+                setTurmas(dataTurmas);
+                
+            } catch (error) {
+                setMensagem('Erro ao carregar dados: ' + error.message);
+            } finally {
+                setCarregando(false);
+            }
+        }
+        carregarDados();
     }, []);
 
+    // Carrega alunos quando turma é selecionada
     useEffect(() => {
         if (selectedTurma) {
-            fetch(`http://localhost:3000/alunos/turma/${selectedTurma}`)
-                .then(res => res.json())
-                .then(data => {
+            async function carregarAlunos() {
+                try {
+                    setCarregando(true);
+                    const res = await fetch(`http://localhost:3000/alunos?turma=${selectedTurma}`);
+                    const data = await res.json();
+                    
+                    // Inicializa todos como presentes por padrão
+                    const presencasIniciais = {};
+                    data.forEach(aluno => {
+                        presencasIniciais[aluno.numProtocolo] = true;
+                    });
+                    
                     setAlunos(data);
-                    const initial = {};
-                    data.forEach(a => initial[a.numProtocolo] = true);
-                    setPresencas(initial);
-                });
+                    setPresencas(presencasIniciais);
+                } catch (error) {
+                    setMensagem('Erro ao carregar alunos: ' + error.message);
+                } finally {
+                    setCarregando(false);
+                }
+            }
+            carregarAlunos();
         }
     }, [selectedTurma]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const alunosArray = Object.entries(presencas).map(([id, presente]) => ({
-            alunoId: parseInt(id),
-            presente
-        }));
+        
+        if (!selectedMateria || !selectedTurma) {
+            setMensagem('Selecione uma matéria e uma turma');
+            return;
+        }
 
         try {
-            await fetch('http://localhost:3000/presencas', {
+            setCarregando(true);
+            
+            const alunosPresentes = alunos.map(aluno => ({
+                alunoId: aluno.numProtocolo,
+                presente: presencas[aluno.numProtocolo] || false
+            }));
+
+            const response = await fetch('http://localhost:3000/presencas', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
-                    materiaId: parseInt(selectedMateria),
-                    turmaId: parseInt(selectedTurma),
-                    alunos: alunosArray
+                    materiaId: selectedMateria,
+                    turmaId: selectedTurma,
+                    alunos: alunosPresentes
                 })
             });
-            setMensagem('Presenças registradas!');
+
+            if (!response.ok) {
+                throw new Error('Erro ao salvar presenças');
+            }
+
+            setMensagem('Presenças registradas com sucesso!');
             setTimeout(() => navigate('/relatorioPresenca'), 2000);
+            
         } catch (error) {
-            console.error("Erro ao conectar com o backend:", error);
-            setMensagem('Erro ao registrar!');
+            setMensagem('Erro: ' + error.message);
+        } finally {
+            setCarregando(false);
         }
     };
 
     return (
         <PaginaGeral>
+            <h2 className="text-center mb-4">Cadastro de Presenças</h2>
+            
+            {mensagem && (
+                <Alert variant={mensagem.includes('sucesso') ? 'success' : 'danger'}>
+                    {mensagem}
+                </Alert>
+            )}
+
             <Form onSubmit={handleSubmit}>
-              <Form.Group className="mb-3">
-                <Form.Label>Turma</Form.Label>
-                {materias.length === 0 ?
-                (<FormSelect>
-                  <option value="">Não há materias cadastradas</option>
-                </FormSelect>):
-                (
-                  <Form.Select
-                      value={selectedMateria}
-                      onChange={(e) => setSelectedMateria(e.target.value)}
-                  >
-                      <option value="">Selecione uma materia</option>
-                      {materias.map((materia, index) => (
-                      <option key={index} value={materia.nome}>
-                          {materia.nome}
-                      </option>
-                      ))}
-                  </Form.Select>
-                )
-                }
-              </Form.Group>
-                <Table>
-                    <tbody>
-                        {alunos.map(aluno => (
-                            <tr key={aluno.numProtocolo}>
-                                <td>{aluno.nome}</td>
-                                <td>
-                                    <Form.Check 
-                                        checked={presencas[aluno.numProtocolo]}
-                                        onChange={e => setPresencas({
-                                            ...presencas,
-                                            [aluno.numProtocolo]: e.target.checked
-                                        })}
-                                    />
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-                <Button type="submit">Salvar</Button>
+                <Row className="mb-3">
+                    <Col md={6}>
+                        <Form.Group controlId="formMateria">
+                            <Form.Label>Matéria</Form.Label>
+                            <Form.Select
+                                value={selectedMateria}
+                                onChange={(e) => setSelectedMateria(e.target.value)}
+                                disabled={carregando}
+                                required
+                            >
+                                <option value="">Selecione uma matéria</option>
+                                {materias.map(materia => (
+                                    <option key={materia.id} value={materia.id}>
+                                        {materia.nome}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
+                    </Col>
+                    
+                    <Col md={6}>
+                        <Form.Group controlId="formTurma">
+                            <Form.Label>Turma</Form.Label>
+                            <Form.Select
+                                value={selectedTurma}
+                                onChange={(e) => setSelectedTurma(e.target.value)}
+                                disabled={carregando || !selectedMateria}
+                                required
+                            >
+                                <option value="">Selecione uma turma</option>
+                                {turmas.map(turma => (
+                                    <option key={turma.id} value={turma.id}>
+                                        {turma.cor} - {turma.periodo}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
+                    </Col>
+                </Row>
+
+                {carregando && alunos.length === 0 && selectedTurma && (
+                    <div className="text-center">
+                        <Spinner animation="border" />
+                        <p>Carregando alunos...</p>
+                    </div>
+                )}
+
+                {alunos.length > 0 && (
+                    <>
+                        <h4 className="mt-4 mb-3">Lista de Alunos</h4>
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>Aluno</th>
+                                    <th>Presente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {alunos.map(aluno => (
+                                    <tr key={aluno.numProtocolo}>
+                                        <td>{aluno.nome}</td>
+                                        <td>
+                                            <Form.Check
+                                                type="checkbox"
+                                                checked={presencas[aluno.numProtocolo] || false}
+                                                onChange={(e) => setPresencas({
+                                                    ...presencas,
+                                                    [aluno.numProtocolo]: e.target.checked
+                                                })}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </>
+                )}
+
+                <div className="d-flex justify-content-between mt-4">
+                    <Button as={Link} to="/relatorioPresenca" variant="secondary">
+                        Voltar
+                    </Button>
+                    
+                    <Button 
+                        type="submit" 
+                        variant="primary"
+                        disabled={carregando || alunos.length === 0}
+                    >
+                        {carregando ? (
+                            <>
+                                <Spinner animation="border" size="sm" /> Salvando...
+                            </>
+                        ) : (
+                            'Salvar Presenças'
+                        )}
+                    </Button>
+                </div>
             </Form>
         </PaginaGeral>
     );
