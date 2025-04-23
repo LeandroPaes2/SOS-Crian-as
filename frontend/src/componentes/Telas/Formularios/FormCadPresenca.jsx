@@ -1,150 +1,110 @@
-import { Alert, Form, Button, FormSelect } from "react-bootstrap";
-import "../../css/telaTurma.css";
-import { useState, useEffect } from "react";
-import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import "../../css/alerts.css";
-import { usePresencas } from "../../../PresencaContext";
+import { useEffect, useState } from 'react';
+import { Form, Button, Alert, Table } from 'react-bootstrap';
+import { Link, useNavigate } from 'react-router-dom';
+import PaginaGeral from '../../componentes/layouts/PaginaGeral';
 
-export default function FormCadPresenca(props)
-{
-    const [data, setData] = useState("");
-    const [dia, setDia] = useState("");
-    const [mes, setMes] = useState("");
-    const [ano, setAno] = useState("");
-    const [hora, setHora] = useState("");
-    const [minutos, setMinutos] = useState("");
-    const [presente, setPresente] = useState(true);
-    const [mensagem, setMensagem] = useState("");
-    const [id, setId] = useState(0);
-    const [editando, setEditando] = useState(false);
-    const [listaDeTurmas, setListaDeTurmas] = useState([]);
-    const [turmaSelecionada, setTurmaSelecionada] = useState("");
-    const [listaDeMaterias, setListaDeMaterias] = useState([]);
-    const [materiaSelecionada, setMateriaSelecionada] = useState("");
-    const [listaDeAlunos, setListaDeAlunos] = useState([]);
-
-    const location = useLocation();
+export default function FormCadPresenca() {
+    const [materias, setMaterias] = useState([]);
+    const [turmas, setTurmas] = useState([]);
+    const [alunos, setAlunos] = useState([]);
+    const [selectedMateria, setSelectedMateria] = useState('');
+    const [selectedTurma, setSelectedTurma] = useState('');
+    const [presencas, setPresencas] = useState({});
+    const [mensagem, setMensagem] = useState('');
     const navigate = useNavigate();
 
-    const { listaDePresencas, setListaDePresencas } = usePresencas();
-    
-
-    const rotaVoltar = editando ? "/relatorioPresenca" : "/telaPresenca";
-    
     useEffect(() => {
-        const data = new Date();
-        if (location.state) {
-            setData(data);
-            setDia(data.getDate());
-            setMes(data.getMonth());
-            setAno(data.getFullYear);
-            setHora(data.getHours());
-            setMinutos(data.getMinutes());
-            setPresente(location.state.presente);
-            setId(location.state.id);
-            setEditando(true);
-        }
-    }, [location.state]);
+        fetch('http://localhost:3000/materias')
+            .then(res => res.json())
+            .then(data => setMaterias(data));
+        
+        fetch('http://localhost:3000/turmas')
+            .then(res => res.json())
+            .then(data => setTurmas(data));
+    }, []);
 
     useEffect(() => {
-        fetch("http://localhost:3000/turmas")
-          .then((response) => response.json())
-          .then((dados) => setListaDeTurmas(dados))
-          .catch((error) => console.error("Erro ao carregar as turmas:", error));
-      }, []);
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
-        if (!materiaSelecionada) {
-            setMensagem("Por favor, selecione uma matéria");
-            return;
+        if (selectedTurma) {
+            fetch(`http://localhost:3000/alunos/turma/${selectedTurma}`)
+                .then(res => res.json())
+                .then(data => {
+                    setAlunos(data);
+                    const initial = {};
+                    data.forEach(a => initial[a.numProtocolo] = true);
+                    setPresencas(initial);
+                });
         }
+    }, [selectedTurma]);
 
-        setMensagem(
-            `Presença registrada para a matéria ${materiaSelecionada} do dia ${dia} do mes ${mes} do ano ${ano} às ${hora}:${minutos}.`
-          );
-
-        const novoId = listaDePresencas.length > 0
-        ? Math.max(...listaDePresencas.map((presenca) => presenca.id)) + 1
-        : 1;
-    
-        const novaPresenca = {
-            id: editando ? id : novoId,
-            data,
-            dia,
-            mes,
-            ano,
-            hora,
-            minutos,
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const alunosArray = Object.entries(presencas).map(([id, presente]) => ({
+            alunoId: parseInt(id),
             presente
-        };
-    
-        let novaLista;
-        if (editando) {
-            novaLista = listaDePresencas.map((presenca) => (presenca.id === novaPresenca.id ? novaPresenca : presenca));
-        } else {
-            novaLista = [...listaDePresencas, novaPresenca];
-        }
-    
-        setListaDePresencas(novaLista);
-        setMensagem(editando ? "Lista de presença atualizada com sucesso!" : "Lista de presença cadastrada com sucesso!");
-    
-        setTimeout(() => {
-            setEditando(false);
-            setTurmaSelecionada("");
-            navigate("/relatorioPresenca", {
-                state: { presencas: novaLista }, 
+        }));
+
+        try {
+            await fetch('http://localhost:3000/presencas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    materiaId: parseInt(selectedMateria),
+                    turmaId: parseInt(selectedTurma),
+                    alunos: alunosArray
+                })
             });
-        }, 3000);
+            setMensagem('Presenças registradas!');
+            setTimeout(() => navigate('/relatorioPresenca'), 2000);
+        } catch (error) {
+            console.error("Erro ao conectar com o backend:", error);
+            setMensagem('Erro ao registrar!');
+        }
     };
-    
+
     return (
         <PaginaGeral>
-          <Alert className="alert-custom text-center mt-4 mb-4">
-            <h2 className="titulo-alert">Cadastro de Presença</h2>
-          </Alert>
-    
-          {mensagem && (
-            <Alert
-              className="mt-2 mb-2 text-center"
-              variant={mensagem.includes("registrada") ? "success" : "danger"}
-            >
-              {mensagem}
-            </Alert>
-          )}
-    
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label>Turma</Form.Label>
-              {listaDeTurmas.length === 0 ?
-              (<FormSelect>
-                <option value="">Não há turmas cadastradas</option>
-              </FormSelect>):
-              (
-                <Form.Select
-                    value={turmaSelecionada}
-                    onChange={(e) => setTurmaSelecionada(e.target.value)}
-                >
-                    <option value="">Selecione uma turma</option>
-                    {listaDeTurmas.map((turma, index) => (
-                    <option key={index} value={turma.cor}>
-                        {turma.cor}
-                    </option>
-                    ))}
-                </Form.Select>
-              )
-              }
-            </Form.Group>
-    
-            <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
-              Voltar
-            </Button>
-            <Button className="botaoPesquisa" variant="primary" type="submit">
-                {editando ? "Atualizar" : "Cadastrar"}
-            </Button>
-          </Form>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-3">
+                <Form.Label>Turma</Form.Label>
+                {materias.length === 0 ?
+                (<FormSelect>
+                  <option value="">Não há materias cadastradas</option>
+                </FormSelect>):
+                (
+                  <Form.Select
+                      value={selectedMateria}
+                      onChange={(e) => setSelectedMateria(e.target.value)}
+                  >
+                      <option value="">Selecione uma materia</option>
+                      {materias.map((materia, index) => (
+                      <option key={index} value={materia.nome}>
+                          {materia.nome}
+                      </option>
+                      ))}
+                  </Form.Select>
+                )
+                }
+              </Form.Group>
+                <Table>
+                    <tbody>
+                        {alunos.map(aluno => (
+                            <tr key={aluno.numProtocolo}>
+                                <td>{aluno.nome}</td>
+                                <td>
+                                    <Form.Check 
+                                        checked={presencas[aluno.numProtocolo]}
+                                        onChange={e => setPresencas({
+                                            ...presencas,
+                                            [aluno.numProtocolo]: e.target.checked
+                                        })}
+                                    />
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+                <Button type="submit">Salvar</Button>
+            </Form>
         </PaginaGeral>
     );
 }

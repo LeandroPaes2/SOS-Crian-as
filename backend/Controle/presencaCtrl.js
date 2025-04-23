@@ -20,7 +20,7 @@ export default class PresencaCtrl{
                             await conexao.query('COMMIT');
                             resposta.status(200).json({
                                 "status":true,
-                                "mensagem":"Presença adicionada com sucesso!",
+                                mensagem:"Presença adicionada com sucesso!",
                         });
                     }
                     else
@@ -29,7 +29,7 @@ export default class PresencaCtrl{
                         //await conexao.release();
                         resposta.status(500).json({
                             "status":false,
-                            "mensagem":"Não foi possível adicionar a presença: "
+                            mensagem:"Não foi possível adicionar a presença: "
                         });
                     }   
                 }
@@ -46,88 +46,82 @@ export default class PresencaCtrl{
                 resposta.status(400).json(
                     {
                         "status":false,
-                        "mensagem":"Informe nomeretamente todos os dados de uma presença conforme documentação da API."
+                        mensagem:"Informe corretamente todos os dados de uma presença conforme documentação da API."
                     }
                 );
             }
         }
     }
-    async consultar(req, res) {
-        res.type("application/json");
-        if (req.method === "GET") {
+    async consultar(requisicao, resposta) {
+        const conexao = await conectar();
+        resposta.type("application/json");
+        if (requisicao.method === "GET") {
+            const presenca = new Presenca();
             try {
-                const conexao = await conectar();
-                const presenca = new Presenca();
+                await conexao.query('BEGIN');
                 const listaPresencas = await presenca.consultar(conexao);
 
-                if (listaPresencas.length > 0) {
-                    res.status(200).json(listaPresencas);
+                if (Array.isArray(listaPresencas)) {
+                    await conexao.query('COMMIT');
+                    resposta.status(200).json(listaPresencas);
                 } else {
-                    res.status(404).json({
-                        status: false,
-                        mensagem: "Nenhum registro de presença encontrado"
-                    });
+                    await conexao.query('ROLLBACK');
+                    resposta.status(500).json({ status: false, mensagem: "Formato inesperado na resposta" });
                 }
-            } catch (erro) {
-                res.status(500).json({
-                    status: false,
-                    mensagem: "Erro ao consultar presenças: " + erro.message
-                });
+            } 
+            catch (e) {
+                await conexao.query('ROLLBACK');
+                throw e
+            }
+            finally {
+                conexao.release();
             }
         } else {
-            res.status(400).json({
+            resposta.status(400).json({
                 status: false,
-                mensagem: "Método não permitido! Use GET"
+                mensagem: "Requisição inválida! Consulte a documentação da API."
             });
         }
     }
 
-    async excluir(req, res) {
-        res.type("application/json");
-        if (req.method === "DELETE") {
-            try {
-                const id = parseInt(req.params.id);
-                
-                if (isNaN(id)) {
-                    res.status(400).json({
-                        status: false,
-                        mensagem: "ID inválido!"
-                    });
-                    return;
-                }
-
-                const conexao = await conectar();
-                await conexao.query("BEGIN");
-
+    async excluir(requisicao, resposta) {
+        const conexao = await conectar();
+        resposta.type("application/json");
+        if (requisicao.method === "DELETE") {
+            const id = parseInt(requisicao.params.id);
+            if(id)
+            {
                 const presenca = new Presenca(id);
-                const resultado = await presenca.excluir(conexao);
-
-                if (resultado) {
-                    await conexao.query("COMMIT");
-                    res.status(200).json({
-                        status: true,
-                        mensagem: "Presença excluída com sucesso!"
-                    });
-                } else {
+                try {
+                    await conexao.query("BEGIN");
+                        if (presenca.excluir(conexao)){
+                            await conexao.query("COMMIT");
+                            resposta.status(200).json({
+                                status: true,
+                                mensagem: "Presença excluída com sucesso!"
+                            });
+                        }
+                        else {
+                            await conexao.query("ROLLBACK");
+                            resposta.status(500).json({
+                                status: false,
+                                mensagem: "Não foi possível excluir a materia: " + erro.message
+                            });
+                        }
+                } catch (erro) {
                     await conexao.query("ROLLBACK");
-                    res.status(404).json({
+                    resposta.status(500).json({
                         status: false,
-                        mensagem: "Presença não encontrada!"
+                        mensagem: "Erro ao excluir presença: " + erro.message
                     });
+                } finally {
+                    if (conexao) conexao.release();
                 }
-            } catch (erro) {
-                await conexao.query("ROLLBACK");
-                res.status(500).json({
-                    status: false,
-                    mensagem: "Erro ao excluir presença: " + erro.message
-                });
-            } finally {
-                if (conexao) conexao.release();
             }
         } else {
-            res.status(400).json({
+            resposta.status(400).json({
                 status: false,
-                mensagem: "Método não permitido! Use DELETE"
+                mensagem: "Requisição inválida! Consulte a documentação da API."
             });
         }
     }
