@@ -22,13 +22,15 @@ import TelaEvento from './componentes/Telas/TelaEvento';
 import FormCadEvento from './componentes/Telas/Formularios/FormCadEvento';
 import RelatorioEventos from './componentes/Telas/Relatorios/RelatorioEventos';
 import RelatorioAlunos from './componentes/Telas/Relatorios/RelatorioAlunos';
+import TelaLogin from './componentes/Telas/TelaLogin';
 
 function App() {
     return (
         <Router>
             <div className="app-background"> 
                 <Routes>
-                    <Route path="/" element={<TelaMenu />} />
+                    <Route path="/" element={<TelaLogin/>}/>
+                    <Route path="/telaMenu" element={<TelaMenu />} />
                     <Route path="/telaTurma" element={<TelaCadastroTurma />} />
                     <Route path="/cadastroTurma" element={<FormCadTurma />} />
                     <Route path="/telaEscola" element={< TelaCadastroEscola/>}/>
@@ -44,13 +46,9 @@ function App() {
                     <Route path="/telaResponsavel" element={<TelaCadastroResponsavel />} />
                     <Route path="/cadastroResponsavel" element={<FormCadResponsavel />} />
                     <Route path="/relatorioResponsavel" element={<RelatorioResponsaveis/>}/>
-                    <Route path="/relatorioEvento" element={
-                            <RelatorioEventos />
-                       }/>
+                    <Route path="/relatorioEvento" element={<RelatorioEventos />}/>
                     <Route path="/telaEvento" element={<TelaEvento/>}/>
-                    <Route path="/cadastroEvento" element={
-                            <FormCadEvento />
-                        }/>
+                    <Route path="/cadastroEvento" element={<FormCadEvento />}/>
                 </Routes>
             </div>
         </Router>
