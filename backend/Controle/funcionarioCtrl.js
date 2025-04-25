@@ -1,6 +1,6 @@
 //É a classe responsável por traduzir requisições HTTP e produzir respostas HTTP
 import Funcionario from "../Modelo/funcionario.js";
-import conectar from "./Conexao.js";
+import conectar from "../Persistencia/Conexao.js";
 
 export default class FuncionarioCtrl {
 
