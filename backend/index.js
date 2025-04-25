@@ -8,6 +8,7 @@ import rotaMateria from './Rotas/rotaMateria.js';
 import rotaResponsavel from './Rotas/rotaResponsavel.js';
 import rotaAluno from './Rotas/rotaAluno.js';
 import rotaEvento from './Rotas/rotaEvento.js';
+import rotaFuncionario from './Rotas/rotaFuncionario.js';
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use("/materias", rotaMateria);
 app.use("/responsaveis", rotaResponsavel); 
 app.use("/alunos", rotaAluno);
 app.use("/eventos", rotaEvento);
+app.use("/funcionarios",rotaFuncionario);
 
 
 app.get('/teste-conexao', async (req, res) => {
