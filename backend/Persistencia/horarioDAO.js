@@ -62,4 +62,20 @@ export default class HorarioDAO {
         }
         return listaHorario;
     }
+
+    /*async consultarTurmasPorMateria(materiaId, conexao) {
+        let sql = `
+            SELECT t.* 
+            FROM horario h
+            JOIN turma t ON h.hora_turm_cor = t.turm_id
+            WHERE h.hora_mat_nome = ?
+            GROUP BY t.turm_id
+        `;
+        const [linhas] = await conexao.execute(sql, [materiaId]);
+        return linhas.map(linha => new Turma(
+            linha.turm_id,
+            linha.turm_cor,
+            linha.turm_per
+        ));
+    }*/
 }        

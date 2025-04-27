@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Alert, Button } from 'react-bootstrap';
+import { Table, Alert, Button, Spinner } from 'react-bootstrap';
 import PaginaGeral from '../../layouts/PaginaGeral';
 import { Link } from 'react-router-dom';
 
@@ -12,17 +12,20 @@ export default function RelatorioPresenca() {
         async function carregarPresencas() {
             try {
                 const resposta = await fetch('http://localhost:3000/presencas');
+                
                 if (!resposta.ok) {
                     throw new Error('Erro ao carregar presenças');
                 }
+                
                 const dados = await resposta.json();
                 setPresencas(dados);
+                setMensagem('');
             } catch (erro) {
                 setMensagem(erro.message);
             } finally {
                 setCarregando(false);
             }
-        };
+        }
         carregarPresencas();
     }, []);
 
@@ -34,7 +37,7 @@ export default function RelatorioPresenca() {
     return (
         <PaginaGeral>
             <h2 className="text-center mb-4">Relatório de Presenças</h2>
-            
+
             {mensagem && (
                 <Alert variant="danger" className="text-center">
                     {mensagem}
@@ -42,10 +45,13 @@ export default function RelatorioPresenca() {
             )}
 
             {carregando ? (
-                <p className="text-center">Carregando presenças...</p>
+                <div className="text-center">
+                    <Spinner animation="border" />
+                    <p>Carregando presenças...</p>
+                </div>
             ) : presencas.length === 0 ? (
                 <Alert variant="info" className="text-center">
-                    Nenhuma presença registrada ainda.
+                    Nenhuma presença registrada ainda
                 </Alert>
             ) : (
                 <Table striped bordered hover responsive>
@@ -62,7 +68,10 @@ export default function RelatorioPresenca() {
                             <tr key={presenca.id}>
                                 <td>{formatarData(presenca.dataHora)}</td>
                                 <td>{presenca.materia?.nome || 'N/A'}</td>
-                                <td>{presenca.turma?.cor || 'N/A'}</td>
+                                <td>
+                                    {presenca.turma?.cor || 'N/A'}
+                                    <br />
+                                </td>
                                 <td>
                                     {presenca.alunosPresentes
                                         ?.filter(ap => ap.presente)
@@ -77,7 +86,7 @@ export default function RelatorioPresenca() {
 
             <div className="text-center mt-4">
                 <Button as={Link} to="/cadastroPresenca" variant="primary">
-                    Cadastrar Nova Presença
+                    Nova Presença
                 </Button>
             </div>
         </PaginaGeral>

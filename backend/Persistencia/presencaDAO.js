@@ -41,6 +41,18 @@ export default class PresencaDAO{
 
     async incluir(presenca, conexao){
         try{
+            /*
+            const [validacao] = await conexao.execute(
+                `SELECT 1 FROM horario 
+                 WHERE hora_mat_nome = ? AND hora_turm_cor = ?`,
+                [presenca.materia.id, presenca.turma.id]
+            );
+    
+            if (validacao.length === 0) {
+                throw new Error('Matéria não oferecida para esta turma');
+            }
+            */
+           
             const sqlPresenca = `INSERT INTO presenca (pre_data_hora, mat_id, turm_id) VALUES (?, ?, ?)`;
             const paramsPresenca = [
                 presenca.dataHora,

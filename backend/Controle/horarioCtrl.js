@@ -2,6 +2,7 @@ import Horario from "../Modelo/horario.js";
 import Turma from "../Modelo/turma.js";
 import Materia from "../Modelo/materia.js"
 import conectar from "../Persistencia/Conexao.js";
+import HorarioDAO from "../Persistencia/horarioDAO.js";
 
 export default class HorarioCtrl {
 
@@ -196,4 +197,31 @@ export default class HorarioCtrl {
         }
     }
 
+    /*async consultarTurmasPorMateria(requisicao, resposta) {
+        resposta.type("application/json");
+        const conexao = await conectar();
+        try {
+            await conexao.query("BEGIN");
+            const materiaId = requisicao.params.id;
+            const dao = new HorarioDAO();
+            const turmas = await dao.consultarTurmasPorMateria(materiaId, conexao);
+            if(Array.isArray(turmas))
+            {
+                await conexao.query("COMMIT");
+                resposta.status(200).json(turmas);
+            }
+            else {
+                await conexao.query("ROLLBACK");
+                resposta.status(500).json({ status: false, mensagem: "Formato inesperado na resposta" });
+            }
+        } catch (erro) {
+            if (conexao) await conexao.query("ROLLBACK");
+            resposta.status(500).json({ status: false, mensagem: "Erro ao consultar horario por turma: " + erro.message });
+        }
+        finally {
+            if (conexao) {
+                conexao.release();
+            }
+        }
+    }*/
 }

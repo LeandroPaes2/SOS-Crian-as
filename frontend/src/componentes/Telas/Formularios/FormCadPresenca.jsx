@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Form, Button, Alert, Spinner, Row, Col, Table } from 'react-bootstrap';
+import { Form, Button, Alert, Spinner, Table, Row, Col } from 'react-bootstrap';
 import PaginaGeral from '../../layouts/PaginaGeral';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -25,7 +25,7 @@ export default function FormCadPresenca() {
                 const dataMaterias = await resMaterias.json();
                 setMaterias(dataMaterias);
                 
-                // Carrega turmas
+                // Carrega todas as turmas
                 const resTurmas = await fetch('http://localhost:3000/turmas');
                 const dataTurmas = await resTurmas.json();
                 setTurmas(dataTurmas);
@@ -45,10 +45,9 @@ export default function FormCadPresenca() {
             async function carregarAlunos() {
                 try {
                     setCarregando(true);
-                    const res = await fetch(`http://localhost:3000/alunos?turma=${selectedTurma}`);
+                    const res = await fetch('http://localhost:3000/alunos');
                     const data = await res.json();
                     
-                    // Inicializa todos como presentes por padrão
                     const presencasIniciais = {};
                     data.forEach(aluno => {
                         presencasIniciais[aluno.numProtocolo] = true;
@@ -144,8 +143,11 @@ export default function FormCadPresenca() {
                             <Form.Label>Turma</Form.Label>
                             <Form.Select
                                 value={selectedTurma}
-                                onChange={(e) => setSelectedTurma(e.target.value)}
-                                disabled={carregando || !selectedMateria}
+                                onChange={(e) => {
+                                    setSelectedTurma(e.target.value);
+                                    setAlunos([]);
+                                }}
+                                disabled={carregando}
                                 required
                             >
                                 <option value="">Selecione uma turma</option>
@@ -169,7 +171,7 @@ export default function FormCadPresenca() {
                 {alunos.length > 0 && (
                     <>
                         <h4 className="mt-4 mb-3">Lista de Alunos</h4>
-                        <Table striped bordered hover>
+                        <Table striped bordered hover responsive>
                             <thead>
                                 <tr>
                                     <th>Aluno</th>
