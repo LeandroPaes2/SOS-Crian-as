@@ -30,6 +30,8 @@ import RelatorioFuncionarios from './componentes/Telas/Relatorios/RelatorioFunci
 import TelaCadastroFuncionario from './componentes/Telas/TelaCadastroFuncionario';
 import FormCadFuncionario from './componentes/Telas/Formularios/FormCadFuncionario';
 import RelatorioListaEspera from './componentes/Telas/Relatorios/RelatorioListaEspera';
+import TelaCadastroListaEspera from './componentes/Telas/TelaCadastroListaEspera';
+import FormCadListaEspera from './componentes/Telas/Formularios/FormCadListaEspera';
 
 function App() {
     return (
@@ -58,6 +60,8 @@ function App() {
                     <Route path="/cadastroFuncionario" element={<FormCadFuncionario />} />
                     <Route path="/relatorioFuncionario" element={<RelatorioFuncionarios />} />
                     <Route path="/relatorioListaEspera" element={<RelatorioListaEspera />} />
+                    <Route path='/telaListaEspera' element={<TelaCadastroListaEspera />} />
+                    <Route path="/cadastroListaEspera" element={<FormCadListaEspera />} />
 
                     <Route path="/relatorioEvento" element={
                             <RelatorioEventos />

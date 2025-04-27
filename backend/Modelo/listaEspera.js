@@ -2,7 +2,7 @@ import Responsavel from "./responsavel.js";
 import Escola from "./escola.js";
 import ListaEsperaDAO from "../Persistencia/listaEsperaDAO.js";
 
-export default class ListaEsperaDAO {
+export default class ListaEspera {
     #id;
     #nome;
     #dataNascimento;
