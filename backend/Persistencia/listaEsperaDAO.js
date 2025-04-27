@@ -97,7 +97,7 @@ import conectar from "./Conexao.js";
 
 export default class ListaEsperaDAO {
 
-    constructor() {
+   /* constructor() {
         this.init();
     }
 
@@ -142,7 +142,7 @@ export default class ListaEsperaDAO {
         } catch (e) {
             console.log("Erro ao iniciar banco de dados: " + e.message);
         }
-    }
+    }*/
 
 
 

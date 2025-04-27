@@ -391,15 +391,15 @@ export default class ListaEsperaCtrl {
                     const objResponsavel = new Responsavel(
                         responsavel.cpf,
                         responsavel.nome,
-                        responsavel.telefone,
-                        responsavel.email,
-                        responsavel.parentesco
+                        responsavel.telefone
                     );
     
                     const objEscola = new Escola(
-                        escola.codigo,
+                        escola.id,
                         escola.nome,
-                        escola.endereco
+                        escola.endereco,
+                        escola.telefone,
+                        escola.tipo
                     );
     
                     const listaEspera = new ListaEspera(
@@ -483,15 +483,15 @@ export default class ListaEsperaCtrl {
                     const objResponsavel = new Responsavel(
                         responsavel.cpf,
                         responsavel.nome,
-                        responsavel.telefone,
-                        responsavel.email,
-                        responsavel.parentesco
+                        responsavel.telefone
                     );
     
                     const objEscola = new Escola(
-                        escola.codigo,
+                        escola.id,
                         escola.nome,
-                        escola.endereco
+                        escola.endereco,
+                        escola.telefone,
+                        escola.tipo
                     );
     
                     const listaEspera = new ListaEspera(
