@@ -259,7 +259,7 @@ export default function RelatorioListaEspera() {
     useEffect(() => {
         const buscarListaEspera = async () => {
             try {
-                const response = await fetch("http://localhost:3000/listaEspera");
+                const response = await fetch("http://localhost:3000/listasEspera");
                 if (!response.ok) throw new Error("Erro ao buscar listaEspera");
                 
                 const dados = await response.json();
@@ -276,7 +276,7 @@ export default function RelatorioListaEspera() {
     const excluirListaEspera = async (listaEspera) => {
         if (window.confirm("Deseja realmente excluir a criança " + listaEspera.nome + " da lista de espera?")) {
             try {
-                const response = await fetch("http://localhost:3000/listaEspera/" + listaEspera.id, {
+                const response = await fetch("http://localhost:3000/listasEspera/" + listaEspera.id, {
                     method: "DELETE"
                 });
 

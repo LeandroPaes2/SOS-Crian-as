@@ -33,7 +33,7 @@ app.use("/materias", rotaMateria);
 app.use("/responsaveis", rotaResponsavel); 
 app.use("/alunos", rotaAluno);
 app.use("/funcionarios", rotaFuncionario);
-app.use("/listaEspera", rotaListaEspera);
+app.use("/listasEspera", rotaListaEspera);
 
 
 app.get('/teste-conexao', async (req, res) => {

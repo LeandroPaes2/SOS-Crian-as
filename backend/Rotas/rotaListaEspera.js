@@ -7,10 +7,13 @@ import ListaEsperaCtrl from "../Controle/listaEsperaCtrl.js";
 const listaEspCtrl = new ListaEsperaCtrl();
 const rotaListaEspera = Router();
 
-rotaListaEspera.post("/:numProtocolo", listaEspCtrl.gravar);
+rotaListaEspera.post("/", listaEspCtrl.gravar);
+rotaListaEspera.put("/:id", listaEspCtrl.alterar);
+rotaListaEspera.patch("/:id", listaEspCtrl.alterar);
 rotaListaEspera.delete("/:id", listaEspCtrl.excluir);
 rotaListaEspera.get("/:nome?", listaEspCtrl.consultar);
 rotaListaEspera.get("/",listaEspCtrl.consultar);
+
 
 export default rotaListaEspera;
 

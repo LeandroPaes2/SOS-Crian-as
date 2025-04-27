@@ -93,7 +93,7 @@ export default class LisaEsperaDAO {
 import ListaEspera from "../Modelo/listaEspera.js";
 import Responsavel from "../Modelo/responsavel.js";
 import Escola from "../Modelo/escola.js";
-import conectar from "../Controle/Conexao.js";
+import conectar from "./Conexao.js";
 
 export default class ListaEsperaDAO {
 
@@ -104,24 +104,11 @@ export default class ListaEsperaDAO {
    
     async init() {
         try {
-            /*
-            const sql2="DROP TABLE listaEspera";
-            await conexao.execute(sql2);
-            const sql = `CREATE TABLE IF NOT EXISTS listaEspera (
-                alu_id INT AUTO_INCREMENT PRIMARY KEY,
-                alu_nome VARCHAR(100) NOT NULL,
-                alu_idade INT NOT NULL,
-                alu_responsavel VARCHAR(100) NOT NULL,
-                alu_endereco VARCHAR(255) NOT NULL,
-                alu_telefone VARCHAR(20) NOT NULL,
-                alu_periodoProjeto VARCHAR(50) NOT NULL,
-                alu_periodoEscola VARCHAR(50) NOT NULL
-            );`;
-            */
-            let sql3 = `DROP TABLE listaEspera`;
+           
+                let sql3 = 'DROP TABLE listaEspera';
             let conexao = await conectar();
             await conexao.execute(sql3);
-            sql3 = `CREATE TABLE IF NOT EXISTS listaEspera (
+             sql3 = `CREATE TABLE IF NOT EXISTS listaEspera (
             alu_id INT AUTO_INCREMENT,
             alu_nome VARCHAR(100) NOT NULL,
             alu_data_nascimento DATE NOT NULL,
@@ -140,7 +127,7 @@ export default class ListaEsperaDAO {
 
             -- assumindo que a tabela responsavel tem cpf como chave primária
             CONSTRAINT fk_listaEspera_responsavel FOREIGN KEY (alu_responsavel_cpf) 
-                REFERENCES responsavel(res_cpf)
+                REFERENCES responsavel(resp_cpf)
                 ON UPDATE CASCADE
                 ON DELETE RESTRICT,
 
@@ -156,7 +143,12 @@ export default class ListaEsperaDAO {
             console.log("Erro ao iniciar banco de dados: " + e.message);
         }
     }
+
+
+
     async incluir(listaEspera, conexao) {
+
+       // this.init();
         if (listaEspera instanceof ListaEspera) {
             const sql = `INSERT INTO listaEspera 
             (

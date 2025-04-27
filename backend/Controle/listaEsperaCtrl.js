@@ -349,6 +349,7 @@ export default class ListaEsperaCtrl {
 import ListaEspera from "../Modelo/listaEspera.js";
 import Responsavel from "../Modelo/responsavel.js";
 import Escola from "../Modelo/escola.js";
+import conectar from "./Conexao.js";
 
 export default class ListaEsperaCtrl {
     async gravar(req, res) {
