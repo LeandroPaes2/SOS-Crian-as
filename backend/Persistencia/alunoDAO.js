@@ -30,14 +30,32 @@ export default class AlunoDAO {
             let conexao = await conectar();
             await conexao.execute(sql3);
             sql3 = `CREATE TABLE IF NOT EXISTS aluno (
-        alu_num_protocolo INT AUTO_INCREMENT,
-        alu_nome VARCHAR(100) NOT NULL,
-        alu_data_nascimento DATE NOT NULL,
-        alu_responsavel_cpf VARCHAR(14) NOT NULL,
-        alu_rua VARCHAR(255) NOT NULL,
+            alu_id INT AUTO_INCREMENT,
+            alu_nome VARCHAR(100) NOT NULL,
+            alu_data_nascimento DATE NOT NULL,
+            alu_responsavel_cpf VARCHAR(14) NOT NULL,
+            alu_rua VARCHAR(255) NOT NULL,
+            alu_numero VARCHAR(10) NOT NULL,
+            alu_escola_id INT NOT NULL,
+            alu_telefone VARCHAR(20) NOT NULL,
+            alu_periodo_escola ENUM('Manhã', 'Tarde') NOT NULL,
+            alu_realiza_acompanhamento VARCHAR(200),
+            alu_possui_sindrome VARCHAR(200),
+            alu_descricao VARCHAR(300) NOT NULL,
+            alu_dataInsercao DATE NOT NULL,
+            
+
+
+
+
+
+
+
+        
         alu_bairro VARCHAR(100) NOT NULL,
-        alu_cidade VARCHAR(100) NOT NULL,
         alu_cep VARCHAR(20) NOT NULL,
+
+        
         alu_numero VARCHAR(10) NOT NULL,
         alu_escola_id INT NOT NULL,
         alu_telefone VARCHAR(20) NOT NULL,
@@ -103,15 +121,28 @@ export default class AlunoDAO {
         }
     }
     
-    async consultar(termo, conexao) {
+    async consultar(termo, tipo,conexao) {
+
         let sql = ``;
         let parametros = [];
-        if (parseInt(termo)) {
-            sql = `SELECT * FROM aluno WHERE alu_num_protocolo = ?`;
+        if(tipo==0){
+            sql = `SELECT * FROM aluno WHERE alu_nome = ?`;
             parametros = [termo];
-        } else {
-            sql = `SELECT * FROM aluno WHERE alu_nome LIKE ?`;
-            parametros = ['%' + termo + '%'];
+        }
+        else
+        if(tipo==1){
+            sql = `SELECT * FROM aluno WHERE alu_nome = ?`;
+            parametros = [termo];
+        }
+        else
+        if(tipo==2){
+            sql = `SELECT * FROM aluno WHERE alu_rg = ?`;
+            parametros = [termo];
+        }
+        else{
+            if(tipo==3)
+            sql = `SELECT * FROM aluno WHERE alu_id = ?`;
+            parametros = [termo];
         }
     
         const [registros] = await conexao.execute(sql, parametros);
@@ -119,34 +150,49 @@ export default class AlunoDAO {
     
         for (const registro of registros) {
             // Buscar Responsável pelo CPF
-            const responsavel = new Responsavel();
-            const listaResp = await responsavel.consultar(registro['alu_responsavel_cpf'], conexao);
-            const responsavelCompleto = listaResp[0];  // supondo que venha um array
-    
+            const respon = await responsavel.consultar(registro['alu_responsavel_cpf'], conexao);
+            const responsavel = new Responsavel(respon.cpf,respon.nome,respon.telefone);
+            
+            // Buscar FormularioSaude pelo aluno_id
+            const formularioSaude = null;
+
+
+
+            // Buscar Ficha pelo aluno_id
+            const ficha = null;
+            
+
+
+
+
+
             // Buscar Escola pelo ID
-            const escola = new Escola();
-            const listaEscola = await escola.consultar(registro['alu_escola_id'], conexao);
-            const escolaCompleta = listaEscola[0];  // supondo que venha um array
-    
+            
+            const esco = await escola.consultar(registro['alu_escola_id'], conexao);
+              
+            const escola = new Escola(esco.nome,esco.endereco,esco.telefone,esco.tipo);
             // Agora sim criar o Aluno com os objetos completos
-            const aluno = new Aluno(
-                registro['alu_num_protocolo'],
-                registro['alu_nome'],
-                registro['alu_data_nascimento'],
-                responsavelCompleto,
-                registro['alu_rua'],
-                registro['alu_bairro'],
-                registro['alu_cidade'],
-                registro['alu_cep'],
-                registro['alu_numero'],
-                escolaCompleta,
-                registro['alu_telefone'],
-                registro['alu_periodo_projeto'],
-                registro['alu_periodo_escola'],
-                registro['alu_realiza_acompanhamento'],
-                registro['alu_possui_sindrome'],
-                registro['alu_status']
-            );
+           const aluno = new Aluno(
+            registro['alu_id'],
+            registro['alu_nome'],
+            registro['alu_data_nascimento'],
+            responsavel,
+            registro['alu_rua'],
+            registro['alu_numero'],
+            escola,
+            registro['alu_telefone'],
+            registro['alu_periodo_escola'],
+            registro['alu_realiza_acompanhamento'],
+            registro['alu_possui_sindrome'],
+            registro['alu_descricao'],
+            registro['alu_data_insercao'],
+            registro['rg'],
+            formularioSaude,
+            ficha,
+            registro['alu_data_inclusao_projeto'],
+            registro['alu_status'],
+            registro['alu_periodo_projeto']           
+           )
             listaAluno.push(aluno);
         }
         return listaAluno;
