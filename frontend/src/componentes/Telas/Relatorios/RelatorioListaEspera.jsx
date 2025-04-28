@@ -356,12 +356,12 @@ export default function RelatorioListaEspera() {
                             <tr key={listaEspera.id}>
                                 <td>{listaEspera.id}</td>
                                 <td>{listaEspera.nome}</td>
-                                <td>{listaEspera.responsavel}</td>
+                                <td>{listaEspera.responsavel.nome}</td>
                                 <td>{listaEspera.dataInsercao}</td>
                                 <td>
                                     <Button
                                         as={Link}
-                                        to="/cadastroFuncionario"
+                                        to="/cadastroListaEspera"
                                         state={{
                                             editando: true,
                                             id: listaEspera.id,

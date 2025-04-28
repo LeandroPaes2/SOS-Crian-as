@@ -131,9 +131,7 @@ export default class ListaEsperaCtrl {
                     conexao = await conectar();
                     await conexao.query("BEGIN");
 
-                    const resultado = await listaEspera.alterar(conexao);
-
-                    if (resultado) {
+                    if (listaEspera.alterar(conexao)) {
                         await conexao.query("COMMIT");
                         res.status(200).json({ status: true, mensagem: "Alterado com sucesso na Lista de Espera!" });
                     } else {
@@ -141,12 +139,13 @@ export default class ListaEsperaCtrl {
                         res.status(500).json({ status: false, mensagem: "Erro ao alterar listaEspera." });
                     }
 
-                } catch (erro) {
-                    if (conexao) await conexao.query("ROLLBACK");
-                    res.status(500).json({ status: false, mensagem: "Erro ao alterar listaEspera: " + erro.message });
-                } finally {
-                    if (conexao) conexao.release();
-                }
+                } catch (e) {
+                    await conexao.query('ROLLBACK');
+                    throw e
+                } 
+                finally {
+                    conexao.release();
+                  }
             } else {
                 res.status(400).json({ status: false, mensagem: "Dados incompletos ou inválidos." });
             }
@@ -172,9 +171,7 @@ export default class ListaEsperaCtrl {
                     conexao = await conectar();
                     await conexao.query("BEGIN");
 
-                    const resultado = await listaEspera.excluir(conexao);
-
-                    if (resultado) {
+                    if (listaEspera.excluir(conexao)) {
                         await conexao.query("COMMIT");
                         res.status(200).json({ status: true, mensagem: "Excluído com sucesso da Lista de Espera!" });
                     } else {
@@ -182,12 +179,13 @@ export default class ListaEsperaCtrl {
                         res.status(500).json({ status: false, mensagem: "Erro ao excluir na lista de espera. Verifique se o ID existe." });
                     }
 
-                } catch (erro) {
-                    if (conexao) await conexao.query("ROLLBACK");
-                    res.status(500).json({ status: false, mensagem: "Erro ao excluir listaEspera: " + erro.message });
-                } finally {
-                    if (conexao) conexao.release();
-                }
+                } catch (e) {
+                    await conexao.query('ROLLBACK');
+                    throw e
+                } 
+                finally {
+                    conexao.release();
+                  }
 
             } else {
                 res.status(400).json({ status: false, mensagem: "ID inválido!" });

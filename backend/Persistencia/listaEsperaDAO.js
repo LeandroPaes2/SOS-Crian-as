@@ -139,7 +139,7 @@ export default class ListaEsperaDAO {
     async excluir(listaEspera, conexao) {
         if (listaEspera instanceof ListaEspera) {
             const sql = `DELETE FROM listaEspera WHERE alu_id = ?`;
-            const parametros = [listaEspera.numProtocolo];
+            const parametros = [listaEspera.id];
             await conexao.execute(sql, parametros);
         }
     }
