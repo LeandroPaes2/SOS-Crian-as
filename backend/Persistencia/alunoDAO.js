@@ -59,10 +59,10 @@ export default class AlunoDAO {
         alu_numero VARCHAR(10) NOT NULL,
         alu_escola_id INT NOT NULL,
         alu_telefone VARCHAR(20) NOT NULL,
-        alu_periodo_projeto ENUM('Manhã', 'Tarde', 'Integral') NOT NULL,
-        alu_periodo_escola ENUM('Manhã', 'Tarde', 'Noite', 'Integral') NOT NULL,
-        alu_realiza_acompanhamento BOOLEAN NOT NULL,
-        alu_possui_sindrome BOOLEAN NOT NULL,
+        alu_periodo_projeto ENUM('Manhã', 'Tarde' ) NOT NULL,
+        alu_periodo_escola ENUM('Manhã', 'Tarde') NOT NULL,
+        alu_realiza_acompanhamento VARCHAR(200),
+        alu_possui_sindrome VARCHAR(200),
         alu_status INT NOT NULL,
 
     CONSTRAINT pk_aluno PRIMARY KEY (alu_num_protocolo),
@@ -73,13 +73,12 @@ export default class AlunoDAO {
         ON UPDATE CASCADE
         ON DELETE RESTRICT,
 
-    -- assumindo que escola tem esc_id como chave primária
     CONSTRAINT fk_aluno_escola FOREIGN KEY (alu_escola_id) 
         REFERENCES escola(esc_id)
         ON UPDATE CASCADE
         ON DELETE RESTRICT,
 
-    CONSTRAINT chk_aluno_status CHECK (alu_status IN (0,1,2))
+    CONSTRAINT chk_aluno_status CHECK (alu_status IN (0,1))
 );
 `;
             await conexao.execute(sql3);
