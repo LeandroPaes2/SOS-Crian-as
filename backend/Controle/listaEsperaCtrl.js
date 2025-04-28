@@ -62,9 +62,7 @@ export default class ListaEsperaCtrl {
                     conexao = await conectar();
                     await conexao.query("BEGIN");
 
-                    const resultado = await listaEspera.incluir(conexao);
-
-                    if (resultado) {
+                    if (listaEspera.incluir(conexao)) {
                         await conexao.query("COMMIT");
                         res.status(200).json({ status: true, mensagem: "Cadastrado com sucesso na Lista de Espera!" });
                     } else {
@@ -72,11 +70,12 @@ export default class ListaEsperaCtrl {
                         res.status(500).json({ status: false, mensagem: "Erro ao cadastrar listaEspera." });
                     }
 
-                } catch (erro) {
-                    if (conexao) await conexao.query("ROLLBACK");
-                    res.status(500).json({ status: false, mensagem: "Erro interno: " + erro.message });
-                } finally {
-                    if (conexao) conexao.release();
+                } catch (e) {
+                    await conexao.query('ROLLBACK');
+                    throw e
+                }
+                finally {
+                    conexao.release();
                 }
             } else 
                 res.status(400).json({ status: false, mensagem: "Dados incompletos ou inválidos. Verifique a requisição." });

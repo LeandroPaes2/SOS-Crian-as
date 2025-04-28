@@ -3,11 +3,11 @@
 import ListaEspera from "../Modelo/listaEspera.js";
 import Responsavel from "../Modelo/responsavel.js";
 import Escola from "../Modelo/escola.js";
-import conectar from "./Conexao.js";
+//import conectar from "./Conexao.js";
 
 export default class ListaEsperaDAO {
 
-   /* constructor() {
+ /*   constructor() {
         this.init();
     }
 
@@ -15,11 +15,11 @@ export default class ListaEsperaDAO {
     async init() {
         try {
            
-                let sql3 = 'DROP TABLE listaEspera';
+             //   let sql3 = 'DROP TABLE listaEspera';
             let conexao = await conectar();
-            await conexao.execute(sql3);
-             sql3 = `CREATE TABLE IF NOT EXISTS listaEspera (
-            alu_id INT AUTO_INCREMENT,
+           // await conexao.execute(sql3);
+            let sql3 = `CREATE TABLE IF NOT EXISTS listaEspera (
+            alu_id INT AUTO_INCREMENT NOT NULL,
             alu_nome VARCHAR(100) NOT NULL,
             alu_data_nascimento DATE NOT NULL,
             alu_responsavel_cpf VARCHAR(14) NOT NULL,
@@ -60,28 +60,33 @@ export default class ListaEsperaDAO {
 
        // this.init();
         if (listaEspera instanceof ListaEspera) {
-            const sql = `INSERT INTO listaEspera 
-            (
-                alu_nome, alu_data_nascimento, alu_responsavel_cpf, alu_rua, alu_numero, alu_escola_id, alu_telefone, 
-                alu_periodo_escola, alu_realiza_acompanhamento, alu_possui_sindrome, alu_descricao, alu_dataInsercao
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    
-            const parametros = [
-                listaEspera.nome,
-                listaEspera.dataNascimento,
-                listaEspera.responsavel.cpf,
-                listaEspera.rua,
-                listaEspera.numero,
-                listaEspera.escola.id,
-                listaEspera.telefone,
-                listaEspera.periodoEscola,
-                listaEspera.realizaAcompanhamento,
-                listaEspera.possuiSindrome,
-                listaEspera.descricao, 
-                listaEspera.dataInsercao
-            ];
-            await conexao.execute(sql, parametros);
+            try {
+                const sql = `INSERT INTO listaEspera 
+                (
+                    alu_nome, alu_data_nascimento, alu_responsavel_cpf, alu_rua, alu_numero, alu_escola_id, alu_telefone, 
+                    alu_periodo_escola, alu_realiza_acompanhamento, alu_possui_sindrome, alu_descricao, alu_dataInsercao
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        
+                const parametros = [
+                    listaEspera.nome,
+                    listaEspera.dataNascimento,
+                    listaEspera.responsavel.cpf,
+                    listaEspera.rua,
+                    listaEspera.numero,
+                    listaEspera.escola.id,
+                    listaEspera.telefone,
+                    listaEspera.periodoEscola,
+                    listaEspera.realizaAcompanhamento,
+                    listaEspera.possuiSindrome,
+                    listaEspera.descricao, 
+                    listaEspera.dataInsercao
+                ];
+                await conexao.execute(sql, parametros);
+                //   await conexao.release();
+            } catch (e) {
+                throw new Error("Erro ao incluir na lista de espera: " + e.message);
+            }
         }
     }
     
