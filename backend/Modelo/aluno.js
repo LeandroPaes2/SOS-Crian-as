@@ -1,8 +1,20 @@
 import AlunoDAO from "../Persistencia/alunoDAO.js";
 
-import ListaEspera from "./listaEspera.js";
-
-export default class Aluno extends ListaEspera {
+export default class Aluno {
+    #id;
+    #nome;
+    #dataNascimento;
+    #responsavel;
+    #rua;
+    #bairro
+    #numero;
+    #escola;
+    #telefone;
+    #periodoEscola;
+    #realizaAcompanhamento;
+    #possuiSindrome;
+    #descricao;
+    #dataInsercaoListaEspera;
     #rg
     #formularioSaude;
     #ficha;
@@ -11,40 +23,134 @@ export default class Aluno extends ListaEspera {
     #PeriodoProjeto;
     #cep;
 
-    constructor(id=0, nome="", dataNascimento="", responsavel={},rua="",numero="", escola={} ,telefone="",periodoEscola="", realizaAcompanhamento="", possuiSindrome="", descricao="", dataInsercao="",rg="" ,formularioSaude={}, ficha={}, dataInclusaoProjeto="", status="", PeriodoProjeto="") {
-       super(id, nome, dataNascimento, responsavel, rua, numero, escola, telefone, periodoEscola, realizaAcompanhamento, possuiSindrome, descricao, dataInsercao);
-       this.#rg = rg;
-       this.#formularioSaude = formularioSaude;
-       this.#ficha = ficha;
-       this.#dataInclusaoProjeto = dataInclusaoProjeto;
-       this.#status = status;
-       this.#PeriodoProjeto = PeriodoProjeto;
+    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", dataInsercao = "", rg = "", formularioSaude = {}, ficha = {}, dataInclusaoProjeto = "", status = "", PeriodoProjeto = "") {
+        this.#id = id;
+        this.#nome = nome;
+        this.#dataNascimento = dataNascimento;
+        this.#responsavel = responsavel;
+        this.#rua = rua;
+        this.#bairro = bairro
+        this.#numero = numero;
+        this.#escola = escola;
+        this.#telefone = telefone;
+        this.#periodoEscola = periodoEscola;
+        this.#realizaAcompanhamento = realizaAcompanhamento;
+        this.#possuiSindrome = possuiSindrome;
+        this.#descricao = descricao;
+        this.#dataInsercaoListaEspera = dataInsercao;
+        this.#rg = rg;
+        this.#formularioSaude = formularioSaude;
+        this.#ficha = ficha;
+        this.#dataInclusaoProjeto = dataInclusaoProjeto;
+        this.#status = status;
+        this.#PeriodoProjeto = PeriodoProjeto;
+        this.#cep = cep;
     }
 
-    get rg() { return this.#rg; } // get privado
-    set rg(novoRg) { this.#rg = novoRg; } // set privado
+    get id() { return this.#id; }
+    set id(novoId) { this.#id = novoId; }
 
 
-    get formularioSaude() { return this.#formularioSaude; } // get privado
-    set formularioSaude(novoFormularioSaude) { this.#formularioSaude = novoFormularioSaude; } // set privado
+    get nome() { return this.#nome; }
+    set nome(novoNome) { this.#nome = novoNome; }
 
 
-    get ficha() { return this.#ficha; } // get privado
-    set ficha(novoFicha) { this.#ficha = novoFicha; } // set privado
+    get dataNascimento() { return this.#dataNascimento; }
+    set dataNascimento(novoDataNascimento) { this.#dataNascimento = novoDataNascimento; }
 
 
-    get dataInclusaoProjeto() { return this.#dataInclusaoProjeto; } // get privado
-    set dataInclusaoProjeto(novoDataInclusaoProjeto) { this.#dataInclusaoProjeto = novoDataInclusaoProjeto; } // set privado
+    get responsavel() { return this.#responsavel.toJSON(); }
+    set responsavel(novoResponsavel) {
+        if (novoResponsavel instanceof Responsavel)
+            this.#responsavel = novoResponsavel;
+    }
 
 
-    get status() { return this.#status; } // get privado
-    set status(novoStatus) { this.#status = novoStatus; } // set privado
+    get rua() { return this.#rua; }
+    set rua(novoRua) { this.#rua = novoRua; }
 
 
-    get PeriodoProjeto() { return this.#PeriodoProjeto; } // get privado
-    set PeriodoProjeto(novoPeriodoProjeto) { this.#PeriodoProjeto = novoPeriodoProjeto; } // set privado
+    get bairro() { return this.#bairro; }
+    set bairro(novoBairro) { this.#bairro = novoBairro; }
 
-  
+
+    get numero() { return this.#numero; }
+    set numero(novoNumero) { this.#numero = novoNumero; }
+
+
+    get escola() { return this.#escola.toJSON(); }
+    set escola(novaEscola) {
+        if (novaEscola instanceof Escola)
+            this.#escola = novaEscola;
+    }
+
+
+    get telefone() { return this.#telefone; }
+    set telefone(novoTelefone) { this.#telefone = novoTelefone; }
+
+
+    get periodoEscola() { return this.#periodoEscola; }
+    set periodoEscola(novoPeriodoEscola) { this.#periodoEscola = novoPeriodoEscola; }
+
+
+    get realizaAcompanhamento() { return this.#realizaAcompanhamento; }
+    set realizaAcompanhamento(novoRealizaAcompanhamento) { this.#realizaAcompanhamento = novoRealizaAcompanhamento; }
+
+
+    get possuiSindrome() { return this.#possuiSindrome; }
+    set possuiSindrome(novoPossuiSindrome) { this.#possuiSindrome = novoPossuiSindrome; }
+
+
+    get descricao() { return this.#descricao; }
+    set descricao(novaDescricao) { this.#descricao = novaDescricao; }
+
+
+    get dataInsercaoListaEspera() { return this.#dataInsercaoListaEspera; }
+    set dataInsercaoListaEspera(novoDataInsercaoListaEspera) { this.#dataInsercaoListaEspera = novoDataInsercaoListaEspera; }
+
+    get rg() { return this.#rg; }
+    set rg(novoRg) { this.#rg = novoRg; }
+
+
+    get formularioSaude() { return this.#formularioSaude.toJSON(); }
+    set formularioSaude(novoFormularioSaude) { 
+
+        this.#formularioSaude = novoFormularioSaude;
+
+        /*
+        if(novoFormularioSaude instanceof FormularioSaude)
+        this.#formularioSaude = novoFormularioSaude;*/
+    
+    
+    }
+
+
+    get ficha() { return this.#ficha.toJSON(); }     /// ainda nn existe
+    set ficha(novoFicha) { 
+        this.#ficha = novoFicha; 
+
+        /*
+        if(novoFicha instanceof Ficha)
+            this.#ficha = novoFicha; 
+        */
+    }
+
+
+    get dataInclusaoProjeto() { return this.#dataInclusaoProjeto; }
+    set dataInclusaoProjeto(novoDataInclusaoProjeto) { this.#dataInclusaoProjeto = novoDataInclusaoProjeto; }
+
+
+    get status() { return this.#status; }
+    set status(novoStatus) { this.#status = novoStatus; }
+
+
+    get PeriodoProjeto() { return this.#PeriodoProjeto; }
+    set PeriodoProjeto(novoPeriodoProjeto) { this.#PeriodoProjeto = novoPeriodoProjeto; }
+
+    get cep() { return this.#cep; }
+    set cep(novoCep) { this.#cep = novoCep; }
+
+
     toJSON() {
         return {
             id: this.getid(),
@@ -88,9 +194,9 @@ export default class Aluno extends ListaEspera {
     }
 
 
-    consultar(termo,tipo,conexao) {
+    consultar(termo, tipo, conexao) {
         const alunoDAO = new AlunoDAO();
-        return alunoDAO.consultar(termo,tipo,conexao);
+        return alunoDAO.consultar(termo, tipo, conexao);
     }
 
 }

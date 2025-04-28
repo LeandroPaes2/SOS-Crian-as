@@ -13,6 +13,7 @@ export default class AlunoCtrl {
                     dataNascimento,
                     responsavel,
                     rua,
+                    bairro,
                     numero,
                     escola,
                     telefone,
@@ -20,13 +21,14 @@ export default class AlunoCtrl {
                     realizaAcompanhamento,
                     possuiSindrome,
                     descricao,
-                    dataInsercao,
+                    dataInsercaoListaEspera,
                     rg,
                     formularioSaude,
                     dataInclusaoProjeto,
                     status,
                     PeriodoProjeto,
-                    ficha
+                    ficha,
+                    cep
                 } = req.body;
         
                 // Validação de campos obrigatórios (inclusive os objetos filhos)
@@ -40,8 +42,8 @@ export default class AlunoCtrl {
                 telefone && periodoEscola &&
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
-                descricao && dataInsercao &&
-                rg && formularioSaude !== undefined && ficha !== undefined && dataInclusaoProjeto && status != 0 && PeriodoProjeto;
+                descricao && dataInsercaoListaEspera &&
+                rg && formularioSaude !== undefined && ficha !== undefined && dataInclusaoProjeto && status != 0 && PeriodoProjeto && cep && bairro;
                 if (dadosValidos) {
                     let conexao;
                     try {
@@ -58,6 +60,17 @@ export default class AlunoCtrl {
                             escola.nome,
                             escola.endereco
                         );
+
+
+                        const objFormularioSaude = null; //gambiarra pra rodar por enquanto
+
+
+                        /*
+                        const objFormularioSaude = new FormularioSaude(
+                            formularioSaude.id,
+                            // RESTO DOS ATRIBUTOS
+                        );
+                        */
         
                         const aluno = new Aluno(
                             id,
@@ -65,6 +78,7 @@ export default class AlunoCtrl {
                             dataNascimento,
                             objResponsavel,
                             rua,
+                            bairro,
                             numero,
                             objEscola,
                             telefone,
@@ -72,13 +86,14 @@ export default class AlunoCtrl {
                             realizaAcompanhamento,
                             possuiSindrome,
                             descricao,
-                            dataInsercao,
+                            dataInsercaoListaEspera,
                             rg,
-                            formularioSaude,
+                            objFormularioSaude,
                             ficha,
                             dataInclusaoProjeto,
                             status,
-                            PeriodoProjeto
+                            PeriodoProjeto,
+                            cep
                         );
         
                         conexao = await conectar();
@@ -118,6 +133,7 @@ export default class AlunoCtrl {
                     dataNascimento,
                     responsavel,
                     rua,
+                    bairro,
                     numero,
                     escola,
                     telefone,
@@ -125,13 +141,14 @@ export default class AlunoCtrl {
                     realizaAcompanhamento,
                     possuiSindrome,
                     descricao,
-                    dataInsercao,
+                    dataInsercaoListaEspera,
                     rg,
                     formularioSaude,
-                    ficha,
                     dataInclusaoProjeto,
                     status,
-                    PeriodoProjeto
+                    PeriodoProjeto,
+                    ficha,
+                    cep
                 } = req.body;
         
                 const dadosValidos=
@@ -144,8 +161,8 @@ export default class AlunoCtrl {
                 telefone && periodoEscola &&
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
-                descricao && dataInsercao &&
-                rg && formularioSaude !== undefined && ficha !== undefined && dataInclusaoProjeto && status != 0 && PeriodoProjeto;
+                descricao && dataInsercaoListaEspera &&
+                rg && formularioSaude !== undefined && ficha !== undefined && dataInclusaoProjeto && status != 0 && PeriodoProjeto && cep && bairro;
         
                 if (dadosValidos) {
                     let conexao;
@@ -163,6 +180,19 @@ export default class AlunoCtrl {
                             escola.nome,
                             escola.endereco
                         );
+
+                        
+                        const objFormularioSaude = null; //gambiarra pra rodar por enquanto
+
+
+                        /*
+                        const objFormularioSaude = new FormularioSaude(
+                            formularioSaude.id,
+                            // RESTO DOS ATRIBUTOS
+                        );
+                        */
+
+
         
                         const aluno = new Aluno(
                             id,
@@ -170,6 +200,7 @@ export default class AlunoCtrl {
                             dataNascimento,
                             objResponsavel,
                             rua,
+                            bairro,
                             numero,
                             objEscola,
                             telefone,
@@ -177,13 +208,14 @@ export default class AlunoCtrl {
                             realizaAcompanhamento,
                             possuiSindrome,
                             descricao,
-                            dataInsercao,
+                            dataInsercaoListaEspera,
                             rg,
-                            formularioSaude,
+                            objFormularioSaude,
                             ficha,
                             dataInclusaoProjeto,
                             status,
-                            PeriodoProjeto
+                            PeriodoProjeto,
+                            cep
                         );
         
                         conexao = await conectar();
