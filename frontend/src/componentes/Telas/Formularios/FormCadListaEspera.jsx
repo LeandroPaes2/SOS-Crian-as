@@ -1189,7 +1189,7 @@ export default function FormCadListaEspera() {
 
         return true;
     }
-
+/*
     async function buscarResponsavel(nomeResponsavel, cpfResponsavel) {
         try {
             const resposta = await fetch(`http://localhost:3000/responsaveis?nome=${encodeURIComponent(nomeResponsavel)}`);
@@ -1211,7 +1211,43 @@ export default function FormCadListaEspera() {
             console.error("Erro ao buscar responsável:", erro);
             setMensagem(erro.message);
         }
-    }
+    }*/
+
+
+        async function buscarResponsavel(nomeResponsavel, cpfResponsavel) {
+            try {
+                const resposta = await fetch(`http://localhost:3000/responsaveis?nome=${encodeURIComponent(nomeResponsavel)}`);
+                const listaResponsaveis = await resposta.json();
+        
+                if (listaResponsaveis.length === 0) {
+                    throw new Error('Nenhum responsável encontrado com esse nome.');
+                }
+        
+                const responsavelCorreto = listaResponsaveis.find(r => r.cpf === cpfResponsavel);
+        
+                if (!responsavelCorreto) {
+                    throw new Error('Nenhum responsável encontrado com o CPF informado.');
+                }
+        
+                // Aqui preenche automaticamente o telefone
+                setListaEspera(prev => ({
+                    ...prev,
+                    responsavel: {
+                        ...prev.responsavel,
+                        cpf: responsavelCorreto.cpf,
+                        nome: responsavelCorreto.nome,
+                        telefone: responsavelCorreto.telefone
+                    }
+                }));
+        
+                setMensagem('Responsável encontrado com sucesso!');
+        
+            } catch (erro) {
+                console.error("Erro ao buscar responsável:", erro);
+                setMensagem(erro.message);
+            }
+        }
+        
 
     const handleSubmit = async (evento) => {
         evento.preventDefault();
@@ -1242,15 +1278,12 @@ export default function FormCadListaEspera() {
             dataInsercao: editando ? listaEspera.dataInsercao : dataFormatada
         };
 
-        const url = editando
-            ? `http://localhost:3000/listasEspera/${novaListaEspera.id}`
-            : "http://localhost:3000/listasEspera";
-
+        const url = editando ? `http://localhost:3000/listasEspera/${novaListaEspera.id}` : "http://localhost:3000/listasEspera";
         const method = editando ? "PUT" : "POST";
 
         try {
             const response = await fetch(url, {
-                method,
+                method: method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(novaListaEspera)
             });
