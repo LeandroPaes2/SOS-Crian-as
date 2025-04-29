@@ -18,12 +18,12 @@ export default class Aluno {
     #rg
     #formularioSaude;
     #ficha;
-    #dataInclusaoProjeto;
+    #dataInsercaoProjeto;
     #status;
-    #PeriodoProjeto;
+    #periodoProjeto;
     #cep;
 
-    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", dataInsercao = "", rg = "", formularioSaude = {}, ficha = {}, dataInclusaoProjeto = "", status = "", PeriodoProjeto = "") {
+    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", dataInsercao = "", rg = "", formularioSaude = {}, ficha = {}, dataInsercaoProjeto = "", status = "", periodoProjeto = "") {
         this.#id = id;
         this.#nome = nome;
         this.#dataNascimento = dataNascimento;
@@ -41,9 +41,9 @@ export default class Aluno {
         this.#rg = rg;
         this.#formularioSaude = formularioSaude;
         this.#ficha = ficha;
-        this.#dataInclusaoProjeto = dataInclusaoProjeto;
+        this.#dataInsercaoProjeto = dataInsercaoProjeto;
         this.#status = status;
-        this.#PeriodoProjeto = PeriodoProjeto;
+        this.#periodoProjeto = periodoProjeto;
         this.#cep = cep;
     }
 
@@ -136,16 +136,16 @@ export default class Aluno {
     }
 
 
-    get dataInclusaoProjeto() { return this.#dataInclusaoProjeto; }
-    set dataInclusaoProjeto(novoDataInclusaoProjeto) { this.#dataInclusaoProjeto = novoDataInclusaoProjeto; }
+    get dataInsercaoProjeto() { return this.#dataInsercaoProjeto; }
+    set dataInsercaoProjeto(novoDataInsercaoProjeto) { this.#dataInsercaoProjeto = novoDataInsercaoProjeto; }
 
 
     get status() { return this.#status; }
     set status(novoStatus) { this.#status = novoStatus; }
 
 
-    get PeriodoProjeto() { return this.#PeriodoProjeto; }
-    set PeriodoProjeto(novoPeriodoProjeto) { this.#PeriodoProjeto = novoPeriodoProjeto; }
+    get periodoProjeto() { return this.#periodoProjeto; }
+    set periodoProjeto(novoperiodoProjeto) { this.#periodoProjeto = novoperiodoProjeto; }
 
     get cep() { return this.#cep; }
     set cep(novoCep) { this.#cep = novoCep; }
@@ -169,9 +169,9 @@ export default class Aluno {
             rg: this.#rg,
             formularioSaude: this.#formularioSaude,
             ficha: this.#ficha,
-            dataInclusaoProjeto: this.#dataInclusaoProjeto,
+            dataInsercaoProjeto: this.#dataInsercaoProjeto,
             status: this.#status,
-            PeriodoProjeto: this.#PeriodoProjeto
+            periodoProjeto: this.#periodoProjeto
         };
     }
 

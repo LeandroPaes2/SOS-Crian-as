@@ -24,9 +24,9 @@ export default class AlunoCtrl {
                     dataInsercaoListaEspera,
                     rg,
                     formularioSaude,
-                    dataInclusaoProjeto,
+                    dataInsercaoProjeto,
                     status,
-                    PeriodoProjeto,
+                    periodoProjeto,
                     ficha,
                     cep
                 } = req.body;
@@ -43,7 +43,7 @@ export default class AlunoCtrl {
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
                 descricao && dataInsercaoListaEspera &&
-                rg && formularioSaude !== undefined && ficha !== undefined && dataInclusaoProjeto && status != 0 && PeriodoProjeto && cep && bairro;
+                rg && formularioSaude !== undefined && ficha !== undefined && dataInsercaoProjeto && status != 0 && periodoProjeto && cep && bairro;
                 if (dadosValidos) {
                     let conexao;
                     try {
@@ -90,9 +90,9 @@ export default class AlunoCtrl {
                             rg,
                             objFormularioSaude,
                             ficha,
-                            dataInclusaoProjeto,
+                            dataInsercaoProjeto,
                             status,
-                            PeriodoProjeto,
+                            periodoProjeto,
                             cep
                         );
         
@@ -144,9 +144,9 @@ export default class AlunoCtrl {
                     dataInsercaoListaEspera,
                     rg,
                     formularioSaude,
-                    dataInclusaoProjeto,
+                    dataInsercaoProjeto,
                     status,
-                    PeriodoProjeto,
+                    periodoProjeto,
                     ficha,
                     cep
                 } = req.body;
@@ -162,7 +162,7 @@ export default class AlunoCtrl {
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
                 descricao && dataInsercaoListaEspera &&
-                rg && formularioSaude !== undefined && ficha !== undefined && dataInclusaoProjeto && status != 0 && PeriodoProjeto && cep && bairro;
+                rg && formularioSaude !== undefined && ficha !== undefined && dataInsercaoProjeto && status != 0 && periodoProjeto && cep && bairro;
         
                 if (dadosValidos) {
                     let conexao;
@@ -212,9 +212,9 @@ export default class AlunoCtrl {
                             rg,
                             objFormularioSaude,
                             ficha,
-                            dataInclusaoProjeto,
+                            dataInsercaoProjeto,
                             status,
-                            PeriodoProjeto,
+                            periodoProjeto,
                             cep
                         );
         
