@@ -1,10 +1,20 @@
 import EscolaDAO from "../Persistencia/escolaDAO.js";
 
 export default class Escola {
+    #id
     #nome;
     #endereco;
     #telefone;
-    #tipo; // tipo de escola: pública, privada, filantrópica
+    #tipo; 
+
+
+    get id(){
+        return this.#id;
+    }
+
+    set id(novoId){
+        this.#id = novoId;
+    }
 
     get nome() {
         return this.#nome;
@@ -38,7 +48,8 @@ export default class Escola {
         this.#tipo = novoTipo;
     }
 
-    constructor(nome = "", endereco = "", telefone = "", tipo = "") {
+    constructor(id = 0,nome = "", endereco = "", telefone = "", tipo = "") {
+        this.#id = id;
         this.#nome = nome;
         this.#endereco = endereco;
         this.#telefone = telefone;
@@ -47,6 +58,7 @@ export default class Escola {
 
     toJSON() {
         return {
+            "id": this.#id,
             "nome": this.#nome,
             "endereco": this.#endereco,
             "telefone": this.#telefone,
@@ -54,23 +66,23 @@ export default class Escola {
         };
     }
 
-    async incluir() {
+    async incluir(conexao) {
         const escolaDAO = new EscolaDAO();
-        await escolaDAO.incluir(this);
+        return await escolaDAO.incluir(this, conexao);
     }
 
-    async consultar(termo) {
+    async consultar(termo, conexao) {
         const escolaDAO = new EscolaDAO();
-        return await escolaDAO.consultar(termo);
+        return await escolaDAO.consultar(termo, conexao);
     }
 
-    async excluir() {
+    async excluir(conexao) {
         const escolaDAO = new EscolaDAO();
-        await escolaDAO.excluir(this);
+        return await escolaDAO.excluir(this, conexao);
     }
 
-    async alterar() {
+    async alterar(conexao) {
         const escolaDAO = new EscolaDAO();
-        await escolaDAO.alterar(this);
+        return await escolaDAO.alterar(this, conexao);
     }
 }

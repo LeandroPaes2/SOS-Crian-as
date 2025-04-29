@@ -6,11 +6,11 @@ import "../css/telaEscola.css";
 export default function TelaCadastroEscola(props){
 
     return(
-        <div>
+        <div className="topo">
             <PaginaGeral>
                 <br/>
                 <Alert className = "alert-custom text-center mt-4 mb-4" variant="dark">
-                    <h2>
+                    <h2 className="titulo-alert">
                         Escolas
                     </h2>
                 </Alert>

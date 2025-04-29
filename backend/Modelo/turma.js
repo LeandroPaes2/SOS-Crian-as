@@ -1,12 +1,18 @@
 import TurmaDAO from "../Persistencia/turmaDAO.js";
-import Aluno from "./aluno.js";
 
 export default class Turma{
-    //atributos privados
+    #id;
     #cor;
     #periodo;
-    //#aluno
 
+
+    get id(){
+        return this.#id;
+    }
+
+    set id(novoId){    
+        this.#id = novoId;
+    }
 
     get cor(){
         return this.#cor;
@@ -24,51 +30,39 @@ export default class Turma{
         this.#periodo=novoPeriodo;
     }
 
-    /*get categoria(){
-        return this.#aluno
-    }
-
-    set categoria(novaCategoria){
-        if (novoAluno instanceof Aluno){
-            this.#aluno = novoAluno;
-        }
-    }*/
-
-    //construtor (criador de um produto)
-    constructor(cor="", periodo=""){
+    
+    constructor(id=0, cor="", periodo=""){
+        this.#id=id;
         this.#cor=cor;
         this.#periodo=periodo;
     }
 
-    //override do método toJSON
-    //o método toJSON é chamado automaticamente quando um produto
-    //precisar ser convertido no formato JSON
     toJSON(){
         return {
+            "id":this.#id,
             "cor":this.#cor,
             "periodo":this.#periodo
         }
     }
 
-    async incluir(){
-        //instanciar a camada de persistencia do produto
+    async incluir(conexao){
         const turmDAO = new TurmaDAO();
-        await turmDAO.incluir(this); //this referência a si mesmo
+        return await turmDAO.incluir(this, conexao); 
     }
 
-    async consultar(termo){
+    async consultar(termo, conexao){
         const turmDAO = new TurmaDAO();
-        return await turmDAO.consultar(termo);
+        return await turmDAO.consultar(termo, conexao);
     }
 
-    async excluir(){
+    async excluir(conexao){
         const turmDAO = new TurmaDAO();
-        await turmDAO.excluir(this);
+        return await turmDAO.excluir(this, conexao);
     }
 
-    async alterar(){
+    async alterar(conexao){
         const turmDAO = new TurmaDAO();
-        await turmDAO.alterar(this);
+       return await turmDAO.alterar(this, conexao);
     }
 }
 

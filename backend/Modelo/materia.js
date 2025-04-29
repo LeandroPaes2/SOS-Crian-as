@@ -2,9 +2,17 @@ import MateriaDAO from "../Persistencia/materiaDAO.js";
 
 export default class Materia{
     
+    #id;
     #nome;
     #descricao;
 
+    get id() {
+        return this.#id;
+    }
+
+    set id(novoId) {
+        this.#id = novoId;
+    }
 
     get nome(){
         return this.#nome;
@@ -22,35 +30,37 @@ export default class Materia{
         this.#descricao=novadescricao;
     }
 
-    constructor(nome="", descricao=""){
-        this.#nome=nome;
-        this.#descricao=descricao;
+    constructor(id = "", nome = "", descricao = ""){
+        this.#id = id;
+        this.#nome = nome;
+        this.#descricao = descricao;
     }
 
     toJSON(){
         return {
-            "nome":this.#nome,
-            "descricao":this.#descricao
+            "id": this.#id,
+            "nome": this.#nome,
+            "descricao": this.#descricao
         }
     }
 
-    async incluir(){
+    async incluir(conexao){
         const materiaDAO = new MateriaDAO();
-        await materiaDAO.incluir(this);
+        await materiaDAO.incluir(this, conexao);
     }
 
-    async consultar(termo){
+    async consultar(termo, conexao){
         const materiaDAO = new MateriaDAO();
-        return await materiaDAO.consultar(termo);
+        return await materiaDAO.consultar(termo, conexao);
     }
 
-    async excluir(){
+    async excluir(conexao){
         const materiaDAO = new MateriaDAO();
-        await materiaDAO.excluir(this);
+        await materiaDAO.excluir(this, conexao);
     }
 
-    async alterar(){
+    async alterar(conexao){
         const materiaDAO = new MateriaDAO();
-        await materiaDAO.alterar(this);
+        await materiaDAO.alterar(this, conexao);
     }
 }

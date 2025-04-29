@@ -7,6 +7,7 @@ import rotaEscola from './Rotas/rotaEscola.js';
 import rotaMateria from './Rotas/rotaMateria.js';
 import rotaResponsavel from './Rotas/rotaResponsavel.js';
 import rotaAluno from './Rotas/rotaAluno.js';
+import rotaHorario from './Rotas/rotaHorario.js';
 
 dotenv.config();
 
@@ -30,7 +31,7 @@ app.use("/escolas", rotaEscola);
 app.use("/materias", rotaMateria);
 app.use("/responsaveis", rotaResponsavel); 
 app.use("/alunos", rotaAluno);
-
+app.use("/horarios", rotaHorario);
 
 
 app.get('/teste-conexao', async (req, res) => {
