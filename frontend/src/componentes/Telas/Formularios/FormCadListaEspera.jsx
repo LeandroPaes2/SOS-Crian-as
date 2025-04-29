@@ -162,8 +162,8 @@ export default function FormCadListaEspera() {
             }
         }
 
-        const hoje = new Date();
-        const dataFormatada = hoje.toISOString().split('T')[0];
+        const dataAtual = new Date();
+        const dataFormatada = dataAtual.toISOString().split('T')[0];
 
         const novaListaEspera = {
             ...listaEspera,
@@ -484,6 +484,17 @@ export default function FormCadListaEspera() {
     const handleSubmit = async (evento) => {
         evento.preventDefault();
 
+        const dataNasc = new Date(listaEspera.dataNascimento);
+        const hoje = new Date();
+        const idade = hoje.getFullYear() - dataNasc.getFullYear();
+        const m = hoje.getMonth() - dataNasc.getMonth();
+        const ajustada = (m < 0 || (m === 0 && hoje.getDate() < dataNasc.getDate())) ? idade - 1 : idade;
+
+        if (ajustada < 6 || ajustada > 14) {
+            setMensagem("A criança deve ter entre 6 e 14 anos para ser cadastrada.");
+            return;
+        }
+
         const cpf = listaEspera.responsavel.cpf;
 
         if (!cpf || cpf.trim() === "") {
@@ -497,7 +508,7 @@ export default function FormCadListaEspera() {
         }
 
         const responsavelEncontrado = await buscarResponsavel(cpf);
-        if (!responsavelEncontrado) return; // Interrompe se não achou responsável
+        if (!responsavelEncontrado) return;
 
         const camposObrigatorios = ["nome", "dataNascimento", "rua", "numero", "telefone", "periodoEscola", "realizaAcompanhamento", "possuiSindrome", "descricao"];
         for (const campo of camposObrigatorios) {
@@ -507,8 +518,8 @@ export default function FormCadListaEspera() {
             }
         }
 
-        const hoje = new Date();
-        const dataFormatada = hoje.toISOString().split('T')[0];
+        const dataAtual = new Date();
+        const dataFormatada = dataAtual.toISOString().split('T')[0];
 
         const novaListaEspera = {
             ...listaEspera,
