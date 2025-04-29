@@ -13,8 +13,10 @@ export default class HorarioCtrl {
         if (requisicao.method === "POST" && requisicao.is("application/json")) {
             const turma = requisicao.body.turma;
             const materia = requisicao.body.materia;
+            const hora = requisicao.body.hora;
+            const semana = requisicao.body.semana;
 
-            if (turma && materia && turma.cor && materia.nome) {
+            if (turma && materia && turma.cor && materia.nome && hora && semana) {
                 try {
                     const objTurma = new Turma(
                         turma.id,
@@ -31,7 +33,9 @@ export default class HorarioCtrl {
                     const horario = new Horario(
                         0,
                         objTurma,
-                        objMateria
+                        objMateria,
+                        hora,
+                        semana
                     )
 
                     conexao = await conectar();
@@ -70,8 +74,10 @@ export default class HorarioCtrl {
             const id = requisicao.params.id;
             const turma = requisicao.body.turma;
             const materia = requisicao.body.materia;
+            const hora = requisicao.body.hora;
+            const semana = requisicao.body.semana;
 
-            if (id && turma && materia && turma.cor && materia.nome) {
+            if (id && turma && materia && turma.cor && materia.nome && hora && semana) {
                 try {
                     const objTurma = new Turma(
                         turma.id,
@@ -87,7 +93,8 @@ export default class HorarioCtrl {
                     const horario = new Horario(
                         id,
                         objTurma,
-                        objMateria
+                        objMateria,
+                        
                     );
 
                     conexao = await conectar();
