@@ -6,7 +6,7 @@ export default class Aluno {
     #dataNascimento;
     #responsavel;
     #rua;
-    #bairro
+    #bairro;
     #numero;
     #escola;
     #telefone;
@@ -15,13 +15,16 @@ export default class Aluno {
     #possuiSindrome;
     #descricao;
     #dataInsercaoListaEspera;
-    #rg
+    #rg;
     #formularioSaude;
     #ficha;
     #dataInsercaoProjeto;
     #status;
     #periodoProjeto;
     #cep;
+
+
+    ////// TENHO Q ARRUMAR ESSA POHA TA FALTANDO ATRIBUTOS NOS LUGAR TIPO NO TOJSON;
 
     constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", dataInsercao = "", rg = "", formularioSaude = {}, ficha = {}, dataInsercaoProjeto = "", status = "", periodoProjeto = "") {
         this.#id = id;

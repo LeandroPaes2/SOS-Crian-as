@@ -6,30 +6,17 @@ import Escola from "../Modelo/escola.js";
 export default class AlunoDAO {
 
 
-
     constructor() {
     }
 
     async init() {
         try {
-            /*
+            
             const sql2="DROP TABLE aluno";
             await conexao.execute(sql2);
-            const sql = `CREATE TABLE IF NOT EXISTS aluno (
-                alu_id INT AUTO_INCREMENT PRIMARY KEY,
-                alu_nome VARCHAR(100) NOT NULL,
-                alu_idade INT NOT NULL,
-                alu_responsavel VARCHAR(100) NOT NULL,
-                alu_endereco VARCHAR(255) NOT NULL,
-                alu_telefone VARCHAR(20) NOT NULL,
-                alu_periodoProjeto VARCHAR(50) NOT NULL,
-                alu_periodoEscola VARCHAR(50) NOT NULL
-            );`;
-            */
-            let sql3 = `DROP TABLE aluno`;
-            let conexao = await conectar();
-            await conexao.execute(sql3);
-            sql3 = `CREATE TABLE IF NOT EXISTS aluno (
+        
+            
+            let  sql3 = `CREATE TABLE IF NOT EXISTS aluno (
             alu_id INT AUTO_INCREMENT,
             alu_nome VARCHAR(100) NOT NULL,
             alu_data_nascimento DATE NOT NULL,
@@ -45,17 +32,12 @@ export default class AlunoDAO {
             alu_descricao VARCHAR(300) NOT NULL,
             alu_dataInsercao_lista_espera DATE NOT NULL,
             alu_rg VARCHAR(20) NOT NULL,
-            alu_formulario_saude INT NOT NULL,
-            alu_ficha INT NOT NULL,
+            alu_formulario_saude INT,
+            alu_ficha INT ,
             alu_dataInsercao_projeto DATE NOT NULL,
             alu_status INT NOT NULL,
             alu_periodo_projeto ENUM('Manhã', 'Tarde' ) NOT NULL,
             alu_cep VARCHAR(20) NOT NULL,
-
-
-
-
-            
 
         CONSTRAINT pk_aluno PRIMARY KEY (alu_id),
 
@@ -96,20 +78,7 @@ export default class AlunoDAO {
         }
     }
 
-    /// SO ARRUMEI ATÉ ALI EM CIMA ************************************************
-
-
-
-
-
-
-
-
-
-
-    /////////// ARRUMAR ALI EM BAIXO *************************************************
-
-
+    
     async incluir(aluno, conexao) {
         if (aluno instanceof Aluno) {
             const sql = `INSERT INTO aluno 

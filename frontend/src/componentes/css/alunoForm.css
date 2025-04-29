@@ -1,0 +1,43 @@
+.botaoPesquisa{
+    width: 400px;
+    background-color: #e3436b;
+    border-color: #81233b;
+    margin: 5px;
+    width: 150px;
+}
+
+.divInput{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.formInput{
+    width: 400px;
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.topot{
+    padding-top: 100px;
+}
+
+.cadastroAluno{
+    background-color: rgba(255, 255, 255, 0.9);
+    height: 100vh;
+    width: 60%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 100px;
+
+}

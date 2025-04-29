@@ -1,0 +1,53 @@
+.div1 {
+    background-color: rgba(255, 255, 255, 0.9);
+    min-height: 100vh;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6% 16px;
+    font-family: Arial, sans-serif;
+}
+
+.div2 {
+    align-self: center;
+    margin-top: 0;
+}
+
+.botoes-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.botaoMenu {
+    padding: 14px 24px;
+    font-size: 2.15rem;
+    min-width: 200px;
+    max-width: 260px;
+    width: 100%;
+    text-align: center;
+    border-radius: 8px;
+}
+
+/* Responsivo para telas menores */
+@media (max-width: 600px) {
+    .div1 {
+        padding: 8% 20px;
+    }
+
+    .botaoMenu {
+        width: 100%;
+        max-width: none;
+        font-size: 5.2rem;
+        padding: 16px;
+    }
+
+    .titulo-alert {
+        font-size: 4.5rem;
+    }
+}

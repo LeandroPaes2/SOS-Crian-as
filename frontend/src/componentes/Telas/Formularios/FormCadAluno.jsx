@@ -2,7 +2,7 @@ import { Alert, Form, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
 import { Link, useLocation } from "react-router-dom";
-import '../../css/aluno.css'
+import "../../css/alunoForm.css"
 
 import { useNavigate } from 'react-router-dom';
 
@@ -93,29 +93,21 @@ export default function FormCadAluno() {
     };
 
     return (
-        <div className="div1">
+        <div className="cadastroAluno">
 
             <PaginaGeral>
-                <Alert className="text-center mt-2 mb-4">
+                <Alert className="mt-2 mb-2 text-center" variant="dark">
                     <h2>{editando ? "Editar Aluno" : "Cadastro de Aluno"}</h2>
                 </Alert>
 
-                {mensagem && <Alert className="mt-02 mb-02 success text-center" variant="info">{mensagem}</Alert>}
+                
+
+            {mensagem && <Alert variant="info">{mensagem}</Alert>}
+
 
                 <Form onSubmit={handleSubmit}>
 
-                    <Form.Group className="mb-3" id="id" >
-                        <Form.Label>id</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite o id"
-                            name="id"
-                            value={id}
-                            onChange={(e) => setId(e.target.value)}
-                            disabled
 
-                        />
-                    </Form.Group>
 
 
                     <Form.Group className="mb-3" id="nome" >
@@ -191,13 +183,16 @@ export default function FormCadAluno() {
                         </Form.Select>
                     </Form.Group>
 
+                    <div className="d-flex justify-content-between">
+                        <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
+                            Voltar
+                        </Button>
+                        <Button className="botaoPesquisa" variant="primary" type="submit">
+                            {editando ? "Atualizar" : "Cadastrar"}
+                        </Button>
 
-                    <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
-                        Voltar
-                    </Button>
-                    <Button className="botaoPesquisa" variant="primary" type="submit">
-                        {editando ? "Atualizar" : "Cadastrar"}
-                    </Button>
+                    </div>
+
 
                 </Form>
             </PaginaGeral>
