@@ -5,12 +5,14 @@ import Materia from "../Modelo/materia.js";
 export default class HorarioDAO {
     async incluir(horario, conexao) {
         if(horario instanceof Horario) {
-            const sql = `INSERT INTO horario(hora_turm_cor, hora_mat_nome)  
-                VALUES (?, ?)
+            const sql = `INSERT INTO horario(hora_turm_cor, hora_mat_nome, hora_hora, hora_semana)  
+                VALUES (?, ?, ?, ?)
             `;
             const parametros =[
                 horario.Turma.id,
-                horario.Materia.id
+                horario.Materia.id,
+                horario.Hora,
+                horario.Semana
             ];
             const [resultado] = await conexao.query(sql, parametros);
             return resultado;
@@ -19,10 +21,12 @@ export default class HorarioDAO {
     }
     async alterar(horario, conexao) {
         if(horario instanceof Horario) {
-            const sql = `UPDATE horario SET hora_turm_cor = ?, hora_mat_nome = ? WHERE hora_id = ?`;
+            const sql = `UPDATE horario SET hora_turm_cor = ?, hora_mat_nome = ?, hora_hora = ?, hora_semana = ? WHERE hora_id = ?`;
             const parametros =[
                 horario.Turma.id,
                 horario.Materia.id,
+                horario.Hora,
+                horario.Semana,
                 horario.id
             ];
             const [resultado] = await conexao.query(sql, parametros);
@@ -56,7 +60,9 @@ export default class HorarioDAO {
             const horario = new Horario(
                 linha['hora_id'], 
                 new Turma(linha['hora_turm_cor']),
-                new Materia(linha['hora_mat_nome'])
+                new Materia(linha['hora_mat_nome']),
+                linha['hora_hora'],
+                linha['hora_semana']
             );
             listaHorario.push(horario);
         }

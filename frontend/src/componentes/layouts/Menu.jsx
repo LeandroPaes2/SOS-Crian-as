@@ -20,6 +20,7 @@ export default function Menu(props){
                             <NavDropdown.Item href="#" >Materias</NavDropdown.Item>
                             <NavDropdown.Item href="#" as={Link} to="/telaEscola">Escolas</NavDropdown.Item>
                             <NavDropdown.Item href="#" as={Link} to="/telaEvento">Eventos</NavDropdown.Item>
+                            <NavDropdown.Item href="#" as={Link} to="/telaHorario">Horários</NavDropdown.Item>
                         </NavDropdown>
                     
                         <NavDropdown title="Relatórios" id="basic-nav-dropdown">
@@ -29,6 +30,8 @@ export default function Menu(props){
                             <NavDropdown.Item href="#action/3.1">Turmas</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.1">Materias</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.1">Escolas</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.1">Eventos</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.1">Horários</NavDropdown.Item>
                         </NavDropdown>
                         <Nav.Link href="#home">Sobre</Nav.Link>
                 </Nav>

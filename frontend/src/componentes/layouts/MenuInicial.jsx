@@ -46,6 +46,11 @@ export default function MenuInicial() {
                 <br/>
                 Eventos
             </Button>
+            <Button as={Link} to="/telaHorario" className='botaoMenu' variant="primary" size="lg">
+                <img style={{width: '100px'}} />
+                <br/>
+                Horários
+            </Button>
         </div>
     );
 }

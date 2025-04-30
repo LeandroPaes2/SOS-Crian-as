@@ -94,6 +94,8 @@ export default class HorarioCtrl {
                         id,
                         objTurma,
                         objMateria,
+                        hora,
+                        semana
                         
                     );
 
