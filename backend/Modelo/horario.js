@@ -1,6 +1,6 @@
 import HorarioDAO from "../Persistencia/horarioDAO.js"
-import Turma from "./materia.js";
-import Materia from "./turma.js";
+import Turma from "./turma.js";
+import Materia from "./materia.js";
 
 export default class Horario{
 
@@ -61,13 +61,13 @@ export default class Horario{
         this.#semana = semana;        
     }
 
-    JSON(){
+    toJSON(){
         return{
             "id": this.#id,
             "turma": this.#turma.toJSON(),
             "materia": this.#materia.toJSON(),
-            "hora": this.#hora.toJSON(),
-            "semana": this.#semana.toJSON()
+            "hora": this.#hora,
+            "semana": this.#semana
         }
     }
 

@@ -25,7 +25,7 @@ import RelatorioAlunos from './componentes/Telas/Relatorios/RelatorioAlunos';
 import { EventosProvider } from './EventosContext';
 import TelaCadastroHorario from './componentes/Telas/telaCadastroHorario';
 import FormCadHorario from './componentes/Telas/Formularios/FormCadHorario';
-
+import RelatorioHorario from './componentes/Telas/Relatorios/RelatorioHorario';
 function App() {
     return (
         <EventosProvider>
@@ -53,6 +53,7 @@ function App() {
                     <Route path="/cadastroEvento" element={<FormCadEvento />}/>
                     <Route path="/telaHorario" element={<TelaCadastroHorario/>}/>
                     <Route path="/cadastroHorario" element={<FormCadHorario/>}/>
+                    <Route path="/relatorioHorario" element={<RelatorioHorario/>}/>
 
                 </Routes>
             </div>
