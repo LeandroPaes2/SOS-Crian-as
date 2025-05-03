@@ -175,7 +175,7 @@ export default class ListaEsperaDAO {
                 listaEspera.possuiSindrome,
                 listaEspera.descricao, 
                 listaEspera.dataInsercao,
-                listaEspera.numProtocolo
+                listaEspera.id
             ];
             await conexao.execute(sql, parametros);
         }
