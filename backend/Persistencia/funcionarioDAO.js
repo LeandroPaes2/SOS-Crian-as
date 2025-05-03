@@ -92,19 +92,21 @@ export default class FuncionarioDAO {
     
     async consultar(termo, conexao) {
         try {
-            //   const conexao = await conectar();
             let sql = "";
             let parametros = [];
     
-            if (!termo) {
+            if (!termo || (typeof termo !== 'object')) {
                 sql = `SELECT * FROM funcionario ORDER BY func_nome`;
-            } else {
+            } else if (termo.nome) {
                 sql = `SELECT * FROM funcionario WHERE func_nome LIKE ? ORDER BY func_nome`;
-                parametros = ['%' + termo + '%'];
+                parametros = ['%' + termo.nome + '%'];
+            } else if (termo.email) {
+                sql = `SELECT * FROM funcionario WHERE func_email LIKE ? ORDER BY func_nome`;
+                parametros = ['%' + termo.email + '%'];
             }
     
             const [linhas] = await conexao.execute(sql, parametros);
-            const listaFuncionario = linhas.map(linha => new Funcionario(
+            return linhas.map(linha => new Funcionario(
                 linha['func_nome'],
                 linha['func_cpf'],
                 linha['func_cargo'],
@@ -112,8 +114,6 @@ export default class FuncionarioDAO {
                 linha['func_email'],
                 linha['func_senha']
             ));
-            //   await conexao.release();
-            return listaFuncionario;
         } catch (e) {
             throw new Error("Erro ao consultar funcionários: " + e.message);
         }
