@@ -3,6 +3,7 @@ import Presenca from "../Modelo/presenca.js";
 import Turma from "../Modelo/turma.js";
 import conectar from "../Persistencia/Conexao.js";
 import Aluno from "../Modelo/aluno.js"
+import PresencaDAO from "../Persistencia/presencaDAO.js";
 
 export default class PresencaCtrl{
     async gravar(requisicao, resposta)
@@ -81,6 +82,34 @@ export default class PresencaCtrl{
                 status: false,
                 mensagem: "Requisição inválida! Consulte a documentação da API."
             });
+        }
+    }
+
+    async consultarTurmasPorMateria(requisicao, resposta) {
+        resposta.type("application/json");
+        const conexao = await conectar();
+        try {
+            await conexao.query("BEGIN");
+            const materiaId = requisicao.params.materiaId;
+            const dao = new PresencaDAO();
+            const turmas = await dao.consultarTurmasPorMateria(materiaId, conexao);
+            if(Array.isArray(turmas))
+            {
+                await conexao.query("COMMIT");
+                resposta.status(200).json(turmas);
+            }
+            else {
+                await conexao.query("ROLLBACK");
+                resposta.status(500).json({ status: false, mensagem: "Formato inesperado na resposta" });
+            }
+        } catch (erro) {
+            if (conexao) await conexao.query("ROLLBACK");
+            resposta.status(500).json({ status: false, mensagem: "Erro ao consultar turma por matéria: " + erro.message });
+        }
+        finally {
+            if (conexao) {
+                conexao.release();
+            }
         }
     }
 

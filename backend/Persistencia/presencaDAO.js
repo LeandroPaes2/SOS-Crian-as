@@ -1,5 +1,6 @@
 import Presenca from "../Modelo/presenca.js";
 import conectar from "./Conexao.js";
+import Turma from "../Modelo/turma.js";
 
 export default class PresencaDAO{
     constructor()
@@ -41,17 +42,16 @@ export default class PresencaDAO{
 
     async incluir(presenca, conexao){
         try{
-            /*
+            
             const [validacao] = await conexao.execute(
                 `SELECT 1 FROM horario 
-                 WHERE hora_mat_nome = ? AND hora_turm_cor = ?`,
+                 WHERE hora_mat_id = ? AND hora_turm_id = ?`,
                 [presenca.materia.id, presenca.turma.id]
             );
     
             if (validacao.length === 0) {
                 throw new Error('Matéria não oferecida para esta turma');
             }
-            */
            
             const sqlPresenca = `INSERT INTO presenca (pre_data_hora, mat_id, turm_id) VALUES (?, ?, ?)`;
             const paramsPresenca = [
@@ -87,20 +87,36 @@ export default class PresencaDAO{
         }
     }
 
+    async consultarTurmasPorMateria(materiaId, conexao) {
+        let sql = `
+            SELECT t.* 
+            FROM horario h
+            JOIN turma t ON h.hora_turm_id = t.turm_id
+            WHERE h.hora_mat_id = ?
+            GROUP BY t.turm_id
+        `;
+        const [linhas] = await conexao.execute(sql, [materiaId]);
+        return linhas.map(linha => new Turma(
+            linha.turm_id,
+            linha.turm_cor,
+            linha.turm_per
+        ));
+    }
+
     async excluir(presenca, conexao)
     {
         try{
             const deletedId = presenca.id;
             const sql = `DELETE FROM presenca WHERE pre_id = ?`;
             await conexao.execute(sql, [presenca.id]);
-            await conexao.execute('UPDATE materia SET mat_id = mat_id - 1 WHERE mat_id > ?', [deletedId]);
+            await conexao.execute('UPDATE presnca SET pre_id = pre_id - 1 WHERE pre_id > ?', [deletedId]);
                 // Ajusta o AUTO_INCREMENT para continuar a sequência corretamente
             const [rows] = await conexao.execute('SELECT MAX(pre_id) AS maxId FROM presenca');
             const nextId = (rows[0].maxId || 0) + 1;
             await conexao.execute(`ALTER TABLE presenca AUTO_INCREMENT = ${nextId}`);
         }
         catch (e) {
-            throw new Error("Erro ao excluir matéria: " + e.message);
+            throw new Error("Erro ao excluir presença: " + e.message);
         }
     }
 }

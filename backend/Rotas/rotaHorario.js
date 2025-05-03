@@ -10,6 +10,5 @@ rotaHorario.patch("/:id", horarioCtrl.alterar);
 rotaHorario.delete("/:id", horarioCtrl.excluir);
 rotaHorario.get("/:id", horarioCtrl.consultar);
 rotaHorario.get("/",horarioCtrl.consultar);
-//rotaHorario.get("/materia/:materiaId/turmas", horarioCtrl.consultarTurmasPorMateria);
 
 export default rotaHorario;

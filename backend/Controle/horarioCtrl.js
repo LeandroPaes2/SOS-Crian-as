@@ -2,20 +2,21 @@ import Horario from "../Modelo/horario.js";
 import Turma from "../Modelo/turma.js";
 import Materia from "../Modelo/materia.js"
 import conectar from "../Persistencia/Conexao.js";
-import HorarioDAO from "../Persistencia/horarioDAO.js";
 
 export default class HorarioCtrl {
 
     async gravar(requisicao, resposta) {
-        requisicao.type("application/json");
+        resposta.type("application/json");
 
-        const conexao = await conectar();
+        let conexao = await conectar();
 
         if (requisicao.method === "POST" && requisicao.is("application/json")) {
             const turma = requisicao.body.turma;
             const materia = requisicao.body.materia;
+            const hora = requisicao.body.hora;
+            const semana = requisicao.body.semana;
 
-            if (turma && materia && turma.cor && materia.nome) {
+            if (turma && materia && turma.cor && materia.nome && hora && semana) {
                 try {
                     const objTurma = new Turma(
                         turma.id,
@@ -32,11 +33,29 @@ export default class HorarioCtrl {
                     const horario = new Horario(
                         0,
                         objTurma,
-                        objMateria
-                    )
+                        objMateria,
+                        hora,
+                        semana
+                    );
 
                     conexao = await conectar();
                     await conexao.query("BEGIN");
+
+                    // Verifica duplicidade
+                    const [linhas] = await conexao.query(
+                        `SELECT COUNT(*) AS total 
+                         FROM horario 
+                         WHERE hora_hora = ? AND hora_semana = ?`,
+                        [hora, semana]
+                    );
+                    
+                    
+
+                    if (linhas[0].total > 0) {
+                        await conexao.query("ROLLBACK");
+                        resposta.status(400).json({ status: false, mensagem: "Já existe um horário cadastrado para este dia e hora." });
+                        return;
+                    }
 
                     const resultado = await horario.incluir(conexao);
 
@@ -49,6 +68,7 @@ export default class HorarioCtrl {
                     }
 
                 } catch (erro) {
+                    console.error(erro);
                     if (conexao) await conexao.query("ROLLBACK");
                     resposta.status(500).json({ status: false, mensagem: "Não foi possível incluir a horario: " + erro.message });
                 } finally {
@@ -60,8 +80,8 @@ export default class HorarioCtrl {
         } else {
             resposta.status(400).json({ status: false, mensagem: "Requisição inválida!" });
         }
-
     }
+
 
     async alterar(requisicao, resposta) {
         resposta.type("application/json");
@@ -71,8 +91,10 @@ export default class HorarioCtrl {
             const id = requisicao.params.id;
             const turma = requisicao.body.turma;
             const materia = requisicao.body.materia;
+            const hora = requisicao.body.hora;
+            const semana = requisicao.body.semana;
 
-            if (id && turma && materia && turma.cor && materia.nome) {
+            if (id && turma && materia && turma.cor && materia.nome && hora && semana) {
                 try {
                     const objTurma = new Turma(
                         turma.id,
@@ -88,15 +110,17 @@ export default class HorarioCtrl {
                     const horario = new Horario(
                         id,
                         objTurma,
-                        objMateria
+                        objMateria,
+                        hora,
+                        semana
+
                     );
 
-                    conexao = await conectar();
                     await conexao.query("BEGIN");
 
                     const resultado = await horario.alterar(conexao);
 
-                    if (resultado) {                        
+                    if (resultado) {
                         await conexao.query("COMMIT");
                         resposta.status(200).json({ status: true, mensagem: "Horario alterado com sucesso!" });
                     } else {
@@ -105,11 +129,12 @@ export default class HorarioCtrl {
                     }
 
                 } catch (erro) {
+
                     if (conexao) await conexao.query("ROLLBACK");
                     resposta.status(500).json({ status: false, mensagem: "Não foi possível alterar a horario: " + erro.message });
-                } finally { 
+                } finally {
                     if (conexao) {
-                        conexao.release();  
+                        conexao.release();
                     }
                 }
             }
@@ -125,43 +150,40 @@ export default class HorarioCtrl {
     async excluir(requisicao, resposta) {
         resposta.type("application/json");
         const conexao = await conectar();
-
+    
         if (requisicao.method == 'DELETE') {
             const id = requisicao.params.id;
-
+    
             if (id) {
                 try {
-                    const horario = new Horario();
-                    conexao = await conectar();
-                    await conexao.query("BEGIN");   
-
+                    const horario = new Horario(id);
+                    await conexao.query("BEGIN");
+    
                     const resultado = await horario.excluir(conexao);
-
-                    if (resultado) {
+    
+                    if (resultado.affectedRows > 0) {
                         await conexao.query("COMMIT");
-                        resposta.status(200).json({ status: true, mensagem: "Horario excluído com sucesso!" });
+                        resposta.status(200).json({ status: true, mensagem: "Horário excluído com sucesso!" });
                     } else {
                         await conexao.query("ROLLBACK");
-                        resposta.status(500).json({ status: false, mensagem: "Erro ao excluir horario." });
+                        resposta.status(500).json({ status: false, mensagem: "Erro ao excluir horário." });
                     }
-
+    
                 } catch (erro) {
+                    console.error("Erro ao excluir horário:", erro);
                     if (conexao) await conexao.query("ROLLBACK");
-                    resposta.status(500).json({ status: false, mensagem: "Não foi possível excluir a horario: " + erro.message });
+                    resposta.status(500).json({ status: false, mensagem: "Não foi possível excluir o horário: " + erro.message });
                 } finally {
-                    if (conexao) {
-                        conexao.release();
-                    }
+                    if (conexao) conexao.release();
                 }
-            }
-            else {
+            } else {
                 resposta.status(400).json({ status: false, mensagem: "Dados incompletos ou inválidos. Verifique a requisição." });
             }
-        }
-        else {
+        } else {
             resposta.status(400).json({ status: false, mensagem: "Requisição inválida!" });
         }
     }
+    
 
     async consultar(requisicao, resposta) {
         resposta.type("application/json");
@@ -196,32 +218,4 @@ export default class HorarioCtrl {
             resposta.status(400).json({ status: false, mensagem: "Requisição inválida!" });
         }
     }
-
-    /*async consultarTurmasPorMateria(requisicao, resposta) {
-        resposta.type("application/json");
-        const conexao = await conectar();
-        try {
-            await conexao.query("BEGIN");
-            const materiaId = requisicao.params.id;
-            const dao = new HorarioDAO();
-            const turmas = await dao.consultarTurmasPorMateria(materiaId, conexao);
-            if(Array.isArray(turmas))
-            {
-                await conexao.query("COMMIT");
-                resposta.status(200).json(turmas);
-            }
-            else {
-                await conexao.query("ROLLBACK");
-                resposta.status(500).json({ status: false, mensagem: "Formato inesperado na resposta" });
-            }
-        } catch (erro) {
-            if (conexao) await conexao.query("ROLLBACK");
-            resposta.status(500).json({ status: false, mensagem: "Erro ao consultar horario por turma: " + erro.message });
-        }
-        finally {
-            if (conexao) {
-                conexao.release();
-            }
-        }
-    }*/
 }

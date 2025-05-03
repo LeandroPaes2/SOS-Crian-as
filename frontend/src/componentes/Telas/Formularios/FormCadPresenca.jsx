@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Form, Button, Alert, Spinner, Table, Row, Col } from 'react-bootstrap';
+import { Form, Button, Alert, Spinner, Table } from 'react-bootstrap';
 import PaginaGeral from '../../layouts/PaginaGeral';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -14,35 +14,46 @@ export default function FormCadPresenca() {
     const [mensagem, setMensagem] = useState('');
     const navigate = useNavigate();
 
-    // Carrega matérias e turmas ao iniciar
+    // Carrega matérias ao iniciar
     useEffect(() => {
-        async function carregarDados() {
+        async function carregarMaterias() {
             try {
                 setCarregando(true);
-                
-                // Carrega matérias
-                const resMaterias = await fetch('http://localhost:3000/materias');
-                const dataMaterias = await resMaterias.json();
-                setMaterias(dataMaterias);
-                
-                // Carrega todas as turmas
-                const resTurmas = await fetch('http://localhost:3000/turmas');
-                const dataTurmas = await resTurmas.json();
-                setTurmas(dataTurmas);
-                
+                const res = await fetch('http://localhost:3000/materias');
+                const data = await res.json();
+                setMaterias(data);
             } catch (error) {
-                setMensagem('Erro ao carregar dados: ' + error.message);
+                setMensagem('Erro ao carregar matérias: ' + error.message);
             } finally {
                 setCarregando(false);
             }
         }
-        carregarDados();
+        carregarMaterias();
     }, []);
+
+    // Carrega turmas quando matéria é selecionada
+    useEffect(() => {
+        async function carregarTurmas() {
+            if (selectedMateria) {
+                try {
+                    setCarregando(true);
+                    const res = await fetch(`http://localhost:3000/presencas/materia/${selectedMateria}/turmas`);
+                    const data = await res.json();
+                    setTurmas(data);
+                } catch (error) {
+                    setMensagem('Erro ao carregar turmas: ' + error.message);
+                } finally {
+                    setCarregando(false);
+                }
+            }
+        }
+        carregarTurmas();
+    }, [selectedMateria]);
 
     // Carrega alunos quando turma é selecionada
     useEffect(() => {
-        if (selectedTurma) {
-            async function carregarAlunos() {
+        async function carregarAlunos() {
+            if (selectedTurma) {
                 try {
                     setCarregando(true);
                     const res = await fetch('http://localhost:3000/alunos');
@@ -61,8 +72,8 @@ export default function FormCadPresenca() {
                     setCarregando(false);
                 }
             }
-            carregarAlunos();
         }
+        carregarAlunos();
     }, [selectedTurma]);
 
     const handleSubmit = async (e) => {
@@ -118,8 +129,8 @@ export default function FormCadPresenca() {
             )}
 
             <Form onSubmit={handleSubmit}>
-                <Row className="mb-3">
-                    <Col md={6}>
+                <div className="row mb-3">
+                    <div className="col-md-6">
                         <Form.Group controlId="formMateria">
                             <Form.Label>Matéria</Form.Label>
                             <Form.Select
@@ -136,9 +147,9 @@ export default function FormCadPresenca() {
                                 ))}
                             </Form.Select>
                         </Form.Group>
-                    </Col>
+                    </div>
                     
-                    <Col md={6}>
+                    <div className="col-md-6">
                         <Form.Group controlId="formTurma">
                             <Form.Label>Turma</Form.Label>
                             <Form.Select
@@ -147,7 +158,7 @@ export default function FormCadPresenca() {
                                     setSelectedTurma(e.target.value);
                                     setAlunos([]);
                                 }}
-                                disabled={carregando}
+                                disabled={carregando || !selectedMateria}
                                 required
                             >
                                 <option value="">Selecione uma turma</option>
@@ -156,10 +167,13 @@ export default function FormCadPresenca() {
                                         {turma.cor} - {turma.periodo}
                                     </option>
                                 ))}
+                                {turmas.length === 0 && selectedMateria && (
+                                    <option disabled>Nenhuma turma encontrada para esta matéria</option>
+                                )}
                             </Form.Select>
                         </Form.Group>
-                    </Col>
-                </Row>
+                    </div>
+                </div>
 
                 {carregando && alunos.length === 0 && selectedTurma && (
                     <div className="text-center">
