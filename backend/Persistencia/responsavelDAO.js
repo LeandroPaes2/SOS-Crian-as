@@ -1,6 +1,5 @@
 import Responsavel from "../Modelo/responsavel.js";
 
-import conectar from "./Conexao.js";
 export default class ResponsavelDAO {
     constructor() {
         this.init();

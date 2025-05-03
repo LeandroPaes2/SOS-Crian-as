@@ -1,4 +1,4 @@
-import conectar from "./Conexao.js";
+
 import Aluno from "../Modelo/aluno.js";
 
 export default class AlunoDAO {

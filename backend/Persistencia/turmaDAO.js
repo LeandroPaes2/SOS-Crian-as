@@ -1,74 +1,68 @@
 import Turma from "../Modelo/turma.js";
+import supabase from "../Persistencia/Conexao.js";
 
 export default class TurmaDAO {
 
-    async incluir(turma, conexao) {
+    async incluir(turma) {
         if (turma instanceof Turma) {
+            const { data, error } = await supabase
+                .from('turma')
+                .insert({
+                    turm_cor: turma.cor,
+                    turm_per: turma.periodo
+                })
+                .select()
+                .single();
 
-            const sql = `INSERT INTO turma(turm_cor, turm_per)
-                VALUES (?, ?)
-            `;
-            let parametros = [
-                turma.cor,
-                turma.periodo
-            ]; 
-            const [resultado] = await conexao.execute(sql, parametros);
-            return resultado;
+            if (error) throw error;
+            return data;
         }
     }
 
-    async alterar(turma, conexao) {
+    async alterar(turma) {
         if (turma instanceof Turma) {
-            
-            const sql = `UPDATE turma 
-                        SET turm_cor = ?, turm_per = ?
-                        WHERE  turm_id = ?
-            `;
-            let parametros = [
-                turma.cor,
-                turma.periodo,
-                turma.id
-            ]; 
-            const [resultado] = await conexao.execute(sql, parametros);
-            return resultado;
- 
+            const { data, error } = await supabase
+                .from('turma')
+                .update({
+                    turm_cor: turma.cor,
+                    turm_per: turma.periodo
+                })
+                .eq('turm_id', turma.id)
+                .select()
+                .single();
+
+            if (error) throw error;
+            return data;
         }
     }
-    
-    async consultar(termo, conexao) {
 
-        let sql = "";
-        let parametros = [];
-        if (!termo) {
-            sql = `SELECT * FROM turma`;
-        }
-        else {
-            sql = `SELECT * FROM turma WHERE turm_id LIKE ?`;
-            parametros = ['%' + termo + '%'];
-        }
-        const [linhas, campos] = await conexao.execute(sql, parametros);
-        let listaTurma = [];
-        for (const linha of linhas) {
-            const turma = new Turma(
-                linha['turm_id'],
-                linha['turm_cor'],
-                linha['turm_per']
-            );
-            listaTurma.push(turma);
+    async consultar(termo) {
+        let query = supabase.from('turma').select('*');
+
+        if (termo) {
+            query = query.ilike('turm_id', `%${termo}%`);
         }
 
-        return listaTurma;
+        const { data, error } = await query;
+
+        if (error) throw error;
+
+        return data.map(linha => new Turma(
+            linha.turm_id,
+            linha.turm_cor,
+            linha.turm_per
+        ));
     }
 
-    async excluir(turma, conexao) {
+    async excluir(turma) {
         if (turma instanceof Turma) {
-            const sql = `DELETE FROM turma WHERE turm_id = ?`;
-            let parametros = [
-                turma.id
-            ]; 
-            const [resultado] = await conexao.execute(sql, parametros);
-            return resultado;
- 
+            const { data, error } = await supabase
+                .from('turma')
+                .delete()
+                .eq('turm_id', turma.id);
+
+            if (error) throw error;
+            return data;
         }
     }
 }

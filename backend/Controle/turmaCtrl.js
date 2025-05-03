@@ -1,11 +1,10 @@
 import Turma from "../Modelo/turma.js";
-import conectar from "../Persistencia/Conexao.js";
+import supabase from "../Persistencia/Conexao.js";
+
 
 export default class TurmaCtrl {
 
     async gravar(req, res) {
-        const conexao = await conectar();
-
         res.type("application/json");
 
         if (req.method === 'POST' && req.is("application/json")) {
@@ -14,32 +13,22 @@ export default class TurmaCtrl {
             if (cor && periodo) {
                 try {
                     const turma = new Turma(0, cor, periodo);
-                    await conexao.query("BEGIN");
+                    const resultado = await turma.incluir();
 
-                    const resultado = await turma.incluir(conexao);
-
-                    if (resultado) {
-                        await conexao.query("COMMIT");
+                    if (resultado && !resultado.error) {
                         res.status(200).json({
                             status: true,
                             mensagem: "Turma adicionada com sucesso!",
                             cor: turma.cor
                         });
                     } else {
-                        await conexao.query("ROLLBACK");
-                        res.status(500).json({
-                            status: false,
-                            mensagem: "Não foi possível incluir a turma"
-                        });
+                        throw new Error(resultado.error?.message || "Erro ao incluir turma");
                     }
                 } catch (erro) {
-                    if (conexao) await conexao.query("ROLLBACK");
                     res.status(500).json({
                         status: false,
                         mensagem: "Não foi possível incluir a turma: " + erro.message
                     });
-                } finally {
-                    if (conexao) conexao.release();
                 }
             } else {
                 res.status(400).json({
@@ -56,43 +45,30 @@ export default class TurmaCtrl {
     }
 
     async editar(req, res) {
-        const conexao = await conectar();
-
         res.type("application/json");
 
         if ((req.method === 'PUT' || req.method === 'PATCH') && req.is("application/json")) {
             const id = req.params.id;
-            const cor = req.body.cor;
-            const periodo = req.body.periodo;
+            const { cor, periodo } = req.body;
 
             if (id && cor && periodo) {
                 try {
                     const turma = new Turma(id, cor, periodo);
-                    await conexao.query("BEGIN");
+                    const resultado = await turma.alterar();
 
-                    const resultado = await turma.alterar(conexao);
-
-                    if (resultado) {
-                        await conexao.query("COMMIT");
+                    if (resultado && !resultado.error) {
                         res.status(200).json({
                             status: true,
                             mensagem: "Turma alterada com sucesso!"
                         });
                     } else {
-                        await conexao.query("ROLLBACK");
-                        res.status(500).json({
-                            status: false,
-                            mensagem: "Não foi possível alterar a turma"
-                        });
+                        throw new Error(resultado.error?.message || "Erro ao alterar turma");
                     }
                 } catch (erro) {
-                    if (conexao) await conexao.query("ROLLBACK");
                     res.status(500).json({
                         status: false,
                         mensagem: "Não foi possível alterar a turma: " + erro.message
                     });
-                } finally {
-                    if (conexao) conexao.release();
                 }
             } else {
                 res.status(400).json({
@@ -109,74 +85,74 @@ export default class TurmaCtrl {
     }
 
     async excluir(req, res) {
-        const conexao = await conectar();
-
         res.type("application/json");
-
+    
         if (req.method === 'DELETE') {
             const id = req.params.id;
-
-            if (id) {
+    
+            if (id && !isNaN(id)) {
                 try {
-                    const turma = new Turma(id, null, null);
-                    await conexao.query("BEGIN");
-
-                    const resultado = await turma.excluir(conexao);
-
-                    if (resultado) {
-                        await conexao.query("COMMIT");
+                    const turma = new Turma(id);
+                    const resultado = await turma.excluir();
+    
+                    // Verifica se o resultado é nulo ou indefinido
+                    if (resultado === null || resultado === undefined) {
+                        // Considera como sucesso se não houver erro no retorno
                         res.status(200).json({
                             status: true,
                             mensagem: "Turma excluída com sucesso!"
                         });
                     } else {
-                        await conexao.query("ROLLBACK");
-                        res.status(500).json({
-                            status: false,
-                            mensagem: "Não foi possível excluir a turma"
-                        });
+                        // Caso o resultado tenha alguma resposta, verifica seu sucesso
+                        if (resultado.success) {
+                            res.status(200).json({
+                                status: true,
+                                mensagem: "Turma excluída com sucesso!"
+                            });
+                        } else {
+                            throw new Error(resultado.error?.message || "Erro desconhecido ao excluir a turma");
+                        }
                     }
                 } catch (erro) {
-                    if (conexao) await conexao.query("ROLLBACK");
                     res.status(500).json({
                         status: false,
                         mensagem: "Não foi possível excluir a turma: " + erro.message
                     });
-                } finally {
-                    if (conexao) conexao.release();
                 }
             } else {
                 res.status(400).json({
                     status: false,
-                    mensagem: "Informe um código válido de uma turma conforme documentação da API."
+                    mensagem: "Informe um código de turma válido."
                 });
             }
         } else {
-            res.status(400).json({
+            res.status(405).json({
                 status: false,
-                mensagem: "Requisição inválida! Consulte a documentação da API."
+                mensagem: "Método não permitido. Utilize o método DELETE para exclusão."
             });
         }
     }
+    
+    
+    
+    
 
     async consultar(req, res) {
         res.type("application/json");
-        const conexao = await conectar();
 
         if (req.method === "GET") {
-            let id = req.params.id;  
-
+            const id = req.params.id;
             const turma = new Turma();
 
             try {
-                const listaTurma = await turma.consultar(id, conexao);
+                const listaTurma = await turma.consultar(id);
 
                 if (Array.isArray(listaTurma) && listaTurma.length > 0) {
                     res.status(200).json(listaTurma);
                 } else {
-                    res.status(500).json({
+                    res.status(404).json({
                         status: false,
-                        mensagem: "Erro ao consultar turma"
+                        mensagem: "Nenhuma turma encontrada"
                     });
                 }
             } catch (erro) {
@@ -184,9 +160,6 @@ export default class TurmaCtrl {
                     status: false,
                     mensagem: "Erro ao consultar turma: " + erro.message
                 });
-            } finally {
-                if (conexao) 
-                    conexao.release();
             }
         } else {
             res.status(400).json({
