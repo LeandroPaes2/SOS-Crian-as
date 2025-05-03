@@ -51,6 +51,7 @@ export default function RelatorioListaEspera() {
     const adicionarAluno = (listaEspera) => {
         navigate("/cadastroAluno", {
             state: {
+                editando: true,
                 nome: listaEspera.nome,
                 dataNascimento: listaEspera.dataNascimento,
                 responsavel: listaEspera.responsavel,
@@ -111,6 +112,7 @@ export default function RelatorioListaEspera() {
                             <th>ID</th>
                             <th>Nome</th>
                             <th>Responsável</th>
+                            <th>Telefone</th>
                             <th>Data Inserção</th>
                             <th>Ações</th>
                         </tr>
@@ -121,6 +123,7 @@ export default function RelatorioListaEspera() {
                                 <td>{listaEspera.id}</td>
                                 <td>{listaEspera.nome}</td>
                                 <td>{listaEspera.responsavel.nome}</td>
+                                <td>{listaEspera.telefone}</td>
                                 <td>{formatarData(listaEspera.dataInsercao)}</td>
                                 <td>
                                     <Button
