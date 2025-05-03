@@ -28,7 +28,7 @@ export default function RelatorioListaEspera() {
         buscarListaEspera();
     }, []);
 
-    const excluirListaEspera = async (listaEspera) => {
+    /*const excluirListaEspera = async (listaEspera) => {
         if (window.confirm("Deseja realmente excluir a criança " + listaEspera.nome + " da lista de espera?")) {
             try {
                 const response = await fetch("http://localhost:3000/listasEspera/" + listaEspera.id, {
@@ -66,7 +66,55 @@ export default function RelatorioListaEspera() {
                 dataInsercao: listaEspera.dataInsercao
             }
         });
+    };*/
+
+
+    const excluirListaEspera = async (listaEspera, confirmar = true) => {
+        if (confirmar) {
+            const confirmacao = window.confirm("Deseja realmente excluir a criança " + listaEspera.nome + " da lista de espera?");
+            if (!confirmacao) return;
+        }
+    
+        try {
+            const response = await fetch("http://localhost:3000/listasEspera/" + listaEspera.id, {
+                method: "DELETE"
+            });
+    
+            if (response.ok) {
+                setMensagem("Excluído com sucesso!");
+                setListaDeListaEspera(listaDeListaEspera.filter(t => t.id !== listaEspera.id));
+            } else {
+                setMensagem("Erro ao excluir.");
+            }
+        } catch (error) {
+            console.error("Erro ao conectar com o backend:", error);
+            setMensagem("Erro de conexão com o servidor.");
+        }
     };
+
+    
+    const adicionarAluno = async (listaEspera) => {
+        await excluirListaEspera(listaEspera, false); // Exclui direto, sem pedir confirmação
+    
+        navigate("/cadastroAluno", {
+            state: {
+                editando: true,
+                nome: listaEspera.nome,
+                dataNascimento: listaEspera.dataNascimento,
+                responsavel: listaEspera.responsavel,
+                rua: listaEspera.rua,
+                numero: listaEspera.numero,
+                escola: listaEspera.escola,
+                telefone: listaEspera.telefone,
+                periodoEscola: listaEspera.periodoEscola,
+                realizaAcompanhamento: listaEspera.realizaAcompanhamento,
+                possuiSindrome: listaEspera.possuiSindrome,
+                descricao: listaEspera.descricao,
+                dataInsercao: listaEspera.dataInsercao
+            }
+        });
+    };
+    
 
     const formatarData = (dataString) => {
         const data = new Date(dataString);
