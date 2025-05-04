@@ -5,6 +5,7 @@ export default class Aluno {
     #nome;
     #dataNascimento;
     #responsavel;
+    #cidade;
     #rua;
     #bairro;
     #numero;
@@ -26,11 +27,12 @@ export default class Aluno {
 
     ////// TENHO Q ARRUMAR ESSA POHA TA FALTANDO ATRIBUTOS NOS LUGAR TIPO NO TOJSON;
 
-    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", dataInsercao = "", rg = "", formularioSaude = {}, ficha = {}, dataInsercaoProjeto = "", status = "", periodoProjeto = "") {
+    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, cidade = "" ,rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", dataInsercao = "", rg = "", formularioSaude = {}, ficha = {}, dataInsercaoProjeto = "", status = "", periodoProjeto = "") {
         this.#id = id;
         this.#nome = nome;
         this.#dataNascimento = dataNascimento;
         this.#responsavel = responsavel;
+        this.#cidade = cidade;
         this.#rua = rua;
         this.#bairro = bairro
         this.#numero = numero;
@@ -68,6 +70,9 @@ export default class Aluno {
             this.#responsavel = novoResponsavel;
     }
 
+
+    get cidade() { return this.#cidade; }
+    set cidade(novaCidade) { this.#cidade = novaCidade; }
 
     get rua() { return this.#rua; }
     set rua(novoRua) { this.#rua = novoRua; }

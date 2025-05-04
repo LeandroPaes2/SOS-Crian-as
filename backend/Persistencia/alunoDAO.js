@@ -21,6 +21,7 @@ export default class AlunoDAO {
             alu_nome VARCHAR(100) NOT NULL,
             alu_data_nascimento DATE NOT NULL,
             alu_responsavel_cpf VARCHAR(14) NOT NULL,
+            alu_cidade VARCHAR(50) NOT NULL,
             alu_rua VARCHAR(255) NOT NULL,
             alu_bairro VARCHAR(50) NOT NULL,
             alu_numero VARCHAR(10) NOT NULL,
@@ -86,6 +87,7 @@ export default class AlunoDAO {
             alu_nome,
             alu_data_nascimento,
             alu_responsavel_cpf,
+            alu_cidade,
             alu_rua ,
             alu_bairro ,
             alu_numero,
@@ -104,12 +106,13 @@ export default class AlunoDAO {
             alu_periodo_projeto ENUM('Manhã', 'Tarde' ),
             alu_cep
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?)`;
+            VALUES (?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?)`;
 
             const parametros = [
                 aluno.nome,
                 aluno.dataNascimento,
                 aluno.responsavel.cpf,
+                aluno.cidade,
                 aluno.rua,
                 aluno.bairro,
                 aluno.numero,
@@ -184,6 +187,7 @@ export default class AlunoDAO {
                 registro['alu_nome'],
                 registro['alu_data_nascimento'],
                 responsavel,
+                registro['alu_cidade'],
                 registro['alu_rua'],
                 registro['alu_bairro'],
                 registro['alu_numero'],
@@ -222,6 +226,7 @@ export default class AlunoDAO {
                     alu_nome = ?,
                     alu_data_nascimento = ?,
                     alu_responsavel_cpf = ?,
+                    alu_cidade = ?,
                     alu_rua = ?,
                     alu_bairro = ?,
                     alu_numero = ?,
@@ -245,6 +250,7 @@ export default class AlunoDAO {
                 aluno.nome,
                 aluno.dataNascimento,
                 aluno.responsavel.cpf,
+                aluno.cidade,
                 aluno.rua,
                 aluno.bairro,
                 aluno.numero,

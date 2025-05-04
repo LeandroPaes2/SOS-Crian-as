@@ -12,6 +12,7 @@ export default class AlunoCtrl {
                     nome,
                     dataNascimento,
                     responsavel,
+                    cidade,
                     rua,
                     bairro,
                     numero,
@@ -37,6 +38,7 @@ export default class AlunoCtrl {
                 nome && dataNascimento &&
                 responsavel && responsavel.cpf && responsavel.nome &&
                 responsavel.telefone && responsavel.email && responsavel.parentesco &&
+                cidade &&
                 rua && numero &&
                 escola && escola.codigo && escola.nome && escola.endereco &&
                 telefone && periodoEscola &&
@@ -77,6 +79,7 @@ export default class AlunoCtrl {
                             nome,
                             dataNascimento,
                             objResponsavel,
+                            cidade,
                             rua,
                             bairro,
                             numero,
@@ -132,6 +135,7 @@ export default class AlunoCtrl {
                     nome,
                     dataNascimento,
                     responsavel,
+                    cidade,
                     rua,
                     bairro,
                     numero,
@@ -156,6 +160,7 @@ export default class AlunoCtrl {
                 nome && dataNascimento &&
                 responsavel && responsavel.cpf && responsavel.nome &&
                 responsavel.telefone && responsavel.email && responsavel.parentesco &&
+                cidade &&
                 rua && numero &&
                 escola && escola.codigo && escola.nome && escola.endereco &&
                 telefone && periodoEscola &&
@@ -199,6 +204,7 @@ export default class AlunoCtrl {
                             nome,
                             dataNascimento,
                             objResponsavel,
+                            cidade,
                             rua,
                             bairro,
                             numero,

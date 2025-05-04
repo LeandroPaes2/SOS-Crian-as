@@ -1,38 +1,42 @@
-import { Alert, Form, Button } from "react-bootstrap";
+import { Alert, Form, Button, Col, Row } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
 import { Link, useLocation } from "react-router-dom";
-import "../../css/alunoForm.css"
+import "../../css/alunoForm.css";
 import { useNavigate } from 'react-router-dom';
 
 export default function FormCadAluno(props) {
     const location = useLocation();
     const [editando, setEditando] = useState(false);
     const [mensagem, setMensagem] = useState("");
+    const [cepNaoEncontrado, setCepNaoEncontrado] = useState(false);
+    const [cepValido, setCepValido] = useState(false);
 
-    // Novo estado para armazenar todos os campos
     const [dados, setDados] = useState({
         id: 0,
         nome: "",
-        idade: 0,
-        responsavel: "",
-        endereco: "",
-        telefone: "",
-        periodoEscola: "",
-        periodoProjeto: "",
+        dataNascimento: "",
+        responsavel: {
+            nomeResp: "",
+            cpf: ""
+        },
+        cidade: "",
         rua: "",
         bairro: "",
         numero: "",
-        escola: "",
-        realizaAcompanhamento: false,
-        possuiSindrome: false,
+        escola: {},
+        telefone: "",
+        periodoEscola: "",
+        realizaAcompanhamento: "",
+        possuiSindrome: "",
         descricao: "",
         dataInsercaoListaEspera: "",
         rg: "",
-        formularioSaude: "",
-        ficha: "",
+        formularioSaude: {},
+        ficha: {},
         dataInsercaoProjeto: "",
         status: "",
+        periodoProjeto: "",
         cep: ""
     });
 
@@ -40,7 +44,6 @@ export default function FormCadAluno(props) {
     const rotaVoltar = editando ? "/relatorioAluno" : "/telaAluno";
 
     useEffect(() => {
-        console.log(location.state);
         if (location.state && location.state.id) {
             setDados((prev) => ({
                 ...prev,
@@ -49,23 +52,95 @@ export default function FormCadAluno(props) {
             setEditando(true);
         }
     }, [location.state]);
-    
+
+    async function buscarCep() {
+        const cep = dados.cep.replace(/\D/g, "");
+        const url = `https://viacep.com.br/ws/${cep}/json/`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.erro) {
+                setCepNaoEncontrado(true);
+                setCepValido(false);
+            } else {
+                setCepNaoEncontrado(false);
+                setCepValido(true);
+
+                setDados((prev) => ({
+                    ...prev,
+                    cidade: prev.cidade || data.localidade,
+                    rua: prev.rua || data.logradouro,
+                    bairro: prev.bairro || data.bairro,
+                    cep: data.cep
+                }));
+            }
+        } catch (error) {
+            setCepNaoEncontrado(true);
+            setCepValido(false);
+            console.error("Erro ao buscar CEP:", error);
+        }
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Desestruturando os dados
         const {
-            nome, idade, responsavel, endereco, telefone, periodoEscola,
-            periodoProjeto, rua, bairro, numero, escola, realizaAcompanhamento,
-            possuiSindrome, descricao, dataInsercaoListaEspera, rg, formularioSaude,
-            ficha, dataInsercaoProjeto, status, cep
+            id,
+            nome,
+            dataNascimento,
+            responsavel,
+            cidade,
+            rua,
+            bairro,
+            numero,
+            escola,
+            telefone,
+            periodoEscola,
+            realizaAcompanhamento,
+            possuiSindrome,
+            descricao,
+            dataInsercaoListaEspera,
+            rg,
+            formularioSaude,
+            ficha,
+            dataInsercaoProjeto,
+            status,
+            periodoProjeto,
+            cep
         } = dados;
 
-        if (!nome || !idade || !responsavel || !endereco || !telefone || !periodoEscola || !periodoProjeto) {
+        if (
+            !id ||
+            !nome ||
+            !dataNascimento ||
+            !responsavel ||
+            !cidade ||
+            !rua ||
+            !bairro ||
+            !numero ||
+            !escola ||
+            !telefone ||
+            !periodoEscola ||
+            !realizaAcompanhamento ||
+            !possuiSindrome ||
+            !descricao ||
+            !dataInsercaoListaEspera ||
+            !rg ||
+            !formularioSaude ||
+            !ficha ||
+            !dataInsercaoProjeto ||
+            !status ||
+            !periodoProjeto ||
+            !cep) {
             setMensagem("Preencha todos os campos obrigatórios!");
             return;
         }
+        if (!validarRGComDV(dados.rg)) {
+            return;
+        }
+
 
         const aluno = { ...dados };
 
@@ -73,7 +148,6 @@ export default function FormCadAluno(props) {
             ? `http://localhost:3000/alunos/${dados.id}`
             : "http://localhost:3000/alunos";
         const method = editando ? "PUT" : "POST";
-
 
         try {
             if (editando && !window.confirm("Deseja realmente alterar o aluno: " + aluno.nome)) {
@@ -92,25 +166,25 @@ export default function FormCadAluno(props) {
                     setDados({
                         id: 0,
                         nome: "",
-                        idade: 0,
-                        responsavel: "",
-                        endereco: "",
-                        telefone: "",
-                        periodoEscola: "",
-                        periodoProjeto: "",
+                        dataNascimento: "",
+                        responsavel: {},
+                        cidade: "",
                         rua: "",
                         bairro: "",
                         numero: "",
-                        escola: "",
-                        realizaAcompanhamento: false,
-                        possuiSindrome: false,
+                        escola: {},
+                        telefone: "",
+                        periodoEscola: "",
+                        realizaAcompanhamento: "",
+                        possuiSindrome: "",
                         descricao: "",
                         dataInsercaoListaEspera: "",
                         rg: "",
-                        formularioSaude: "",
-                        ficha: "",
+                        formularioSaude: {},
+                        ficha: {},
                         dataInsercaoProjeto: "",
                         status: "",
+                        periodoProjeto: "",
                         cep: ""
                     });
                     navigate("/relatorioAluno");
@@ -124,12 +198,198 @@ export default function FormCadAluno(props) {
         }
     };
 
+    function validarRGComDV(rg) {
+        if (!rg) return false;
+
+        // Remove tudo que não for número ou 'X'
+        const rgLimpo = rg.toUpperCase().replace(/[^0-9X]/g, "");
+
+        if (!/^\d{8}[0-9X]$/.test(rgLimpo)) {
+            return false; // formato inválido
+        }
+
+        const numeros = rgLimpo.slice(0, 8).split("").map(Number);
+        const dvInformado = rgLimpo[8];
+
+        // Calcula o DV
+        let soma = 0;
+        let peso = 2;
+
+        for (let i = 7; i >= 0; i--) {
+            soma += numeros[i] * peso;
+            peso++;
+        }
+
+        let resto = soma % 11;
+        let dvCalculado = 11 - resto;
+
+        if (dvCalculado === 10) {
+            dvCalculado = 'X';
+        } else if (dvCalculado === 11) {
+            dvCalculado = '0';
+        } else {
+            dvCalculado = dvCalculado.toString();
+        }
+
+        return dvInformado === dvCalculado;
+    }
+
+    function validarCPF(cpf) {
+        if (!cpf) return false;
+
+        // Remove pontos e traço
+        const cpfLimpo = cpf.replace(/\D/g, '');
+
+        if (!/^\d{11}$/.test(cpfLimpo)) return false;
+
+        // Verifica se todos os dígitos são iguais (inválido)
+        if (/^(\d)\1+$/.test(cpfLimpo)) return false;
+
+        const numeros = cpfLimpo.split('').map(Number);
+
+        // Valida DV1
+        let soma = 0;
+        for (let i = 0; i < 9; i++) {
+            soma += numeros[i] * (10 - i);
+        }
+        let resto = (soma * 10) % 11;
+        let dv1 = resto === 10 ? 0 : resto;
+        if (numeros[9] !== dv1) return false;
+
+        // Valida DV2
+        soma = 0;
+        for (let i = 0; i < 10; i++) {
+            soma += numeros[i] * (11 - i);
+        }
+        resto = (soma * 10) % 11;
+        let dv2 = resto === 10 ? 0 : resto;
+        if (numeros[10] !== dv2) return false;
+
+        return true;
+    }
+
+
+
     const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setDados(prevDados => ({
-            ...prevDados,
-            [name]: type === 'checkbox' ? checked : value
-        }));
+        const { name, value } = e.target;
+        let value2 = value;
+
+        // Máscara para o CEP
+        if (name === "cep") {
+            let cepNumeros = value.replace(/\D/g, "");
+            cepNumeros = cepNumeros.slice(0, 8);
+            let cepFormatado = cepNumeros;
+            if (cepNumeros.length > 5) {
+                cepFormatado = cepNumeros.slice(0, 5) + "-" + cepNumeros.slice(5);
+            }
+            setDados((prev) => ({ ...prev, cep: cepFormatado }));
+            setCepNaoEncontrado(false);
+            return;
+        }
+
+        // Máscara para telefone
+        if (name === "telefone") {
+            let telefoneNumeros = value.replace(/\D/g, "");
+            if (telefoneNumeros.length > 10) {
+                telefoneNumeros = telefoneNumeros.slice(0, 11); // Limita a 11 caracteres
+            }
+            let telefoneFormatado = telefoneNumeros;
+            if (telefoneNumeros.length > 6) {
+                telefoneFormatado = `(${telefoneNumeros.slice(0, 2)}) ${telefoneNumeros.slice(2, 7)}-${telefoneNumeros.slice(7)}`;
+            } else if (telefoneNumeros.length > 2) {
+                telefoneFormatado = `(${telefoneNumeros.slice(0, 2)}) ${telefoneNumeros.slice(2)}`;
+            }
+            setDados((prev) => ({ ...prev, telefone: telefoneFormatado }));
+            return;
+        }
+
+
+
+
+
+
+        if (name === "rg") {
+            // Remove tudo que não for número ou 'X' (maiúsculo)
+            let rgLimpo = value.toUpperCase().replace(/[^0-9X]/g, "");
+
+            // Limita o tamanho: 9 dígitos (sem formatação) ou 8 dígitos + 'X'
+            rgLimpo = rgLimpo.slice(0, 9);
+
+            // Aplica a formatação: 11.111.111-X
+            let rgFormatado = rgLimpo;
+
+            if (rgLimpo.length > 2) {
+                rgFormatado = rgFormatado.replace(/^(\d{2})(\d)/, "$1.$2");
+            }
+            if (rgLimpo.length > 5) {
+                rgFormatado = rgFormatado.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+            }
+            if (rgLimpo.length === 9) {
+                rgFormatado = rgFormatado.replace(/^(\d{2})\.(\d{3})\.(\d{3})([0-9X])$/, "$1.$2.$3-$4");
+            }
+            if (rgFormatado.length > 12) {
+                rgFormatado = rgFormatado.slice(0, 11); // Limita a 9 dígitos
+            }
+            setDados((prev) => ({
+                ...prev,
+                [name]: rgFormatado
+            }));
+
+            return;
+        }
+
+        if (name === "responsavel.cpf") {
+            // Remove tudo que não for número
+            let cpfLimpo = value.replace(/\D/g, "");
+
+            // Limita o tamanho: 11 dígitos
+            cpfLimpo = cpfLimpo.slice(0, 11);
+
+            // Aplica a formatação: 000.000.000-00
+            let cpfFormatado = cpfLimpo;
+
+            if (cpfLimpo.length > 3) {
+                cpfFormatado = cpfFormatado.replace(/^(\d{3})(\d)/, "$1.$2");
+            }
+            if (cpfLimpo.length > 6) {
+                cpfFormatado = cpfFormatado.replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3");
+            }
+            if (cpfLimpo.length > 9) {
+                cpfFormatado = cpfFormatado.replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d{1,2})$/, "$1.$2.$3-$4");
+            }
+
+            value2 = cpfFormatado;
+        }
+
+
+
+
+        /* Verifica se é um campo de objeto dentro de outro objeto tipo:
+         obj1{
+            obj2{
+            nome:"teste"
+            } 
+         }
+
+        dai fica name = obj1.obj2
+
+            e ai fica parent == obj1
+            child == obj2 
+
+        */
+        if (name.includes(".")) {
+
+            const [parent, child] = name.split(".");
+            setDados((prev) => ({
+                ...prev,
+                [parent]: {
+                    ...prev[parent],
+                    [child]: value2
+                }
+            }));
+        } else {
+            setDados((prev) => ({ ...prev, [name]: value }));
+        }
     };
 
     return (
@@ -143,6 +403,30 @@ export default function FormCadAluno(props) {
 
                 <Form onSubmit={handleSubmit}>
 
+
+                    <Form.Group className="mb-3" id="responsavel.cpf">
+                        <Form.Label>Responsavel</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite a responsavel"
+                            name="responsavel.cpf"
+                            value={dados.responsavel.cpf || ""}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+
+                    <Form.Group className="mb-3" id="responsavel.nome">
+                        <Form.Label>Responsavel</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite a responsavel"
+                            name="responsavel.nome"
+                            value={dados.responsavel.nome || ""}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
                     <Form.Group className="mb-3" id="nome">
                         <Form.Label>Nome</Form.Label>
                         <Form.Control
@@ -154,38 +438,110 @@ export default function FormCadAluno(props) {
                         />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" id="idade">
-                        <Form.Label>Idade</Form.Label>
+
+
+
+                    <Form.Group className="mb-3" id="cep">
+                        <Form.Label>CEP</Form.Label>
                         <Form.Control
-                            type="number"
-                            placeholder="Digite a idade"
-                            name="idade"
-                            value={dados.idade}
+                            type="text"
+                            placeholder="Digite o CEP"
+                            name="cep"
+                            value={dados.cep}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+                    <Row className="mb-2 align-items-center">
+                        <Col xs="auto">
+                            <Button variant="info" onClick={buscarCep}>
+                                Buscar CEP
+                            </Button>
+                        </Col>
+                        <Col>
+                            <Form.Text className="text-muted">
+                                Preenche automaticamente os campos de rua, cidade e bairro <strong>se estiverem vazios</strong>.
+                            </Form.Text>
+                        </Col>
+                    </Row>
+
+
+
+                    <Form.Group className="mb-3" id="cidade">
+                        <Form.Label>Cidade</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="cidade"
+                            placeholder="Digite o CEP e clique em buscar "
+                            value={dados.cidade || ""}
+                            onChange={handleChange}
+                            className={
+                                cepNaoEncontrado && !dados.cidade ? "input-warning-amarelo" : ""
+                            }
+                        />
+                        {cepNaoEncontrado && (
+                            <Form.Text className="texto-aviso-cep">
+                                Cep não encontrado, preencha manualmente.
+                            </Form.Text>
+                        )}
+                    </Form.Group>
+
+
+                    <Form.Group className="mb-3" id="bairro">
+                        <Form.Label>Bairro</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="bairro"
+                            placeholder="Digite o CEP e clique em buscar "
+                            value={dados.bairro || ""}
+                            onChange={handleChange}
+                            className={
+                                cepNaoEncontrado && dados.bairro
+                                    ? "input-warning-grossa"
+                                    : ""
+                            }
+                        />
+                        {cepNaoEncontrado && (
+                            <Form.Text className="texto-aviso-cep">
+                                Cep não encontrado, preencha manualmente.
+                            </Form.Text>
+                        )}
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" id="rua">
+                        <Form.Label>Rua</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="rua"
+                            placeholder="Digite o CEP e clique em buscar "
+                            value={dados.rua || ""}
+                            onChange={handleChange}
+                            className={
+                                cepNaoEncontrado && dados.rua
+                                    ? "input-warning-grossa"
+                                    : ""
+                            }
+                        />
+                        {cepNaoEncontrado && (
+                            <Form.Text className="texto-aviso-cep">
+                                Cep não encontrado, preencha manualmente.
+                            </Form.Text>
+                        )}
+                    </Form.Group>
+
+
+
+                    <Form.Group className="mb-3" id="numero">
+                        <Form.Label>Numero</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite o numero"
+                            name="numero"
+                            value={dados.numero}
                             onChange={handleChange}
                         />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" id="responsavel">
-                        <Form.Label>Responsável</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite o nome do responsável"
-                            name="responsavel"
-                            value={dados.responsavel}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
 
-                    <Form.Group className="mb-3" id="endereco">
-                        <Form.Label>Endereço</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite o endereço"
-                            name="endereco"
-                            value={dados.endereco}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
 
                     <Form.Group className="mb-3" id="telefone">
                         <Form.Label>Telefone</Form.Label>
@@ -216,46 +572,13 @@ export default function FormCadAluno(props) {
                         </Form.Select>
                     </Form.Group>
 
-                    <Form.Group className="mb-3" id="rua">
-                        <Form.Label>Rua</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite a rua"
-                            name="rua"
-                            value={dados.rua}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="bairro">
-                        <Form.Label>Bairro</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite o bairro"
-                            name="bairro"
-                            value={dados.bairro}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="numero">
-                        <Form.Label>Número</Form.Label>
-                        <Form.Control
-                            type="number"
-                            placeholder="Digite o número"
-                            name="numero"
-                            value={dados.numero}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
                     <Form.Group className="mb-3" id="escola">
                         <Form.Label>Escola</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite a escola"
                             name="escola"
-                            value={dados.escola}
+                            value={dados.escola.nome || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -281,6 +604,7 @@ export default function FormCadAluno(props) {
                         />
                     </Form.Group>
 
+
                     <Form.Group className="mb-3" id="rg">
                         <Form.Label>RG</Form.Label>
                         <Form.Control
@@ -298,7 +622,7 @@ export default function FormCadAluno(props) {
                             type="text"
                             placeholder="Digite o formulário de saúde"
                             name="formularioSaude"
-                            value={dados.formularioSaude}
+                            value={dados.formularioSaude.id || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -309,7 +633,7 @@ export default function FormCadAluno(props) {
                             type="text"
                             placeholder="Digite a ficha"
                             name="ficha"
-                            value={dados.ficha}
+                            value={dados.ficha.id || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -335,16 +659,7 @@ export default function FormCadAluno(props) {
                         />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" id="cep">
-                        <Form.Label>CEP</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite o CEP"
-                            name="cep"
-                            value={dados.cep}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+
 
                     <div className="d-flex justify-content-between">
                         <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
