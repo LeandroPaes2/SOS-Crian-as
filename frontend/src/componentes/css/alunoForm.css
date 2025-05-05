@@ -6,6 +6,33 @@
     width: 150px;
 }
 
+.divResp{
+    /*background-color: rgba(207, 97, 97, 0.9);*/
+    border-radius: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+
+}
+
+.divResp2{
+    margin: 2%;
+    border-radius: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+
+}
+
+.divTitulo{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 10px;
+}
+
 .divInput {
     display: flex;
     flex-direction: column;

@@ -83,6 +83,35 @@ export default function FormCadAluno(props) {
         }
     }
 
+    async function buscarResp() {
+        const url = `http://localhost:3000`;
+        try {
+
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+
+                }, body: {
+                    cpf: dados.responsavel.cpf
+                }
+
+            });
+
+            const data = await response.json();
+
+            if (data.erro) {
+                setCepNaoEncontrado(true);
+                setCepValido(false);
+            } else {
+                dados.responsavel = data;
+            }
+        } catch (error) {
+            dados.responsavel.cpf = "";
+            console.error("Erro ao buscar responsavel:", error);
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -404,28 +433,71 @@ export default function FormCadAluno(props) {
                 <Form onSubmit={handleSubmit}>
 
 
-                    <Form.Group className="mb-3" id="responsavel.cpf">
-                        <Form.Label>Responsavel</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite a responsavel"
-                            name="responsavel.cpf"
-                            value={dados.responsavel.cpf || ""}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                    <div className="divResp">
+                        <div className="divTitulo">
+                            <strong>Responsavel</strong>
+                        </div>
 
 
-                    <Form.Group className="mb-3" id="responsavel.nome">
-                        <Form.Label>Responsavel</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite a responsavel"
-                            name="responsavel.nome"
-                            value={dados.responsavel.nome || ""}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+                        <div className="divResp2">
+
+                            <Form.Group className="mb-3" id="responsavel.cpf">
+                                <Form.Label>CPF</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Digite a/o responsavel"
+                                    name="responsavel.cpf"
+                                    value={dados.responsavel.cpf || ""}
+                                    onChange={handleChange}
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3" id="responsavel.nome">
+                                <Form.Label>Nome</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    disabled
+                                    placeholder="Digite a/o responsavel"
+                                    name="responsavel.nome"
+                                    value={dados.responsavel.nome || ""}
+                                    
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3" id="responsavel.telefone">
+                                <Form.Label>Telefone</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    disabled
+                                    placeholder="Digite a/o responsavel"
+                                    name="responsavel.nome"
+                                    value={dados.responsavel.telefone || ""}
+                                    
+                                />
+                            </Form.Group>
+
+
+                            <Row className="mb-2 align-items-center">
+                                <Col xs="auto">
+                                    <Button variant="info" onClick={buscarResp}>
+                                        Buscar Responsavel
+                                    </Button>
+                                </Col>
+                                <Col>
+                                    <Form.Text className="text-muted">
+                                       <strong> Preenche automaticamente os campos Nome, Telefone  </strong>.
+                                    </Form.Text>
+                                </Col>
+                            </Row>
+                        </div>
+                    </div>
+
+                    <br /><br /><br />
+
+
+                    <div className="divTitulo">
+                        <strong>Aluno</strong>
+                    </div>
 
                     <Form.Group className="mb-3" id="nome">
                         <Form.Label>Nome</Form.Label>
@@ -474,9 +546,6 @@ export default function FormCadAluno(props) {
                             placeholder="Digite o CEP e clique em buscar "
                             value={dados.cidade || ""}
                             onChange={handleChange}
-                            className={
-                                cepNaoEncontrado && !dados.cidade ? "input-warning-amarelo" : ""
-                            }
                         />
                         {cepNaoEncontrado && (
                             <Form.Text className="texto-aviso-cep">
@@ -494,11 +563,6 @@ export default function FormCadAluno(props) {
                             placeholder="Digite o CEP e clique em buscar "
                             value={dados.bairro || ""}
                             onChange={handleChange}
-                            className={
-                                cepNaoEncontrado && dados.bairro
-                                    ? "input-warning-grossa"
-                                    : ""
-                            }
                         />
                         {cepNaoEncontrado && (
                             <Form.Text className="texto-aviso-cep">
@@ -515,11 +579,6 @@ export default function FormCadAluno(props) {
                             placeholder="Digite o CEP e clique em buscar "
                             value={dados.rua || ""}
                             onChange={handleChange}
-                            className={
-                                cepNaoEncontrado && dados.rua
-                                    ? "input-warning-grossa"
-                                    : ""
-                            }
                         />
                         {cepNaoEncontrado && (
                             <Form.Text className="texto-aviso-cep">
@@ -672,7 +731,7 @@ export default function FormCadAluno(props) {
 
                 </Form>
             </PaginaGeral>
-        </div>
+        </div >
 
     );
 }
