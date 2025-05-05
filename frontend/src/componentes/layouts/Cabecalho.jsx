@@ -5,8 +5,10 @@ export default function Cabecalho(props){
     
     //método render
     return (
-        <Alert className="alert-custom text-center mt-4 mb-4">
-                <h2 className="titulo-alert">Sistema SOS Crianças</h2>
-        </Alert>
+        <div className="topoc">
+            <Alert className="alert-custom text-center mb-4" variant="dark">
+                    <h2 className=" titulo-alert">Sistema SOS Crianças</h2>
+            </Alert>
+        </div>
     );
 }

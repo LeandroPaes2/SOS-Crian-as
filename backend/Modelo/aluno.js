@@ -1,141 +1,210 @@
 import AlunoDAO from "../Persistencia/alunoDAO.js";
-import Responsavel from "./responsavel.js";
-import Escola from "./escola.js";
 
 export default class Aluno {
-    #numProtocolo;
+    #id;
     #nome;
     #dataNascimento;
     #responsavel;
+    #cidade;
     #rua;
     #bairro;
-    #cidade;
-    #cep;
     #numero;
     #escola;
     #telefone;
-    #periodoProjeto;
     #periodoEscola;
     #realizaAcompanhamento;
     #possuiSindrome;
-    #status //0 inativo e 1 ativo
+    #descricao;
+    #dataInsercaoListaEspera;
+    #rg;
+    #formularioSaude;
+    #ficha;
+    #dataInsercaoProjeto;
+    #status;
+    #periodoProjeto;
+    #cep;
 
-    constructor(numProtocolo=0, nome="", dataNascimento="", responsavel={},rua="", bairro="", cidade="", cep="", numero="", escola={} ,telefone="", periodoProjeto="", periodoEscola="", realizaAcompanhamento="", possuiSindrome="",status=0) {
-        this.#numProtocolo = numProtocolo;
+
+    ////// TENHO Q ARRUMAR ESSA POHA TA FALTANDO ATRIBUTOS NOS LUGAR TIPO NO TOJSON;
+
+    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, cidade = "" ,rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", dataInsercao = "", rg = "", formularioSaude = {}, ficha = {}, dataInsercaoProjeto = "", status = "", periodoProjeto = "") {
+        this.#id = id;
         this.#nome = nome;
         this.#dataNascimento = dataNascimento;
         this.#responsavel = responsavel;
-        this.#rua = rua;
-        this.#bairro = bairro;
         this.#cidade = cidade;
-        this.#cep = cep;
+        this.#rua = rua;
+        this.#bairro = bairro
         this.#numero = numero;
         this.#escola = escola;
         this.#telefone = telefone;
-        this.#periodoProjeto = periodoProjeto;
         this.#periodoEscola = periodoEscola;
         this.#realizaAcompanhamento = realizaAcompanhamento;
         this.#possuiSindrome = possuiSindrome;
+        this.#descricao = descricao;
+        this.#dataInsercaoListaEspera = dataInsercao;
+        this.#rg = rg;
+        this.#formularioSaude = formularioSaude;
+        this.#ficha = ficha;
+        this.#dataInsercaoProjeto = dataInsercaoProjeto;
         this.#status = status;
+        this.#periodoProjeto = periodoProjeto;
+        this.#cep = cep;
     }
 
-    get numProtocolo() { return this.#numProtocolo; }
-    set numProtocolo(valor) { this.#numProtocolo = valor; }
+    get id() { return this.#id; }
+    set id(novoId) { this.#id = novoId; }
+
 
     get nome() { return this.#nome; }
-    set nome(valor) { this.#nome = valor; }
+    set nome(novoNome) { this.#nome = novoNome; }
 
-   get dataNascimento() { return this.#dataNascimento; }
-    set dataNascimento(valor) { this.#dataNascimento = valor; }
 
-    get responsavel() { return this.#responsavel; }
+    get dataNascimento() { return this.#dataNascimento; }
+    set dataNascimento(novoDataNascimento) { this.#dataNascimento = novoDataNascimento; }
+
+
+    get responsavel() { return this.#responsavel.toJSON(); }
     set responsavel(novoResponsavel) {
-        if(novoResponsavel instanceof Responsavel)
+        if (novoResponsavel instanceof Responsavel)
             this.#responsavel = novoResponsavel;
-        }
+    }
 
-    get rua() { return this.#rua; }
-    set rua(valor) { this.#rua = valor; }
-
-    get bairro() { return this.#bairro; }    
-    set bairro(valor) { this.#bairro = valor; }
 
     get cidade() { return this.#cidade; }
-    set cidade(valor) { this.#cidade = valor; }
+    set cidade(novaCidade) { this.#cidade = novaCidade; }
 
-    get cep() { return this.#cep; }
-    set cep(valor) { this.#cep = valor; }
+    get rua() { return this.#rua; }
+    set rua(novoRua) { this.#rua = novoRua; }
+
+
+    get bairro() { return this.#bairro; }
+    set bairro(novoBairro) { this.#bairro = novoBairro; }
+
 
     get numero() { return this.#numero; }
-    set numero(valor) { this.#numero = valor; }
+    set numero(novoNumero) { this.#numero = novoNumero; }
 
-    get escola() { return this.#escola; }
+
+    get escola() { return this.#escola.toJSON(); }
     set escola(novaEscola) {
-        if(novaEscola instanceof Escola)
-         this.#escola = novaEscola;
-         }
-    
-    get telefone() { return this.#telefone; }
-    set telefone(valor) { this.#telefone = valor; }
+        if (novaEscola instanceof Escola)
+            this.#escola = novaEscola;
+    }
 
-    get periodoProjeto() { return this.#periodoProjeto; }
-    set periodoProjeto(valor) { this.#periodoProjeto = valor; }
+
+    get telefone() { return this.#telefone; }
+    set telefone(novoTelefone) { this.#telefone = novoTelefone; }
+
 
     get periodoEscola() { return this.#periodoEscola; }
-    set periodoEscola(valor) { this.#periodoEscola = valor; }
+    set periodoEscola(novoPeriodoEscola) { this.#periodoEscola = novoPeriodoEscola; }
+
 
     get realizaAcompanhamento() { return this.#realizaAcompanhamento; }
-    set realizaAcompanhamento(valor) { this.#realizaAcompanhamento = valor; }
+    set realizaAcompanhamento(novoRealizaAcompanhamento) { this.#realizaAcompanhamento = novoRealizaAcompanhamento; }
+
 
     get possuiSindrome() { return this.#possuiSindrome; }
-    set possuiSindrome(valor) { this.#possuiSindrome = valor; }
+    set possuiSindrome(novoPossuiSindrome) { this.#possuiSindrome = novoPossuiSindrome; }
 
-    get status(){
-        return this.#status;
+
+    get descricao() { return this.#descricao; }
+    set descricao(novaDescricao) { this.#descricao = novaDescricao; }
+
+
+    get dataInsercaoListaEspera() { return this.#dataInsercaoListaEspera; }
+    set dataInsercaoListaEspera(novoDataInsercaoListaEspera) { this.#dataInsercaoListaEspera = novoDataInsercaoListaEspera; }
+
+    get rg() { return this.#rg; }
+    set rg(novoRg) { this.#rg = novoRg; }
+
+
+    get formularioSaude() { return this.#formularioSaude.toJSON(); }
+    set formularioSaude(novoFormularioSaude) { 
+
+        this.#formularioSaude = novoFormularioSaude;
+
+        /*
+        if(novoFormularioSaude instanceof FormularioSaude)
+        this.#formularioSaude = novoFormularioSaude;*/
+    
+    
     }
 
-    set status(NovoStatus){
-        this.#status = NovoStatus;
+
+    get ficha() { return this.#ficha.toJSON(); }     /// ainda nn existe
+    set ficha(novoFicha) { 
+        this.#ficha = novoFicha; 
+
+        /*
+        if(novoFicha instanceof Ficha)
+            this.#ficha = novoFicha; 
+        */
     }
+
+
+    get dataInsercaoProjeto() { return this.#dataInsercaoProjeto; }
+    set dataInsercaoProjeto(novoDataInsercaoProjeto) { this.#dataInsercaoProjeto = novoDataInsercaoProjeto; }
+
+
+    get status() { return this.#status; }
+    set status(novoStatus) { this.#status = novoStatus; }
+
+
+    get periodoProjeto() { return this.#periodoProjeto; }
+    set periodoProjeto(novoperiodoProjeto) { this.#periodoProjeto = novoperiodoProjeto; }
+
+    get cep() { return this.#cep; }
+    set cep(novoCep) { this.#cep = novoCep; }
+
 
     toJSON() {
         return {
-            numProtocolo: this.#numProtocolo,
+            id: this.#id,
             nome: this.#nome,
             dataNascimento: this.#dataNascimento,
             responsavel: this.#responsavel.toJSON(),
             rua: this.#rua,
-            bairro: this.#bairro,
-            cidade: this.#cidade,
-            cep: this.#cep,
             numero: this.#numero,
             escola: this.#escola.toJSON(),
             telefone: this.#telefone,
-            periodoProjeto: this.#periodoProjeto,
             periodoEscola: this.#periodoEscola,
             realizaAcompanhamento: this.#realizaAcompanhamento,
             possuiSindrome: this.#possuiSindrome,
+            descricao: this.#descricao,
+            dataInsercao: this.#dataInsercaoListaEspera,
+            rg: this.#rg,
+            formularioSaude: this.#formularioSaude,
+            ficha: this.#ficha,
+            dataInsercaoProjeto: this.#dataInsercaoProjeto,
             status: this.#status,
+            periodoProjeto: this.#periodoProjeto
         };
     }
 
-    async incluir(conexao) {
-        const dao = new AlunoDAO();
-        await dao.incluir(this,conexao);
+
+    incluir(conexao) {
+        const alunoDAO = new AlunoDAO();
+        alunoDAO.incluir(this, conexao);
     }
 
-    async alterar(conexao) {
-        const dao = new AlunoDAO();
-        await dao.alterar(this,conexao);
+
+    alterar(conexao) {
+        const alunoDAO = new AlunoDAO();
+        alunoDAO.alterar(this, conexao);
     }
 
-    async excluir(conexao) {
-        const dao = new AlunoDAO();
-        await dao.excluir(this,conexao);
+
+    excluir(conexao) {
+        const alunoDAO = new AlunoDAO();
+        alunoDAO.excluir(this, conexao);
     }
 
-    async consultar(termo,conexao) {
-        const dao = new AlunoDAO();
-        return await dao.consultar(termo,conexao);
+
+    consultar(termo, tipo, conexao) {
+        const alunoDAO = new AlunoDAO();
+        return alunoDAO.consultar(termo, tipo, conexao);
     }
+
 }
