@@ -9,7 +9,7 @@ export default function RelatorioHorario() {
     const [listadeHorarios, setListadeHorarios] = useState([]);
     const [turmas, setTurmas] = useState([]);
     const [materias, setMaterias] = useState([]);
-
+    const [pesquisaTurma, setPesquisaTurma] = useState("");
     const [mensagem, setMensagem] = useState("");
     const navigate = useNavigate();
 
@@ -91,6 +91,20 @@ export default function RelatorioHorario() {
                         <h2 className="titulo-alert">Horários</h2>
                     </Alert>  
                         
+                        {/*<Form className="mt-4">
+                            <Form.Group controlId="formPesquisaNome">
+                                <Form.Label>Pequise a turma pelo nome</Form.Label>
+                                <InputGroup>
+                                    <Form.Control 
+                                        type="text" 
+                                        placeholder="Digite o nome da turma..." 
+                                        value={pesquisaTurma} 
+                                        onChange={(e) => setPesquisaTurma(e.target.value)}/>
+                                    <Button variant="secondary">Pesquisar</Button>
+                                </InputGroup>
+                            </Form.Group>
+                        </Form>*/}
+
                         {mensagem &&(
                             <Alert 
                             className="text-center" 
