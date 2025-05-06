@@ -606,8 +606,14 @@ export default function FormCadAluno(props) {
                         />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" id="escola">
-                        <Form.Label>Escola</Form.Label>
+
+
+                    <div className="divTitulo">
+                        <strong> <h4>Escola</h4>  </strong>
+                    </div>
+
+                    <Form.Group className="mb-3" id="escola.nome">
+                        <Form.Label>Nome</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite a escola"
@@ -616,6 +622,24 @@ export default function FormCadAluno(props) {
                             onChange={handleChange}
                         />
                     </Form.Group>
+                    <Form.Group className="mb-3" id="escola.endereco">
+                        <Form.Label>Endereco</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite a escola"
+                            name="escola"
+                            value={dados.escola.nome || ""}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+
+
+
+
+
+
+
 
                     <Form.Group className="mb-3">
                         <Form.Label>Período Escolar</Form.Label>
@@ -627,7 +651,7 @@ export default function FormCadAluno(props) {
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                    <Row className="mb-2 align-items-center">
+                        <Row className="mb-2 align-items-center">
                             <Col xs="auto" className="d-flex align-items-center">
                                 <Form.Label className="mb-0 me-2">Período do Projeto</Form.Label>
                                 <OverlayTrigger
