@@ -25,6 +25,7 @@
 }
 
 .divTitulo{
+    padding-top: 3%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -94,3 +95,24 @@
     align-items: center;
     padding-top: 100px;
 }
+
+.popover-custom {
+    max-width: 250px;
+    font-size: 0.95rem;
+    padding: 0.75rem;
+  }
+  
+  .popover-custom .popover-header {
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  .help-button {
+    text-decoration: none;
+    padding: 0;
+    color: #0d6efd; /* Azul padrão Bootstrap */
+  }
+  
+  .help-button:hover {
+    color: #0a58ca; /* Azul mais escuro no hover */
+  }

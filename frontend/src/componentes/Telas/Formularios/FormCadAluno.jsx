@@ -1,16 +1,19 @@
-import { Alert, Form, Button, Col, Row } from "react-bootstrap";
-import { useState, useEffect } from "react";
+import { Alert, Form, Button, Col, Row, OverlayTrigger, Popover } from "react-bootstrap";
+import { useState, useEffect, use } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
 import { Link, useLocation } from "react-router-dom";
 import "../../css/alunoForm.css";
 import { useNavigate } from 'react-router-dom';
+import { FaQuestionCircle } from "react-icons/fa"; // Ícone de interrogação
+
 
 export default function FormCadAluno(props) {
     const location = useLocation();
     const [editando, setEditando] = useState(false);
     const [mensagem, setMensagem] = useState("");
     const [cepNaoEncontrado, setCepNaoEncontrado] = useState(false);
-    const [cepValido, setCepValido] = useState(false);
+    const [respNaoEncontrado, setRespNaoEncontrado] = useState(false);
+
 
     const [dados, setDados] = useState({
         id: 0,
@@ -18,7 +21,8 @@ export default function FormCadAluno(props) {
         dataNascimento: "",
         responsavel: {
             nomeResp: "",
-            cpf: ""
+            cpf: "",
+            email: ""
         },
         cidade: "",
         rua: "",
@@ -53,66 +57,77 @@ export default function FormCadAluno(props) {
         }
     }, [location.state]);
 
+
+
+
     async function buscarCep() {
         const cep = dados.cep.replace(/\D/g, "");
         const url = `https://viacep.com.br/ws/${cep}/json/`;
-
         try {
             const response = await fetch(url);
+
+            // Verifica se a resposta foi bem-sucedida (status 200–299)
+            if (!response.ok) {
+                throw new Error("Erro ao buscar CEP na API.");
+            }
+
             const data = await response.json();
 
             if (data.erro) {
+                // API retornou resposta válida mas com erro de CEP não encontrado
                 setCepNaoEncontrado(true);
-                setCepValido(false);
             } else {
                 setCepNaoEncontrado(false);
-                setCepValido(true);
-
                 setDados((prev) => ({
                     ...prev,
-                    cidade: prev.cidade || data.localidade,
-                    rua: prev.rua || data.logradouro,
-                    bairro: prev.bairro || data.bairro,
-                    cep: data.cep
+                    cidade: data.localidade,
+                    rua: data.logradouro,
+                    bairro: data.bairro,
+                    cep: data.cep,
                 }));
             }
         } catch (error) {
-            setCepNaoEncontrado(true);
-            setCepValido(false);
             console.error("Erro ao buscar CEP:", error);
+            setCepNaoEncontrado(true);
         }
     }
 
-    async function buscarResp() {
-        const url = `http://localhost:3000`;
-        try {
 
+
+    async function buscarResp() {
+        const cpf = dados.responsavel.cpf?.replace(/\D/g, ""); // Remove pontos e traços se houver
+        const url = `http://localhost:3000/responsavel/${cpf}`;
+
+        try {
             const response = await fetch(url, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-
-                }, body: {
-                    cpf: dados.responsavel.cpf
-                }
-
+                },
             });
+
+            if (!response.ok) {
+                throw new Error("Responsável não encontrado.");
+            } else
+                setRespNaoEncontrado(false);
 
             const data = await response.json();
 
-            if (data.erro) {
-                setCepNaoEncontrado(true);
-                setCepValido(false);
-            } else {
-                dados.responsavel = data;
-            }
+            // Atualiza os dados 
+            setDados((prev) => ({
+                ...prev,
+                responsavel: {
+                    ...prev.responsavel,
+                    nome: data.nome,
+                    email: data.email,
+                    telefone: data.telefone,
+                },
+            }));
         } catch (error) {
-            dados.responsavel.cpf = "";
-            console.error("Erro ao buscar responsavel:", error);
+            console.error("Erro ao buscar responsável:", error);
+            setRespNaoEncontrado(true);
         }
-    }
-
-    const handleSubmit = async (e) => {
+    } const handleSubmit = async (e) => {
         e.preventDefault();
 
         const {
@@ -367,6 +382,35 @@ export default function FormCadAluno(props) {
             return;
         }
 
+        if (name === "periodoEscola") {
+            console.log("AAAAAA ENTROU AAAAAA");
+            console.log(value);
+            if (value === "Tarde") {
+                setDados((prev) => ({
+                    ...prev,
+                    [name]: value,
+                    ["periodoProjeto"]: "Manhã"
+                }));
+            }
+            else
+                if (value === "Manhã") {
+                    console.log("AAAAAA MANHA AAAAAA");
+                    setDados((prev) => ({
+                        ...prev,
+                        [name]: value,
+                        ["periodoProjeto"]: "Tarde"
+                    }));
+                }
+                else {
+                    setDados((prev) => ({
+                        ...prev,
+                        [name]: value,
+                        ["periodoProjeto"]: ""
+                    }));
+                }
+        }
+
+
         if (name === "responsavel.cpf") {
             // Remove tudo que não for número
             let cpfLimpo = value.replace(/\D/g, "");
@@ -435,7 +479,7 @@ export default function FormCadAluno(props) {
 
                     <div className="divResp">
                         <div className="divTitulo">
-                            <strong>Responsavel</strong>
+                            <strong> <h4>Responsavel</h4></strong>
                         </div>
 
 
@@ -445,7 +489,7 @@ export default function FormCadAluno(props) {
                                 <Form.Label>CPF</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    placeholder="Digite a/o responsavel"
+                                    placeholder="Digite o CPF do(da) Responsavel"
                                     name="responsavel.cpf"
                                     value={dados.responsavel.cpf || ""}
                                     onChange={handleChange}
@@ -457,10 +501,22 @@ export default function FormCadAluno(props) {
                                 <Form.Control
                                     type="text"
                                     disabled
-                                    placeholder="Digite a/o responsavel"
+                                    placeholder="Digite o CPF do(da) Responsavel"
                                     name="responsavel.nome"
                                     value={dados.responsavel.nome || ""}
-                                    
+
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3" id="responsavel.email">
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    disabled
+                                    placeholder="Digite o CPF do(da) Responsavel"
+                                    name="responsavel.email"
+                                    value={dados.responsavel.email || ""}
+
                                 />
                             </Form.Group>
 
@@ -469,34 +525,51 @@ export default function FormCadAluno(props) {
                                 <Form.Control
                                     type="text"
                                     disabled
-                                    placeholder="Digite a/o responsavel"
+                                    placeholder="Digite o CPF do(da) Responsavel"
                                     name="responsavel.nome"
                                     value={dados.responsavel.telefone || ""}
-                                    
+
                                 />
                             </Form.Group>
+
+
 
 
                             <Row className="mb-2 align-items-center">
                                 <Col xs="auto">
                                     <Button variant="info" onClick={buscarResp}>
-                                        Buscar Responsavel
+                                        Buscar Responsável
                                     </Button>
                                 </Col>
-                                <Col>
-                                    <Form.Text className="text-muted">
-                                       <strong> Preenche automaticamente os campos Nome, Telefone  </strong>.
-                                    </Form.Text>
+                                <Col xs="auto">
+                                    <OverlayTrigger
+                                        trigger="click"
+                                        placement="auto"
+                                        rootClose
+                                        overlay={
+                                            <Popover id="popover-info" className="popover-custom">
+                                                <Popover.Header as="h3">O que este botão faz?</Popover.Header>
+                                                <Popover.Body>
+                                                    Ao clicar, o sistema busca os dados do responsável pelo CPF informado e preenche automaticamente os campos Nome, Email e Telefone.
+                                                </Popover.Body>
+                                            </Popover>
+                                        }
+                                    >
+                                        <Button variant="link" className="help-button">
+                                            <FaQuestionCircle size={20} />
+                                        </Button>
+                                    </OverlayTrigger>
                                 </Col>
                             </Row>
+
                         </div>
                     </div>
 
-                    <br /><br /><br />
+
 
 
                     <div className="divTitulo">
-                        <strong>Aluno</strong>
+                        <strong> <h4>Aluno</h4>  </strong>
                     </div>
 
                     <Form.Group className="mb-3" id="nome">
@@ -510,9 +583,119 @@ export default function FormCadAluno(props) {
                         />
                     </Form.Group>
 
+                    <Form.Group className="mb-3" id="rg">
+                        <Form.Label>RG</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite o RG"
+                            name="rg"
+                            value={dados.rg}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
 
 
+                    <Form.Group className="mb-3" id="telefone">
+                        <Form.Label>Telefone</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite o telefone"
+                            name="telefone"
+                            value={dados.telefone}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
 
+                    <Form.Group className="mb-3" id="escola">
+                        <Form.Label>Escola</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite a escola"
+                            name="escola"
+                            value={dados.escola.nome || ""}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>Período Escolar</Form.Label>
+                        <Form.Select name="periodoEscola" value={dados.periodoEscola} onChange={handleChange}>
+                            <option value="">Selecione o período escolar</option>
+                            <option value="Manhã">Manhã</option>
+                            <option value="Tarde">Tarde</option>
+                        </Form.Select>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                    <Row className="mb-2 align-items-center">
+                            <Col xs="auto" className="d-flex align-items-center">
+                                <Form.Label className="mb-0 me-2">Período do Projeto</Form.Label>
+                                <OverlayTrigger
+                                    trigger="click"
+                                    placement="auto"
+                                    rootClose
+                                    overlay={
+                                        <Popover id="popover-info" className="popover-custom">
+                                            <Popover.Header as="h3">O que este campo faz?</Popover.Header>
+                                            <Popover.Body>
+                                                O Período do Projeto sempre será no contraturno do Período Escolar, logo o sistema muda ele altomaticamente para o contraturno escolar.
+                                            </Popover.Body>
+                                        </Popover>
+                                    }
+                                >
+                                    <Button variant="link" className="help-button p-0 ms-2">
+                                        <FaQuestionCircle size={20} />
+                                    </Button>
+                                </OverlayTrigger>
+                            </Col>
+                        </Row>
+                        <Form.Select name="periodoProjeto" value={dados.periodoProjeto} onChange={handleChange} disabled>
+                            <option value="">Selecione o período</option>
+                            <option value="Manhã">Manhã</option>
+                            <option value="Tarde">Tarde</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" id="descricao">
+                        <Form.Label>Descrição</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite a descrição"
+                            name="descricao"
+                            value={dados.descricao}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" id="formularioSaude">
+                        <Form.Label>Formulário de Saúde</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite o formulário de saúde"
+                            name="formularioSaude"
+                            value={dados.formularioSaude.id || ""}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" id="ficha">
+                        <Form.Label>Ficha</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite a ficha"
+                            name="ficha"
+                            value={dados.ficha.id || ""}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" id="dataInsercaoProjeto">
+                        <Form.Label>Data de Inserção no Projeto</Form.Label>
+                        <Form.Control
+                            type="date"
+                            name="dataInsercaoProjeto"
+                            value={dados.dataInsercaoProjeto}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
                     <Form.Group className="mb-3" id="cep">
                         <Form.Label>CEP</Form.Label>
                         <Form.Control
@@ -529,14 +712,26 @@ export default function FormCadAluno(props) {
                                 Buscar CEP
                             </Button>
                         </Col>
-                        <Col>
-                            <Form.Text className="text-muted">
-                                Preenche automaticamente os campos de rua, cidade e bairro <strong>se estiverem vazios</strong>.
-                            </Form.Text>
+                        <Col xs="auto">
+                            <OverlayTrigger
+                                trigger="click"
+                                placement="auto"
+                                rootClose
+                                overlay={
+                                    <Popover id="popover-info" className="popover-custom">
+                                        <Popover.Header as="h3">O que este botão faz?</Popover.Header>
+                                        <Popover.Body>
+                                            Ao clicar, o sistema busca os dados do CEP informado e preenche automaticamente os campos Cidade, Bairro e Rua.
+                                        </Popover.Body>
+                                    </Popover>
+                                }
+                            >
+                                <Button variant="link" className="help-button">
+                                    <FaQuestionCircle size={20} />
+                                </Button>
+                            </OverlayTrigger>
                         </Col>
                     </Row>
-
-
 
                     <Form.Group className="mb-3" id="cidade">
                         <Form.Label>Cidade</Form.Label>
@@ -600,123 +795,6 @@ export default function FormCadAluno(props) {
                         />
                     </Form.Group>
 
-
-
-                    <Form.Group className="mb-3" id="telefone">
-                        <Form.Label>Telefone</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite o telefone"
-                            name="telefone"
-                            value={dados.telefone}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                        <Form.Label>Período do Projeto</Form.Label>
-                        <Form.Select name="periodoProjeto" value={dados.periodoProjeto} onChange={handleChange}>
-                            <option value="">Selecione o período</option>
-                            <option value="manha">Manhã</option>
-                            <option value="tarde">Tarde</option>
-                        </Form.Select>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                        <Form.Label>Período Escolar</Form.Label>
-                        <Form.Select name="periodoEscola" value={dados.periodoEscola} onChange={handleChange}>
-                            <option value="">Selecione o período escolar</option>
-                            <option value="manha">Manhã</option>
-                            <option value="tarde">Tarde</option>
-                        </Form.Select>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="escola">
-                        <Form.Label>Escola</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite a escola"
-                            name="escola"
-                            value={dados.escola.nome || ""}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="descricao">
-                        <Form.Label>Descrição</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite a descrição"
-                            name="descricao"
-                            value={dados.descricao}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="dataInsercaoListaEspera">
-                        <Form.Label>Data de Inserção na Lista de Espera</Form.Label>
-                        <Form.Control
-                            type="date"
-                            name="dataInsercaoListaEspera"
-                            value={dados.dataInsercaoListaEspera}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-
-                    <Form.Group className="mb-3" id="rg">
-                        <Form.Label>RG</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite o RG"
-                            name="rg"
-                            value={dados.rg}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="formularioSaude">
-                        <Form.Label>Formulário de Saúde</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite o formulário de saúde"
-                            name="formularioSaude"
-                            value={dados.formularioSaude.id || ""}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="ficha">
-                        <Form.Label>Ficha</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite a ficha"
-                            name="ficha"
-                            value={dados.ficha.id || ""}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="dataInsercaoProjeto">
-                        <Form.Label>Data de Inserção no Projeto</Form.Label>
-                        <Form.Control
-                            type="date"
-                            name="dataInsercaoProjeto"
-                            value={dados.dataInsercaoProjeto}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="status">
-                        <Form.Label>Status</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite o status"
-                            name="status"
-                            value={dados.status}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
 
 
 
