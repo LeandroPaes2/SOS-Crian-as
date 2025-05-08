@@ -30,31 +30,38 @@ export default function RelatorioTurmas() {
     }, []);
 
     const excluirTurmas = async (turma) => {
-
         if (window.confirm("Deseja realmente excluir a turma " + turma.cor)) {
             if (!turma || !turma.id) {
                 setMensagem("Erro: turma inválida!");
                 return;
             }
-
+    
             try {
                 const response = await fetch(`http://localhost:3000/turmas/${turma.id}`, {
                     method: "DELETE"
                 });
-
+    
                 if (response.ok) {
-                    setMensagem("Turma excluida com sucesso!");
+                    setMensagem("Turma excluída com sucesso!");
                     setListaDeTurmas(listaDeTurmas.filter(t => t.id !== turma.id));
                 } else {
                     setMensagem("Erro ao excluir a turma.");
                 }
+
+                setTimeout(() => {
+                    setMensagem("");
+                }, 3000);
+    
             } catch (error) {
                 console.error("Erro ao conectar com o backend:", error);
                 setMensagem("Erro de conexão com o servidor.");
+                setTimeout(() => {
+                    setMensagem("");
+                }, 3000);
             }
         }
-        window.location.reload()
     };
+    
 
     const editarTurmas = (turma) => {
         navigate("/cadastroTurma", {
@@ -106,6 +113,7 @@ export default function RelatorioTurmas() {
                                             : "warning"
                                 }
                             >
+                                
                                 {mensagem}
                             </Alert>
                         )}
