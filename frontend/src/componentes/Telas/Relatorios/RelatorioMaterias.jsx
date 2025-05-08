@@ -45,13 +45,19 @@ export default function RelatorioMateria() {
                 } else {
                     setMensagem("Erro ao excluir a matéria.");
                 }
+
+                setTimeout(() => {
+                    setMensagem("");
+                }, 3000);
+
             } catch (error) {
                 console.error("Erro ao conectar com o backend:", error);
                 setMensagem("Erro de conexão com o servidor.");
+                setTimeout(() => {
+                    setMensagem("");
+                }, 3000);
             }
         }
-        // opcional: atualizar a página após a exclusão
-        window.location.reload();
     };
 
     return (
@@ -78,6 +84,22 @@ export default function RelatorioMateria() {
                                 </InputGroup>
                             </Form.Group>
                         </Form>
+
+                        {mensagem && (
+                            <Alert
+                                className="text-center"
+                                variant={
+                                    mensagem.toLowerCase().includes("sucesso")
+                                        ? "success"
+                                        : mensagem.toLowerCase().includes("erro")
+                                            ? "danger"
+                                            : "warning"
+                                }
+                            >
+                                
+                                {mensagem}
+                            </Alert>
+                        )}
 
                         <Container>
                             <Table striped bordered hover>
