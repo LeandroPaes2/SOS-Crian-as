@@ -1,4 +1,5 @@
 import Aluno from "../Modelo/aluno.js";
+import ResponsavelCtrl from "../Controle/responsavelCtrl.js";
 import Responsavel from "../Modelo/responsavel.js";
 import Escola from "../Modelo/escola.js";
 
@@ -22,13 +23,11 @@ export default class AlunoCtrl {
                     realizaAcompanhamento,
                     possuiSindrome,
                     descricao,
-                    dataInsercaoListaEspera,
                     rg,
                     formularioSaude,
-                    dataInsercaoProjeto,
+                    ficha,
                     status,
                     periodoProjeto,
-                    ficha,
                     cep
                 } = req.body;
         
@@ -44,11 +43,22 @@ export default class AlunoCtrl {
                 telefone && periodoEscola &&
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
-                descricao && dataInsercaoListaEspera &&
-                rg && formularioSaude !== undefined && ficha !== undefined && dataInsercaoProjeto && status != 0 && periodoProjeto && cep && bairro;
+                descricao &&
+                rg && status != 0 && periodoProjeto && cep && bairro;
                 if (dadosValidos) {
                     let conexao;
                     try {
+
+                        /*
+                        const objResponsavel = ResponsavelCtrl.buscar(responsavel.cpf,conexao);
+                        
+                        
+                            //tem q ser assim mas nn funciona no momento
+                        */
+
+
+
+
                         const objResponsavel = new Responsavel(
                             responsavel.cpf,
                             responsavel.nome,
@@ -89,11 +99,9 @@ export default class AlunoCtrl {
                             realizaAcompanhamento,
                             possuiSindrome,
                             descricao,
-                            dataInsercaoListaEspera,
                             rg,
                             objFormularioSaude,
                             ficha,
-                            dataInsercaoProjeto,
                             status,
                             periodoProjeto,
                             cep
@@ -145,13 +153,11 @@ export default class AlunoCtrl {
                     realizaAcompanhamento,
                     possuiSindrome,
                     descricao,
-                    dataInsercaoListaEspera,
                     rg,
                     formularioSaude,
-                    dataInsercaoProjeto,
+                    ficha,
                     status,
                     periodoProjeto,
-                    ficha,
                     cep
                 } = req.body;
         
@@ -166,9 +172,8 @@ export default class AlunoCtrl {
                 telefone && periodoEscola &&
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
-                descricao && dataInsercaoListaEspera &&
-                rg && formularioSaude !== undefined && ficha !== undefined && dataInsercaoProjeto && status != 0 && periodoProjeto && cep && bairro;
-        
+                descricao &&
+                rg && status != 0 && periodoProjeto && cep && bairro;
                 if (dadosValidos) {
                     let conexao;
                     try {
@@ -214,11 +219,9 @@ export default class AlunoCtrl {
                             realizaAcompanhamento,
                             possuiSindrome,
                             descricao,
-                            dataInsercaoListaEspera,
                             rg,
                             objFormularioSaude,
                             ficha,
-                            dataInsercaoProjeto,
                             status,
                             periodoProjeto,
                             cep

@@ -13,6 +13,7 @@ export default function FormCadAluno(props) {
     const [mensagem, setMensagem] = useState("");
     const [cepNaoEncontrado, setCepNaoEncontrado] = useState(false);
     const [respNaoEncontrado, setRespNaoEncontrado] = useState(false);
+    const [cpfInvalido, setCpfInvalido] = useState(false);
 
 
     const [dados, setDados] = useState({
@@ -95,6 +96,7 @@ export default function FormCadAluno(props) {
 
 
     async function buscarResp() {
+        validarCPF(dados.responsavel.cpf);
         const cpf = dados.responsavel.cpf?.replace(/\D/g, ""); // Remove pontos e traços se houver
         const url = `http://localhost:3000/responsavel/${cpf}`;
 
@@ -279,37 +281,50 @@ export default function FormCadAluno(props) {
     }
 
     function validarCPF(cpf) {
-        if (!cpf) return false;
+        if (!cpf) {
+            setCpfInvalido(true);
+        } else {
+            // Remove pontos e traço
+            const cpfLimpo = cpf.replace(/\D/g, '');
 
-        // Remove pontos e traço
-        const cpfLimpo = cpf.replace(/\D/g, '');
+            if (!/^\d{11}$/.test(cpfLimpo)) {
+                setCpfInvalido(true);
+            }
+            else {
+                // Verifica se todos os dígitos são iguais (inválido)
+                if (/^(\d)\1+$/.test(cpfLimpo)) {
+                    setCpfInvalido(true);
+                }
+                else {
+                    const numeros = cpfLimpo.split('').map(Number);
 
-        if (!/^\d{11}$/.test(cpfLimpo)) return false;
-
-        // Verifica se todos os dígitos são iguais (inválido)
-        if (/^(\d)\1+$/.test(cpfLimpo)) return false;
-
-        const numeros = cpfLimpo.split('').map(Number);
-
-        // Valida DV1
-        let soma = 0;
-        for (let i = 0; i < 9; i++) {
-            soma += numeros[i] * (10 - i);
+                    // Valida DV1
+                    let soma = 0;
+                    for (let i = 0; i < 9; i++) {
+                        soma += numeros[i] * (10 - i);
+                    }
+                    let resto = (soma * 10) % 11;
+                    let dv1 = resto === 10 ? 0 : resto;
+                    if (numeros[9] !== dv1) {
+                        setCpfInvalido(true);
+                    }
+                    else {
+                        // Valida DV2
+                        soma = 0;
+                        for (let i = 0; i < 10; i++) {
+                            soma += numeros[i] * (11 - i);
+                        }
+                        resto = (soma * 10) % 11;
+                        let dv2 = resto === 10 ? 0 : resto;
+                        if (numeros[10] !== dv2) {
+                            setCpfInvalido(true);
+                        }
+                        else
+                            setCpfInvalido(false);
+                    }
+                }
+            }
         }
-        let resto = (soma * 10) % 11;
-        let dv1 = resto === 10 ? 0 : resto;
-        if (numeros[9] !== dv1) return false;
-
-        // Valida DV2
-        soma = 0;
-        for (let i = 0; i < 10; i++) {
-            soma += numeros[i] * (11 - i);
-        }
-        resto = (soma * 10) % 11;
-        let dv2 = resto === 10 ? 0 : resto;
-        if (numeros[10] !== dv2) return false;
-
-        return true;
     }
 
 
@@ -411,6 +426,9 @@ export default function FormCadAluno(props) {
         }
 
 
+
+        //mascara de cpf
+
         if (name === "responsavel.cpf") {
             // Remove tudo que não for número
             let cpfLimpo = value.replace(/\D/g, "");
@@ -486,7 +504,7 @@ export default function FormCadAluno(props) {
                         <div className="divResp2">
 
                             <Form.Group className="mb-3" id="responsavel.cpf">
-                                <Form.Label>CPF</Form.Label>
+                                <Form.Label>CPF:</Form.Label>
                                 <Form.Control
                                     type="text"
                                     placeholder="Digite o CPF do(da) Responsavel"
@@ -494,10 +512,22 @@ export default function FormCadAluno(props) {
                                     value={dados.responsavel.cpf || ""}
                                     onChange={handleChange}
                                 />
+                                {cpfInvalido && (
+                                    <Form.Text className="texto-aviso-cep">
+                                        CPF invalio
+                                    </Form.Text>
+                                )}
                             </Form.Group>
 
+
+
+
+
+
+
+
                             <Form.Group className="mb-3" id="responsavel.nome">
-                                <Form.Label>Nome</Form.Label>
+                                <Form.Label>Nome:</Form.Label>
                                 <Form.Control
                                     type="text"
                                     disabled
@@ -509,7 +539,7 @@ export default function FormCadAluno(props) {
                             </Form.Group>
 
                             <Form.Group className="mb-3" id="responsavel.email">
-                                <Form.Label>Email</Form.Label>
+                                <Form.Label>Email:</Form.Label>
                                 <Form.Control
                                     type="text"
                                     disabled
@@ -521,7 +551,7 @@ export default function FormCadAluno(props) {
                             </Form.Group>
 
                             <Form.Group className="mb-3" id="responsavel.telefone">
-                                <Form.Label>Telefone</Form.Label>
+                                <Form.Label>Telefone:</Form.Label>
                                 <Form.Control
                                     type="text"
                                     disabled
@@ -573,7 +603,7 @@ export default function FormCadAluno(props) {
                     </div>
 
                     <Form.Group className="mb-3" id="nome">
-                        <Form.Label>Nome</Form.Label>
+                        <Form.Label>Nome:</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite o nome"
@@ -584,7 +614,7 @@ export default function FormCadAluno(props) {
                     </Form.Group>
 
                     <Form.Group className="mb-3" id="rg">
-                        <Form.Label>RG</Form.Label>
+                        <Form.Label>RG:</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite o RG"
@@ -596,7 +626,7 @@ export default function FormCadAluno(props) {
 
 
                     <Form.Group className="mb-3" id="telefone">
-                        <Form.Label>Telefone</Form.Label>
+                        <Form.Label>Telefone:</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite o telefone"
@@ -605,50 +635,15 @@ export default function FormCadAluno(props) {
                             onChange={handleChange}
                         />
                     </Form.Group>
-
-
-
-                    <div className="divTitulo">
-                        <strong> <h4>Escola</h4>  </strong>
-                    </div>
-
-                    <Form.Group className="mb-3" id="escola.nome">
-                        <Form.Label>Nome</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite a escola"
-                            name="escola"
-                            value={dados.escola.nome || ""}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3" id="escola.endereco">
-                        <Form.Label>Endereco</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite a escola"
-                            name="escola"
-                            value={dados.escola.nome || ""}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-
-
-
-
-
-
-
-
                     <Form.Group className="mb-3">
-                        <Form.Label>Período Escolar</Form.Label>
+                        <Form.Label>Período Escolar:</Form.Label>
                         <Form.Select name="periodoEscola" value={dados.periodoEscola} onChange={handleChange}>
                             <option value="">Selecione o período escolar</option>
                             <option value="Manhã">Manhã</option>
                             <option value="Tarde">Tarde</option>
                         </Form.Select>
                     </Form.Group>
+
 
                     <Form.Group className="mb-3">
                         <Row className="mb-2 align-items-center">
@@ -679,8 +674,35 @@ export default function FormCadAluno(props) {
                             <option value="Tarde">Tarde</option>
                         </Form.Select>
                     </Form.Group>
+
+
+                    <Form.Group className="mb-3" id="realizaAcompanhamento">
+                        <Form.Label>Realiza Acompanhamento em outra Instituição:</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Descreva a instituição se ouver"
+                            name="realizaAcompanhamento"
+                            value={dados.realizaAcompanhamento || ""}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+
+
+                    <Form.Group className="mb-3" id="possuiSindrome">
+                        <Form.Label>Possui sindrome ou deficiência: </Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Descreva se houver"
+                            name="possuiSindrome"
+                            value={dados.possuiSindrome || ""}
+                            onChange={handleChange}
+
+                        />
+                    </Form.Group>
+
                     <Form.Group className="mb-3" id="descricao">
-                        <Form.Label>Descrição</Form.Label>
+                        <Form.Label>Descrição:</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite a descrição"
@@ -689,6 +711,36 @@ export default function FormCadAluno(props) {
                             onChange={handleChange}
                         />
                     </Form.Group>
+
+
+
+                    <div className="divTitulo">
+                        <strong> <h4>Escola</h4>  </strong>
+                    </div>
+
+                    <Form.Group className="mb-3" id="escola.nome">
+                        <Form.Label>Nome:</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite a escola"
+                            name="escola.nome"
+                            value={dados.escola.nome || ""}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" id="escola.endereco">
+                        <Form.Label>Endereco:</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Digite a escola"
+                            name="escola.endereco"
+                            disabled
+                            value={dados.escola.endereco || ""}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+
                     <Form.Group className="mb-3" id="formularioSaude">
                         <Form.Label>Formulário de Saúde</Form.Label>
                         <Form.Control
@@ -701,7 +753,7 @@ export default function FormCadAluno(props) {
                     </Form.Group>
 
                     <Form.Group className="mb-3" id="ficha">
-                        <Form.Label>Ficha</Form.Label>
+                        <Form.Label>Ficha:</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite a ficha"
@@ -712,7 +764,7 @@ export default function FormCadAluno(props) {
                     </Form.Group>
 
                     <Form.Group className="mb-3" id="dataInsercaoProjeto">
-                        <Form.Label>Data de Inserção no Projeto</Form.Label>
+                        <Form.Label>Data de Inserção no Projeto:</Form.Label>
                         <Form.Control
                             type="date"
                             name="dataInsercaoProjeto"
@@ -721,7 +773,7 @@ export default function FormCadAluno(props) {
                         />
                     </Form.Group>
                     <Form.Group className="mb-3" id="cep">
-                        <Form.Label>CEP</Form.Label>
+                        <Form.Label>CEP:</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite o CEP"
@@ -758,7 +810,7 @@ export default function FormCadAluno(props) {
                     </Row>
 
                     <Form.Group className="mb-3" id="cidade">
-                        <Form.Label>Cidade</Form.Label>
+                        <Form.Label>Cidade:</Form.Label>
                         <Form.Control
                             type="text"
                             name="cidade"
@@ -775,7 +827,7 @@ export default function FormCadAluno(props) {
 
 
                     <Form.Group className="mb-3" id="bairro">
-                        <Form.Label>Bairro</Form.Label>
+                        <Form.Label>Bairro:</Form.Label>
                         <Form.Control
                             type="text"
                             name="bairro"
@@ -791,7 +843,7 @@ export default function FormCadAluno(props) {
                     </Form.Group>
 
                     <Form.Group className="mb-3" id="rua">
-                        <Form.Label>Rua</Form.Label>
+                        <Form.Label>Rua:</Form.Label>
                         <Form.Control
                             type="text"
                             name="rua"
@@ -809,7 +861,7 @@ export default function FormCadAluno(props) {
 
 
                     <Form.Group className="mb-3" id="numero">
-                        <Form.Label>Numero</Form.Label>
+                        <Form.Label>Numero:</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite o numero"
