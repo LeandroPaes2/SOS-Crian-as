@@ -1,4 +1,4 @@
-import { Alert, Form, Button } from "react-bootstrap";
+/*import { Alert, Form, Button } from "react-bootstrap";
 import "../../css/telaListaEspera.css";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../layouts/PaginaGeral";
@@ -338,5 +338,242 @@ export default function FormCadListaEspera() {
             </PaginaGeral>
         </div>
     );
+}*/
+
+
+
+import { Alert, Form, Button } from "react-bootstrap";
+import "../../css/telaListaEspera.css";
+import { useState, useEffect } from "react";
+import PaginaGeral from "../../layouts/PaginaGeral";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
+export default function FormCadListaEspera() {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [editando, setEditando] = useState(location.state?.editando || false);
+
+    const [listaEspera, setListaEspera] = useState({
+        id: 0,
+        aluno: {
+            id: 0,
+            nome: "",
+            dataNascimento: "",
+            responsavel: {
+                cpf: "",
+                nome: "",
+                telefone: ""
+            },
+            rua: "",
+            numero: "",
+            escola: {
+                id: "",
+                nome: "",
+                endereco: "",
+                telefone: "",
+                tipo: ""
+            },
+            telefone: "",
+            periodoEscola: "",
+            realizaAcompanhamento: "",
+            possuiSindrome: "",
+            descricao: "",
+            dataInsercao: "",
+            rg: "",
+            formularioSaude: {},
+            ficha: {},
+            dataInsercaoProjeto: "",
+            status: 0,
+            periodoProjeto: ""
+        },
+        dataInsercao: "",
+        prioridade: "",
+        status: 0
+    });
+
+    const [mensagem, setMensagem] = useState("");
+
+    useEffect(() => {
+        if (editando && location.state) {
+            setListaEspera({ ...location.state });
+        }
+    }, [editando, location.state]);
+
+    useEffect(() => {
+        async function carregarEscolas() {
+            try {
+                const resposta = await fetch('http://localhost:3000/escolas');
+                const dados = await resposta.json();
+                setEscolas(dados);
+            } catch (erro) {
+                console.error('Erro ao carregar escolas:', erro);
+            }
+        }
+        carregarEscolas();
+    }, []);
+
+    function manipularMudanca(evento) {
+        const { name, value } = evento.target;
+        setListaEspera({ ...listaEspera, [name]: value });
+    }
+
+    function manipularMudancaAluno(evento) {
+        const { name, value } = evento.target;
+        setListaEspera(prev => ({
+            ...prev,
+            aluno: { ...prev.aluno, [name]: value }
+        }));
+    }
+
+    async function buscarAluno(id) {
+        try {
+            const resposta = await fetch(`http://localhost:3000/alunos?id=${encodeURIComponent(id)}`);
+            
+            if (!resposta.ok) {
+                throw new Error('Erro ao consultar o servidor.');
+            }
+
+            const aluno = await resposta.json();
+
+            if (!aluno || Object.keys(aluno).length === 0) {
+                throw new Error('Nenhum responsável encontrado com o CPF informado.');
+            }
+
+            setListaEspera(prev => ({
+                ...prev,
+                aluno: {
+                    id: aluno.id,
+                    nome: aluno.nome,
+                    dataNascimento: aluno.dataNascimento,
+                    responsavel: aluno.responsavel,
+                    rua: aluno.rua,
+                    numero: aluno.numero,
+                    escola: aluno.escola,
+                    telefone: aluno.telefone,
+                    periodoEscola: aluno.periodoEscola,
+                    realizaAcompanhamento: aluno.realizaAcompanhamento,
+                    possuiSindrome: aluno.possuiSindrome,
+                    descricao: aluno.descricao,
+                    dataInsercao: aluno.dataInsercao,
+                    rg: aluno.rg,
+                    formularioSaude: aluno.formularioSaude,
+                    ficha: aluno.ficha,
+                    dataInsercaoProjeto: aluno.dataInsercaoProjeto,
+                    status: aluno.status,
+                    periodoProjeto: aluno.periodoProjeto
+                    }
+            }));
+
+            setMensagem('Responsável encontrado com sucesso!');
+            return aluno;
+
+        } catch (erro) {
+            console.error("Erro ao buscar responsável:", erro);
+            setMensagem(erro.message);
+            return null;
+        }
+    }
+
+    const handleSubmit = async (evento) => {
+        evento.preventDefault();
+
+
+        const alunoEncontrado = await buscarAluno(listaEspera.id);
+        if (!alunoEncontrado) return;
+
+        listaEspera.aluno = alunoEncontrado;
+        listaEspera.status = 1;
+        const dataAtual = new Date();
+        const dataFormatada = dataAtual.toISOString().split('T')[0];
+
+        const camposObrigatorios = ["id", "prioridade"];
+        for (const campo of camposObrigatorios) {
+            if (!listaEspera[campo] || listaEspera[campo].trim() === "") {
+                setMensagem("Preencha todos os campos obrigatórios.");
+                return;
+            }
+        }
+
+        const novaListaEspera = {
+            ...listaEspera,
+            dataInsercao: editando ? listaEspera.dataInsercao : dataFormatada
+        };
+
+        const url = editando ? `http://localhost:3000/listasEspera/${novaListaEspera.id}` : "http://localhost:3000/listasEspera";
+        const method = editando ? "PUT" : "POST";
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(novaListaEspera)
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro ao salvar dados.");
+            }
+
+            setMensagem(editando ? "Atualizado com sucesso!" : "Cadastrado com sucesso!");
+            setTimeout(() => navigate("/telaListaEspera"), 2000);
+
+        } catch (erro) {
+            console.error('Erro ao salvar:', erro);
+            setMensagem(erro.message);
+        }
+    };
+
+    return (
+        <div>
+            <PaginaGeral>
+                <Alert className="mt-2 mb-2 text-center" variant="dark">
+                    <h2>{editando ? "Editar" : "Cadastrar"} Criança na Lista de Espera</h2>
+                </Alert>
+
+                {mensagem && <Alert variant="info">{mensagem}</Alert>}
+
+                <Form onSubmit={handleSubmit}>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>Numero do Protocolo</Form.Label>
+                        <Form.Control
+                            type="number"
+                            name="id"
+                            value={listaEspera.id}
+                            onChange={manipularMudanca}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>Nome da Criança</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="nome"
+                            value={listaEspera.aluno.nome}
+                            onChange={manipularMudancaAluno}
+                        />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                        <Form.Label>Prioridade</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="prioridade"
+                            value={listaEspera.prioridade}
+                            onChange={manipularMudanca}
+                        />
+                    </Form.Group>
+
+                    <Button variant="primary" type="submit">
+                        {editando ? "Atualizar" : "Cadastrar"}
+                    </Button>
+                    <Link to="/telaListaEspera">
+                        <Button className="ml-2" variant="secondary">Cancelar</Button>
+                    </Link>
+                </Form>
+            </PaginaGeral>
+        </div>
+    );
 }
+
+
 

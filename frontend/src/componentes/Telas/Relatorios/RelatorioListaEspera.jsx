@@ -28,56 +28,30 @@ export default function RelatorioListaEspera() {
         buscarListaEspera();
     }, []);
 
-    /*const excluirListaEspera = async (listaEspera) => {
-        if (window.confirm("Deseja realmente excluir a criança " + listaEspera.nome + " da lista de espera?")) {
-            try {
-                const response = await fetch("http://localhost:3000/listasEspera/" + listaEspera.id, {
-                    method: "DELETE"
-                });
 
-                if (response.ok) {
-                    setMensagem("Excluído com sucesso!");
-                    setListaDeListaEspera(listaDeListaEspera.filter(t => t.id !== listaEspera.id));
-                } else {
-                    setMensagem("Erro ao excluir.");
-                }
-            } catch (error) {
-                console.error("Erro ao conectar com o backend:", error);
-                setMensagem("Erro de conexão com o servidor.");
-            }
+    const alterarListaEspera =  async (listaEspera) =>{
+      navigate("/cadastroListaEspera", {
+        state: {
+            editando: true,
+            id: listaEspera.id,
+            aluno: listaEspera.aluno,
+            dataInsercao: listaEspera.dataInsercao,
+            prioridade: listaEspera.prioridade,
+            status: listaEspera.status
         }
-    };
+    });
 
-    const adicionarAluno = (listaEspera) => {
-        navigate("/cadastroAluno", {
-            state: {
-                editando: true,
-                nome: listaEspera.nome,
-                dataNascimento: listaEspera.dataNascimento,
-                responsavel: listaEspera.responsavel,
-                rua: listaEspera.rua,
-                numero: listaEspera.numero,
-                escola: listaEspera.escola,
-                telefone: listaEspera.telefone,
-                periodoEscola: listaEspera.periodoEscola,
-                realizaAcompanhamento: listaEspera.realizaAcompanhamento,
-                possuiSindrome: listaEspera.possuiSindrome,
-                descricao: listaEspera.descricao,
-                dataInsercao: listaEspera.dataInsercao
-            }
-        });
-    };*/
-
-
+    }
+/*
     const excluirListaEspera = async (listaEspera, confirmar = true) => {
         if (confirmar) {
-            const confirmacao = window.confirm("Deseja realmente excluir a criança " + listaEspera.nome + " da lista de espera?");
+            const confirmacao = window.confirm("Deseja realmente excluir a criança " + listaEspera.aluno.nome + " da lista de espera?");
             if (!confirmacao) return;
         }
     
         try {
             const response = await fetch("http://localhost:3000/listasEspera/" + listaEspera.id, {
-                method: "DELETE"
+                method: "PUT"
             });
     
             if (response.ok) {
@@ -91,10 +65,36 @@ export default function RelatorioListaEspera() {
             setMensagem("Erro de conexão com o servidor.");
         }
     };
+*/
 
-    
-    const adicionarAluno = async (listaEspera) => {
-        await excluirListaEspera(listaEspera, false); // Exclui direto, sem pedir confirmação
+const excluirListaEspera = async (listaEspera, confirmar = true) => {
+    if (confirmar) {
+        const confirmacao = window.confirm("Deseja realmente excluir a criança " + listaEspera.aluno.nome + " da lista de espera?");
+        if (!confirmacao) return;
+    }
+
+    try {
+            listaEspera.status = 0;
+            const response = await fetch("http://localhost:3000/listasEspera/" + listaEspera.id, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(listaEspera)
+        });
+
+        if (response.ok) {
+            setMensagem("Excluído com sucesso!");
+            setListaDeListaEspera(listaDeListaEspera.filter(t => t.id !== listaEspera.id));
+        } else {
+            setMensagem("Erro ao excluir.");
+        }
+    } catch (error) {
+        console.error("Erro ao conectar com o backend:", error);
+        setMensagem("Erro de conexão com o servidor.");
+    }
+};
+
+    // TENHO QUE CONSERTAR ISSO
+    const matricularAluno = async (listaEspera) => {
     
         navigate("/cadastroAluno", {
             state: {
@@ -126,7 +126,7 @@ export default function RelatorioListaEspera() {
     
 
     const listaEsperaFiltradas = pesquisaNome
-        ? listaDeListaEspera.filter((listaEspera) => listaEspera.nome.toLowerCase().includes(pesquisaNome.toLowerCase()))
+        ? listaDeListaEspera.filter((listaEspera) => listaEspera.aluno.nome.toLowerCase().includes(pesquisaNome.toLowerCase()))
         : listaDeListaEspera;
 
     return (
@@ -161,6 +161,7 @@ export default function RelatorioListaEspera() {
                             <th>Nome</th>
                             <th>Responsável</th>
                             <th>Telefone</th>
+                            <th>Prioridade</th>
                             <th>Data Inserção</th>
                             <th>Ações</th>
                         </tr>
@@ -169,30 +170,14 @@ export default function RelatorioListaEspera() {
                         {listaEsperaFiltradas.map((listaEspera) => (
                             <tr key={listaEspera.id}>
                                 <td>{listaEspera.id}</td>
-                                <td>{listaEspera.nome}</td>
-                                <td>{listaEspera.responsavel.nome}</td>
-                                <td>{listaEspera.telefone}</td>
+                                <td>{listaEspera.aluno.nome}</td>
+                                <td>{listaEspera.aluno.responsavel.nome}</td>
+                                <td>{listaEspera.aluno.telefone}</td>
+                                <td>{listaEspera.prioridade}</td>
                                 <td>{formatarData(listaEspera.dataInsercao)}</td>
                                 <td>
                                     <Button
-                                        as={Link}
-                                        to="/cadastroListaEspera"
-                                        state={{
-                                            editando: true,
-                                            id: listaEspera.id,
-                                            nome: listaEspera.nome,
-                                            dataNascimento: listaEspera.dataNascimento,
-                                            responsavel: listaEspera.responsavel,
-                                            rua: listaEspera.rua,
-                                            numero: listaEspera.numero,
-                                            escola: listaEspera.escola,
-                                            telefone: listaEspera.telefone,
-                                            periodoEscola: listaEspera.periodoEscola,
-                                            realizaAcompanhamento: listaEspera.realizaAcompanhamento,
-                                            possuiSindrome: listaEspera.possuiSindrome,
-                                            descricao: listaEspera.descricao,
-                                            dataInsercao: listaEspera.dataInsercao
-                                        }}
+                                        onClick={() => alterarListaEspera(listaEspera)}
                                         variant="warning"
                                         className="me-2"
                                     >
@@ -214,7 +199,7 @@ export default function RelatorioListaEspera() {
                                     </Button>
 
                                     <Button
-                                        onClick={() => adicionarAluno(listaEspera)}
+                                        onClick={() => matricularAluno(listaEspera)}
                                         variant="success"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-check-lg" viewBox="0 0 16 16">
