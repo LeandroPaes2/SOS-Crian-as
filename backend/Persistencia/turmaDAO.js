@@ -63,12 +63,8 @@ export default class TurmaDAO {
     async excluir(turma, conexao) {
         if (turma instanceof Turma) {
             const sql = `DELETE FROM turma WHERE turm_id = ?`;
-            let parametros = [
-                turma.id
-            ]; 
-            const [resultado] = await conexao.execute(sql, parametros);
+            const [resultado] = await conexao.execute(sql, [turma.id]);
             return resultado;
- 
         }
     }
 }
