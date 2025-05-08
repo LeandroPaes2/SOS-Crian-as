@@ -1,7 +1,6 @@
 
 import ListaEspera from "../Modelo/listaEspera.js";
-import Responsavel from "../Modelo/responsavel.js";
-import Escola from "../Modelo/escola.js";
+import Aluno from "../Modelo/aluno.js";
 import conectar from "./Conexao.js";
 
 export default class ListaEsperaCtrl {
@@ -9,54 +8,54 @@ export default class ListaEsperaCtrl {
         res.type("application/json");
 
         if (req.method === "POST" && req.is("application/json")) {
-            const nome = req.body.nome;
-            const dataNascimento = req.body.dataNascimento;
-            const responsavel = req.body.responsavel || {};
-            const rua = req.body.rua;
-            const numero = req.body.numero;
-            const escola = req.body.escola || {};
-            const telefone = req.body.telefone;
-            const periodoEscola = req.body.periodoEscola;
-            const realizaAcompanhamento = req.body.realizaAcompanhamento;
-            const possuiSindrome = req.body.possuiSindrome;
-            const descricao = req.body.descricao;
+            const aluno = req.body.aluno || {};
             const dataInsercao = req.body.dataInsercao;
-            if (!escola || !escola.id) {
+            const prioridade = req.body.prioridade;
+            const status = req.body.status;
+
+            if (!aluno || !aluno.id) {
                 return resposta.status(400).json({
                     "status": false,
-                    "mensagem": "Escola não informada ou inválida."
-                });
-            }
-            if (!responsavel || !responsavel.cpf) {
-                return resposta.status(400).json({
-                    "status": false,
-                    "mensagem": "Resposavel não informado ou inválido."
+                    "mensagem": "Aluno não informado ou inválido."
                 });
             }
 
 
-            if (nome && dataNascimento && rua && numero && telefone && periodoEscola && realizaAcompanhamento && possuiSindrome && descricao && dataInsercao) {
+            if (dataInsercao && prioridade && !isNaN(status)) {
 
                 let conexao;
 
                 try {
-                    const objResponsavel = new Responsavel(responsavel.cpf, responsavel.nome, responsavel.telefone);
-                    const objEscola = new Escola(escola.id, escola.nome, escola.endereco, escola.telefone, escola.tipo);
+                    const objAluno = new Aluno(
+                        aluno.id,
+                        aluno.nome,
+                        aluno.dataNascimento,
+                        aluno.objResponsavel,
+                        aluno.cidade,
+                        aluno.rua,
+                        aluno.bairro,
+                        aluno.numero,
+                        aluno.objEscola,
+                        aluno.telefone,
+                        aluno.periodoEscola,
+                        aluno.realizaAcompanhamento,
+                        aluno.possuiSindrome,
+                        aluno.descricao,
+                        aluno.dataInsercaoListaEspera,
+                        aluno.rg,
+                        aluno.objFormularioSaude,
+                        aluno.ficha,
+                        aluno.dataInsercaoProjeto,
+                        aluno.status,
+                        aluno.periodoProjeto,
+                        aluno.cep);
 
                     const listaEspera = new ListaEspera(
-                        0,
-                        nome,
-                        dataNascimento,
-                        objResponsavel,
-                        rua,
-                        numero,
-                        objEscola,
-                        telefone,
-                        periodoEscola,
-                        realizaAcompanhamento,
-                        possuiSindrome,
-                        descricao,
-                        dataInsercao
+                        aluno.id,
+                        objAluno,
+                        dataInsercao,
+                        prioridade,
+                        status
                     );
 
                     conexao = await conectar();
@@ -91,41 +90,47 @@ export default class ListaEsperaCtrl {
 
         if ((req.method === "PUT" || req.method === "PATCH") && req.is("application/json")) {
             const id = req.body.id;
-            const nome = req.body.nome;
-            const dataNascimento = req.body.dataNascimento;
-            const responsavel = req.body.responsavel || {};
-            const rua = req.body.rua;
-            const numero = req.body.numero;
-            const escola = req.body.escola || {};
-            const telefone = req.body.telefone;
-            const periodoEscola = req.body.periodoEscola;
-            const realizaAcompanhamento = req.body.realizaAcompanhamento;
-            const possuiSindrome = req.body.possuiSindrome;
-            const descricao = req.body.descricao;
+            const aluno = req.body.aluno || {};
             const dataInsercao = req.body.dataInsercao;
+            const prioridade = req.body.prioridade;
+            const status = req.body.status;
 
-            const objResponsavel = new Responsavel(responsavel.cpf, responsavel.nome, responsavel.telefone);
-            const objEscola = new Escola(escola.id, escola.nome, escola.endereco, escola.telefone, escola.tipo);
+
+            const objAluno = new Aluno(
+                aluno.id,
+                aluno.nome,
+                aluno.dataNascimento,
+                aluno.objResponsavel,
+                aluno.cidade,
+                aluno.rua,
+                aluno.bairro,
+                aluno.numero,
+                aluno.objEscola,
+                aluno.telefone,
+                aluno.periodoEscola,
+                aluno.realizaAcompanhamento,
+                aluno.possuiSindrome,
+                aluno.descricao,
+                aluno.dataInsercaoListaEspera,
+                aluno.rg,
+                aluno.objFormularioSaude,
+                aluno.ficha,
+                aluno.dataInsercaoProjeto,
+                aluno.status,
+                aluno.periodoProjeto,
+                aluno.cep);
 
 
-            if (id > 0 && nome && dataNascimento && rua && numero && telefone && periodoEscola && realizaAcompanhamento && possuiSindrome  && descricao && dataInsercao) {
+            if (id > 0 && dataInsercao && prioridade && status>-1 && status < 2) {
                 let conexao;
                 try {
 
                     const listaEspera = new ListaEspera(
                         id,
-                        nome,
-                        dataNascimento,
-                        objResponsavel,
-                        rua,
-                        numero,
-                        objEscola,
-                        telefone,
-                        periodoEscola,
-                        realizaAcompanhamento,
-                        possuiSindrome,
-                        descricao,
-                        dataInsercao
+                        objAluno,
+                        dataInsercao,
+                        prioridade,
+                        status
                     );
 
                     conexao = await conectar();

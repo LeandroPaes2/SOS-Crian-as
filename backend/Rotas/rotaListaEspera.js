@@ -11,7 +11,7 @@ rotaListaEspera.post("/", listaEspCtrl.gravar);
 rotaListaEspera.put("/:id", listaEspCtrl.alterar);
 rotaListaEspera.patch("/:id", listaEspCtrl.alterar);
 rotaListaEspera.delete("/:id", listaEspCtrl.excluir);
-rotaListaEspera.get("/:nome?", listaEspCtrl.consultar);
+rotaListaEspera.get("/:prioridade?", listaEspCtrl.consultar);
 rotaListaEspera.get("/",listaEspCtrl.consultar);
 
 

@@ -1,100 +1,48 @@
-import Responsavel from "./responsavel.js";
-import Escola from "./escola.js";
+import Aluno from "./aluno.js";
 import ListaEsperaDAO from "../Persistencia/listaEsperaDAO.js";
 
 export default class ListaEspera {
     #id;
-    #nome;
-    #dataNascimento;
-    #responsavel;
-    #rua;
-    #numero;
-    #escola;
-    #telefone;
-    #periodoEscola;
-    #realizaAcompanhamento;
-    #possuiSindrome;
-    #descricao;
+    #aluno;
     #dataInsercao;
+    #prioridade;
+    #status;
 
-    constructor(id=0, nome="", dataNascimento="", responsavel={},rua="",numero="", escola={} ,telefone="",periodoEscola="", realizaAcompanhamento="", possuiSindrome="", descricao="", dataInsercao="") {
+    constructor(id=0, aluno={}, dataInsercao="", prioridade = "", status=0) {
         this.#id = id;
-        this.#nome = nome;
-        this.#dataNascimento = dataNascimento;
-        this.#responsavel = responsavel;
-        this.#rua = rua;
-        this.#numero = numero;
-        this.#escola = escola;
-        this.#telefone = telefone;
-        this.#periodoEscola = periodoEscola;
-        this.#realizaAcompanhamento = realizaAcompanhamento;
-        this.#possuiSindrome = possuiSindrome;
-        this.#descricao = descricao;
+        this.#aluno = aluno;
         this.#dataInsercao = dataInsercao;
+        this.#prioridade = prioridade;
+        this.#status = status;
     }
 
     get id() { return this.#id; }
     set id(valor) { this.#id = valor; }
 
-    get nome() { return this.#nome; }
-    set nome(valor) { this.#nome = valor; }
-
-   get dataNascimento() { return this.#dataNascimento; }
-    set dataNascimento(valor) { this.#dataNascimento = valor; }
-
-    get responsavel() { return this.#responsavel; }
-    set responsavel(novoResponsavel) {
-        if(novoResponsavel instanceof Responsavel)
-            this.#responsavel = novoResponsavel;
+    get aluno() { return this.#aluno; }
+    set aluno(novoAluno) {
+        if(novoAluno instanceof Aluno)
+            this.#aluno = novoAluno;
         }
-
-    get rua() { return this.#rua; }
-    set rua(valor) { this.#rua = valor; }
-
-    get numero() { return this.#numero; }
-    set numero(valor) { this.#numero = valor; }
-
-    get escola() { return this.#escola; }
-    set escola(novaEscola) {
-        if(novaEscola instanceof Escola)
-         this.#escola = novaEscola;
-         }
-    
-    get telefone() { return this.#telefone; }
-    set telefone(valor) { this.#telefone = valor; }
-
-    get periodoEscola() { return this.#periodoEscola; }
-    set periodoEscola(valor) { this.#periodoEscola = valor; }
-
-    get realizaAcompanhamento() { return this.#realizaAcompanhamento; }
-    set realizaAcompanhamento(valor) { this.#realizaAcompanhamento = valor; }
-
-    get possuiSindrome() { return this.#possuiSindrome; }
-    set possuiSindrome(valor) { this.#possuiSindrome = valor; }
-
-    get descricao() { return this.#descricao; }
-    set descricao(valor) { this.#descricao = valor; }
 
     get dataInsercao() { return this.#dataInsercao; }
     set dataInsercao(valor) { this.#dataInsercao = valor; }
+
+    get prioridade() { return this.#prioridade; }
+    set prioridade(valor) { this.#prioridade = valor; }
+
+    get status() { return this.#status; }
+    set status(valor) { this.#status = valor; }
 
 
 
     toJSON() {
         return {
             id: this.#id,
-            nome: this.#nome,
-            dataNascimento: this.#dataNascimento,
-            responsavel: this.#responsavel.toJSON(),
-            rua: this.#rua,
-            numero: this.#numero,
-            escola: this.#escola.toJSON(),
-            telefone: this.#telefone,
-            periodoEscola: this.#periodoEscola,
-            realizaAcompanhamento: this.#realizaAcompanhamento,
-            possuiSindrome: this.#possuiSindrome,
-            descricao: this.#descricao,
-            dataInsercao: this.#dataInsercao
+            aluno: this.#aluno.toJSON(),
+            dataInsercao: this.#dataInsercao,
+            prioridade: this.#prioridade,
+            status: this.#status
         };
     }
 
