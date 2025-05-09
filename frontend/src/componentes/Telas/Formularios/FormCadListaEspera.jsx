@@ -387,7 +387,7 @@ export default function FormCadListaEspera() {
             periodoProjeto: ""
         },
         dataInsercao: "",
-        prioridade: "",
+        prioridade: 0,
         status: 0
     });
 
@@ -398,19 +398,6 @@ export default function FormCadListaEspera() {
             setListaEspera({ ...location.state });
         }
     }, [editando, location.state]);
-
-    useEffect(() => {
-        async function carregarEscolas() {
-            try {
-                const resposta = await fetch('http://localhost:3000/escolas');
-                const dados = await resposta.json();
-                setEscolas(dados);
-            } catch (erro) {
-                console.error('Erro ao carregar escolas:', erro);
-            }
-        }
-        carregarEscolas();
-    }, []);
 
     function manipularMudanca(evento) {
         const { name, value } = evento.target;
@@ -555,12 +542,16 @@ export default function FormCadListaEspera() {
 
                     <Form.Group className="mb-3">
                         <Form.Label>Prioridade</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="prioridade"
+                        <Form.Select
                             value={listaEspera.prioridade}
+                            id = "prioridade"
+                            name="prioridade"
                             onChange={manipularMudanca}
-                        />
+                        >
+                            <option value="">Selecione uma prioridade</option>
+                            <option value="1">Azul</option>
+                            <option value="2">Vermelho</option>
+                        </Form.Select>
                     </Form.Group>
 
                     <Button variant="primary" type="submit">

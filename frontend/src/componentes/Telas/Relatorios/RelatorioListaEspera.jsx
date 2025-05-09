@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+/*import { useState, useEffect } from "react";
 import { Container, Table, Button, Form, InputGroup, Alert } from "react-bootstrap";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import { Link, useNavigate } from 'react-router-dom';
@@ -65,7 +65,7 @@ export default function RelatorioListaEspera() {
             setMensagem("Erro de conexão com o servidor.");
         }
     };
-*/
+
 
 const excluirListaEspera = async (listaEspera, confirmar = true) => {
     if (confirmar) {
@@ -225,4 +225,216 @@ const excluirListaEspera = async (listaEspera, confirmar = true) => {
             </div>
         </PaginaGeral>
     );
+}*/
+
+
+
+
+import { useState, useEffect } from "react";
+import { Container, Table, Button, Form, InputGroup, Alert } from "react-bootstrap";
+import PaginaGeral from "../../layouts/PaginaGeral";
+import { Link, useNavigate } from 'react-router-dom';
+
+export default function RelatorioListaEspera() {
+    const navigate = useNavigate();
+
+    const [listaDeListaEspera, setListaDeListaEspera] = useState([]);
+    const [mensagem, setMensagem] = useState("");
+    const [pesquisaNome, setPesquisaNome] = useState("");
+    const [filtroStatus, setFiltroStatus] = useState("1"); // 1 = ativos, 0 = excluídos, todos = todos
+    const [ordenarPor, setOrdenarPor] = useState("dataInsercao");
+
+    useEffect(() => {
+        const buscarListaEspera = async () => {
+            try {
+                const response = await fetch("http://localhost:3000/listasEspera");
+                if (!response.ok) throw new Error("Erro ao buscar listaEspera");
+
+                const dados = await response.json();
+                setListaDeListaEspera(dados);
+            } catch (error) {
+                console.error("Erro ao buscar listaEspera:", error);
+                setMensagem("Erro ao carregar a lista de espera.");
+            }
+        };
+
+        buscarListaEspera();
+    }, []);
+
+    const alterarListaEspera = (listaEspera) => {
+        navigate("/cadastroListaEspera", {
+            state: {
+                editando: true,
+                id: listaEspera.id,
+                aluno: listaEspera.aluno,
+                dataInsercao: listaEspera.dataInsercao,
+                prioridade: listaEspera.prioridade,
+                status: listaEspera.status
+            }
+        });
+    };
+
+    const excluirListaEspera = async (listaEspera, confirmar = true) => {
+        if (confirmar) {
+            const confirmacao = window.confirm("Deseja realmente excluir a criança " + listaEspera.aluno.nome + " da lista de espera?");
+            if (!confirmacao) return;
+        }
+
+        try {
+            listaEspera.status = 0;
+            const response = await fetch("http://localhost:3000/listasEspera/" + listaEspera.id, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(listaEspera)
+            });
+
+            if (response.ok) {
+                setMensagem("Excluído com sucesso!");
+                setListaDeListaEspera(listaDeListaEspera.filter(t => t.id !== listaEspera.id));
+            } else {
+                setMensagem("Erro ao excluir.");
+            }
+        } catch (error) {
+            console.error("Erro ao conectar com o backend:", error);
+            setMensagem("Erro de conexão com o servidor.");
+        }
+    };
+
+    const matricularAluno = (listaEspera) => {
+        navigate("/cadastroAluno", {
+            state: {
+                editando: true,
+                nome: listaEspera.nome,
+                dataNascimento: listaEspera.dataNascimento,
+                responsavel: listaEspera.responsavel,
+                rua: listaEspera.rua,
+                numero: listaEspera.numero,
+                escola: listaEspera.escola,
+                telefone: listaEspera.telefone,
+                periodoEscola: listaEspera.periodoEscola,
+                realizaAcompanhamento: listaEspera.realizaAcompanhamento,
+                possuiSindrome: listaEspera.possuiSindrome,
+                descricao: listaEspera.descricao,
+                dataInsercao: listaEspera.dataInsercao
+            }
+        });
+    };
+
+    const formatarData = (dataString) => {
+        const data = new Date(dataString);
+        const dia = String(data.getDate()).padStart(2, '0');
+        const mes = String(data.getMonth() + 1).padStart(2, '0');
+        const ano = data.getFullYear();
+        return `${dia}/${mes}/${ano}`;
+    };
+
+    const listaFiltradaEOrdenada = listaDeListaEspera
+        .filter(lista => filtroStatus === "todos" || String(lista.status) === filtroStatus)
+        .filter(lista => lista.aluno.nome.toLowerCase().includes(pesquisaNome.toLowerCase()))
+        .sort((a, b) => {
+            if (ordenarPor === "dataInsercao") {
+                return new Date(a.dataInsercao) - new Date(b.dataInsercao);
+            } else if (ordenarPor === "prioridade") {
+                return a.prioridade - b.prioridade;
+            } else if (ordenarPor === "id") {
+                return a.id - b.id;
+            } else if (ordenarPor === "nome") {
+                return a.aluno.nome.localeCompare(b.aluno.nome);
+            }
+            return 0;
+        });
+
+    return (
+        <PaginaGeral>
+            <br />
+            <Alert className="mt-02 mb-02 dark text-center" variant="dark">
+                <h2>Lista de Espera</h2>
+            </Alert>
+
+            <Form>
+                <Form.Group className="form" controlId="pesquisaNome">
+                    <Form.Label>Pesquise a criança pelo nome</Form.Label>
+                    <InputGroup>
+                        <Form.Control
+                            type="text"
+                            placeholder="Nome da Criança"
+                            value={pesquisaNome}
+                            onChange={(e) => setPesquisaNome(e.target.value)}
+                        />
+                        <Button variant="secondary">Pesquisar</Button>
+                    </InputGroup>
+                </Form.Group>
+
+                <Form.Group className="mt-3">
+                    <Form.Label>Status</Form.Label>
+                    <Form.Select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value)}>
+                        <option value="1">Ativos</option>
+                        <option value="0">Excluídos</option>
+                        <option value="todos">Todos</option>
+                    </Form.Select>
+                </Form.Group>
+
+                <Form.Group className="mt-3">
+                    <Form.Label>Ordenar por</Form.Label>
+                    <Form.Select value={ordenarPor} onChange={(e) => setOrdenarPor(e.target.value)}>
+                        <option value="id">ID</option>
+                        <option value="nome">Nome</option>
+                        <option value="dataInsercao">Data de Inserção</option>
+                        <option value="prioridade">Prioridade</option>
+                    </Form.Select>
+                </Form.Group>
+            </Form>
+
+            <br />
+            <Container>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Responsável</th>
+                            <th>Telefone</th>
+                            <th>Prioridade</th>
+                            <th>Data Inserção</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {listaFiltradaEOrdenada.map((listaEspera) => (
+                            <tr key={listaEspera.id}>
+                                <td>{listaEspera.id}</td>
+                                <td>{listaEspera.aluno.nome}</td>
+                                <td>{listaEspera.aluno.responsavel.nome}</td>
+                                <td>{listaEspera.aluno.telefone}</td>
+                                <td>{listaEspera.prioridade}</td>
+                                <td>{formatarData(listaEspera.dataInsercao)}</td>
+                                <td>
+                                    <Button onClick={() => alterarListaEspera(listaEspera)} variant="warning" className="me-2">
+                                        ✏️
+                                    </Button>
+                                    <Button onClick={() => excluirListaEspera(listaEspera)} variant="danger" className="me-2">
+                                        🗑️
+                                    </Button>
+                                    <Button onClick={() => matricularAluno(listaEspera)} variant="success">
+                                        ✅
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+                <p>Quantidade de crianças cadastradas na lista de espera: {listaFiltradaEOrdenada.length}</p>
+            </Container>
+
+            <div className="mt-4">
+                <Button as={Link} to="/telaListaEspera" variant="secondary" className="me-2">
+                    Voltar
+                </Button>
+                <Button as={Link} to="/cadastroListaEspera" variant="secondary">
+                    Cadastrar
+                </Button>
+            </div>
+        </PaginaGeral>
+    );
 }
+

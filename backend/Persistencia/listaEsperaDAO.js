@@ -18,7 +18,7 @@ export default class ListaEsperaDAO {
              sql3 = `CREATE TABLE IF NOT EXISTS listaEspera (
             alu_id INT NOT NULL,
             lista_espera_dataInsercao DATE NOT NULL,
-            lista_espera_prioridade VARCHAR(30) NOT NULL,
+            lista_espera_prioridade INT NOT NULL,
             lista_espera_status INT NOT NULL,
 
             CONSTRAINT pk_listaEspera PRIMARY KEY (alu_id),
@@ -65,12 +65,22 @@ export default class ListaEsperaDAO {
     async consultar(termo, conexao) {
         let sql = ``;
         let parametros = [];
-        if (parseInt(termo)) {
-            sql = `SELECT * FROM listaEspera WHERE alu_id = ?`;
-            parametros = [termo];
-        } else {
-            sql = `SELECT * FROM listaEspera WHERE lista_espera_prioridade LIKE ?`;
-            parametros = ['%' + termo + '%'];
+
+        if (!termo || (typeof termo !== 'object')) {
+            sql = `SELECT * FROM listaEspera`;
+        } else if (termo.nome) {
+            sql = `SELECT * FROM listaEspera WHERE alu_id = ( 
+                SELECT alu_id FROM aluno WHERE alu_nome LIKE ?
+            )
+            `;
+            parametros = ['%' + termo.nome + '%'];
+        } else if (termo.prioridade) {
+            sql = `SELECT * FROM listaEspera WHERE lista_espera_prioridade = ? `;
+            parametros = [termo.prioridade];
+        }
+        else if (termo.status) {
+            sql = `SELECT * FROM listaEspera WHERE lista_espera_status = ? `;
+            parametros = [termo.status];
         }
     
         const [registros] = await conexao.execute(sql, parametros);

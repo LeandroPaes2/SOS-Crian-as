@@ -8,7 +8,7 @@ export default class ListaEspera {
     #prioridade;
     #status;
 
-    constructor(id=0, aluno={}, dataInsercao="", prioridade = "", status=0) {
+    constructor(id=0, aluno={}, dataInsercao="", prioridade = 0, status=0) {
         this.#id = id;
         this.#aluno = aluno;
         this.#dataInsercao = dataInsercao;

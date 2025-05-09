@@ -21,7 +21,7 @@ export default class ListaEsperaCtrl {
             }
 
 
-            if (dataInsercao && prioridade && !isNaN(status)) {
+            if (dataInsercao && !isNaN(prioridade) && !isNaN(status)) {
 
                 let conexao;
 
@@ -121,7 +121,7 @@ export default class ListaEsperaCtrl {
                 aluno.cep);
 
 
-            if (id > 0 && dataInsercao && prioridade && status>-1 && status < 2) {
+            if (id > 0 && dataInsercao && prioridade >= 0 && status>-1 && status < 2) {
                 let conexao;
                 try {
 
@@ -211,7 +211,7 @@ export default class ListaEsperaCtrl {
 
             try {
                 conexao = await conectar();
-                const listaListaEspera = await listaEspera.consultar(termo, conexao);
+                const listaListaEspera = await listaEspera.consultar(termo,conexao);
 
                 if (Array.isArray(listaListaEspera) && listaListaEspera.length > 0) {
                     res.status(200).json(listaListaEspera);
