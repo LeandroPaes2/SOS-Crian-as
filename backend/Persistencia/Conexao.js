@@ -2,21 +2,20 @@ import pg from 'pg';
 
 const { Pool } = pg;
 
+let pool;
+
 export default async function conectar() {
-    if (global.poolConexoes) {
-        return global.poolConexoes;
-    }
-
-
-    global.poolConexoes = new Pool({
-        connectionString: process.env.SUPABASE_URL_CONEXAO,
-        max: 20,
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 60000,
-        ssl: {
-            rejectUnauthorized: false, // necessário para evitar erro de SSL no Supabase
-        },
+  if (!pool) {
+    pool = new Pool({
+      connectionString: process.env.SUPABASE_URL_CONEXAO,
+      max: 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 60000,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     });
-    
-    return global.poolConexoes;
+  }
+
+  return await pool.connect(); // <-- Isso retorna um client com `.release()`
 }

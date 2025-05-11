@@ -113,7 +113,7 @@ export default class Aluno {
     set rg(novoRg) { this.#rg = novoRg; }
 
 
-    get formularioSaude() { return this.#formularioSaude.toJSON(); }
+    get formularioSaude() { return this.#formularioSaude; }
     set formularioSaude(novoFormularioSaude) { 
 
         this.#formularioSaude = novoFormularioSaude;
