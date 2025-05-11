@@ -193,7 +193,7 @@ export default class AlunoCtrl {
 
                         
                         const objFormularioSaude = null; //gambiarra pra rodar por enquanto
-
+                        const objFicha = null;  //gambiarra pra rodar por enquanto
 
                         /*
                         const objFormularioSaude = new FormularioSaude(
@@ -221,7 +221,7 @@ export default class AlunoCtrl {
                             descricao,
                             rg,
                             objFormularioSaude,
-                            ficha,
+                            objFicha,
                             status,
                             periodoProjeto,
                             cep
@@ -301,7 +301,7 @@ export default class AlunoCtrl {
         res.type("application/json");
     
         if (req.method === "GET") {
-            let termo = req.params.nome || ""; // poderia ser rg ou id ou nome
+            let termo = req.params.nome || ""; 
             let tipo=1;
             if(termo == "")
             {

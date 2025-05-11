@@ -348,19 +348,25 @@ export default function FormCadAluno(props) {
 
         // Máscara para telefone
         if (name === "telefone") {
-            let telefoneNumeros = value.replace(/\D/g, "");
-            if (telefoneNumeros.length > 10) {
-                telefoneNumeros = telefoneNumeros.slice(0, 11); // Limita a 11 caracteres
+            let numeros = value.replace(/\D/g, ""); // Remove tudo que não é número
+            numeros = numeros.slice(0, 11); // Limita a 11 dígitos
+
+            let telefoneFormatado = "";
+
+            if (numeros.length >= 1 && numeros.length <= 2) {
+                telefoneFormatado = `(${numeros}`;
+            } else if (numeros.length > 2 && numeros.length <= 6) {
+                telefoneFormatado = `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`;
+            } else if (numeros.length > 6 && numeros.length <= 10) {
+                telefoneFormatado = `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(6)}`;
+            } else if (numeros.length === 11) {
+                telefoneFormatado = `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
             }
-            let telefoneFormatado = telefoneNumeros;
-            if (telefoneNumeros.length > 6) {
-                telefoneFormatado = `(${telefoneNumeros.slice(0, 2)}) ${telefoneNumeros.slice(2, 7)}-${telefoneNumeros.slice(7)}`;
-            } else if (telefoneNumeros.length > 2) {
-                telefoneFormatado = `(${telefoneNumeros.slice(0, 2)}) ${telefoneNumeros.slice(2)}`;
-            }
+
             setDados((prev) => ({ ...prev, telefone: telefoneFormatado }));
             return;
         }
+
 
 
 
@@ -398,7 +404,6 @@ export default function FormCadAluno(props) {
         }
 
         if (name === "periodoEscola") {
-            console.log("AAAAAA ENTROU AAAAAA");
             console.log(value);
             if (value === "Tarde") {
                 setDados((prev) => ({
@@ -409,7 +414,6 @@ export default function FormCadAluno(props) {
             }
             else
                 if (value === "Manhã") {
-                    console.log("AAAAAA MANHA AAAAAA");
                     setDados((prev) => ({
                         ...prev,
                         [name]: value,
