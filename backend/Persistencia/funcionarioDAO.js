@@ -1,5 +1,5 @@
 //DAO - Data Access Object
-import Funcionario from "../Modelo/funcionario.js";
+/*import Funcionario from "../Modelo/funcionario.js";
 //import conectar from "../Controle/Conexao.js";
 
 export default class FuncionarioDAO {
@@ -30,7 +30,7 @@ export default class FuncionarioDAO {
                 console.log("Não foi possível iniciar o banco de dados: " + e.message);
             }
         }
-        */
+        
 
     async incluir(funcionario, conexao) {
         if (funcionario instanceof Funcionario) {
@@ -119,4 +119,91 @@ export default class FuncionarioDAO {
         }
     }
         
+}*/
+
+
+
+import Funcionario from "../Modelo/funcionario.js";
+
+export default class FuncionarioDAO {
+    async incluir(funcionario, conexao) {
+        if (funcionario instanceof Funcionario) {
+            try {
+                const sql = `INSERT INTO funcionario 
+                (func_nome, func_cpf, func_cargo, func_nivel, func_email, func_senha)
+                VALUES ($1, $2, $3, $4, $5, $6)`;
+                const parametros = [
+                    funcionario.nome,
+                    funcionario.cpf,
+                    funcionario.cargo,
+                    funcionario.nivel,
+                    funcionario.email,
+                    funcionario.senha
+                ];
+                await conexao.query(sql, parametros);
+            } catch (e) {
+                throw new Error("Erro ao incluir funcionário: " + e.message);
+            }
+        }
+    }
+
+    async alterar(funcionario, conexao) {
+        if (funcionario instanceof Funcionario) {
+            try {
+                const sql = `UPDATE funcionario 
+                             SET func_nome = $1, func_cargo = $2, func_nivel = $3, func_email = $4, func_senha = $5 
+                             WHERE func_cpf = $6`;
+                const parametros = [
+                    funcionario.nome,
+                    funcionario.cargo,
+                    funcionario.nivel,
+                    funcionario.email,
+                    funcionario.senha,
+                    funcionario.cpf
+                ];
+                await conexao.query(sql, parametros);
+            } catch (e) {
+                throw new Error("Erro ao alterar funcionário: " + e.message);
+            }
+        }
+    }
+
+    async excluir(funcionario, conexao) {
+        if (funcionario instanceof Funcionario) {
+            try {
+                const sql = `DELETE FROM funcionario WHERE func_cpf = $1`;
+                await conexao.query(sql, [funcionario.cpf]);
+            } catch (e) {
+                throw new Error("Erro ao excluir funcionário: " + e.message);
+            }
+        }
+    }
+
+    async consultar(termo, conexao) {
+        try {
+            let sql = "SELECT * FROM funcionario ORDER BY func_nome";
+            let parametros = [];
+
+            if (termo?.nome) {
+                sql = "SELECT * FROM funcionario WHERE func_nome ILIKE $1 ORDER BY func_nome";
+                parametros = [`%${termo.nome}%`];
+            } else if (termo?.email) {
+                sql = "SELECT * FROM funcionario WHERE func_email ILIKE $1 ORDER BY func_nome";
+                parametros = [`%${termo.email}%`];
+            }
+
+            const resultado = await conexao.query(sql, parametros);
+            return resultado.rows.map(linha => new Funcionario(
+                linha.func_nome,
+                linha.func_cpf,
+                linha.func_cargo,
+                linha.func_nivel,
+                linha.func_email,
+                linha.func_senha
+            ));
+        } catch (e) {
+            throw new Error("Erro ao consultar funcionários: " + e.message);
+        }
+    }
 }
+

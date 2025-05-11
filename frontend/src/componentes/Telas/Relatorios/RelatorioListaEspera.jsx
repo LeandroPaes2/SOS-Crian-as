@@ -229,9 +229,17 @@ const excluirListaEspera = async (listaEspera, confirmar = true) => {
 
 
 
-
 import { useState, useEffect } from "react";
-import { Container, Table, Button, Form, InputGroup, Alert } from "react-bootstrap";
+import {
+    Container,
+    Table,
+    Button,
+    Form,
+    InputGroup,
+    Alert,
+    ButtonGroup,
+    ToggleButton
+} from "react-bootstrap";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -241,8 +249,21 @@ export default function RelatorioListaEspera() {
     const [listaDeListaEspera, setListaDeListaEspera] = useState([]);
     const [mensagem, setMensagem] = useState("");
     const [pesquisaNome, setPesquisaNome] = useState("");
-    const [filtroStatus, setFiltroStatus] = useState("1"); // 1 = ativos, 0 = excluídos, todos = todos
+    const [filtroStatus, setFiltroStatus] = useState("1");
     const [ordenarPor, setOrdenarPor] = useState("dataInsercao");
+
+    const statusOptions = [
+        { name: 'Ativos', value: '1' },
+        { name: 'Excluídos', value: '0' },
+        { name: 'Todos', value: 'todos' },
+    ];
+
+    const ordenarOptions = [
+        { name: 'Data', value: 'dataInsercao' },
+        { name: 'Prioridade', value: 'prioridade' },
+        { name: 'ID', value: 'id' },
+        { name: 'Nome', value: 'nome' },
+    ];
 
     useEffect(() => {
         const buscarListaEspera = async () => {
@@ -261,7 +282,7 @@ export default function RelatorioListaEspera() {
         buscarListaEspera();
     }, []);
 
-    const alterarListaEspera = (listaEspera) => {
+    const alterarListaEspera = async (listaEspera) => {
         navigate("/cadastroListaEspera", {
             state: {
                 editando: true,
@@ -300,7 +321,7 @@ export default function RelatorioListaEspera() {
         }
     };
 
-    const matricularAluno = (listaEspera) => {
+    const matricularAluno = async (listaEspera) => {
         navigate("/cadastroAluno", {
             state: {
                 editando: true,
@@ -328,31 +349,81 @@ export default function RelatorioListaEspera() {
         return `${dia}/${mes}/${ano}`;
     };
 
-    const listaFiltradaEOrdenada = listaDeListaEspera
-        .filter(lista => filtroStatus === "todos" || String(lista.status) === filtroStatus)
-        .filter(lista => lista.aluno.nome.toLowerCase().includes(pesquisaNome.toLowerCase()))
+    const listaFiltrada = listaDeListaEspera
+        .filter(item => {
+            if (filtroStatus === "todos") return true;
+            return item.status.toString() === filtroStatus;
+        })
+        .filter(item => item.aluno.nome.toLowerCase().includes(pesquisaNome.toLowerCase()))
         .sort((a, b) => {
-            if (ordenarPor === "dataInsercao") {
-                return new Date(a.dataInsercao) - new Date(b.dataInsercao);
-            } else if (ordenarPor === "prioridade") {
-                return a.prioridade - b.prioridade;
-            } else if (ordenarPor === "id") {
-                return a.id - b.id;
-            } else if (ordenarPor === "nome") {
-                return a.aluno.nome.localeCompare(b.aluno.nome);
-            }
+            if (ordenarPor === "nome") return a.aluno.nome.localeCompare(b.aluno.nome);
+            if (ordenarPor === "id") return a.id - b.id;
+            if (ordenarPor === "prioridade") return a.prioridade - b.prioridade;
+            if (ordenarPor === "dataInsercao") return new Date(a.dataInsercao) - new Date(b.dataInsercao);
             return 0;
         });
 
     return (
         <PaginaGeral>
-            <br />
             <Alert className="mt-02 mb-02 dark text-center" variant="dark">
                 <h2>Lista de Espera</h2>
             </Alert>
 
-            <Form>
-                <Form.Group className="form" controlId="pesquisaNome">
+            <div style={{
+                position: 'sticky',
+                top: 0,
+                backgroundColor: 'white',
+                zIndex: 1000,
+                padding: '10px',
+                borderBottom: '1px solid #ccc',
+                boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                width: '70%',
+                margin: '0 auto',
+                display: 'flex',
+                justifyContent: 'center', 
+                alignItems: 'center'     
+            }}>
+
+
+                <h5>Filtrar Status:</h5>
+                <ButtonGroup className="mb-2 me-3">
+                    {statusOptions.map((radio, idx) => (
+                        <ToggleButton
+                            key={idx}
+                            id={`status-${idx}`}
+                            type="radio"
+                            variant="outline-primary"
+                            name="status"
+                            value={radio.value}
+                            checked={filtroStatus === radio.value}
+                            onChange={(e) => setFiltroStatus(e.currentTarget.value)}
+                        >
+                            {radio.name}
+                        </ToggleButton>
+                    ))}
+                </ButtonGroup>
+
+                <h5 className="mt-2">Ordenar Por:</h5>
+                <ButtonGroup className="mb-2">
+                    {ordenarOptions.map((radio, idx) => (
+                        <ToggleButton
+                            key={idx}
+                            id={`ordenar-${idx}`}
+                            type="radio"
+                            variant="outline-success"
+                            name="ordenar"
+                            value={radio.value}
+                            checked={ordenarPor === radio.value}
+                            onChange={(e) => setOrdenarPor(e.currentTarget.value)}
+                        >
+                            {radio.name}
+                        </ToggleButton>
+                    ))}
+                </ButtonGroup>
+            </div>
+
+            <Form className="mt-3">
+                <Form.Group controlId="formPesquisaNome">
                     <Form.Label>Pesquise a criança pelo nome</Form.Label>
                     <InputGroup>
                         <Form.Control
@@ -361,32 +432,11 @@ export default function RelatorioListaEspera() {
                             value={pesquisaNome}
                             onChange={(e) => setPesquisaNome(e.target.value)}
                         />
-                        <Button variant="secondary">Pesquisar</Button>
                     </InputGroup>
-                </Form.Group>
-
-                <Form.Group className="mt-3">
-                    <Form.Label>Status</Form.Label>
-                    <Form.Select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value)}>
-                        <option value="1">Ativos</option>
-                        <option value="0">Excluídos</option>
-                        <option value="todos">Todos</option>
-                    </Form.Select>
-                </Form.Group>
-
-                <Form.Group className="mt-3">
-                    <Form.Label>Ordenar por</Form.Label>
-                    <Form.Select value={ordenarPor} onChange={(e) => setOrdenarPor(e.target.value)}>
-                        <option value="id">ID</option>
-                        <option value="nome">Nome</option>
-                        <option value="dataInsercao">Data de Inserção</option>
-                        <option value="prioridade">Prioridade</option>
-                    </Form.Select>
                 </Form.Group>
             </Form>
 
-            <br />
-            <Container>
+            <Container className="mt-4">
                 <Table striped bordered hover>
                     <thead>
                         <tr>
@@ -400,7 +450,7 @@ export default function RelatorioListaEspera() {
                         </tr>
                     </thead>
                     <tbody>
-                        {listaFiltradaEOrdenada.map((listaEspera) => (
+                        {listaFiltrada.map((listaEspera) => (
                             <tr key={listaEspera.id}>
                                 <td>{listaEspera.id}</td>
                                 <td>{listaEspera.aluno.nome}</td>
@@ -409,32 +459,21 @@ export default function RelatorioListaEspera() {
                                 <td>{listaEspera.prioridade}</td>
                                 <td>{formatarData(listaEspera.dataInsercao)}</td>
                                 <td>
-                                    <Button onClick={() => alterarListaEspera(listaEspera)} variant="warning" className="me-2">
-                                        ✏️
-                                    </Button>
-                                    <Button onClick={() => excluirListaEspera(listaEspera)} variant="danger" className="me-2">
-                                        🗑️
-                                    </Button>
-                                    <Button onClick={() => matricularAluno(listaEspera)} variant="success">
-                                        ✅
-                                    </Button>
+                                    <Button variant="warning" className="me-2" onClick={() => alterarListaEspera(listaEspera)}>Editar</Button>
+                                    <Button variant="danger" className="me-2" onClick={() => excluirListaEspera(listaEspera)}>Excluir</Button>
+                                    <Button variant="success" onClick={() => matricularAluno(listaEspera)}>Matricular</Button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </Table>
-                <p>Quantidade de crianças cadastradas na lista de espera: {listaFiltradaEOrdenada.length}</p>
+                <p>Quantidade de crianças cadastradas na lista de espera: {listaFiltrada.length}</p>
             </Container>
 
             <div className="mt-4">
-                <Button as={Link} to="/telaListaEspera" variant="secondary" className="me-2">
-                    Voltar
-                </Button>
-                <Button as={Link} to="/cadastroListaEspera" variant="secondary">
-                    Cadastrar
-                </Button>
+                <Button as={Link} to="/telaListaEspera" variant="secondary" className="me-2">Voltar</Button>
+                <Button as={Link} to="/cadastroListaEspera" variant="secondary">Cadastrar</Button>
             </div>
         </PaginaGeral>
     );
 }
-

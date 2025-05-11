@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise';
+/*import mysql from 'mysql2/promise';
 
 //Lembre-se, nossa aplicação neste momento estará se comunicando com outra aplicação.
 //Desse modo, nossa aplicação não tem controle sobre a outra.
@@ -23,4 +23,26 @@ export default async function conectar(){
         });
         return await global.poolConexoes.getConnection();
     }
+}*/
+
+
+
+
+// Conexao.js
+import pkg from 'pg';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const { Pool } = pkg;
+
+const pool = new Pool({
+    user: process.env.PGUSER || 'postgres',
+    host: process.env.PGHOST || 'localhost',
+    database: process.env.PGDATABASE || 'sos_db',
+    password: process.env.PGPASSWORD || 'postgres123',
+    port: process.env.PGPORT || 5432
+});
+
+export default async function conectar() {
+    return await pool.connect();
 }

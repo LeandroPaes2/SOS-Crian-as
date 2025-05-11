@@ -399,6 +399,13 @@ export default function FormCadListaEspera() {
         }
     }, [editando, location.state]);
 
+    useEffect(() => {
+        if (listaEspera.id > 0) {
+            buscarAluno(listaEspera.id);
+        }
+    }, [listaEspera.id]);
+    
+
     function manipularMudanca(evento) {
         const { name, value } = evento.target;
         setListaEspera({ ...listaEspera, [name]: value });
@@ -416,50 +423,28 @@ export default function FormCadListaEspera() {
         try {
             const resposta = await fetch(`http://localhost:3000/alunos?id=${encodeURIComponent(id)}`);
             
-            if (!resposta.ok) {
-                throw new Error('Erro ao consultar o servidor.');
-            }
-
-            const aluno = await resposta.json();
-
-            if (!aluno || Object.keys(aluno).length === 0) {
-                throw new Error('Nenhum responsável encontrado com o CPF informado.');
-            }
-
+            if (!resposta.ok) throw new Error('Erro ao consultar o servidor.');
+    
+            const resultado = await resposta.json();
+            const aluno = resultado[0]; // acessa o primeiro item do array
+    
+            if (!aluno) throw new Error('Nenhum aluno encontrado com o ID informado.');
+    
             setListaEspera(prev => ({
                 ...prev,
-                aluno: {
-                    id: aluno.id,
-                    nome: aluno.nome,
-                    dataNascimento: aluno.dataNascimento,
-                    responsavel: aluno.responsavel,
-                    rua: aluno.rua,
-                    numero: aluno.numero,
-                    escola: aluno.escola,
-                    telefone: aluno.telefone,
-                    periodoEscola: aluno.periodoEscola,
-                    realizaAcompanhamento: aluno.realizaAcompanhamento,
-                    possuiSindrome: aluno.possuiSindrome,
-                    descricao: aluno.descricao,
-                    dataInsercao: aluno.dataInsercao,
-                    rg: aluno.rg,
-                    formularioSaude: aluno.formularioSaude,
-                    ficha: aluno.ficha,
-                    dataInsercaoProjeto: aluno.dataInsercaoProjeto,
-                    status: aluno.status,
-                    periodoProjeto: aluno.periodoProjeto
-                    }
+                aluno: { ...aluno }
             }));
-
-            setMensagem('Responsável encontrado com sucesso!');
+    
+            setMensagem('Aluno encontrado com sucesso!');
             return aluno;
-
+    
         } catch (erro) {
-            console.error("Erro ao buscar responsável:", erro);
+            console.error("Erro ao buscar aluno:", erro);
             setMensagem(erro.message);
             return null;
         }
     }
+    
 
     const handleSubmit = async (evento) => {
         evento.preventDefault();
