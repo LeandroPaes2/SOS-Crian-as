@@ -501,6 +501,9 @@ export default function FormCadListaEspera() {
                     <h2>{editando ? "Editar" : "Cadastrar"} Criança na Lista de Espera</h2>
                 </Alert>
 
+
+
+
                 {mensagem && <Alert variant="info">{mensagem}</Alert>}
 
                 <Form onSubmit={handleSubmit} className="form topot">
