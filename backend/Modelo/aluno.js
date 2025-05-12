@@ -152,7 +152,7 @@ export default class Aluno {
             nome: this.#nome,
             dataNascimento: this.#dataNascimento,
             responsavel: this.#responsavel.toJSON(),
-            cidadecidade: this.#cidade,
+            cidade: this.#cidade,
             rua: this.#rua,
             bairro: this.#bairro,
             numero: this.#numero,

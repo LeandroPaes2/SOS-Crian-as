@@ -740,6 +740,7 @@ export default function FormCadAluno(props) {
                             name="realizaAcompanhamento"
                             value={dados.realizaAcompanhamento || ""}
                             onChange={handleChange}
+                            className={erros.realizaAcompanhamento ? 'input-error' : ''}
                         />
                     </Form.Group>
                     <Form.Group className="mb-3" id="possuiSindrome">
@@ -750,6 +751,7 @@ export default function FormCadAluno(props) {
                             name="possuiSindrome"
                             value={dados.possuiSindrome || ""}
                             onChange={handleChange}
+                            className={erros.possuiSindrome ? 'input-error' : ''}
 
                         />
                     </Form.Group>
@@ -769,7 +771,6 @@ export default function FormCadAluno(props) {
                     <div className="divTitulo">
                         <strong> <h4>Escola</h4>  </strong>
                     </div>
-
                     <Form.Group className="mb-3" id="escola.nome">
                         <Form.Label>Nome:</Form.Label>
                         <Form.Control
@@ -912,10 +913,9 @@ export default function FormCadAluno(props) {
                             Voltar
                         </Button>
                         <Button className="botaoPesquisa" variant="primary" type="submit" onClick={handleSubmit}>
-                            {editando ? "Atualizar" : "Cadastrar"}
+                            {editando ? "AtualizaR" : "Cadastrar"}
                         </Button>
                     </div>
-
                 </Form>
             </PaginaGeral>
         </div >
