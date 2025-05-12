@@ -9,14 +9,14 @@ export default class AlunoDAO {
     constructor() {
     }
 
-    async init() {
+    /*async init() {
         try {
-            
-            const sql2="DROP TABLE aluno";
-            await conexao.execute(sql2);
-        
-            
-            let  sql3 = `CREATE TABLE IF NOT EXISTS aluno (
+
+            /*const sql2 = "DROP TABLE aluno";
+            await conexao.query(sql2);
+
+
+            let sql3 = `CREATE TABLE IF NOT EXISTS aluno (
             alu_id INT AUTO_INCREMENT,
             alu_nome VARCHAR(100) NOT NULL,
             alu_data_nascimento DATE NOT NULL,
@@ -31,7 +31,6 @@ export default class AlunoDAO {
             alu_realiza_acompanhamento VARCHAR(200),
             alu_possui_sindrome VARCHAR(200),
             alu_descricao VARCHAR(300) NOT NULL,
-            alu_dataInsercao_lista_espera DATE NOT NULL,
             alu_rg VARCHAR(20) NOT NULL,
             alu_formulario_saude INT,
             alu_ficha INT ,
@@ -58,7 +57,7 @@ export default class AlunoDAO {
             ON DELETE RESTRICT,
 
 
-        -- assumindo que a tabela responsavel tem cpf como chave primária
+       
         CONSTRAINT fk_aluno_responsavel FOREIGN KEY (alu_responsavel_cpf) 
             REFERENCES responsavel(res_cpf)
             ON UPDATE CASCADE
@@ -71,42 +70,86 @@ export default class AlunoDAO {
 
         CONSTRAINT chk_aluno_status CHECK (alu_status IN (0,1))
     );
-`;
-            await conexao.execute(sql3);
+`;*/
+
+           /* const sql3 = `CREATE TABLE IF NOT EXISTS aluno (
+    alu_id INT GENERATED ALWAYS AS IDENTITY,
+    alu_nome VARCHAR(100) NOT NULL,
+    alu_data_nascimento DATE NOT NULL,
+    alu_responsavel_cpf VARCHAR(14) NOT NULL,
+    alu_cidade VARCHAR(50) NOT NULL,
+    alu_rua VARCHAR(255) NOT NULL,
+    alu_bairro VARCHAR(50) NOT NULL,
+    alu_numero VARCHAR(10) NOT NULL,
+    alu_escola_id INT NOT NULL,
+    alu_telefone VARCHAR(20) NOT NULL,
+    alu_periodo_escola VARCHAR(10) NOT NULL,
+    alu_realiza_acompanhamento VARCHAR(200),
+    alu_possui_sindrome VARCHAR(200),
+    alu_descricao VARCHAR(300) NOT NULL,
+    alu_rg VARCHAR(20) NOT NULL,
+    alu_formulario_saude INT,
+    alu_ficha INT,
+    -- alu_dataInsercao_projeto DATE NOT NULL,
+    alu_status INT NOT NULL,
+    alu_periodo_projeto VARCHAR(10) NOT NULL,
+    alu_cep VARCHAR(20) NOT NULL,
+
+    -- PRIMARY KEY
+    CONSTRAINT pk_aluno PRIMARY KEY (alu_id),
+
+    -- FOREIGN KEYS
+
+    -- CHECK CONSTRAINTS (Substituindo ENUMs)
+    CONSTRAINT chk_aluno_periodo_escola CHECK (alu_periodo_escola IN ('Manhã', 'Tarde')),
+    CONSTRAINT chk_aluno_periodo_projeto CHECK (alu_periodo_projeto IN ('Manhã', 'Tarde')),
+    CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
+);`;
+            await conexao.query(sql3);
             await conexao.release();
         } catch (e) {
             console.log("Erro ao iniciar banco de dados: " + e.message);
         }
     }
+*/
 
-    
+
+
+
+
+
+
+    //preciso corrijir o status no front mais as gambiarras no geral funciona
+
     async incluir(aluno, conexao) {
         if (aluno instanceof Aluno) {
-            const sql = `INSERT INTO aluno 
-            (
-            alu_nome,
-            alu_data_nascimento,
-            alu_responsavel_cpf,
-            alu_cidade,
-            alu_rua ,
-            alu_bairro ,
-            alu_numero,
-            alu_escola_id ,
-            alu_telefone,
-            alu_periodo_escola,
-            alu_realiza_acompanhamento,
-            alu_possui_sindrome,
-            alu_descricao,
-            alu_dataInsercao_lista_espera ,
-            alu_rg,
-            alu_formulario_saude ,
-            alu_ficha ,
-            alu_dataInsercao_projeto ,
-            alu_status,
-            alu_periodo_projeto ENUM('Manhã', 'Tarde' ),
-            alu_cep
-            )
-            VALUES (?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?)`;
+            const sql = `
+    INSERT INTO aluno (
+        alu_nome,
+        alu_data_nascimento,
+        alu_responsavel_cpf,
+        alu_cidade,
+        alu_rua,
+        alu_bairro,
+        alu_numero,
+        alu_escola_id,
+        alu_telefone,
+        alu_periodo_escola,
+        alu_realiza_acompanhamento,
+        alu_possui_sindrome,
+        alu_descricao,
+        alu_rg,
+        alu_formulario_saude,
+        alu_ficha,
+        alu_status,
+        alu_periodo_projeto,
+        alu_cep
+    )
+    VALUES (
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+    $11, $12, $13, $14, $15, $16, $17, $18, $19
+);
+`;
 
             const parametros = [
                 aluno.nome,
@@ -122,16 +165,14 @@ export default class AlunoDAO {
                 aluno.realizaAcompanhamento,
                 aluno.possuiSindrome,
                 aluno.descricao,
-                aluno.dataInsercaoListaEspera,
                 aluno.rg,
                 aluno.formularioSaude,
                 aluno.ficha,
-                aluno.dataInsercaoProjeto,
                 aluno.status,
                 aluno.periodoProjeto,
                 aluno.cep
             ];
-            await conexao.execute(sql, parametros);
+            await conexao.query(sql, parametros);
         }
     }
 
@@ -139,34 +180,32 @@ export default class AlunoDAO {
 
         let sql = ``;
         let parametros = [];
-        if (tipo == 0) {
+        if (tipo === 0) {
             sql = `SELECT * FROM aluno WHERE alu_nome = ?`;
             parametros = [termo];
+        } else if (tipo === 1) {
+            sql = `SELECT * FROM aluno WHERE alu_nome = ?`;
+            parametros = [termo];
+        } else if (tipo === 2) {
+            sql = `SELECT * FROM aluno WHERE alu_rg = ?`;
+            parametros = [termo];
+        } else if (tipo === 3) {
+            sql = `SELECT * FROM aluno WHERE alu_id = ?`;
+            parametros = [termo];
         }
-        else
-            if (tipo == 1) {
-                sql = `SELECT * FROM aluno WHERE alu_nome = ?`;
-                parametros = [termo];
-            }
-            else
-                if (tipo == 2) {
-                    sql = `SELECT * FROM aluno WHERE alu_rg = ?`;
-                    parametros = [termo];
-                }
-                else {
-                    if (tipo == 3)
-                        sql = `SELECT * FROM aluno WHERE alu_id = ?`;
-                    parametros = [termo];
-                }
 
-        const [registros] = await conexao.execute(sql, parametros);
+
+        const [registros] = await conexao.query(sql, parametros);
         const listaAluno = [];
 
         for (const registro of registros) {
             // Buscar Responsável pelo CPF
+            /*
             const respon = await responsavel.consultar(registro['alu_responsavel_cpf'], conexao);
             const responsavel = new Responsavel(respon.cpf, respon.nome, respon.telefone);
+            */
 
+            const responsavel = {};
             // Buscar FormularioSaude pelo aluno_id
             const formularioSaude = null;
 
@@ -177,10 +216,12 @@ export default class AlunoDAO {
 
 
             // Buscar Escola pelo ID
-
+            /*
             const esco = await escola.consultar(registro['alu_escola_id'], conexao);
+            const escola = new Escola(esco.nome, esco.endereco, esco.telefone, esco.tipo);*/
 
-            const escola = new Escola(esco.nome, esco.endereco, esco.telefone, esco.tipo);
+            const escola = {};
+
             // Agora sim criar o Aluno com os objetos completos
             const aluno = new Aluno(
                 registro['alu_id'],
@@ -197,7 +238,6 @@ export default class AlunoDAO {
                 registro['alu_realiza_acompanhamento'],
                 registro['alu_possui_sindrome'],
                 registro['alu_descricao'],
-                registro['alu_dataInsercao_lista_espera'],
                 registro['rg'],
                 formularioSaude,
                 ficha,
@@ -215,37 +255,37 @@ export default class AlunoDAO {
         if (aluno instanceof Aluno) {
             const sql = `DELETE FROM aluno WHERE alu_id = ?`;
             const parametros = [aluno.id];
-            await conexao.execute(sql, parametros);
+            await conexao.query(sql, parametros);
         }
     }
 
     async alterar(aluno, conexao) {
         if (aluno instanceof Aluno) {
             const sql = `
-                UPDATE aluno SET 
-                    alu_nome = ?,
-                    alu_data_nascimento = ?,
-                    alu_responsavel_cpf = ?,
-                    alu_cidade = ?,
-                    alu_rua = ?,
-                    alu_bairro = ?,
-                    alu_numero = ?,
-                    alu_escola_id = ?,
-                    alu_telefone = ?,
-                    alu_periodo_escola = ?,
-                    alu_realiza_acompanhamento = ?,
-                    alu_possui_sindrome = ?,
-                    alu_descricao = ?
-                    alu_dataInsercao_lista_espera = ?,
-                    alu_rg = ?,
-                    alu_formulario_saude = ?,
-                    alu_ficha = ?,
-                    alu_dataInsercao_projeto = ?,
-                    alu_status = ?
-                    alu_periodo_projeto = ?
-                    alu_cep = ?
-                WHERE alu_num_protocolo = ?
-            `;
+            UPDATE aluno SET 
+                alu_nome = ?,
+                alu_data_nascimento = ?,
+                alu_responsavel_cpf = ?,
+                alu_cidade = ?,
+                alu_rua = ?,
+                alu_bairro = ?,
+                alu_numero = ?,
+                alu_escola_id = ?,
+                alu_telefone = ?,
+                alu_periodo_escola = ?,
+                alu_realiza_acompanhamento = ?,
+                alu_possui_sindrome = ?,
+                alu_descricao = ?,
+                alu_rg = ?,
+                alu_formulario_saude = ?,
+                alu_ficha = ?,
+                alu_dataInsercao_projeto = ?,
+                alu_status = ?,
+                alu_periodo_projeto = ?,
+                alu_cep = ?
+            WHERE alu_id = ?
+        `;
+
             const parametros = [
                 aluno.nome,
                 aluno.dataNascimento,
@@ -260,17 +300,19 @@ export default class AlunoDAO {
                 aluno.realizaAcompanhamento,
                 aluno.possuiSindrome,
                 aluno.descricao,
-                aluno.dataInsercaoListaEspera,
                 aluno.rg,
                 aluno.formularioSaude,
                 aluno.ficha,
                 aluno.dataInsercaoProjeto,
                 aluno.status,
                 aluno.periodoProjeto,
-                aluno.cep
+                aluno.cep,
+                aluno.id // este é o identificador usado no WHERE
             ];
-            await conexao.execute(sql, parametros);
+
+            await conexao.query(sql, parametros);
         }
     }
+
 
 }

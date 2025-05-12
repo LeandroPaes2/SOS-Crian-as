@@ -404,7 +404,7 @@ export default function FormCadListaEspera() {
             buscarAluno(listaEspera.id);
         }
     }, [listaEspera.id]);
-    
+
 
     function manipularMudanca(evento) {
         const { name, value } = evento.target;
@@ -422,29 +422,29 @@ export default function FormCadListaEspera() {
     async function buscarAluno(id) {
         try {
             const resposta = await fetch(`http://localhost:3000/alunos?id=${encodeURIComponent(id)}`);
-            
+
             if (!resposta.ok) throw new Error('Erro ao consultar o servidor.');
-    
+
             const resultado = await resposta.json();
             const aluno = resultado[0]; // acessa o primeiro item do array
-    
+
             if (!aluno) throw new Error('Nenhum aluno encontrado com o ID informado.');
-    
+
             setListaEspera(prev => ({
                 ...prev,
                 aluno: { ...aluno }
             }));
-    
+
             setMensagem('Aluno encontrado com sucesso!');
             return aluno;
-    
+
         } catch (erro) {
             console.error("Erro ao buscar aluno:", erro);
             setMensagem(erro.message);
             return null;
         }
     }
-    
+
 
     const handleSubmit = async (evento) => {
         evento.preventDefault();
@@ -503,49 +503,55 @@ export default function FormCadListaEspera() {
 
                 {mensagem && <Alert variant="info">{mensagem}</Alert>}
 
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} className="form topot">
+                    <div className="cadastroListaEspera">
+                        <div className="divInput">
+                            <Form.Group className="formInput">
+                                <Form.Label>Numero do Protocolo</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    name="id"
+                                    value={listaEspera.id}
+                                    onChange={manipularMudanca}
+                                />
+                            </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Numero do Protocolo</Form.Label>
-                        <Form.Control
-                            type="number"
-                            name="id"
-                            value={listaEspera.id}
-                            onChange={manipularMudanca}
-                        />
-                    </Form.Group>
+                            <Form.Group className="formInput">
+                                <Form.Label>Nome da Criança</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="nome"
+                                    value={listaEspera.aluno.nome}
+                                    onChange={manipularMudancaAluno}
+                                />
+                            </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Nome da Criança</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="nome"
-                            value={listaEspera.aluno.nome}
-                            onChange={manipularMudancaAluno}
-                        />
-                    </Form.Group>
+                            <Form.Group className="formInput">
+                                <Form.Label>Prioridade</Form.Label>
+                                <Form.Select
+                                    value={listaEspera.prioridade}
+                                    name="prioridade"
+                                    onChange={manipularMudanca}
+                                >
+                                    <option value="">Selecione uma prioridade</option>
+                                    <option value="1">Azul</option>
+                                    <option value="2">Vermelho</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </div>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Prioridade</Form.Label>
-                        <Form.Select
-                            value={listaEspera.prioridade}
-                            id = "prioridade"
-                            name="prioridade"
-                            onChange={manipularMudanca}
-                        >
-                            <option value="">Selecione uma prioridade</option>
-                            <option value="1">Azul</option>
-                            <option value="2">Vermelho</option>
-                        </Form.Select>
-                    </Form.Group>
-
-                    <Button variant="primary" type="submit">
-                        {editando ? "Atualizar" : "Cadastrar"}
-                    </Button>
-                    <Link to="/telaListaEspera">
-                        <Button className="ml-2" variant="secondary">Cancelar</Button>
-                    </Link>
+                        <div className="divInput" style={{ flexDirection: "row", justifyContent: "center" }}>
+                            <Button type="submit" className="botaoPesquisa">
+                                {editando ? "Atualizar" : "Cadastrar"}
+                            </Button>
+                            <Link to="/telaListaEspera">
+                                <Button variant="secondary" className="botaoPesquisa">Cancelar</Button>
+                            </Link>
+                        </div>
+                    </div>
                 </Form>
+
+
             </PaginaGeral>
         </div>
     );

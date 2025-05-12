@@ -15,11 +15,10 @@ export default class Aluno {
     #realizaAcompanhamento;
     #possuiSindrome;
     #descricao;
-    #dataInsercaoListaEspera;
     #rg;
     #formularioSaude;
     #ficha;
-    #dataInsercaoProjeto;
+   // #Projeto;
     #status;
     #periodoProjeto;
     #cep;
@@ -27,7 +26,7 @@ export default class Aluno {
 
     ////// TENHO Q ARRUMAR ESSA POHA TA FALTANDO ATRIBUTOS NOS LUGAR TIPO NO TOJSON;
 
-    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, cidade = "" ,rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", dataInsercao = "", rg = "", formularioSaude = {}, ficha = {}, dataInsercaoProjeto = "", status = "", periodoProjeto = "") {
+    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, cidade = "" ,rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", rg = "", formularioSaude = {}, ficha = {}, status = "", periodoProjeto = "",cep="") {
         this.#id = id;
         this.#nome = nome;
         this.#dataNascimento = dataNascimento;
@@ -42,11 +41,9 @@ export default class Aluno {
         this.#realizaAcompanhamento = realizaAcompanhamento;
         this.#possuiSindrome = possuiSindrome;
         this.#descricao = descricao;
-        this.#dataInsercaoListaEspera = dataInsercao;
         this.#rg = rg;
         this.#formularioSaude = formularioSaude;
         this.#ficha = ficha;
-        this.#dataInsercaoProjeto = dataInsercaoProjeto;
         this.#status = status;
         this.#periodoProjeto = periodoProjeto;
         this.#cep = cep;
@@ -112,15 +109,11 @@ export default class Aluno {
     get descricao() { return this.#descricao; }
     set descricao(novaDescricao) { this.#descricao = novaDescricao; }
 
-
-    get dataInsercaoListaEspera() { return this.#dataInsercaoListaEspera; }
-    set dataInsercaoListaEspera(novoDataInsercaoListaEspera) { this.#dataInsercaoListaEspera = novoDataInsercaoListaEspera; }
-
     get rg() { return this.#rg; }
     set rg(novoRg) { this.#rg = novoRg; }
 
 
-    get formularioSaude() { return this.#formularioSaude.toJSON(); }
+    get formularioSaude() { return this.#formularioSaude; }
     set formularioSaude(novoFormularioSaude) { 
 
         this.#formularioSaude = novoFormularioSaude;
@@ -133,7 +126,7 @@ export default class Aluno {
     }
 
 
-    get ficha() { return this.#ficha.toJSON(); }     /// ainda nn existe
+    get ficha() {return this.#ficha /*return this.#ficha.toJSON();*/ }     /// ainda nn existe
     set ficha(novoFicha) { 
         this.#ficha = novoFicha; 
 
@@ -142,12 +135,6 @@ export default class Aluno {
             this.#ficha = novoFicha; 
         */
     }
-
-
-    get dataInsercaoProjeto() { return this.#dataInsercaoProjeto; }
-    set dataInsercaoProjeto(novoDataInsercaoProjeto) { this.#dataInsercaoProjeto = novoDataInsercaoProjeto; }
-
-
     get status() { return this.#status; }
     set status(novoStatus) { this.#status = novoStatus; }
 
@@ -165,7 +152,9 @@ export default class Aluno {
             nome: this.#nome,
             dataNascimento: this.#dataNascimento,
             responsavel: this.#responsavel.toJSON(),
+            cidade: this.#cidade,
             rua: this.#rua,
+            bairro: this.#bairro,
             numero: this.#numero,
             escola: this.#escola.toJSON(),
             telefone: this.#telefone,
@@ -173,13 +162,13 @@ export default class Aluno {
             realizaAcompanhamento: this.#realizaAcompanhamento,
             possuiSindrome: this.#possuiSindrome,
             descricao: this.#descricao,
-            dataInsercao: this.#dataInsercaoListaEspera,
             rg: this.#rg,
             formularioSaude: this.#formularioSaude,
             ficha: this.#ficha,
-            dataInsercaoProjeto: this.#dataInsercaoProjeto,
+            //Projeto: this.#Projeto,
             status: this.#status,
-            periodoProjeto: this.#periodoProjeto
+            periodoProjeto: this.#periodoProjeto,
+            cep: this.#cep
         };
     }
 

@@ -24,7 +24,7 @@ export default function Menu(props){
                         </NavDropdown>
                     
                         <NavDropdown title="Relatórios" id="basic-nav-dropdown">
-                            <NavDropdown.Item href="#action/3.1">Alunos</NavDropdown.Item>
+                            <NavDropdown.Item href="#" as={Link} to="/relatorioAluno" >Alunos</NavDropdown.Item>
                             <NavDropdown.Item href="#" as={Link} to="/relatorioListaEspera" >Crianças na Lista de Espera</NavDropdown.Item>
                             <NavDropdown.Item href="#" as={Link} to="/relatorioResponsavel" >Responsaveis</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.1" as={Link} to="/relatorioFuncionario" >Funcionarios</NavDropdown.Item>
