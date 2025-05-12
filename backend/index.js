@@ -31,14 +31,13 @@ app.use("/responsaveis", rotaResponsavel);
 app.use("/alunos", rotaAluno);
 app.use("/horarios", rotaHorario);
 
-// Teste de conexão ao Supabase
 app.get('/teste-conexao', async (req, res) => {
     try {
-        const { data, error } = await supabase.from('turma').select().limit(1);
-        if (error) throw error;
-        res.json({ mensagem: 'Conexão bem-sucedida com o Supabase!', dados: data });
+        const conexao = await supabase();
+        conexao.release(); 
+        res.json({ mensagem: 'Conexão bem-sucedida!' });
     } catch (erro) {
-        res.status(500).json({ erro: 'Falha ao conectar no Supabase', detalhes: erro.message });
+        res.status(500).json({ erro: 'Falha ao conectar no banco de dados', detalhes: erro.message });
     }
 });
 

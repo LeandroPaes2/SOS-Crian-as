@@ -1,14 +1,21 @@
-import dotenv from 'dotenv';
-dotenv.config();
+import pg from 'pg';
 
-import { createClient } from '@supabase/supabase-js';
+const { Pool } = pg;
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+let pool;
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error("supabaseUrl and supabaseKey are required.");
+export default async function conectar() {
+  if (!pool) {
+    pool = new Pool({
+      connectionString: process.env.SUPABASE_URL_CONEXAO,
+      max: 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 60000,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    });
+  }
+
+  return await pool.connect(); // <-- Isso retorna um client com `.release()`
 }
-
-const supabase = createClient(supabaseUrl, supabaseKey);
-export default supabase;

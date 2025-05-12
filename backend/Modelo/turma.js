@@ -45,24 +45,24 @@ export default class Turma{
         }
     }
 
-    async incluir() {
+    async incluir(supabase) {
         const turmDAO = new TurmaDAO();
-        return await turmDAO.incluir(this);
+        return await turmDAO.incluir(this, supabase);
     }
 
-    async consultar(termo) {
+    async consultar(termo, supabase) {
         const turmDAO = new TurmaDAO();
-        return await turmDAO.consultar(termo);
+        return await turmDAO.consultar(termo, supabase);
     }
 
-    async excluir() {
+    async excluir(supabase) {
         const turmDAO = new TurmaDAO();
-        return await turmDAO.excluir(this);
+        return await turmDAO.excluir(this, supabase);
     }
 
-    async alterar() {
+    async alterar(supabase) {
         const turmDAO = new TurmaDAO();
-        return await turmDAO.alterar(this);
+        return await turmDAO.alterar(this, supabase);
     }
 }
 
