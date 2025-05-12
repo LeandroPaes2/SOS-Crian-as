@@ -262,7 +262,7 @@ export default class FuncionarioCtrl {
 
 
 import Funcionario from "../Modelo/funcionario.js";
-import conectar from "./Conexao.js";
+import conectar from "../Persistencia/Conexao.js";
 
 export default class FuncionarioCtrl {
     async gravar(requisicao, resposta) {

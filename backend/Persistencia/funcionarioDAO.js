@@ -124,8 +124,39 @@ export default class FuncionarioDAO {
 
 
 import Funcionario from "../Modelo/funcionario.js";
+//import conectar from "../Controle/Conexao.js";
 
 export default class FuncionarioDAO {
+
+
+/*
+     constructor() {
+        this.init();
+    }
+
+        async init() {
+            try {
+                const conexao = await conectar();
+
+                await conexao.execute(`
+                    CREATE TABLE IF NOT EXISTS funcionario (
+                        func_nome VARCHAR(50) NOT NULL,
+                        func_cpf VARCHAR(14) NOT NULL UNIQUE,
+                        func_cargo VARCHAR(20) NOT NULL,
+                        func_nivel VARCHAR(20) NOT NULL,
+                        func_email VARCHAR(50) NOT NULL,
+                        func_senha VARCHAR(15) NOT NULL,
+                        CONSTRAINT pk_funcionario PRIMARY KEY(func_cpf)
+                    )
+                `);
+
+                await conexao.release();
+                console.log("Tabela 'funcionario' foi recriada com sucesso.");
+            } catch (e) {
+                console.log("Não foi possível iniciar o banco de dados: " + e.message);
+            }
+        }
+        */
     async incluir(funcionario, conexao) {
         if (funcionario instanceof Funcionario) {
             try {

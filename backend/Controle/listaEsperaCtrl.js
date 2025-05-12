@@ -235,7 +235,7 @@ export default class ListaEsperaCtrl {
 
 import ListaEspera from "../Modelo/listaEspera.js";
 import Aluno from "../Modelo/aluno.js";
-import conectar from "./Conexao.js";
+import conectar from "../Persistencia/Conexao.js";
 
 export default class ListaEsperaCtrl {
     async gravar(req, res) {
