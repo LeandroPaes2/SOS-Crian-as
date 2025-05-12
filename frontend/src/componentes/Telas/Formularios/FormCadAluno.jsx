@@ -14,6 +14,7 @@ export default function FormCadAluno(props) {
     const [cepNaoEncontrado, setCepNaoEncontrado] = useState(false);
     const [respNaoEncontrado, setRespNaoEncontrado] = useState(false);
     const [cpfInvalido, setCpfInvalido] = useState(false);
+    const [erros, setErros] = useState({ qtdErros: 0 });
 
 
     const [dados, setDados] = useState({
@@ -35,12 +36,10 @@ export default function FormCadAluno(props) {
         realizaAcompanhamento: "",
         possuiSindrome: "",
         descricao: "",
-        dataInsercaoListaEspera: "",
         rg: "",
         formularioSaude: {},
         ficha: {},
-        dataInsercaoProjeto: "",
-        status: "",
+        status: 1,
         periodoProjeto: "",
         cep: ""
     });
@@ -129,11 +128,15 @@ export default function FormCadAluno(props) {
             console.error("Erro ao buscar responsável:", error);
             setRespNaoEncontrado(true);
         }
-    } const handleSubmit = async (e) => {
+    }
+    async function handleSubmit(e) {
         e.preventDefault();
+        console.log("entrei nessa poha");
+
+        const novosErros = {};
+        novosErros.qtdErros = 0;
 
         const {
-            id,
             nome,
             dataNascimento,
             responsavel,
@@ -147,100 +150,162 @@ export default function FormCadAluno(props) {
             realizaAcompanhamento,
             possuiSindrome,
             descricao,
-            dataInsercaoListaEspera,
-            rg,
-            formularioSaude,
-            ficha,
-            dataInsercaoProjeto,
-            status,
-            periodoProjeto,
-            cep
         } = dados;
 
-        if (
-            !id ||
-            !nome ||
-            !dataNascimento ||
-            !responsavel ||
-            !cidade ||
-            !rua ||
-            !bairro ||
-            !numero ||
-            !escola ||
-            !telefone ||
-            !periodoEscola ||
-            !realizaAcompanhamento ||
-            !possuiSindrome ||
-            !descricao ||
-            !dataInsercaoListaEspera ||
-            !rg ||
-            !formularioSaude ||
-            !ficha ||
-            !dataInsercaoProjeto ||
-            !status ||
-            !periodoProjeto ||
-            !cep) {
-            setMensagem("Preencha todos os campos obrigatórios!");
-            return;
-        }
-        if (!validarRGComDV(dados.rg)) {
-            return;
+
+        if (!nome) {
+            novosErros.nome = true;
+            novosErros.qtdErros++;
         }
 
+        if (!dataNascimento) {
+            novosErros.dataNascimento = true;
+            novosErros.qtdErros++;
+        }
 
-        const aluno = { ...dados };
+        if (!responsavel) {
+            novosErros.responsavel = true;
+            novosErros.qtdErros++;
+        }
 
-        const url = editando
-            ? `http://localhost:3000/alunos/${dados.id}`
-            : "http://localhost:3000/alunos";
-        const method = editando ? "PUT" : "POST";
+        if (!telefone) {
+            novosErros.telefone = true;
+            novosErros.qtdErros++;
+        }
 
-        try {
-            if (editando && !window.confirm("Deseja realmente alterar o aluno: " + aluno.nome)) {
-                return;
-            }
+        if (!rua) {
+            novosErros.rua = true;
+            novosErros.qtdErros++;
+        }
 
-            const res = await fetch(url, {
-                method: method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(aluno)
-            });
+        if (!numero) {
+            novosErros.numero = true;
+            novosErros.qtdErros++;
+        }
 
-            if (res.ok) {
-                setMensagem(editando ? "Aluno atualizado com sucesso!" : "Aluno cadastrado com sucesso!");
-                setTimeout(() => {
-                    setDados({
-                        id: 0,
-                        nome: "",
-                        dataNascimento: "",
-                        responsavel: {},
-                        cidade: "",
-                        rua: "",
-                        bairro: "",
-                        numero: "",
-                        escola: {},
-                        telefone: "",
-                        periodoEscola: "",
-                        realizaAcompanhamento: "",
-                        possuiSindrome: "",
-                        descricao: "",
-                        dataInsercaoListaEspera: "",
-                        rg: "",
-                        formularioSaude: {},
-                        ficha: {},
-                        dataInsercaoProjeto: "",
-                        status: "",
-                        periodoProjeto: "",
-                        cep: ""
+        if (!bairro) {
+            novosErros.bairro = true;
+            novosErros.qtdErros++;
+        }
+        if (!cidade) {
+            novosErros.cidade = true;
+            novosErros.qtdErros++;
+        }
+        if (!escola) {
+            novosErros.escola = true;
+            novosErros.qtdErros++;
+        }
+        if (!periodoEscola) {
+            novosErros.periodoEscola = true;
+            novosErros.qtdErros++;
+        }
+        if (!descricao) {
+            novosErros.descricao = true;
+            novosErros.qtdErros++;
+        }
+        if (!possuiSindrome) {
+            novosErros.possuiSindrome = true;
+            novosErros.qtdErros++;
+        }
+        if (!realizaAcompanhamento) {
+            novosErros.realizaAcompanhamento = true;
+            novosErros.qtdErros++;
+        }
+
+
+        console.log("Quantidade de erros:" + novosErros.qtdErros);
+        if (novosErros.qtdErros === 0) {
+            setErros({});
+            console.log("Editando: " + editando);
+            const aluno = { ...dados };
+            const url = editando
+                ? `http://localhost:3000/alunos/${dados.id}`
+                : "http://localhost:3000/alunos";
+            const method = editando ? "PUT" : "POST";
+            try {
+                if (editando && window.confirm("Deseja realmente alterar o aluno: " + aluno.nome)) {
+                    const res = await fetch(url, {
+                        method: method,
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(aluno)
                     });
-                    navigate("/relatorioAluno");
-                }, 3000);
-            } else {
-                setMensagem(editando ? "Erro ao atualizar aluno!" : "Erro ao cadastrar o aluno.");
+                    if (res.ok) {
+                        setMensagem(editando ? "Aluno atualizado com sucesso!" : "Aluno cadastrado com sucesso!");
+                        setTimeout(() => {
+                            setDados({
+                                id: 0,
+                                nome: "",
+                                dataNascimento: "",
+                                responsavel: {},
+                                cidade: "",
+                                rua: "",
+                                bairro: "",
+                                numero: "",
+                                escola: {},
+                                telefone: "",
+                                periodoEscola: "",
+                                realizaAcompanhamento: "",
+                                possuiSindrome: "",
+                                descricao: "",
+                                rg: "",
+                                formularioSaude: {},
+                                ficha: {},
+                                status: "",
+                                periodoProjeto: "",
+                                cep: ""
+                            });
+                            navigate("/relatorioAluno");
+                        }, 3000);
+                    } else {
+                        setMensagem(editando ? "Erro ao atualizar aluno!" : "Erro ao cadastrar o aluno.");
+                    }
+                }
+                else {
+                    if (!editando && window.confirm("Deseja realmente cadastrar o aluno: " + aluno.nome)) {
+                        const res = await fetch(url, {
+                            method: method,
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(aluno)
+                        });
+                        if (res.ok) {
+                            setMensagem(editando ? "Aluno atualizado com sucesso!" : "Aluno cadastrado com sucesso!");
+                            setTimeout(() => {
+                                setDados({
+                                    id: 0,
+                                    nome: "",
+                                    dataNascimento: "",
+                                    responsavel: {},
+                                    cidade: "",
+                                    rua: "",
+                                    bairro: "",
+                                    numero: "",
+                                    escola: {},
+                                    telefone: "",
+                                    periodoEscola: "",
+                                    realizaAcompanhamento: "",
+                                    possuiSindrome: "",
+                                    descricao: "",
+                                    rg: "",
+                                    formularioSaude: {},
+                                    ficha: {},
+                                    status: "",
+                                    periodoProjeto: "",
+                                    cep: ""
+                                });
+                                navigate("/relatorioAluno");
+                            }, 3000);
+                        } else {
+                            setMensagem(editando ? "Erro ao atualizar aluno!" : "Erro ao cadastrar o aluno.");
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Erro ao conectar com o backend:", error);
+                setMensagem("Erro de conexão com o servidor.");
             }
-        } catch (error) {
-            console.error("Erro ao conectar com o backend:", error);
-            setMensagem("Erro de conexão com o servidor.");
+        }
+        else {
+            setErros(novosErros);
         }
     };
 
@@ -402,9 +467,7 @@ export default function FormCadAluno(props) {
 
             return;
         }
-
         if (name === "periodoEscola") {
-            console.log(value);
             if (value === "Tarde") {
                 setDados((prev) => ({
                     ...prev,
@@ -503,10 +566,7 @@ export default function FormCadAluno(props) {
                         <div className="divTitulo">
                             <strong> <h4>Responsavel</h4></strong>
                         </div>
-
-
                         <div className="divResp2">
-
                             <Form.Group className="mb-3" id="responsavel.cpf">
                                 <Form.Label>CPF:</Form.Label>
                                 <Form.Control
@@ -514,6 +574,7 @@ export default function FormCadAluno(props) {
                                     placeholder="Digite o CPF do(da) Responsavel"
                                     name="responsavel.cpf"
                                     value={dados.responsavel.cpf || ""}
+                                    className={erros.responsavel ? "input-error" : ""}
                                     onChange={handleChange}
                                 />
                                 {cpfInvalido && (
@@ -522,14 +583,6 @@ export default function FormCadAluno(props) {
                                     </Form.Text>
                                 )}
                             </Form.Group>
-
-
-
-
-
-
-
-
                             <Form.Group className="mb-3" id="responsavel.nome">
                                 <Form.Label>Nome:</Form.Label>
                                 <Form.Control
@@ -541,7 +594,6 @@ export default function FormCadAluno(props) {
 
                                 />
                             </Form.Group>
-
                             <Form.Group className="mb-3" id="responsavel.email">
                                 <Form.Label>Email:</Form.Label>
                                 <Form.Control
@@ -553,7 +605,6 @@ export default function FormCadAluno(props) {
 
                                 />
                             </Form.Group>
-
                             <Form.Group className="mb-3" id="responsavel.telefone">
                                 <Form.Label>Telefone:</Form.Label>
                                 <Form.Control
@@ -565,10 +616,6 @@ export default function FormCadAluno(props) {
 
                                 />
                             </Form.Group>
-
-
-
-
                             <Row className="mb-2 align-items-center">
                                 <Col xs="auto">
                                     <Button variant="info" onClick={buscarResp}>
@@ -605,7 +652,6 @@ export default function FormCadAluno(props) {
                     <div className="divTitulo">
                         <strong> <h4>Aluno</h4>  </strong>
                     </div>
-
                     <Form.Group className="mb-3" id="nome">
                         <Form.Label>Nome:</Form.Label>
                         <Form.Control
@@ -614,6 +660,17 @@ export default function FormCadAluno(props) {
                             name="nome"
                             value={dados.nome}
                             onChange={handleChange}
+                            className={erros.nome ? 'input-error' : ''}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" id="dataNascimento">
+                        <Form.Label>Data de Nascimento:</Form.Label>
+                        <Form.Control
+                            type="date"
+                            name="dataNascimento"
+                            value={dados.dataNascimento}
+                            onChange={handleChange}
+                            className={erros.dataNascimento ? 'input-error' : ''}
                         />
                     </Form.Group>
 
@@ -627,8 +684,6 @@ export default function FormCadAluno(props) {
                             onChange={handleChange}
                         />
                     </Form.Group>
-
-
                     <Form.Group className="mb-3" id="telefone">
                         <Form.Label>Telefone:</Form.Label>
                         <Form.Control
@@ -637,18 +692,17 @@ export default function FormCadAluno(props) {
                             name="telefone"
                             value={dados.telefone}
                             onChange={handleChange}
+                            className={erros.telefone ? 'input-error' : ''}
                         />
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Período Escolar:</Form.Label>
-                        <Form.Select name="periodoEscola" value={dados.periodoEscola} onChange={handleChange}>
+                        <Form.Select name="periodoEscola" value={dados.periodoEscola} onChange={handleChange} className={erros.periodoEscola ? 'input-error' : ''}>
                             <option value="">Selecione o período escolar</option>
                             <option value="Manhã">Manhã</option>
                             <option value="Tarde">Tarde</option>
                         </Form.Select>
                     </Form.Group>
-
-
                     <Form.Group className="mb-3">
                         <Row className="mb-2 align-items-center">
                             <Col xs="auto" className="d-flex align-items-center">
@@ -678,8 +732,6 @@ export default function FormCadAluno(props) {
                             <option value="Tarde">Tarde</option>
                         </Form.Select>
                     </Form.Group>
-
-
                     <Form.Group className="mb-3" id="realizaAcompanhamento">
                         <Form.Label>Realiza Acompanhamento em outra Instituição:</Form.Label>
                         <Form.Control
@@ -690,9 +742,6 @@ export default function FormCadAluno(props) {
                             onChange={handleChange}
                         />
                     </Form.Group>
-
-
-
                     <Form.Group className="mb-3" id="possuiSindrome">
                         <Form.Label>Possui sindrome ou deficiência: </Form.Label>
                         <Form.Control
@@ -704,7 +753,6 @@ export default function FormCadAluno(props) {
 
                         />
                     </Form.Group>
-
                     <Form.Group className="mb-3" id="descricao">
                         <Form.Label>Descrição:</Form.Label>
                         <Form.Control
@@ -730,6 +778,7 @@ export default function FormCadAluno(props) {
                             name="escola.nome"
                             value={dados.escola.nome || ""}
                             onChange={handleChange}
+                            className={erros.escola ? 'input-error' : ''}
                         />
                     </Form.Group>
                     <Form.Group className="mb-3" id="escola.endereco">
@@ -743,8 +792,6 @@ export default function FormCadAluno(props) {
                             onChange={handleChange}
                         />
                     </Form.Group>
-
-
                     <Form.Group className="mb-3" id="formularioSaude">
                         <Form.Label>Formulário de Saúde</Form.Label>
                         <Form.Control
@@ -755,7 +802,6 @@ export default function FormCadAluno(props) {
                             onChange={handleChange}
                         />
                     </Form.Group>
-
                     <Form.Group className="mb-3" id="ficha">
                         <Form.Label>Ficha:</Form.Label>
                         <Form.Control
@@ -763,16 +809,6 @@ export default function FormCadAluno(props) {
                             placeholder="Digite a ficha"
                             name="ficha"
                             value={dados.ficha.id || ""}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="dataInsercaoProjeto">
-                        <Form.Label>Data de Inserção no Projeto:</Form.Label>
-                        <Form.Control
-                            type="date"
-                            name="dataInsercaoProjeto"
-                            value={dados.dataInsercaoProjeto}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -812,7 +848,6 @@ export default function FormCadAluno(props) {
                             </OverlayTrigger>
                         </Col>
                     </Row>
-
                     <Form.Group className="mb-3" id="cidade">
                         <Form.Label>Cidade:</Form.Label>
                         <Form.Control
@@ -821,6 +856,7 @@ export default function FormCadAluno(props) {
                             placeholder="Digite o CEP e clique em buscar "
                             value={dados.cidade || ""}
                             onChange={handleChange}
+                            className={erros.cidade ? 'input-error' : ''}
                         />
                         {cepNaoEncontrado && (
                             <Form.Text className="texto-aviso-cep">
@@ -828,8 +864,6 @@ export default function FormCadAluno(props) {
                             </Form.Text>
                         )}
                     </Form.Group>
-
-
                     <Form.Group className="mb-3" id="bairro">
                         <Form.Label>Bairro:</Form.Label>
                         <Form.Control
@@ -838,6 +872,7 @@ export default function FormCadAluno(props) {
                             placeholder="Digite o CEP e clique em buscar "
                             value={dados.bairro || ""}
                             onChange={handleChange}
+                            className={erros.bairro ? 'input-error' : ''}
                         />
                         {cepNaoEncontrado && (
                             <Form.Text className="texto-aviso-cep">
@@ -845,7 +880,6 @@ export default function FormCadAluno(props) {
                             </Form.Text>
                         )}
                     </Form.Group>
-
                     <Form.Group className="mb-3" id="rua">
                         <Form.Label>Rua:</Form.Label>
                         <Form.Control
@@ -854,6 +888,7 @@ export default function FormCadAluno(props) {
                             placeholder="Digite o CEP e clique em buscar "
                             value={dados.rua || ""}
                             onChange={handleChange}
+                            className={erros.rua ? 'input-error' : ''}
                         />
                         {cepNaoEncontrado && (
                             <Form.Text className="texto-aviso-cep">
@@ -861,9 +896,6 @@ export default function FormCadAluno(props) {
                             </Form.Text>
                         )}
                     </Form.Group>
-
-
-
                     <Form.Group className="mb-3" id="numero">
                         <Form.Label>Numero:</Form.Label>
                         <Form.Control
@@ -872,17 +904,14 @@ export default function FormCadAluno(props) {
                             name="numero"
                             value={dados.numero}
                             onChange={handleChange}
+                            className={erros.numero ? 'input-error' : ''}
                         />
                     </Form.Group>
-
-
-
-
                     <div className="d-flex justify-content-between">
                         <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
                             Voltar
                         </Button>
-                        <Button className="botaoPesquisa" variant="primary" type="submit">
+                        <Button className="botaoPesquisa" variant="primary" type="submit" onClick={handleSubmit}>
                             {editando ? "Atualizar" : "Cadastrar"}
                         </Button>
                     </div>

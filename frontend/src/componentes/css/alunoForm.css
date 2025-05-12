@@ -116,3 +116,7 @@
   .help-button:hover {
     color: #0a58ca; /* Azul mais escuro no hover */
   }
+
+  .input-error {
+  border: 1px solid red;
+}

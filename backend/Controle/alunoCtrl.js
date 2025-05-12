@@ -117,8 +117,6 @@ export default class AlunoCtrl {
 
                     conexao = await conectar();
                     await conexao.query("BEGIN");
-
-
                     try
                     {
                         await aluno.incluir(conexao);
@@ -129,9 +127,6 @@ export default class AlunoCtrl {
                         res.status(500).json({ status: false, mensagem: "Erro ao cadastrar aluno. Verifique os dados informados."+ erro.message });
                     }
                     
-
-                    
-
                 } catch (erro) {
                     if (conexao) await conexao.query("ROLLBACK");
                     res.status(500).json({ status: false, mensagem: "Erro interno ao cadastrar aluno: " + erro.message });

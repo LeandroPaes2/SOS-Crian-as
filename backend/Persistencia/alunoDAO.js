@@ -9,7 +9,7 @@ export default class AlunoDAO {
     constructor() {
     }
 
-    async init() {
+    /*async init() {
         try {
 
             /*const sql2 = "DROP TABLE aluno";
@@ -72,7 +72,7 @@ export default class AlunoDAO {
     );
 `;*/
 
-            const sql3 = `CREATE TABLE IF NOT EXISTS aluno (
+           /* const sql3 = `CREATE TABLE IF NOT EXISTS aluno (
     alu_id INT GENERATED ALWAYS AS IDENTITY,
     alu_nome VARCHAR(100) NOT NULL,
     alu_data_nascimento DATE NOT NULL,
@@ -111,7 +111,15 @@ export default class AlunoDAO {
             console.log("Erro ao iniciar banco de dados: " + e.message);
         }
     }
+*/
 
+
+
+
+
+
+
+    //preciso corrijir o status no front mais as gambiarras no geral funciona
 
     async incluir(aluno, conexao) {
         if (aluno instanceof Aluno) {
