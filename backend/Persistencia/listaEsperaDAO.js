@@ -151,7 +151,7 @@ export default class ListaEsperaDAO {
         try {
             const conexao = await conectar();
             const sql = `
-                CREATE TABLE IF NOT EXISTS listaEspera (
+                CREATE TABLE IF NOT EXISTS listaespera (
                     alu_id INT PRIMARY KEY,
                     lista_espera_dataInsercao DATE NOT NULL,
                     lista_espera_prioridade INT NOT NULL,
@@ -186,20 +186,30 @@ export default class ListaEsperaDAO {
         }
     }
 
-    async consultar(termo, conexao) {
-        let sql = `SELECT * FROM listaEspera`;
+    async consultar(termo = {}, conexao) {
+        if (!conexao) {
+            throw new Error("Conexão com o banco de dados não fornecida.");
+        }
+
+        let sql = `SELECT * FROM listaespera`;
         let parametros = [];
 
-        if (termo?.nome) {
-            sql = `SELECT * FROM listaEspera WHERE alu_id = (
+        if (termo.id) {
+            sql = `SELECT * FROM listaespera WHERE alu_id = $1`;
+            parametros = [termo.id];
+        } else if (termo.nome) {
+            sql = `
+            SELECT * FROM listaespera 
+            WHERE alu_id = (
                 SELECT alu_id FROM aluno WHERE alu_nome ILIKE $1 LIMIT 1
-            )`;
+            )
+        `;
             parametros = [`%${termo.nome}%`];
-        } else if (termo?.prioridade) {
-            sql = `SELECT * FROM listaEspera WHERE lista_espera_prioridade = $1`;
+        } else if (termo.prioridade !== undefined) {
+            sql = `SELECT * FROM listaespera WHERE lista_espera_prioridade = $1`;
             parametros = [termo.prioridade];
-        } else if (termo?.status) {
-            sql = `SELECT * FROM listaEspera WHERE lista_espera_status = $1`;
+        } else if (termo.status !== undefined) {
+            sql = `SELECT * FROM listaespera WHERE lista_espera_status = $1`;
             parametros = [termo.status];
         }
 
@@ -214,14 +224,16 @@ export default class ListaEsperaDAO {
             const listaEspera = new ListaEspera(
                 registro.alu_id,
                 alunoCompleto,
-                registro.lista_espera_dataInsercao,
+                registro.lista_espera_datainsercao,
                 registro.lista_espera_prioridade,
                 registro.lista_espera_status
             );
             listaListaEspera.push(listaEspera);
         }
+
         return listaListaEspera;
     }
+
 
     async excluir(listaEspera, conexao) {
         if (listaEspera instanceof ListaEspera) {

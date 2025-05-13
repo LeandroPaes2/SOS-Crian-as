@@ -419,18 +419,25 @@ export default class ListaEsperaCtrl {
         res.type("application/json");
 
         if (req.method === "GET") {
-            const termo = req.params.id || "";
+            const termoId = req.params.id;
             const listaEspera = new ListaEspera();
             let conexao;
 
             try {
                 conexao = await conectar();
+
+                // Corrigir aqui: termo deve ser um objeto
+                let termo = {};
+                if (termoId) {
+                    termo.id = parseInt(termoId);
+                }
+
                 const lista = await listaEspera.consultar(termo, conexao);
 
                 if (Array.isArray(lista) && lista.length > 0) {
                     res.status(200).json(lista);
                 } else {
-                    res.status(404).json({ status: false, mensagem: "Nenhuma criança encontrada na Lista de Espera." });
+                    res.status(404).json({ status: false, mensagem: "Nenhum registro encontrado na Lista de Espera." });
                 }
 
             } catch (e) {
@@ -442,4 +449,6 @@ export default class ListaEsperaCtrl {
             res.status(400).json({ status: false, mensagem: "Requisição inválida! Use o método GET." });
         }
     }
+
+
 }

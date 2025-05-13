@@ -12,7 +12,6 @@ rotaListaEspera.put("/:id", listaEspCtrl.alterar);
 rotaListaEspera.patch("/:id", listaEspCtrl.alterar);
 rotaListaEspera.delete("/:id", listaEspCtrl.excluir);
 rotaListaEspera.get("/:prioridade?", listaEspCtrl.consultar);
-rotaListaEspera.get("/",listaEspCtrl.consultar);
 
 
 export default rotaListaEspera;
