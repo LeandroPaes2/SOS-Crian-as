@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import conectar from './Persistencia/Conexao.js';
 import dotenv from 'dotenv';
 import rotaTurma from './Rotas/rotaTurma.js'
 import rotaEscola from './Rotas/rotaEscola.js';
@@ -9,6 +8,7 @@ import rotaResponsavel from './Rotas/rotaResponsavel.js';
 import rotaAluno from './Rotas/rotaAluno.js';
 import rotaHorario from './Rotas/rotaHorario.js';
 import rotaPresenca from './Rotas/rotaPresenca.js';
+import supabase from './Persistencia/Conexao.js';
 
 dotenv.config();
 
@@ -38,7 +38,7 @@ app.use("/presencas", rotaPresenca);
 
 app.get('/teste-conexao', async (req, res) => {
   try {
-      const conexao = await conectar();
+      const conexao = await supabase();
       conexao.release(); 
       res.json({ mensagem: 'Conexão bem-sucedida!' });
   } catch (erro) {
