@@ -455,8 +455,6 @@ export default function FormCadListaEspera() {
 
         listaEspera.aluno = alunoEncontrado;
         listaEspera.status = 1;
-        const dataAtual = new Date();
-        const dataFormatada = dataAtual.toISOString().split('T')[0];
 
         const camposObrigatorios = ["id", "prioridade"];
         for (const campo of camposObrigatorios) {
@@ -467,9 +465,12 @@ export default function FormCadListaEspera() {
         }
 
         const novaListaEspera = {
-            ...listaEspera,
-            dataInsercao: editando ? listaEspera.dataInsercao : dataFormatada
+        ...listaEspera
         };
+
+        if (!editando) {
+            delete novaListaEspera.dataInsercao; // Remove do objeto para evitar envio
+        }
 
         const url = editando ? `http://localhost:3000/listasEspera/${novaListaEspera.id}` : "http://localhost:3000/listasEspera";
         const method = editando ? "PUT" : "POST";

@@ -12,5 +12,3 @@ rotaEscola.get("/:id", escolaCtrl.consultar);
 rotaEscola.get("/",escolaCtrl.consultar);
 
 export default rotaEscola;
-
-

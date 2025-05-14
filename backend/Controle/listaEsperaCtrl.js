@@ -8,9 +8,9 @@ export default class ListaEsperaCtrl {
 
         if (req.method === "POST" && req.is("application/json")) {
             const aluno = req.body.aluno || {};
-            const dataInsercao = req.body.dataInsercao;
             const prioridade = req.body.prioridade;
             const status = req.body.status;
+            const dataInsercao = new Date().toISOString().split('T')[0];
 
             if (!aluno || !aluno.id) {
                 return res.status(400).json({
@@ -19,19 +19,19 @@ export default class ListaEsperaCtrl {
                 });
             }
 
-            if (dataInsercao && !isNaN(prioridade) && !isNaN(status)) {
+            if (!isNaN(prioridade) && !isNaN(status)) {
                 let conexao;
                 try {
                     const objAluno = new Aluno(
                         aluno.id,
                         aluno.nome,
                         aluno.dataNascimento,
-                        aluno.objResponsavel,
+                        aluno.responsavel,
                         aluno.cidade,
                         aluno.rua,
                         aluno.bairro,
                         aluno.numero,
-                        aluno.objEscola,
+                        aluno.escola,
                         aluno.telefone,
                         aluno.periodoEscola,
                         aluno.realizaAcompanhamento,
@@ -92,12 +92,12 @@ export default class ListaEsperaCtrl {
                 aluno.id,
                 aluno.nome,
                 aluno.dataNascimento,
-                aluno.objResponsavel,
+                aluno.responsavel,
                 aluno.cidade,
                 aluno.rua,
                 aluno.bairro,
                 aluno.numero,
-                aluno.objEscola,
+                aluno.escola,
                 aluno.telefone,
                 aluno.periodoEscola,
                 aluno.realizaAcompanhamento,

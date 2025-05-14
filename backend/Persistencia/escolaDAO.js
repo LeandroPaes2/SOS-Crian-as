@@ -8,7 +8,7 @@ export default class EscolaDAO {
          {
             const sql = `
                 INSERT INTO escola(esc_nome, esc_endereco, esc_telefone, esc_tipo)
-                VALUES (?, ?, ?, ?)
+                VALUES ($1, $2, $3, $4)
             `;
             let parametros = [
                 escola.nome,
@@ -16,7 +16,7 @@ export default class EscolaDAO {
                 escola.telefone,
                 escola.tipo
             ];
-            const [resultado] = await conexao.execute(sql, parametros);
+            const [resultado] = await conexao.query(sql, parametros);
             return resultado;
          }
         
@@ -26,8 +26,8 @@ export default class EscolaDAO {
         if (escola instanceof Escola) {
             const sql = `
                 UPDATE escola 
-                SET esc_nome = ?, esc_endereco = ?, esc_telefone = ?, esc_tipo = ?
-                WHERE esc_id = ?
+                SET esc_nome = $1, esc_endereco = $2, esc_telefone = $3, esc_tipo = $4
+                WHERE esc_id = $5
             `;
             let parametros = [
                 escola.nome,
@@ -36,7 +36,7 @@ export default class EscolaDAO {
                 escola.tipo,
                 escola.id
             ];
-            const [resultado] = await conexao.execute(sql, parametros);
+            const [resultado] = await conexao.query(sql, parametros);
             return resultado;
         }
     }
@@ -48,11 +48,11 @@ export default class EscolaDAO {
         if (!termo) {
             sql = `SELECT * FROM escola`;
         } else {
-            sql = `SELECT * FROM escola WHERE esc_id LIKE ?`;
+            sql = `SELECT * FROM escola WHERE esc_id LIKE $1`;
             parametros = ['%' + termo + '%'];
         }
 
-        const [linhas, campos] = await conexao.execute(sql, parametros);
+        const [linhas, campos] = await conexao.query(sql, parametros);
         let listaEscola = [];
         for (const linha of linhas) {
             const escola = new Escola(
@@ -71,9 +71,9 @@ export default class EscolaDAO {
 
     async excluir(escola, conexao) {
         if (escola instanceof Escola) {
-            const sql = `DELETE FROM escola WHERE esc_id = ?`;
+            const sql = `DELETE FROM escola WHERE esc_id = $1`;
             let parametros = [escola.id];
-            const [resultado] = await conexao.execute(sql, parametros);
+            const [resultado] = await conexao.query(sql, parametros);
             return resultado;
         }
     }

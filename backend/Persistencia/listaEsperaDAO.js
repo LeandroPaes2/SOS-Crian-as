@@ -223,11 +223,11 @@ export default class ListaEsperaDAO {
 
 
 
-import conectar from "./Conexao.js";
+//import conectar from "./Conexao.js";
 
 export default class ListaEsperaDAO {
 
-    constructor() {
+   /* constructor() {
         this.init();
     }
 
@@ -236,7 +236,7 @@ export default class ListaEsperaDAO {
             const conexao = await conectar();
             const sql = `
                 CREATE TABLE IF NOT EXISTS listaespera (
-                    alu_id INT PRIMARY KEY,
+                    alu_id INT PRIMARY KEY NOT NULL,
                     lista_espera_dataInsercao DATE NOT NULL,
                     lista_espera_prioridade INT NOT NULL,
                     lista_espera_status INT NOT NULL,
@@ -251,7 +251,7 @@ export default class ListaEsperaDAO {
         } catch (e) {
             console.log("Erro ao iniciar banco de dados: " + e.message);
         }
-    }
+    }*/
 
     async incluir(listaEspera, conexao) {
         const sql = `
@@ -260,7 +260,7 @@ export default class ListaEsperaDAO {
             ) VALUES ($1, $2, $3, $4)
         `;
         const parametros = [
-            listaEspera.alu_id,
+            listaEspera.id,
             listaEspera.dataInsercao,
             listaEspera.prioridade,
             listaEspera.status
@@ -298,7 +298,7 @@ export default class ListaEsperaDAO {
             const aluno = await this.consultarAluno(registro.alu_id, conexao);
 
             listaListaEspera.push({
-                alu_id: registro.alu_id,
+                id: registro.alu_id,
                 aluno: aluno[0],
                 dataInsercao: registro.lista_espera_datainsercao,
                 prioridade: registro.lista_espera_prioridade,
@@ -318,7 +318,10 @@ export default class ListaEsperaDAO {
 
         for (const registro of resultado.rows) {
             const responsavel = await this.consultarResponsavel(registro.alu_responsavel_cpf, conexao);
-            const escola = await this.consultarEscola(registro.alu_escola_id, conexao);
+            
+            // o lele precisa consertar isso
+            // const escola = await this.consultarEscola(registro.alu_escola_id, conexao);
+            const escola = {};
 
             alunos.push({
                 id: registro.alu_id,
@@ -376,7 +379,7 @@ export default class ListaEsperaDAO {
 
     async excluir(listaEspera, conexao) {
         const sql = `DELETE FROM listaespera WHERE alu_id = $1`;
-        await conexao.query(sql, [listaEspera.alu_id]);
+        await conexao.query(sql, [listaEspera.id]);
     }
 
     async alterar(listaEspera, conexao) {
@@ -391,7 +394,7 @@ export default class ListaEsperaDAO {
             listaEspera.dataInsercao,
             listaEspera.prioridade,
             listaEspera.status,
-            listaEspera.alu_id
+            listaEspera.id
         ];
         await conexao.query(sql, parametros);
     }
