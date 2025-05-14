@@ -48,21 +48,21 @@ export default class ListaEspera {
 
     async incluir(conexao) {
         const dao = new ListaEsperaDAO();
-        await dao.incluir(this,conexao);
+      return  await dao.incluir(this,conexao);
     }
 
     async alterar(conexao) {
         const dao = new ListaEsperaDAO();
-        await dao.alterar(this,conexao);
+       return await dao.alterar(this,conexao);
     }
 
     async excluir(conexao) {
         const dao = new ListaEsperaDAO();
-        await dao.excluir(this,conexao);
+       return await dao.excluir(this,conexao);
     }
 
-    async consultar(termo,conexao) {
-        const dao = new ListaEsperaDAO();
-        return await dao.consultar(termo,conexao);
+   async consultar(termo, conexao){
+           const dao = new ListaEsperaDAO();
+           return await dao.consultar(termo, conexao);
     }
 }

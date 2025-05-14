@@ -419,31 +419,20 @@ export default class ListaEsperaCtrl {
         res.type("application/json");
 
         if (req.method === "GET") {
-            const termoId = req.params.id;
+            let id = req.params.id || "";
             const listaEspera = new ListaEspera();
-            let conexao;
+            const conexao = await conectar();
 
             try {
-                conexao = await conectar();
-
-                // Corrigir aqui: termo deve ser um objeto
-                let termo = {};
-                if (termoId) {
-                    termo.id = parseInt(termoId);
-                }
-
-                const lista = await listaEspera.consultar(termo, conexao);
-
-                if (Array.isArray(lista) && lista.length > 0) {
-                    res.status(200).json(lista);
-                } else {
-                    res.status(404).json({ status: false, mensagem: "Nenhum registro encontrado na Lista de Espera." });
-                }
-
+                await conexao.query('BEGIN');
+                const listasEsp = await listaEspera.consultar({ id }, conexao);
+                await conexao.query('COMMIT');
+                res.status(200).json(listasEsp);
             } catch (e) {
-                res.status(500).json({ status: false, mensagem: "Erro ao consultar: " + e.message });
+                await conexao.query('ROLLBACK');
+                res.status(500).json({ status: false, mensagem: e.message });
             } finally {
-                if (conexao) conexao.release();
+                conexao.release();
             }
         } else {
             res.status(400).json({ status: false, mensagem: "Requisição inválida! Use o método GET." });

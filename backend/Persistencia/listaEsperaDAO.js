@@ -186,29 +186,25 @@ export default class ListaEsperaDAO {
         }
     }
 
-    async consultar(termo = {}, conexao) {
-        if (!conexao) {
-            throw new Error("Conexão com o banco de dados não fornecida.");
-        }
-
+    async consultar(termo, conexao) {
         let sql = `SELECT * FROM listaespera`;
         let parametros = [];
 
-        if (termo.id) {
+        if (termo?.id) {
             sql = `SELECT * FROM listaespera WHERE alu_id = $1`;
             parametros = [termo.id];
-        } else if (termo.nome) {
+        } else if (termo?.aluno && termo.aluno.nome) {
             sql = `
             SELECT * FROM listaespera 
             WHERE alu_id = (
                 SELECT alu_id FROM aluno WHERE alu_nome ILIKE $1 LIMIT 1
             )
-        `;
-            parametros = [`%${termo.nome}%`];
-        } else if (termo.prioridade !== undefined) {
+            `;
+            parametros = [`%${termo.aluno.nome}%`];
+        } else if (termo?.prioridade) {
             sql = `SELECT * FROM listaespera WHERE lista_espera_prioridade = $1`;
             parametros = [termo.prioridade];
-        } else if (termo.status !== undefined) {
+        } else if (termo?.status) {
             sql = `SELECT * FROM listaespera WHERE lista_espera_status = $1`;
             parametros = [termo.status];
         }
