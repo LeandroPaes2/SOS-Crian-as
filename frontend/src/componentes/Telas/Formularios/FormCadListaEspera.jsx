@@ -102,6 +102,25 @@ export default function FormCadListaEspera() {
         }
     }
 
+    async function buscarListaEspera(id) {
+        try {
+            const resposta = await fetch(`http://localhost:3000/listasEspera/${encodeURIComponent(id)}`);
+
+            if (!resposta.ok) throw new Error('Erro ao consultar o servidor.');
+
+            const resultado = await resposta.json();
+            for (const lista of resultado) {
+                if (lista.prioridade === 1)
+                    throw new Error('Criança já cadastrada na lista de espera');
+            }
+
+        } catch (erro) {
+            console.error("Erro ao buscar criança na lista de espera:", erro);
+            setMensagem(erro.message);
+            return null;
+        }
+    }
+
 
     const handleSubmit = async (evento) => {
         evento.preventDefault();
@@ -109,22 +128,31 @@ export default function FormCadListaEspera() {
         const alunoEncontrado = await buscarAluno(listaEspera.id);
         if (!alunoEncontrado) return;
 
-        listaEspera.aluno = alunoEncontrado;
+        setListaEspera(prev => ({
+            ...prev,
+            aluno: alunoEncontrado
+        }));
+
         listaEspera.status = 1;
 
         const camposObrigatorios = ["id", "prioridade"];
         for (const campo of camposObrigatorios) {
-            for (const campo of camposObrigatorios) {
-                const valor = listaEspera[campo];
-
-                // Se for string, checa trim, se não for string só checa se está falsy
-                if (valor === undefined || valor === null || (typeof valor === "string" && valor.trim() === "") || (typeof valor !== "string" && !valor)) {
-                    setMensagem("Preencha todos os campos obrigatórios.");
-                    return;
-                }
+            const valor = listaEspera[campo];
+            if (
+                valor === undefined ||
+                valor === null ||
+                (typeof valor === "string" && valor.trim() === "") ||
+                (typeof valor !== "string" && !valor)
+            ) {
+                setMensagem("Preencha todos os campos obrigatórios.");
+                return;
             }
-
         }
+
+
+        const resultado = await buscarListaEspera(listaEspera.id);
+        if (resultado === null) return;
+
 
         const novaListaEspera = {
             ...listaEspera
