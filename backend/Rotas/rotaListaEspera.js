@@ -8,9 +8,9 @@ const listaEspCtrl = new ListaEsperaCtrl();
 const rotaListaEspera = Router();
 
 rotaListaEspera.post("/", listaEspCtrl.gravar);
-rotaListaEspera.put("/:id", listaEspCtrl.alterar);
-rotaListaEspera.patch("/:id", listaEspCtrl.alterar);
-rotaListaEspera.delete("/:id", listaEspCtrl.excluir);
+rotaListaEspera.put("/:num", listaEspCtrl.alterar);
+rotaListaEspera.patch("/:num", listaEspCtrl.alterar);
+rotaListaEspera.delete("/:num", listaEspCtrl.excluir);
 rotaListaEspera.get("/:id?", listaEspCtrl.consultar);
 rotaListaEspera.get("/",listaEspCtrl.consultar);
 

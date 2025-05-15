@@ -55,6 +55,7 @@ export default function RelatorioListaEspera() {
         navigate("/cadastroListaEspera", {
             state: {
                 editando: true,
+                num: listaEspera.num,
                 id: listaEspera.id,
                 aluno: listaEspera.aluno,
                 dataInsercao: listaEspera.dataInsercao,
@@ -72,7 +73,7 @@ export default function RelatorioListaEspera() {
 
         try {
             listaEspera.status = 0;
-            const response = await fetch("http://localhost:3000/listasEspera/" + listaEspera.id, {
+            const response = await fetch("http://localhost:3000/listasEspera/" + listaEspera.num, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(listaEspera)
@@ -82,7 +83,7 @@ export default function RelatorioListaEspera() {
                 setMensagem("Excluído com sucesso!");
                 setListaDeListaEspera(prevLista =>
                     prevLista.map(item =>
-                        item.id === listaEspera.id ? { ...item, status: 0 } : item
+                        item.num === listaEspera.num ? { ...item, status: 0 } : item
                     )
                 );
             } else {
@@ -219,7 +220,7 @@ export default function RelatorioListaEspera() {
                             <th>Telefone</th>
                             <th>Prioridade</th>
                             <th>Data Inserção</th>
-                            <th>Ações</th>
+                            { filtroStatus !== "0" &&(<th> Ações </th>)}
                         </tr>
                     </thead>
                     <tbody>
@@ -231,11 +232,11 @@ export default function RelatorioListaEspera() {
                                 <td>{listaEspera.aluno.telefone}</td>
                                 <td>{listaEspera.prioridade}</td>
                                 <td>{formatarData(listaEspera.dataInsercao)}</td>
-                                <td>
+                               { listaEspera.status !== 0 &&(<td>
                                     <Button variant="warning" className="me-2" onClick={() => alterarListaEspera(listaEspera)}>Editar</Button>
                                     <Button variant="danger" className="me-2" onClick={() => excluirListaEspera(listaEspera)}>Excluir</Button>
                                     <Button variant="success" onClick={() => matricularAluno(listaEspera)}>Matricular</Button>
-                                </td>
+                                </td>)}
                             </tr>
                         ))}
                     </tbody>

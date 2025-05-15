@@ -10,6 +10,7 @@ export default function FormCadListaEspera() {
     const [editando, setEditando] = useState(location.state?.editando || false);
 
     const [listaEspera, setListaEspera] = useState({
+        num: 0,
         id: 0,
         aluno: {
             id: 0,
@@ -105,7 +106,6 @@ export default function FormCadListaEspera() {
     const handleSubmit = async (evento) => {
         evento.preventDefault();
 
-
         const alunoEncontrado = await buscarAluno(listaEspera.id);
         if (!alunoEncontrado) return;
 
@@ -134,7 +134,7 @@ export default function FormCadListaEspera() {
             delete novaListaEspera.dataInsercao; // Remove do objeto para evitar envio
         }
 
-        const url = editando ? `http://localhost:3000/listasEspera/${novaListaEspera.id}` : "http://localhost:3000/listasEspera";
+        const url = editando ? `http://localhost:3000/listasEspera/${novaListaEspera.num}` : "http://localhost:3000/listasEspera";
         const method = editando ? "PUT" : "POST";
 
         try {

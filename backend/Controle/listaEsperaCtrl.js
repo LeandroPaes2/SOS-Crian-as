@@ -48,6 +48,7 @@ export default class ListaEsperaCtrl {
                     );
 
                     const listaEspera = new ListaEspera(
+                        0,
                         aluno.id,
                         objAluno,
                         dataInsercao,
@@ -82,6 +83,7 @@ export default class ListaEsperaCtrl {
         res.type("application/json");
 
         if ((req.method === "PUT" || req.method === "PATCH") && req.is("application/json")) {
+            const num = req.body.num;
             const id = req.body.id;
             const aluno = req.body.aluno || {};
             const dataInsercao = req.body.dataInsercao;
@@ -113,10 +115,11 @@ export default class ListaEsperaCtrl {
                 aluno.cep
             );
 
-            if (id > 0 && dataInsercao && prioridade >= 0 && status > -1 && status < 2) {
+            if (num >=0 && id > 0 && dataInsercao && prioridade >= 0 && status > -1 && status < 2) {
                 let conexao;
                 try {
                     const listaEspera = new ListaEspera(
+                        num,
                         id,
                         objAluno,
                         dataInsercao,
@@ -150,10 +153,10 @@ export default class ListaEsperaCtrl {
         res.type("application/json");
 
         if (req.method === "DELETE") {
-            const id = parseInt(req.params.id);
+            const num = parseInt(req.params.num);
 
-            if (!isNaN(id)) {
-                const listaEspera = new ListaEspera(id);
+            if (!isNaN(num)) {
+                const listaEspera = new ListaEspera(num);
                 let conexao;
 
                 try {

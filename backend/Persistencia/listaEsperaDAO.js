@@ -11,7 +11,8 @@ export default class ListaEsperaDAO {
             const conexao = await conectar();
             const sql = `
                 CREATE TABLE IF NOT EXISTS listaespera (
-                    alu_id INT PRIMARY KEY NOT NULL,
+                    lista_espera_num SERIAL PRIMARY KEY NOT NULL,
+                    alu_id INT NOT NULL,
                     lista_espera_dataInsercao DATE NOT NULL,
                     lista_espera_prioridade INT NOT NULL,
                     lista_espera_status INT NOT NULL,
@@ -47,10 +48,16 @@ export default class ListaEsperaDAO {
         let sql = `SELECT * FROM listaespera`;
         let parametros = [];
 
+        
         if (termo?.id) {
             sql = `SELECT * FROM listaespera WHERE alu_id = $1`;
             parametros = [termo.id];
-        } else if (termo?.aluno && termo.aluno.nome) {
+        } 
+        else if (termo?.num){
+            sql = `SELECT * FROM listaespera WHERE lista_espera_num = $1`;
+            parametros = [termo.num];
+        }
+        else if (termo?.aluno && termo.aluno.nome) {
             sql = `
                 SELECT * FROM listaespera 
                 WHERE alu_id = (
@@ -73,6 +80,7 @@ export default class ListaEsperaDAO {
             const aluno = await this.consultarAluno(registro.alu_id, conexao);
 
             listaListaEspera.push({
+                num: registro.lista_espera_num,
                 id: registro.alu_id,
                 aluno: aluno[0],
                 dataInsercao: registro.lista_espera_datainsercao,
@@ -153,8 +161,8 @@ export default class ListaEsperaDAO {
     }
 
     async excluir(listaEspera, conexao) {
-        const sql = `DELETE FROM listaespera WHERE alu_id = $1`;
-        await conexao.query(sql, [listaEspera.id]);
+        const sql = `DELETE FROM listaespera WHERE lista_espera_id = $1`;
+        await conexao.query(sql, [listaEspera.num]);
     }
 
     async alterar(listaEspera, conexao) {
@@ -163,13 +171,13 @@ export default class ListaEsperaDAO {
                 lista_espera_dataInsercao = $1,
                 lista_espera_prioridade = $2,
                 lista_espera_status = $3
-            WHERE alu_id = $4
+            WHERE lista_espera_num = $4
         `;
         const parametros = [
             listaEspera.dataInsercao,
             listaEspera.prioridade,
             listaEspera.status,
-            listaEspera.id
+            listaEspera.num
         ];
         await conexao.query(sql, parametros);
     }

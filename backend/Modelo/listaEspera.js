@@ -2,19 +2,24 @@ import Aluno from "./aluno.js";
 import ListaEsperaDAO from "../Persistencia/listaEsperaDAO.js";
 
 export default class ListaEspera {
+    #num;
     #id;
     #aluno;
     #dataInsercao;
     #prioridade;
     #status;
 
-    constructor(id=0, aluno={}, dataInsercao="", prioridade = 0, status=0) {
+    constructor(num=0, id=0, aluno={}, dataInsercao="", prioridade = 0, status=0) {
+        this.#num = num;
         this.#id = id;
         this.#aluno = aluno;
         this.#dataInsercao = dataInsercao;
         this.#prioridade = prioridade;
         this.#status = status;
     }
+
+    get num() { return this.#num; }
+    set num(valor) { this.#num = valor; }
 
     get id() { return this.#id; }
     set id(valor) { this.#id = valor; }
@@ -38,6 +43,7 @@ export default class ListaEspera {
 
     toJSON() {
         return {
+            num: this.#num,
             id: this.#id,
             aluno: this.#aluno.toJSON(),
             dataInsercao: this.#dataInsercao,
