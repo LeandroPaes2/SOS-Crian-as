@@ -8,6 +8,7 @@ import turmas from '../imagens/turmas.png';
 import materias from '../imagens/materias.png';
 import escolas from '../imagens/escolas.png';
 import eventos from '../imagens/eventos.png';
+import horarios from '../imagens/horario.png';
 export default function MenuInicial() {
     return (
         <div className="divBotao">
@@ -45,6 +46,11 @@ export default function MenuInicial() {
                 <img src={eventos} style={{width: '100px'}} />
                 <br/>
                 Eventos
+            </Button>
+            <Button as={Link} to="/telaHorario" className='botaoMenu' variant="primary" size="lg">
+                <img  src={horarios} style={{width: '100px'}} />
+                <br/>
+                Horários
             </Button>
         </div>
     );

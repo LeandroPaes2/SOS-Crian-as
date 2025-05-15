@@ -89,38 +89,38 @@ export default function FormCadEscola() {
     };
 
     const handleTelefoneChange = (e) => {
-        let input = e.target.value.replace(/\D/g, ""); 
-      
-        if (input.length > 11) input = input.slice(0, 11); 
-      
+        let input = e.target.value.replace(/\D/g, "");
+
+        if (input.length > 11) input = input.slice(0, 11);
+
         let formatted = input;
-      
+
         if (input.length > 0) {
-          formatted = `(${input.slice(0, 2)}`;
+            formatted = `(${input.slice(0, 2)}`;
         }
         if (input.length >= 3) {
-          formatted += `) ${input.slice(2, 7)}`;
+            formatted += `) ${input.slice(2, 7)}`;
         }
         if (input.length >= 8) {
-          formatted += `-${input.slice(7, 11)}`;
+            formatted += `-${input.slice(7, 11)}`;
         }
-      
+
         setTelefone(formatted);
-      };
-      
+    };
+
 
     return (
         <div className="cadastroEscola" >
             <PaginaGeral>
-                <Alert className="mt-2 mb-2 text-center"  variant="dark">
+                <Alert className="mt-2 mb-2 text-center" variant="dark">
                     <h2 className="titulo-alert">{editando ? "Editar Escola" : "Cadastro de Escola"}</h2>
                 </Alert>
 
                 {mensagem && (
                     <Alert className="mt-2 mb-2 text-center" variant={
                         mensagem.toLowerCase().includes("sucesso") ? "success" :
-                        mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha")
-                            ? "danger" : "warning"
+                            mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha")
+                                ? "danger" : "warning"
                     }>
                         {mensagem}
                     </Alert>

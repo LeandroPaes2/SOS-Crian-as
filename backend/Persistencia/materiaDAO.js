@@ -71,20 +71,27 @@ export default class MateriaDAO {
         }
     }
 
-    async excluir(materia,conexao) {
+    async excluir(materia, conexao) {
         if (materia instanceof Materia) {
             try {
                 const deletedId = materia.id;
+    
+                // Exclui horários relacionados
+                await conexao.execute('DELETE FROM horario WHERE hora_mat_id = ?', [deletedId]);
+    
                 // Remove a matéria
                 await conexao.execute('DELETE FROM materia WHERE mat_id = ?', [deletedId]);
-                // Decrementa os IDs das matérias com ID maior que o removido
+    
+                // Reorganiza os IDs
                 await conexao.execute('UPDATE materia SET mat_id = mat_id - 1 WHERE mat_id > ?', [deletedId]);
-                // Ajusta o AUTO_INCREMENT para continuar a sequência corretamente
+    
+                // Corrige o AUTO_INCREMENT
                 const [rows] = await conexao.execute('SELECT MAX(mat_id) AS maxId FROM materia');
                 const nextId = (rows[0].maxId || 0) + 1;
                 await conexao.execute(`ALTER TABLE materia AUTO_INCREMENT = ${nextId}`);
-            }
-            catch (e) {
+    
+                return true;
+            } catch (e) {
                 throw new Error("Erro ao excluir matéria: " + e.message);
             }
         }

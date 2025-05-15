@@ -1,7 +1,6 @@
-import conectar from "./Conexao.js";
 import Aluno from "../Modelo/aluno.js";
-import Responsavel from "../Modelo/responsavel.js";
 import Escola from "../Modelo/escola.js";
+import Responsavel from "../Modelo/responsavel.js";
 
 export default class AlunoDAO {
 
@@ -72,51 +71,46 @@ export default class AlunoDAO {
     );
 `;*/
 
-           /* const sql3 = `CREATE TABLE IF NOT EXISTS aluno (
-    alu_id INT GENERATED ALWAYS AS IDENTITY,
-    alu_nome VARCHAR(100) NOT NULL,
-    alu_data_nascimento DATE NOT NULL,
-    alu_responsavel_cpf VARCHAR(14) NOT NULL,
-    alu_cidade VARCHAR(50) NOT NULL,
-    alu_rua VARCHAR(255) NOT NULL,
-    alu_bairro VARCHAR(50) NOT NULL,
-    alu_numero VARCHAR(10) NOT NULL,
-    alu_escola_id INT NOT NULL,
-    alu_telefone VARCHAR(20) NOT NULL,
-    alu_periodo_escola VARCHAR(10) NOT NULL,
-    alu_realiza_acompanhamento VARCHAR(200),
-    alu_possui_sindrome VARCHAR(200),
-    alu_descricao VARCHAR(300) NOT NULL,
-    alu_rg VARCHAR(20) NOT NULL,
-    alu_formulario_saude INT,
-    alu_ficha INT,
-    -- alu_dataInsercao_projeto DATE NOT NULL,
-    alu_status INT NOT NULL,
-    alu_periodo_projeto VARCHAR(10) NOT NULL,
-    alu_cep VARCHAR(20) NOT NULL,
+    /* const sql3 = `CREATE TABLE IF NOT EXISTS aluno (
+alu_id INT GENERATED ALWAYS AS IDENTITY,
+alu_nome VARCHAR(100) NOT NULL,
+alu_data_nascimento DATE NOT NULL,
+alu_responsavel_cpf VARCHAR(14) NOT NULL,
+alu_cidade VARCHAR(50) NOT NULL,
+alu_rua VARCHAR(255) NOT NULL,
+alu_bairro VARCHAR(50) NOT NULL,
+alu_numero VARCHAR(10) NOT NULL,
+alu_escola_id INT NOT NULL,
+alu_telefone VARCHAR(20) NOT NULL,
+alu_periodo_escola VARCHAR(10) NOT NULL,
+alu_realiza_acompanhamento VARCHAR(200),
+alu_possui_sindrome VARCHAR(200),
+alu_descricao VARCHAR(300) NOT NULL,
+alu_rg VARCHAR(20) NOT NULL,
+alu_formulario_saude INT,
+alu_ficha INT,
+-- alu_dataInsercao_projeto DATE NOT NULL,
+alu_status INT NOT NULL,
+alu_periodo_projeto VARCHAR(10) NOT NULL,
+alu_cep VARCHAR(20) NOT NULL,
 
-    -- PRIMARY KEY
-    CONSTRAINT pk_aluno PRIMARY KEY (alu_id),
+-- PRIMARY KEY
+CONSTRAINT pk_aluno PRIMARY KEY (alu_id),
 
-    -- FOREIGN KEYS
+-- FOREIGN KEYS
 
-    -- CHECK CONSTRAINTS (Substituindo ENUMs)
-    CONSTRAINT chk_aluno_periodo_escola CHECK (alu_periodo_escola IN ('Manhã', 'Tarde')),
-    CONSTRAINT chk_aluno_periodo_projeto CHECK (alu_periodo_projeto IN ('Manhã', 'Tarde')),
-    CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
+-- CHECK CONSTRAINTS (Substituindo ENUMs)
+CONSTRAINT chk_aluno_periodo_escola CHECK (alu_periodo_escola IN ('Manhã', 'Tarde')),
+CONSTRAINT chk_aluno_periodo_projeto CHECK (alu_periodo_projeto IN ('Manhã', 'Tarde')),
+CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
 );`;
-            await conexao.query(sql3);
-            await conexao.release();
-        } catch (e) {
-            console.log("Erro ao iniciar banco de dados: " + e.message);
-        }
-    }
+     await conexao.query(sql3);
+     await conexao.release();
+ } catch (e) {
+     console.log("Erro ao iniciar banco de dados: " + e.message);
+ }
+}
 */
-
-
-
-
-
 
 
     //preciso corrijir o status no front mais as gambiarras no geral funciona
@@ -177,52 +171,48 @@ export default class AlunoDAO {
     }
 
     async consultar(termo, tipo, conexao) {
-
-        let sql = ``;
+        let sql = '';
         let parametros = [];
-        if (tipo === 0) {
-            sql = `SELECT * FROM aluno WHERE alu_nome = ?`;
-            parametros = [termo];
-        } else if (tipo === 1) {
-            sql = `SELECT * FROM aluno WHERE alu_nome = ?`;
+
+        if (tipo === 0 || tipo === 1) {
+            sql = `SELECT * FROM aluno WHERE alu_nome = $1`;
             parametros = [termo];
         } else if (tipo === 2) {
-            sql = `SELECT * FROM aluno WHERE alu_rg = ?`;
+            sql = `SELECT * FROM aluno WHERE alu_rg = $1`;
             parametros = [termo];
         } else if (tipo === 3) {
-            sql = `SELECT * FROM aluno WHERE alu_id = ?`;
+            sql = `SELECT * FROM aluno WHERE alu_id = $1`;
             parametros = [termo];
         }
 
-
-        const [registros] = await conexao.query(sql, parametros);
+        const { rows: registros } = await conexao.query(sql, parametros);
         const listaAluno = [];
 
         for (const registro of registros) {
-            // Buscar Responsável pelo CPF
-            /*
-            const respon = await responsavel.consultar(registro['alu_responsavel_cpf'], conexao);
-            const responsavel = new Responsavel(respon.cpf, respon.nome, respon.telefone);
-            */
+            let responsavel = null;
+            let escola = null;
 
-            const responsavel = {};
-            // Buscar FormularioSaude pelo aluno_id
+            // Buscar Responsável
+            try {
+                const respon = await Responsavel.consultar(registro['alu_responsavel_cpf'], conexao);
+                responsavel = new Responsavel(respon.cpf, respon.nome, respon.telefone);
+            } catch (erro) {
+                console.error(`Erro ao consultar responsável do aluno ${registro['alu_nome']}:`, erro);
+            }
+
+            // Buscar Escola
+            try {
+                const esco = await Escola.consultar(registro['alu_escola_id'], conexao);
+                escola = new Escola(esco.nome, esco.endereco, esco.telefone, esco.tipo);
+            } catch (erro) {
+                console.error(`Erro ao consultar escola do aluno ${registro['alu_nome']}:`, erro);
+            }
+
+            // Buscar FormularioSaude e Ficha (placeholder)
             const formularioSaude = null;
-
-
-
-            // Buscar Ficha pelo aluno_id
             const ficha = null;
 
-
-            // Buscar Escola pelo ID
-            /*
-            const esco = await escola.consultar(registro['alu_escola_id'], conexao);
-            const escola = new Escola(esco.nome, esco.endereco, esco.telefone, esco.tipo);*/
-
-            const escola = {};
-
-            // Agora sim criar o Aluno com os objetos completos
+            // Criar o objeto Aluno
             const aluno = new Aluno(
                 registro['alu_id'],
                 registro['alu_nome'],
@@ -245,15 +235,17 @@ export default class AlunoDAO {
                 registro['alu_status'],
                 registro['alu_periodo_projeto'],
                 registro['alu_cep']
-            )
+            );
+
             listaAluno.push(aluno);
         }
+
         return listaAluno;
     }
 
     async excluir(aluno, conexao) {
         if (aluno instanceof Aluno) {
-            const sql = `DELETE FROM aluno WHERE alu_id = ?`;
+            const sql = `DELETE FROM aluno WHERE alu_id = $1`;
             const parametros = [aluno.id];
             await conexao.query(sql, parametros);
         }
@@ -263,38 +255,38 @@ export default class AlunoDAO {
         if (aluno instanceof Aluno) {
             const sql = `
             UPDATE aluno SET 
-                alu_nome = ?,
-                alu_data_nascimento = ?,
-                alu_responsavel_cpf = ?,
-                alu_cidade = ?,
-                alu_rua = ?,
-                alu_bairro = ?,
-                alu_numero = ?,
-                alu_escola_id = ?,
-                alu_telefone = ?,
-                alu_periodo_escola = ?,
-                alu_realiza_acompanhamento = ?,
-                alu_possui_sindrome = ?,
-                alu_descricao = ?,
-                alu_rg = ?,
-                alu_formulario_saude = ?,
-                alu_ficha = ?,
-                alu_dataInsercao_projeto = ?,
-                alu_status = ?,
-                alu_periodo_projeto = ?,
-                alu_cep = ?
-            WHERE alu_id = ?
+                alu_nome = $1,
+                alu_data_nascimento = $2,
+                alu_responsavel_cpf = $3,
+                alu_cidade = $4,
+                alu_rua = $5,
+                alu_bairro = $6,
+                alu_numero = $7,
+                alu_escola_id = $8,
+                alu_telefone = $9,
+                alu_periodo_escola = $10,
+                alu_realiza_acompanhamento = $11,
+                alu_possui_sindrome = $12,
+                alu_descricao = $13,
+                alu_rg = $14,
+                alu_formulario_saude = $15,
+                alu_ficha = $16,
+                alu_dataInsercao_projeto = $17,
+                alu_status = $18,
+                alu_periodo_projeto = $19,
+                alu_cep = $20
+            WHERE alu_id = $21
         `;
 
             const parametros = [
                 aluno.nome,
                 aluno.dataNascimento,
-                aluno.responsavel.cpf,
+                aluno.responsavel.cpf || null,
                 aluno.cidade,
                 aluno.rua,
                 aluno.bairro,
                 aluno.numero,
-                aluno.escola.id,
+                aluno.escola.id || null,
                 aluno.telefone,
                 aluno.periodoEscola,
                 aluno.realizaAcompanhamento,

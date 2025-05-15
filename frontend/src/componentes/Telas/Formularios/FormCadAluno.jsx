@@ -13,6 +13,7 @@ export default function FormCadAluno(props) {
     const [mensagem, setMensagem] = useState("");
     const [cepNaoEncontrado, setCepNaoEncontrado] = useState(false);
     const [respNaoEncontrado, setRespNaoEncontrado] = useState(false);
+    const [listaResponsaveis, setListaResponsaveis] = useState([]);
     const [cpfInvalido, setCpfInvalido] = useState(false);
     const [erros, setErros] = useState({ qtdErros: 0 });
 
