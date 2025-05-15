@@ -421,7 +421,7 @@ export default function FormCadListaEspera() {
 
     async function buscarAluno(id) {
         try {
-            const resposta = await fetch(`http://localhost:3000/alunos?id=${encodeURIComponent(id)}`);
+            const resposta = await fetch(`http://localhost:3000/alunos/${encodeURIComponent(id)}`);
 
             if (!resposta.ok) throw new Error('Erro ao consultar o servidor.');
 

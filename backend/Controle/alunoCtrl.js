@@ -303,7 +303,7 @@ export default class AlunoCtrl {
             res.status(400).json({ status: false, mensagem: "Requisição inválida! Use o método DELETE." });
         }
     }
-
+/*
     async consultar(req, res) {
         res.type("application/json");
 
@@ -345,5 +345,30 @@ export default class AlunoCtrl {
         } else {
             res.status(400).json({ status: false, mensagem: "Requisição inválida! Use o método GET." });
         }
-    }
+    }*/
+
+
+        async consultar(req, res) {
+                res.type("application/json");
+        
+                if (req.method === "GET") {
+                    let id = req.params.id;
+                    const aluno = new Aluno();
+                    const conexao = await conectar();
+        
+                    try {
+                        await conexao.query('BEGIN');
+                        const listaAlu = await aluno.consultar(id, conexao);
+                        await conexao.query('COMMIT');
+                        res.status(200).json(listaAlu);
+                    } catch (e) {
+                        await conexao.query('ROLLBACK');
+                        res.status(500).json({ status: false, mensagem: e.message });
+                    } finally {
+                        conexao.release();
+                    }
+                } else {
+                    res.status(400).json({ status: false, mensagem: "Requisição inválida! Use o método GET." });
+                }
+            }
 }
