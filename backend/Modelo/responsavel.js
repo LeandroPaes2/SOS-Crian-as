@@ -45,24 +45,24 @@ export default class Responsavel{
         }
     }
 
-    async incluir(){
+    async incluir(conexao){
         const respDAO = new ResponsavelDAO();
-        await respDAO.incluir(this);
+        await respDAO.incluir(this, conexao);
     }
 
-    async consultar(termo){
+    async consultar(termo, conexao){
         const respDAO = new ResponsavelDAO();
-        return await respDAO.consultar(termo);
+        return await respDAO.consultar(termo, conexao);
     }
 
-    async excluir(){
+    async excluir(conexao){
         const respDAO = new ResponsavelDAO();
-        await respDAO.excluir(this);
+        await respDAO.excluir(this, conexao);
     }
 
-    async alterar(){
+    async alterar(conexao){
         const respDAO = new ResponsavelDAO();
-        await respDAO.alterar(this);
+        await respDAO.alterar(this, conexao);
     }
 }
 
