@@ -185,7 +185,9 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
             parametros = [termo];
         }
 
-        const { rows: registros } = await conexao.query(sql, parametros);
+        const  reg  = await conexao.query(sql, parametros);
+
+        const registros = reg.rows;
         const listaAluno = [];
 
         for (const registro of registros) {
@@ -193,20 +195,21 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
             let escola = null;
 
             // Buscar Responsável
-            try {
-                const respon = await Responsavel.consultar(registro['alu_responsavel_cpf'], conexao);
-                responsavel = new Responsavel(respon.cpf, respon.nome, respon.telefone);
-            } catch (erro) {
-                console.error(`Erro ao consultar responsável do aluno ${registro['alu_nome']}:`, erro);
-            }
+            // let sqlBuscarResponsavel = `SELECT * FROM responsavel WHERE cpf = $1`;
+            // let parametrosBuscarResponsavel = [registro['alu_responsavel_cpf']];
+            // const { rows: registrosResponsavel } = await conexao.query(sqlBuscarResponsavel, parametrosBuscarResponsavel);
+            // if (registrosResponsavel.length == 1) {
+            //     responsavel=registrosResponsavel[0];   
+            // }
+           
 
             // Buscar Escola
-            try {
-                const esco = await Escola.consultar(registro['alu_escola_id'], conexao);
-                escola = new Escola(esco.nome, esco.endereco, esco.telefone, esco.tipo);
-            } catch (erro) {
-                console.error(`Erro ao consultar escola do aluno ${registro['alu_nome']}:`, erro);
-            }
+            // let sqlBuscarEscola = `SELECT * FROM escola WHERE escola_id = $1`;
+            // let parametrosBuscarEscola = [registro['alu_escola_id']];
+            // const { rows: registrosEscola } = await conexao.query(sqlBuscarEscola, parametrosBuscarEscola);
+            // if (registrosEscola.length == 1) {
+            //     escola=registrosEscola[0];   
+            // }
 
             // Buscar FormularioSaude e Ficha (placeholder)
             const formularioSaude = null;
@@ -236,7 +239,6 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
                 registro['alu_periodo_projeto'],
                 registro['alu_cep']
             );
-
             listaAluno.push(aluno);
         }
 
