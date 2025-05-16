@@ -19,7 +19,7 @@ export default class Aluno {
     #formularioSaude;
     #ficha;
    // #Projeto;
-    #status;
+    #status; // 0 para desligado 1 para ativo
     #periodoProjeto;
     #cep;
 
@@ -151,12 +151,12 @@ export default class Aluno {
             id: this.#id,
             nome: this.#nome,
             dataNascimento: this.#dataNascimento,
-            responsavel: this.#responsavel.toJSON(),
+            responsavel: this.#responsavel.toJSON() || null,
             cidade: this.#cidade,
             rua: this.#rua,
             bairro: this.#bairro,
             numero: this.#numero,
-            escola: this.#escola.toJSON(),
+            escola: this.#escola.toJSON() || null,
             telefone: this.#telefone,
             periodoEscola: this.#periodoEscola,
             realizaAcompanhamento: this.#realizaAcompanhamento,

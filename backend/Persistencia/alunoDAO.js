@@ -175,71 +175,76 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
         let parametros = [];
 
         if (tipo === 0 || tipo === 1) {
-            sql = `SELECT * FROM aluno WHERE alu_nome = $1`;
-            parametros = [termo];
+            sql = `SELECT * FROM aluno WHERE alu_nome ILIKE $1`;  // ILIKE para busca sem diferenciar maiúsculas/minúsculas
+            parametros = ['%' + termo + '%'];  // Use o % para buscar partes do nome, se necessário
         } else if (tipo === 2) {
-            sql = `SELECT * FROM aluno WHERE alu_rg = $1`;
-            parametros = [termo];
+            sql = `SELECT * FROM aluno WHERE alu_rg ILIKE $1`;  // ILIKE para busca sem diferenciar maiúsculas/minúsculas
+            parametros = ['%' + termo + '%'];  // % para busca parcial
         } else if (tipo === 3) {
             sql = `SELECT * FROM aluno WHERE alu_id = $1`;
             parametros = [termo];
         }
 
-        const  reg  = await conexao.query(sql, parametros);
+        const reg = await conexao.query(sql, parametros);
 
         const registros = reg.rows;
         const listaAluno = [];
 
         for (const registro of registros) {
-            let responsavel = null;
-            let escola = null;
 
-            // Buscar Responsável
-            // let sqlBuscarResponsavel = `SELECT * FROM responsavel WHERE cpf = $1`;
-            // let parametrosBuscarResponsavel = [registro['alu_responsavel_cpf']];
-            // const { rows: registrosResponsavel } = await conexao.query(sqlBuscarResponsavel, parametrosBuscarResponsavel);
-            // if (registrosResponsavel.length == 1) {
-            //     responsavel=registrosResponsavel[0];   
-            // }
-           
+            if (registro) {
+                let responsavel = null;
+                let escola = null;
 
-            // Buscar Escola
-            // let sqlBuscarEscola = `SELECT * FROM escola WHERE escola_id = $1`;
-            // let parametrosBuscarEscola = [registro['alu_escola_id']];
-            // const { rows: registrosEscola } = await conexao.query(sqlBuscarEscola, parametrosBuscarEscola);
-            // if (registrosEscola.length == 1) {
-            //     escola=registrosEscola[0];   
-            // }
 
-            // Buscar FormularioSaude e Ficha (placeholder)
-            const formularioSaude = null;
-            const ficha = null;
 
-            // Criar o objeto Aluno
-            const aluno = new Aluno(
-                registro['alu_id'],
-                registro['alu_nome'],
-                registro['alu_data_nascimento'],
-                responsavel,
-                registro['alu_cidade'],
-                registro['alu_rua'],
-                registro['alu_bairro'],
-                registro['alu_numero'],
-                escola,
-                registro['alu_telefone'],
-                registro['alu_periodo_escola'],
-                registro['alu_realiza_acompanhamento'],
-                registro['alu_possui_sindrome'],
-                registro['alu_descricao'],
-                registro['rg'],
-                formularioSaude,
-                ficha,
-                registro['alu_dataInsercao_projeto'],
-                registro['alu_status'],
-                registro['alu_periodo_projeto'],
-                registro['alu_cep']
-            );
-            listaAluno.push(aluno);
+                // Buscar Responsável
+                // let sqlBuscarResponsavel = `SELECT * FROM responsavel WHERE cpf = $1`;
+                // let parametrosBuscarResponsavel = [registro['alu_responsavel_cpf']];
+                // const { rows: registrosResponsavel } = await conexao.query(sqlBuscarResponsavel, parametrosBuscarResponsavel);
+                // if (registrosResponsavel.length == 1) {
+                //     responsavel=registrosResponsavel[0];   
+                // }
+
+
+                // Buscar Escola
+                // let sqlBuscarEscola = `SELECT * FROM escola WHERE escola_id = $1`;
+                // let parametrosBuscarEscola = [registro['alu_escola_id']];
+                // const { rows: registrosEscola } = await conexao.query(sqlBuscarEscola, parametrosBuscarEscola);
+                // if (registrosEscola.length == 1) {
+                //     escola=registrosEscola[0];   
+                // }
+
+                // Buscar FormularioSaude e Ficha (placeholder)
+                const formularioSaude = null;
+                const ficha = null;
+
+                // Criar o objeto Aluno
+                const aluno = new Aluno(
+                    registro['alu_id'],
+                    registro['alu_nome'],
+                    registro['alu_data_nascimento'],
+                    responsavel,
+                    registro['alu_cidade'],
+                    registro['alu_rua'],
+                    registro['alu_bairro'],
+                    registro['alu_numero'],
+                    escola,
+                    registro['alu_telefone'],
+                    registro['alu_periodo_escola'],
+                    registro['alu_realiza_acompanhamento'],
+                    registro['alu_possui_sindrome'],
+                    registro['alu_descricao'],
+                    registro['alu_rg'],
+                    formularioSaude,
+                    ficha,
+                    registro['alu_dataInsercao_projeto'],
+                    registro['alu_status'],
+                    registro['alu_periodo_projeto'],
+                    registro['alu_cep']
+                );
+                listaAluno.push(aluno);
+            }
         }
 
         return listaAluno;

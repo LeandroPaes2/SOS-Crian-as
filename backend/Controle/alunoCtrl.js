@@ -320,7 +320,7 @@ export default class AlunoCtrl {
             }
             if (termo == "") {
                 tipo = 0;
-                termo = "%";
+                termo = "";
             }
 
             const aluno = new Aluno();
