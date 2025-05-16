@@ -76,7 +76,7 @@ export default function FormCadListaEspera() {
         }));
     }
 
-    async function buscarAluno(id) {
+    /*async function buscarAluno(id) {
         try {
             const resposta = await fetch(`http://localhost:3000/alunos/${encodeURIComponent(id)}`);
 
@@ -95,6 +95,34 @@ export default function FormCadListaEspera() {
             setMensagem('Aluno encontrado com sucesso!');
             return aluno;
 
+        } catch (erro) {
+            console.error("Erro ao buscar aluno:", erro);
+            setMensagem(erro.message);
+            return null;
+        }
+    }*/
+
+
+
+    async function buscarAluno(nome, rg) {
+        try {
+            const resposta = await fetch(`http://localhost:3000/alunos/${encodeURIComponent(nome)}`);
+
+            if (!resposta.ok) throw new Error('Erro ao consultar o servidor.');
+
+            const resultado = await resposta.json();
+            for (const aluno of resultado) {
+                if (aluno.rg === rg) {
+                    setListaEspera(prev => ({
+                        ...prev,
+                        aluno: { ...aluno }
+                    }));
+
+                    setMensagem('Aluno encontrado com sucesso!');
+                    return aluno;
+                }
+            }
+            throw new Error('Nenhum aluno encontrado com o ID informado.');
         } catch (erro) {
             console.error("Erro ao buscar aluno:", erro);
             setMensagem(erro.message);
@@ -125,7 +153,7 @@ export default function FormCadListaEspera() {
     const handleSubmit = async (evento) => {
         evento.preventDefault();
 
-        const alunoEncontrado = await buscarAluno(listaEspera.id);
+        const alunoEncontrado = await buscarAluno(listaEspera.aluno.nome, listaEspera.aluno.rg);
         if (!alunoEncontrado) return;
 
         setListaEspera(prev => ({
@@ -149,17 +177,15 @@ export default function FormCadListaEspera() {
             }
         }
 
-
-        const resultado = await buscarListaEspera(listaEspera.id);
-        if (resultado === null) return;
-
-
         const novaListaEspera = {
             ...listaEspera
         };
 
         if (!editando) {
             delete novaListaEspera.dataInsercao; // Remove do objeto para evitar envio
+
+            const resultado = await buscarListaEspera(listaEspera.id);
+            if (resultado === null) return;
         }
 
         const url = editando ? `http://localhost:3000/listasEspera/${novaListaEspera.num}` : "http://localhost:3000/listasEspera";
@@ -192,9 +218,6 @@ export default function FormCadListaEspera() {
                     <h2>{editando ? "Editar" : "Cadastrar"} Criança na Lista de Espera</h2>
                 </Alert>
 
-
-
-
                 {mensagem && <Alert variant="info">{mensagem}</Alert>}
 
                 <Form onSubmit={handleSubmit} className="form topot">
@@ -206,8 +229,8 @@ export default function FormCadListaEspera() {
                                     type="number"
                                     name="id"
                                     value={listaEspera.id}
-                                    onChange={manipularMudanca}
-                                    disabled={editando}
+                                    onChange={manipularMudancaAluno}
+                                    disabled={true}
                                 />
                             </Form.Group>
 
@@ -217,8 +240,17 @@ export default function FormCadListaEspera() {
                                     type="text"
                                     name="nome"
                                     value={listaEspera.aluno.nome}
-                                    onChange={manipularMudancaAluno}
-                                    disabled={true}
+                                    onChange={manipularMudanca}
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="formInput">
+                                <Form.Label>RG da Criança</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="nome"
+                                    value={listaEspera.aluno.rg}
+                                    onChange={manipularMudanca}
                                 />
                             </Form.Group>
 

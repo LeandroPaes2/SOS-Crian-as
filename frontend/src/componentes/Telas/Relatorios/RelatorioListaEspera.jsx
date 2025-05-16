@@ -130,12 +130,43 @@ export default function RelatorioListaEspera() {
         })
         .filter(item => item.aluno.nome.toLowerCase().includes(pesquisaNome.toLowerCase()))
         .sort((a, b) => {
-            if (ordenarPor === "nome") return a.aluno.nome.localeCompare(b.aluno.nome);
-            if (ordenarPor === "id") return a.id - b.id;
-            if (ordenarPor === "prioridade") return a.prioridade - b.prioridade;
-            if (ordenarPor === "dataInsercao") return new Date(a.dataInsercao) - new Date(b.dataInsercao);
+            if (ordenarPor === "nome") {
+                const compNome = a.aluno.nome.localeCompare(b.aluno.nome);
+                if (compNome !== 0) return compNome;
+
+                const compPrioridade = a.prioridade - b.prioridade;
+                if (compPrioridade !== 0) return compPrioridade;
+
+                return new Date(a.dataInsercao) - new Date(b.dataInsercao);
+            }
+
+            if (ordenarPor === "id") {
+                return a.id - b.id;
+            }
+
+            if (ordenarPor === "prioridade") {
+                const compPrioridade = a.prioridade - b.prioridade;
+                if (compPrioridade !== 0) return compPrioridade;
+
+                const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
+                if (compData !== 0) return compData;
+
+                return a.aluno.nome.localeCompare(b.aluno.nome);
+            }
+
+            if (ordenarPor === "dataInsercao") {
+                const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
+                if (compData !== 0) return compData;
+
+                const compPrioridade = a.prioridade - b.prioridade;
+                if (compPrioridade !== 0) return compPrioridade;
+
+                return a.aluno.nome.localeCompare(b.aluno.nome);
+            }
+
             return 0;
-        });
+        })
+
 
     return (
         <PaginaGeral>
@@ -220,7 +251,7 @@ export default function RelatorioListaEspera() {
                             <th>Telefone</th>
                             <th>Prioridade</th>
                             <th>Data Inserção</th>
-                            { filtroStatus !== "0" &&(<th> Ações </th>)}
+                            {filtroStatus !== "0" && (<th> Ações </th>)}
                         </tr>
                     </thead>
                     <tbody>
@@ -232,7 +263,7 @@ export default function RelatorioListaEspera() {
                                 <td>{listaEspera.aluno.telefone}</td>
                                 <td>{listaEspera.prioridade}</td>
                                 <td>{formatarData(listaEspera.dataInsercao)}</td>
-                               { listaEspera.status !== 0 &&(<td>
+                                {listaEspera.status !== 0 && (<td>
                                     <Button variant="warning" className="me-2" onClick={() => alterarListaEspera(listaEspera)}>Editar</Button>
                                     <Button variant="danger" className="me-2" onClick={() => excluirListaEspera(listaEspera)}>Excluir</Button>
                                     <Button variant="success" onClick={() => matricularAluno(listaEspera)}>Matricular</Button>
