@@ -167,6 +167,12 @@ export default function RelatorioListaEspera() {
             return 0;
         })
 
+        const getCorPrioridade = (prioridade) => {
+            if (prioridade === 1) return "AZUL";
+            if (prioridade === 2) return "VERMELHO";
+            return prioridade; // fallback caso apareça outro valor
+        };
+        
 
     return (
         <PaginaGeral>
@@ -261,7 +267,7 @@ export default function RelatorioListaEspera() {
                                 <td>{listaEspera.aluno.nome}</td>
                                 <td>{listaEspera.aluno.responsavel.nome}</td>
                                 <td>{listaEspera.aluno.telefone}</td>
-                                <td>{listaEspera.prioridade}</td>
+                                <td>{<td>{getCorPrioridade(listaEspera.prioridade)}</td>}</td>
                                 <td>{formatarData(listaEspera.dataInsercao)}</td>
                                 {listaEspera.status !== 0 && (<td>
                                     <Button variant="warning" className="me-2" onClick={() => alterarListaEspera(listaEspera)}>Editar</Button>
