@@ -29,7 +29,7 @@ export default class ResponsavelDAO {
         if (responsavel instanceof Responsavel) {
             try{
             const sql = `INSERT INTO responsavel(resp_cpf, resp_nome,resp_telefone)
-                VALUES (?, ?,?)
+                VALUES ($1, $2, $3)
             `;
             let parametros = [
                 responsavel.cpf,
@@ -46,8 +46,8 @@ export default class ResponsavelDAO {
     async alterar(responsavel, conexao) {
         if (responsavel instanceof Responsavel) {
             try{
-            const sql = `UPDATE responsavel SET resp_nome=?, resp_telefone=?
-                WHERE  resp_cpf = ?
+            const sql = `UPDATE responsavel SET resp_nome=$1, resp_telefone=$2
+                WHERE  resp_cpf = $3
             `;
             let parametros = [
                 responsavel.nome,
@@ -71,7 +71,7 @@ export default class ResponsavelDAO {
         }
         else {
             sql = `SELECT * FROM responsavel r
-                   WHERE resp_cpf = ?`
+                   WHERE resp_cpf = $1`
             parametros = [termo];
         }
         const [linhas, campos] = await conexao.execute(sql, parametros);
@@ -93,7 +93,7 @@ export default class ResponsavelDAO {
     async excluir(responsavel, conexao) {
         if (responsavel instanceof Responsavel) {
             try{
-            const sql = `DELETE FROM responsavel WHERE resp_cpf = ?`;
+            const sql = `DELETE FROM responsavel WHERE resp_cpf = $1`;
             let parametros = [
                 responsavel.cpf
             ]; 
