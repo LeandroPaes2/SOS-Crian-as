@@ -7,8 +7,7 @@ let pool;
 export default async function conectar() {
   if (!pool) {
     pool = new Pool({
-      connectionString: process.env.MEU_SUPABASE_URL_CONEXAO,
-      //connectionString: process.env.SUPABASE_URL_CONEXAO,
+      connectionString: process.env.SUPABASE_URL_CONEXAO,
       max: 20,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 60000,
@@ -17,6 +16,4 @@ export default async function conectar() {
       },
     });
   }
-
-  return await pool.connect(); // client com `.release()`
 }

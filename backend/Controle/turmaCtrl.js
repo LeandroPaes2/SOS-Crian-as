@@ -1,181 +1,176 @@
-//É a classe responsável por traduzir requisições HTTP e produzir respostas HTTP
 import Turma from "../Modelo/turma.js";
+import criarConexao from "../Persistencia/Conexao.js";
 
 export default class TurmaCtrl {
 
-    gravar(requisicao, resposta){
-        //preparar o destinatário que a resposta estará no formato JSON
-        resposta.type("application/json");
-        //Verificando se o método da requisição é POST e conteúdo é JSON
-        if (requisicao.method == 'POST' && requisicao.is("application/json")){
-            const cor  = requisicao.body.cor;
-            const periodo = requisicao.body.periodo;
-            //pseudo validação
-            if (cor && periodo)
-            {
-                //gravar a categoria
-                const turma = new Turma(cor, periodo);
-                turma.incluir()
-                .then(()=>{
-                    resposta.status(200).json({
-                        "status":true,
-                        "mensagem":"Turma adicionada com sucesso!",
-                        "cor": turma.cor
-                    });
-                })
-                .catch((erro)=>{
-                    resposta.status(500).json({
-                        "status":false,
-                        "mensagem":"Não foi possível incluir a turma: " + erro.message
-                    });
-                });
-            }
-            else
-            {
-                resposta.status(400).json(
-                    {
-                        "status":false,
-                        "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
-                    }
-                );
-            }
+    async gravar(req, res) {
+        res.type("application/json");
+        const conexao = await criarConexao();
 
-        }
-        else
-        {
-            resposta.status(400).json({
-                "status":false,
-                "mensagem":"Requisição inválida! Consulte a documentação da API."
-            });
+        if (req.method === 'POST' && req.is("application/json")) {
+            const cor = req.body.cor;
+            const periodo = req.body.periodo;
 
-        }
-
-    }
-
-    editar(requisicao, resposta){
-        //preparar o destinatário que a resposta estará no formato JSON
-        resposta.type("application/json");
-        //Verificando se o método da requisição é POST e conteúdo é JSON
-        if ((requisicao.method == 'PUT' || requisicao.method == 'PATCH') && requisicao.is("application/json")){
-            //o código será extraída da URL (padrão REST)
-            const cor  = requisicao.params.cor;
-            const periodo = requisicao.body.periodo;
-        
-            if (cor && periodo)
-            {
-                //alterar a categoria
-                const turma = new Turma(cor, periodo);
-                turma.alterar().then(()=>{
-                    resposta.status(200).json({
-                        "status":true,
-                        "mensagem":"Turma alterada com sucesso!",
-                    });
-                })
-                .catch((erro)=>{
-                    resposta.status(500).json({
-                        "status":false,
-                        "mensagem":"Não foi possível alterar a turma: " + erro.message
-                    });
-                });
-            }
-            else
-            {
-                resposta.status(400).json(
-                    {
-                        "status":false,
-                        "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
-                    }
-                );
-            }
-        }
-        else
-        {
-            resposta.status(400).json({
-                "status":false,
-                "mensagem":"Requisição inválida! Consulte a documentação da API."
-            });
-
-        }
-    }
-
-    excluir(requisicao, resposta) {
-        //preparar o destinatário que a resposta estará no formato JSON
-        resposta.type("application/json");
-        //Verificando se o método da requisição é POST e conteúdo é JSON
-        if (requisicao.method == 'DELETE') {
-            //o código será extraída da URL (padrão REST)
-            const cor = requisicao.params.cor;
-            //pseudo validação
-            if (cor) {
-                //alterar o produto
-                const turma = new Turma(cor);
-                turma.excluir()
-                    .then(() => {
-                        resposta.status(200).json({
-                            "status": true,
-                            "mensagem": "Turma excluído com sucesso!",
-                        });
+            if (cor && periodo) {
+                const turma = new Turma(0, cor, periodo);
+                await conexao.query("BEGIN");
+                try {
+                    await turma.incluir(conexao);
+                    await conexao.query("COMMIT");
+                    res.status(200).json({
+                        status: true,
+                        mensagem: "Turma adicionada com sucesso!"
                     })
-                    .catch((erro) => {
-                        resposta.status(500).json({
-                            "status": false,
-                            "mensagem": "Não foi possível excluir a turma: " + erro.message
-                        });
+                } catch (erro) {
+                    await conexao.query("ROLLBACK");
+                    res.status(500).json({
+                        status: false,
+                        mensagem: "Não foi possível incluir a turma: " + erro.message
                     });
-            }
-            else {
-                resposta.status(400).json(
-                    {
-                        "status": false,
-                        "mensagem": "Informe um código válido de um produto conforme documentação da API."
-                    }
-                );
-            }
-
-        }
-        else {
-            resposta.status(400).json({
-                "status": false,
-                "mensagem": "Requisição inválida! Consulte a documentação da API."
-            });
-
-        }
-    }
-
-    consultar(requisicao, resposta) {
-        resposta.type("application/json");
-        if (requisicao.method == "GET") {
-            let cor = requisicao.params.cor;
-
-            //evitar que código tenha valor undefined
-            if (!cor) {
-                cor = "";
-            }
-
-            const turma = new Turma();
-            //método consultar retorna uma lista de produtos
-            turma.consultar(cor)
-                .then((listaTurma) => {
-                    resposta.status(200).json(listaTurma);
-                })
-                .catch((erro) => {
-                    resposta.status(500).json(
-                        {
-                            "status": false,
-                            "mensagem": "Erro ao consultar turmas: " + erro.message
-                        }
-                    );
-                });
-
-        }
-        else {
-            resposta.status(400).json(
-                {
-                    "status": false,
-                    "mensagem": "Requisição inválida! Consulte a documentação da API."
+                } finally {
+                    if (conexao)
+                        conexao.release();
                 }
-            );
+            } else {
+                res.status(400).json({
+                    status: false,
+                    mensagem: "Informe corretamente todos os dados de uma turma conforme documentação da API."
+                });
+            }
+        } else {
+            res.status(400).json({
+                status: false,
+                mensagem: "Requisição inválida! Consulte a documentação da API."
+            });
         }
     }
 
+    async editar(req, res) {
+        res.type("application/json");
+        const conexao = await criarConexao();
+
+        if ((req.method === 'PUT' || req.method === 'PATCH') && req.is("application/json")) {
+            const id = req.params.id;
+            const cor = req.body.cor;
+            const periodo = req.body.periodo;
+
+
+            if (id && cor && periodo) {
+                try {
+                    const turma = new Turma(id, cor, periodo);
+                    await conexao.query("BEGIN");
+
+                    const resultado = await turma.alterar(conexao);
+
+                    if (resultado && !resultado.error) {
+                        await conexao.query("COMMIT");
+                        res.status(200).json({
+                            status: true,
+                            mensagem: "Turma alterada com sucesso!"
+                        });
+                    } else {
+                        await conexao.query("ROLLBACK");
+                        throw new Error(resultado.error?.message || "Erro ao alterar turma");
+                    }
+                } catch (erro) {
+                    await conexao.query("ROLLBACK");
+                    res.status(500).json({
+                        status: false,
+                        mensagem: "Não foi possível alterar a turma: " + erro.message
+                    });
+                } finally {
+                    conexao.release();
+                }
+            } else {
+                res.status(400).json({
+                    status: false,
+                    mensagem: "Informe corretamente todos os dados de uma turma conforme documentação da API."
+                });
+            }
+        } else {
+            res.status(400).json({
+                status: false,
+                mensagem: "Requisição inválida! Consulte a documentação da API."
+            });
+        }
+    }
+
+    async excluir(req, res) {
+        res.type("application/json");
+        const conexao = await criarConexao();
+
+        if (req.method === 'DELETE') {
+            const id = req.params.id;
+
+            if (id && !isNaN(id)) {
+                try {
+                    const turma = new Turma(id);
+                    await conexao.query("BEGIN");
+
+                    const resultado = await turma.excluir(conexao);
+
+                    if (!resultado || resultado.success) {
+                        await conexao.query("COMMIT");
+                        res.status(200).json({
+                            status: true,
+                            mensagem: "Turma excluída com sucesso!"
+                        });
+                    } else {
+                        await conexao.query("ROLLBACK");
+                        throw new Error(resultado.error?.message || "Erro ao excluir turma");
+                    }
+                } catch (erro) {
+                    await conexao.query("ROLLBACK");
+                    res.status(500).json({
+                        status: false,
+                        mensagem: "Não foi possível excluir a turma: " + erro.message
+                    });
+                } finally {
+                    conexao.release?.();
+                }
+            } else {
+                res.status(400).json({
+                    status: false,
+                    mensagem: "Informe um código de turma válido."
+                });
+            }
+        } else {
+            res.status(405).json({
+                status: false,
+                mensagem: "Método não permitido. Utilize o método DELETE para exclusão."
+            });
+        }
+    }
+
+    async consultar(req, res) {
+        const conexao = await criarConexao();
+        res.type("application/json");
+
+        if (req.method === "GET") {
+            let id = req.params.id;
+            const turma = new Turma();
+
+            try {
+                const listaTurma = await turma.consultar(id, conexao);
+                if (Array.isArray(listaTurma) && listaTurma.length > 0) {
+                    res.status(200).json(listaTurma);
+                } else {
+                    res.status(404).json({
+                        status: false,
+                        mensagem: "Nenhuma turma encontrada"
+                    });
+                }
+            } catch (erro) {
+                res.status(500).json({
+                    status: false,
+                    mensagem: "Erro ao consultar turma: " + erro.message
+                });
+            }
+        } else {
+            res.status(400).json({
+                status: false,
+                mensagem: "Requisição inválida! Consulte a documentação da API."
+            });
+        }
+    }
 }

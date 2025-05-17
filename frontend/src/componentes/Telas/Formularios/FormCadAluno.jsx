@@ -2,11 +2,9 @@ import { Alert, Form, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
 import { Link, useLocation } from "react-router-dom";
-
+import '../../css/aluno.css'
 
 import { useNavigate } from 'react-router-dom';
-
-
 
 export default function FormCadAluno() {
     const location = useLocation();
@@ -96,6 +94,7 @@ export default function FormCadAluno() {
 
     return (
         <div className="div1">
+
             <PaginaGeral>
                 <Alert className="text-center mt-2 mb-4">
                     <h2>{editando ? "Editar Aluno" : "Cadastro de Aluno"}</h2>
@@ -203,6 +202,5 @@ export default function FormCadAluno() {
                 </Form>
             </PaginaGeral>
         </div>
-
     );
 }

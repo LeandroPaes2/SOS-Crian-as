@@ -1,31 +1,26 @@
-import PaginaGeral from "../layouts/PaginaGeral"
-import { Alert, Form, Button, InputGroup} from "react-bootstrap";
-import {Link} from 'react-router-dom';
-import RelatorioMateria from "./Relatorios/RelatorioMaterias.jsx";
+import PaginaGeral from "../layouts/PaginaGeral";
+import { Alert, Button } from "react-bootstrap";
+import { Link } from 'react-router-dom';
+import "../css/telaResponsavel.css";
 
-export default function TelaCadastroMateria(props){
-
-    return(
-        <div>
+export default function TelaCadastroMateria(){
+    return (
+        <div className="topo">
             <PaginaGeral>
                 <br />
-                <Alert className="mt-02 mb-02 dark text-center" variant="dark">
-                    <h2>
-                        Materia
-                    </h2>
+                <Alert className="alert-custom text-center mt-4 mb-4">
+                    <h2 className="titulo-alert">Matérias</h2>
                 </Alert>
 
-                <div>
+                <div className="botoes-container">
                     <Button as={Link} to="/cadastroMateria" className="botaoPesquisa" variant="secondary">
-                        Cadastrar materia
+                        Cadastrar Matéria
                     </Button>
-                </div>
-                <div>
                     <Button as={Link} to="/relatorioMateria" className="botaoPesquisa" variant="secondary">
-                        Relatorio das materias
+                        Relatório das Matérias
                     </Button>
                 </div>
             </PaginaGeral>
         </div>
-    )
+    );
 }

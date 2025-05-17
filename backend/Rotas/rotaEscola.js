@@ -5,10 +5,10 @@ const escolaCtrl = new EscolaCtrl();
 const rotaEscola = Router();
 
 rotaEscola.post("/", escolaCtrl.gravar);
-rotaEscola.put("/:nome", escolaCtrl.editar);
-rotaEscola.patch("/:nome", escolaCtrl.editar);
-rotaEscola.delete("/:nome", escolaCtrl.excluir);
-rotaEscola.get("/:nome", escolaCtrl.consultar);
+rotaEscola.put("/:id", escolaCtrl.editar);
+rotaEscola.patch("/:id", escolaCtrl.editar);
+rotaEscola.delete("/:id", escolaCtrl.excluir);
+rotaEscola.get("/:id", escolaCtrl.consultar);
 rotaEscola.get("/",escolaCtrl.consultar);
 
 export default rotaEscola;

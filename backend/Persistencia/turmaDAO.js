@@ -1,99 +1,66 @@
-//DAO - Data Access Object
 import Turma from "../Modelo/turma.js";
-//import Aluno from "../Modelo/aluno.js";
+import supabase from "./Conexao.js";
 
-import conectar from "./Conexao.js";
 export default class TurmaDAO {
-    constructor() {
-        this.init();
-    }
 
-    async init() {
-        try 
-        {
-            const conexao = await conectar(); //retorna uma conexão
-            const sql = `
-            CREATE TABLE IF NOT EXISTS turma(
-                turm_cor VARCHAR(40) NOT NULL,
-                turm_per VARCHAR(30) NOT NULL,
-                CONSTRAINT pk_turma PRIMARY KEY(turm_cor)
-            );
-        `;
-            await conexao.execute(sql);
-            await conexao.release();
-        }
-        catch (e) {
-            console.log("Não foi possível iniciar o banco de dados: " + e.message);
-        }
-    }
-
-    async incluir(turma) {
+    async incluir(turma, supabase) {
         if (turma instanceof Turma) {
-            const conexao = await conectar();
             const sql = `INSERT INTO turma(turm_cor, turm_per)
-                VALUES (?, ?)
-            `;
-            let parametros = [
+            VALUES ($1, $2)`;
+            const parametros = [
                 turma.cor,
                 turma.periodo
-            ]; //dados do produto
-            await conexao.execute(sql, parametros);
-            await conexao.release(); //libera a conexão
+            ];
+            await supabase.query(sql, parametros);
         }
     }
 
-    async alterar(turma) {
+    async alterar(turma, supabase) {
         if (turma instanceof Turma) {
-            const conexao = await conectar();
-            const sql = `UPDATE turma SET turm_per =?
-                WHERE  turm_cor = ?
-            `;
-            let parametros = [
+            const sql = `UPDATE turma SET turm_cor = $1, turm_per = $2 
+                        WHERE turm_id = $3`;
+            const parametros = [
+                turma.cor,
                 turma.periodo,
-                turma.cor
-            ]; 
-            await conexao.execute(sql, parametros);
-            await conexao.release(); //libera a conexão
+                turma.id
+            ];
+            const resultado = await supabase.query(sql, parametros);
+            return resultado; // agora retorna algo
         }
+        return null;
     }
-    
-    async consultar(termo) {
-        //resuperar as linhas da tabela produto e transformá-las de volta em produtos
-        const conexao = await conectar();
+
+    async consultar(termo, supabase) {
         let sql = "";
         let parametros = [];
         if (!termo) {
-            sql = `SELECT * FROM turma t
-                   WHERE turm_cor LIKE ?`;
+            sql = `SELECT * FROM turma`;
+        } else if (!isNaN(parseInt(termo))) {
+            sql = `SELECT * FROM turma WHERE turm_id = $1`;
+            parametros = [parseInt(termo)];
+        } else {
+            sql = `SELECT * FROM turma WHERE turm_cor ILIKE $1 OR turm_per ILIKE $1`;
             parametros = ['%' + termo + '%'];
         }
-        else {
-            sql = `SELECT * FROM turma t
-                   WHERE turm_cor = ?`
-            parametros = [termo];
-        }
-        const [linhas, campos] = await conexao.execute(sql, parametros);
+        const resultado = await supabase.query(sql, parametros);
+        const linhas = resultado.rows;
         let listaTurma = [];
         for (const linha of linhas) {
             const turma = new Turma(
+                linha['turm_id'],
                 linha['turm_cor'],
                 linha['turm_per']
             );
             listaTurma.push(turma);
         }
-        await conexao.release();
         return listaTurma;
     }
 
-    async excluir(turma) {
+    async excluir(turma, supabase) {
         if (turma instanceof Turma) {
-            const conexao = await conectar();
-            const sql = `DELETE FROM turma WHERE turm_cor = ?`;
-            let parametros = [
-                turma.cor
-            ]; //dados do produto
-            await conexao.execute(sql, parametros);
-            await conexao.release(); //libera a conexão
+            const sql = `DELETE FROM turma WHERE turm_id = $1`;
+            const parametros = [turma.id];
+            await supabase.query(sql, parametros);
         }
     }
 }

@@ -3,13 +3,14 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import {Link} from 'react-router-dom';
-
+import logo from '../imagens/logo.png';
+import "../css/menu.css";
 export default function Menu(props){
     return(
         <>
-            <Navbar bg="light" data-bs-theme="light">
+            <Navbar className='menu-navbar'>
                 <Container>
-                <Navbar.Brand  as={Link} to="/" href="#home">SOS Home</Navbar.Brand>
+                <Navbar.Brand  as={Link} to="/" href="#home"><img src={logo} style={{width: '100px'}}/></Navbar.Brand>
                 <Nav className="me-auto">
                         <NavDropdown title="Cadastros" id="basic-nav-dropdown">
                             <NavDropdown.Item href="#" as={Link} to="/telaAluno" >Alunos</NavDropdown.Item>
@@ -19,6 +20,7 @@ export default function Menu(props){
                             <NavDropdown.Item href="#" >Materias</NavDropdown.Item>
                             <NavDropdown.Item href="#" as={Link} to="/telaEscola">Escolas</NavDropdown.Item>
                             <NavDropdown.Item href="#" as={Link} to="/telaEvento">Eventos</NavDropdown.Item>
+                            <NavDropdown.Item href="#" as={Link} to="/telaHorario">Horários</NavDropdown.Item>
                         </NavDropdown>
                     
                         <NavDropdown title="Relatórios" id="basic-nav-dropdown">
@@ -28,6 +30,8 @@ export default function Menu(props){
                             <NavDropdown.Item href="#action/3.1">Turmas</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.1">Materias</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.1">Escolas</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.1">Eventos</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.1">Horários</NavDropdown.Item>
                         </NavDropdown>
                         <Nav.Link href="#home">Sobre</Nav.Link>
                 </Nav>
