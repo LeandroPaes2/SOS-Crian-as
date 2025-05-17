@@ -1,5 +1,5 @@
 import Escola from "../Modelo/escola.js";
-
+import conectar from "../Persistencia/Conexao.js";
 
 export default class EscolaCtrl {
 
