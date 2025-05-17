@@ -62,9 +62,18 @@ export default function RelatorioHorario() {
                 } else {
                     setMensagem("Erro ao excluir o horário.");
                 }
+
+                setTimeout(() => {
+                    setMensagem("");
+                }, 3000);
+
             } catch (error) {
                 console.error(error);
                 setMensagem("Erro de conexão com o servidor.");
+
+                setTimeout(() => {
+                    setMensagem("");
+                }, 3000);
                 
             }
         }
