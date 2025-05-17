@@ -1,3 +1,4 @@
+// Conexao.js
 import pg from 'pg';
 
 const { Pool } = pg;
@@ -17,5 +18,5 @@ export default async function conectar() {
     });
   }
 
-  return await pool.connect(); // <-- Isso retorna um client com `.release()`
+  return await pool.connect();
 }
