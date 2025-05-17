@@ -1,7 +1,7 @@
 import Horario from "../Modelo/horario.js";
 import Turma from "../Modelo/turma.js";
 import Materia from "../Modelo/materia.js"
-import conectar from "../Persistencia/Conexao.js";
+
 
 export default class HorarioCtrl {
 
