@@ -247,18 +247,22 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
         }*/
 
     async consultar(termo, conexao) {
-        const sql = `SELECT * FROM aluno WHERE alu_id = $1`;
-        const parametros = [termo];
-        const resultado = await conexao.query(sql, parametros);
+       let sql;
+        let parametros = [];
 
+        if (termo) {
+            sql = `SELECT * FROM aluno WHERE alu_id = $1`;
+            parametros = [termo];
+        } else {
+            sql = `SELECT * FROM aluno`;  // << pegar todos
+        }
+
+        const resultado = await conexao.query(sql, parametros);
         const alunos = [];
 
         for (const registro of resultado.rows) {
             const responsavel = await this.consultarResponsavel(registro.alu_responsavel_cpf, conexao);
-
-            // o lele precisa consertar isso
-            // const escola = await this.consultarEscola(registro.alu_escola_id, conexao);
-            const escola = {};
+            const escola = {}; // ou await this.consultarEscola(registro.alu_escola_id, conexao);
 
             alunos.push({
                 id: registro.alu_id,
@@ -275,7 +279,7 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
                 realizaAcompanhamento: registro.alu_realiza_acompanhamento,
                 possuiSindrome: registro.alu_possui_sindrome,
                 descricao: registro.alu_descricao,
-                rg: registro.rg,
+                rg: registro.alu_rg,
                 formularioSaude: null,
                 ficha: null,
                 dataInsercaoProjeto: registro.alu_dataInsercao_projeto,
