@@ -27,7 +27,7 @@ export default class EventoDAO {
             evento.horaFim
         ];
     
-        const [linhas] = await conexao.execute(sql, parametros);
+        const [linhas] = await conexao.query(sql, parametros);
         return linhas.length > 0; // Se tiver algum resultado, há conflito
     }
     /*constructor() {
@@ -71,7 +71,7 @@ export default class EventoDAO {
                 evento.horaInicio,
                 evento.horaFim
             ];
-            const resultado = await conexao.execute(sql, parametros);
+            const resultado = await conexao.query(sql, parametros);
             evento.id = resultado[0].insertId;
             }catch(e){
                 throw new Error("Erro ao incluir evento: " + e.message);
@@ -93,7 +93,7 @@ export default class EventoDAO {
                 evento.horaFim,
                 evento.id
             ]; 
-            await conexao.execute(sql, parametros);
+            await conexao.query(sql, parametros);
             }catch(e){
                 throw new Error("Erro ao alterar evento: " + e.message);
             }
@@ -115,7 +115,8 @@ export default class EventoDAO {
                    WHERE eve_id = $1`
             parametros = [termo];
         }
-        const [linhas, campos] = await conexao.execute(sql, parametros);
+        const resultado = await conexao.query(sql, parametros);
+        const linhas = resultado.rows;        
         let listaEvento = [];
         for (const linha of linhas) {
             const evento = new Evento(
@@ -141,7 +142,7 @@ export default class EventoDAO {
             let parametros = [
                 evento.id
             ]; 
-            await conexao.execute(sql, parametros);
+            await conexao.query(sql, parametros);
             }catch(e){
                 throw new Error("Erro ao excluir evento: " + e.message);
             }

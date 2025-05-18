@@ -1,8 +1,9 @@
-import { Alert, Form, Button } from "react-bootstrap";
+import { Alert, Form, Button, InputGroup } from "react-bootstrap";
 import "../../css/login.css";
-import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useLogin } from "../../../LoginContext.js";
 
 export default function Login(props){
 
@@ -11,28 +12,36 @@ export default function Login(props){
     const [listaDeFuncionarios, setListaDeFuncionarios] = useState([])
     const [mensagem, setMensagem] = useState("");
     const navigate = useNavigate();
-
-    const formulario = document.getElementById("formularioLogin");
+    const [mostrarSenha, setMostrarSenha] = useState(false);
+    const {login} = useLogin();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
         try {
-            console.log(email);
-            const response = fetch("http://localhost:3000/funcionarios/"+email);
-            if (!response.ok) 
-                throw new Error("Funcionario nao cadastrado");
-            const dados = response.json();
-                
-            /*setTimeout(() => {
-                navigate("/relatorioResponsavel"); 
-            }, 3000);*/
+            const response = await fetch("http://localhost:6543/funcionarios/"+email);
+            if (!response.ok){
+                setMensagem("Funcionário não cadastrado.");
+                return;
+            }
+            const dados = await response.json();
+            console.log(dados);
+            if(senha!==dados[0].senha){
+                setMensagem("Senha incorreta.");
+                return;
+            }
+            if(!dados || dados.length==0){
+                setMensagem("Funcionário não cadastrado.");
+                setTimeout(() => setMensagem(""), 3000);
+                return;
+            }
+            login(dados[0]);
+            setMensagem("");
+            navigate("/telaMenu"); 
+            
 
         }catch(e){
-            console.error("Funcionario nao cadastrado ", e);
             setMensagem("Erro ao carregar os funcionarios.");
         }
-
     }
 
     return (
@@ -45,7 +54,7 @@ export default function Login(props){
             {mensagem && <Alert className="mt-02 mb-02 success text-center" variant={
                 mensagem.includes("sucesso")
                 ? "success"
-                : mensagem.includes("Erro") || mensagem.includes("erro") || mensagem.includes("Preencha") || mensagem.includes("invalido")
+                : mensagem.includes("nao cadastrado") || mensagem.includes("erro") || mensagem.includes("incorreta")
                 ? "danger"
                 : "warning"
                     }>
@@ -63,10 +72,16 @@ export default function Login(props){
 
                     <Form.Group className="mb-4" controlId="senha">
                     <Form.Label>Senha</Form.Label>
-                        <Form.Control type="password" placeholder="Senha" 
+                        <InputGroup>
+                        <Form.Control type={mostrarSenha ? "text" : "password"} 
+                        placeholder="Senha" 
                         required
                         value={senha}
                         onChange={(e) => setSenha(e.target.value)}/>
+                        <InputGroup.Text onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
+                            {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
+                        </InputGroup.Text>
+                        </InputGroup>
                     </Form.Group>
                     <Form.Group className="mb-4" controlId="formBasicCheckbox">
                         <Form.Check type="checkbox" label="Check me out" />

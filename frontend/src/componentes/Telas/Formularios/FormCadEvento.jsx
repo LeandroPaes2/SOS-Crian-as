@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../../css/alerts.css";
-import { useEventos } from "../../../EventosContext";
+import { useLogin } from "../../../LoginContext";
 
 export default function FormCadEvento(props) {
     const [periodo, setPeriodo] = useState("");

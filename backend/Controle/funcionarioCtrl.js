@@ -204,18 +204,18 @@ export default class FuncionarioCtrl {
 
         resposta.type("application/json");
         if (requisicao.method == "GET") {
-            let nome = requisicao.params.nome;
+            let email = requisicao.params.email;
 
             //evitar que código tenha valor undefined
-            if (!nome) {
-                nome = "";
+            if (!email) {
+                email = "";
             }
 
             const funcionario = new Funcionario();
             //método consultar retorna uma lista de produtos
             try{
                 await conexao.query('BEGIN');
-                const listaFuncionario = await funcionario.consultar(nome, conexao);
+                const listaFuncionario = await funcionario.consultar(email, conexao);
                 if (Array.isArray(listaFuncionario)) {
                     await conexao.query('COMMIT');
                     resposta.status(200).json(listaFuncionario);

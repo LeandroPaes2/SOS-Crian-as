@@ -16,4 +16,5 @@ export default async function conectar() {
       },
     });
   }
+  return await pool.connect();
 }

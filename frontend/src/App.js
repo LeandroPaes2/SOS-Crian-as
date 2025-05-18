@@ -22,7 +22,7 @@ import TelaEvento from './componentes/Telas/TelaEvento';
 import FormCadEvento from './componentes/Telas/Formularios/FormCadEvento';
 import RelatorioEventos from './componentes/Telas/Relatorios/RelatorioEventos';
 import RelatorioAlunos from './componentes/Telas/Relatorios/RelatorioAlunos';
-import { EventosProvider } from './EventosContext';
+import { LoginProvider } from './LoginContext';
 import TelaCadastroHorario from './componentes/Telas/telaCadastroHorario';
 import FormCadHorario from './componentes/Telas/Formularios/FormCadHorario';
 import RelatorioHorario from './componentes/Telas/Relatorios/RelatorioHorario';
@@ -30,37 +30,37 @@ import TelaLogin from './componentes/Telas/TelaLogin';
 
 function App() {
     return (
-        <Router>
-            <div className="app-background"> 
-                <Routes>
-                    <Route path="/" element={<TelaLogin/>}/>
-                    <Route path="/telaMenu" element={<TelaMenu />} />
-                    <Route path="/telaTurma" element={<TelaCadastroTurma />} />
-                    <Route path="/cadastroTurma" element={<FormCadTurma />} />
-                    <Route path="/telaEscola" element={< TelaCadastroEscola/>}/>
-                    <Route path="/cadastroEscola" element={<FormCadEscola />} />
-                    <Route path="/telaAluno" element={<TelaCadastroAluno />} />
-                    <Route path="/cadastroAluno" element={<FormCadAluno />} />
-                    <Route path="/relatorioAluno" element={<RelatorioAlunos />} />
-                    <Route path="/relatorioTurma" element={<RelatorioTurmas />} />
-                    <Route path="/relatorioEscola" element={<RelatorioEscolas />} />
-                    <Route path="/telaMateria" element={<TelaCadastroMateria />} />
-                    <Route path="/cadastroMateria" element={<FormCadmateria/>} />
-                    <Route path="/relatorioMateria" element={<RelatorioMateria />} />
-                    <Route path="/telaResponsavel" element={<TelaCadastroResponsavel />} />
-                    <Route path="/cadastroResponsavel" element={<FormCadResponsavel />} />
-                    <Route path="/relatorioResponsavel" element={<RelatorioResponsaveis/>}/>
-                    <Route path="/relatorioEvento" element={<RelatorioEventos />}/>
-                    <Route path="/telaEvento" element={<TelaEvento/>}/>
-                    <Route path="/cadastroEvento" element={
-                            <FormCadEvento />
-                        }/>
+        <LoginProvider>
+            <Router>
+                <div className="app-background"> 
+                    <Routes>
+                        <Route path="/" element={<TelaLogin/>}/>
+                        <Route path="/telaMenu" element={<TelaMenu />} />
+                        <Route path="/telaTurma" element={<TelaCadastroTurma />} />
+                        <Route path="/cadastroTurma" element={<FormCadTurma />} />
+                        <Route path="/telaEscola" element={< TelaCadastroEscola/>}/>
+                        <Route path="/cadastroEscola" element={<FormCadEscola />} />
+                        <Route path="/telaAluno" element={<TelaCadastroAluno />} />
+                        <Route path="/cadastroAluno" element={<FormCadAluno />} />
+                        <Route path="/relatorioAluno" element={<RelatorioAlunos />} />
+                        <Route path="/relatorioTurma" element={<RelatorioTurmas />} />
+                        <Route path="/relatorioEscola" element={<RelatorioEscolas />} />
+                        <Route path="/telaMateria" element={<TelaCadastroMateria />} />
+                        <Route path="/cadastroMateria" element={<FormCadmateria/>} />
+                        <Route path="/relatorioMateria" element={<RelatorioMateria />} />
+                        <Route path="/telaResponsavel" element={<TelaCadastroResponsavel />} />
+                        <Route path="/cadastroResponsavel" element={<FormCadResponsavel />} />
+                        <Route path="/relatorioResponsavel" element={<RelatorioResponsaveis/>}/>
+                        <Route path="/relatorioEvento" element={<RelatorioEventos />}/>
+                        <Route path="/telaEvento" element={<TelaEvento/>}/>
+                        <Route path="/cadastroEvento" element={<FormCadEvento />}/>
                         <Route path="/telaHorario" element={<TelaCadastroHorario/>}/>
-                    <Route path="/cadastroHorario" element={<FormCadHorario/>}/>
-                    <Route path="/relatorioHorario" element={<RelatorioHorario/>}/>
-                </Routes>
-            </div>
-        </Router>
+                        <Route path="/cadastroHorario" element={<FormCadHorario/>}/>
+                        <Route path="/relatorioHorario" element={<RelatorioHorario/>}/>
+                    </Routes>
+                </div>
+            </Router>
+        </LoginProvider>
     );
 }
 

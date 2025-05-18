@@ -36,7 +36,7 @@ export default class ResponsavelDAO {
                 responsavel.nome,
                 responsavel.telefone
             ];
-            await conexao.execute(sql, parametros);
+            await conexao.query(sql, parametros);
             }catch(e){
                 throw new Error("Erro ao incluir funcionário: " + e.message);
             }
@@ -54,7 +54,7 @@ export default class ResponsavelDAO {
                 responsavel.telefone,
                 responsavel.cpf
             ]; 
-            await conexao.execute(sql, parametros);
+            await conexao.query(sql, parametros);
             }catch(e){
                 throw new Error("Erro ao alterar funcionário: " + e.message);
             }
@@ -67,14 +67,15 @@ export default class ResponsavelDAO {
         let parametros = [];
         if (!termo) {
             sql = `SELECT * FROM responsavel`;
-            parametros = ['%' + termo + '%'];
+            parametros = [];
         }
         else {
             sql = `SELECT * FROM responsavel r
                    WHERE resp_cpf = $1`
             parametros = [termo];
         }
-        const [linhas, campos] = await conexao.execute(sql, parametros);
+        const resultado = await conexao.query(sql, parametros);
+        const linhas = resultado.rows;
         let listaResponsavel = [];
         for (const linha of linhas) {
             const responsavel = new Responsavel(
@@ -86,7 +87,7 @@ export default class ResponsavelDAO {
         }
         return listaResponsavel;
         }catch(e){
-            throw new Error("Erro ao consultar funcionários: " + e.message);
+            throw new Error("Erro ao consultar responsaveis: " + e.message);
         }
     }
 
@@ -97,7 +98,7 @@ export default class ResponsavelDAO {
             let parametros = [
                 responsavel.cpf
             ]; 
-            await conexao.execute(sql, parametros);
+            await conexao.query(sql, parametros);
             }catch(e){
                 throw new Error("Erro ao excluir funcionário: " + e.message);
             }

@@ -9,49 +9,61 @@ import materias from '../imagens/materias.png';
 import escolas from '../imagens/escolas.png';
 import eventos from '../imagens/eventos.png';
 import horarios from '../imagens/horario.png';
+import { useLogin } from "../../LoginContext.js";
+
 export default function MenuInicial() {
+
+    const { funcionario }=useLogin();
+
     return (
         <div className="divBotao">
-            <Button as={Link} to="/telaAluno" className='botaoMenu' variant="primary" size="lg">
-                <img src={alunos} style={{width: '100px'}} />
-                <br/>
-                Alunos
-            </Button>
-            <Button as={Link} to="/telaResponsavel" className='botaoMenu' variant="primary" size="lg">
-                <img src={responsavel} style={{width: '100px'}} />
-                <br/>
-                Responsáveis
-            </Button>
+            {funcionario?.nivel !== "3" && (
+                <>
+                    <Button as={Link} to="/telaAluno" className='botaoMenu' variant="primary" size="lg">
+                        <img src={alunos} style={{width: '100px'}} />
+                        <br/>
+                        Alunos
+                    </Button>
+                    <Button as={Link} to="/telaResponsavel" className='botaoMenu' variant="primary" size="lg">
+                        <img src={responsavel} style={{width: '100px'}} />
+                        <br/>
+                        Responsáveis
+                    </Button>
+                    <Button as={Link} to="/telaTurma" className='botaoMenu' variant="primary" size="lg">
+                        <img src={turmas} style={{width: '100px'}} />
+                        <br/>
+                        Turmas
+                    </Button>
+                    <Button as={Link} to="/telaMateria" className='botaoMenu' variant="primary" size="lg">
+                        <img src={materias} style={{width: '100px'}} />
+                        <br/>
+                        Matérias
+                    </Button>
+                    <Button as={Link} to="/telaEscola" className='botaoMenu' variant="primary" size="lg">
+                        <img src={escolas} style={{width: '130px'}} />
+                        <br/>
+                        Escolas
+                    </Button>
+                    <Button as={Link} to="/telaHorario" className='botaoMenu' variant="primary" size="lg">
+                        <img  src={horarios} style={{width: '100px'}} />
+                        <br/>
+                        Horários
+                    </Button>
+                </>
+            )}
+            {funcionario?.nivel !== "2" && (
             <Button className='botaoMenu' variant="primary" size="lg">
                 <img src={funcionarios} style={{width: '100px'}} />
                 <br/>
                 Funcionários
             </Button>
-            <Button as={Link} to="/telaTurma" className='botaoMenu' variant="primary" size="lg">
-                <img src={turmas} style={{width: '100px'}} />
-                <br/>
-                Turmas
-            </Button>
-            <Button as={Link} to="/telaMateria" className='botaoMenu' variant="primary" size="lg">
-                <img src={materias} style={{width: '100px'}} />
-                <br/>
-                Matérias
-            </Button>
-            <Button as={Link} to="/telaEscola" className='botaoMenu' variant="primary" size="lg">
-                <img src={escolas} style={{width: '130px'}} />
-                <br/>
-                Escolas
-            </Button>
+            )}
             <Button as={Link} to="/telaEvento" className='botaoMenu' variant="primary" size="lg">
                 <img src={eventos} style={{width: '100px'}} />
                 <br/>
                 Eventos
             </Button>
-            <Button as={Link} to="/telaHorario" className='botaoMenu' variant="primary" size="lg">
-                <img  src={horarios} style={{width: '100px'}} />
-                <br/>
-                Horários
-            </Button>
+        
         </div>
     );
 }
