@@ -1,11 +1,9 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
-// Criação do contexto
 const LoginContext = createContext();
 
 export const useLogin = () => useContext(LoginContext);
 
-// Provedor de contexto
 export const LoginProvider = ({ children }) => {
     const [funcionario, setFuncionario] = useState(null);
 
