@@ -32,7 +32,7 @@ function App() {
             <div className="app-background"> 
                 <Routes>
                     {/* <Route path="/" element={<TelaLogin/>}/> */}
-                    <Route path="/telaMenu" element={<TelaMenu />} />
+                    <Route path="/" element={<TelaMenu />} />
                     <Route path="/telaTurma" element={<TelaCadastroTurma />} />
                     <Route path="/cadastroTurma" element={<FormCadTurma />} />
                     <Route path="/telaEscola" element={< TelaCadastroEscola/>}/>

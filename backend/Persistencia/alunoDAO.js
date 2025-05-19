@@ -118,32 +118,30 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
     async incluir(aluno, conexao) {
         if (aluno instanceof Aluno) {
             const sql = `
-    INSERT INTO aluno (
-        alu_nome,
-        alu_data_nascimento,
-        alu_responsavel_cpf,
-        alu_cidade,
-        alu_rua,
-        alu_bairro,
-        alu_numero,
-        alu_escola_id,
-        alu_telefone,
-        alu_periodo_escola,
-        alu_realiza_acompanhamento,
-        alu_possui_sindrome,
-        alu_descricao,
-        alu_rg,
-        alu_formulario_saude,
-        alu_ficha,
-        alu_status,
-        alu_periodo_projeto,
-        alu_cep
-    )
-    VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-    $11, $12, $13, $14, $15, $16, $17, $18, $19
-);
-`;
+                INSERT INTO aluno (
+                    alu_nome,
+                    alu_data_nascimento,
+                    alu_responsavel_cpf,
+                    alu_cidade,
+                    alu_rua,
+                    alu_bairro,
+                    alu_numero,
+                    alu_escola_id,
+                    alu_telefone,
+                    alu_periodo_escola,
+                    alu_realiza_acompanhamento,
+                    alu_possui_sindrome,
+                    alu_descricao,
+                    alu_rg,
+                    alu_status,
+                    alu_periodo_projeto,
+                    alu_cep
+                )
+                VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+                $11, $12, $13, $14, $15, $16, $17
+            );
+            `;
 
             const parametros = [
                 aluno.nome,
@@ -160,13 +158,14 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
                 aluno.possuiSindrome,
                 aluno.descricao,
                 aluno.rg,
-                aluno.formularioSaude,
-                aluno.ficha,
                 aluno.status,
                 aluno.periodoProjeto,
                 aluno.cep
             ];
             await conexao.query(sql, parametros);
+        }
+        else {
+            throw new Error("Objeto passado não é uma instância de Aluno");
         }
     }
 
@@ -193,27 +192,15 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
         for (const registro of registros) {
 
             if (registro) {
-                let responsavel = null;
-                let escola = null;
 
-
-
-                // Buscar Responsável
-                // let sqlBuscarResponsavel = `SELECT * FROM responsavel WHERE cpf = $1`;
-                // let parametrosBuscarResponsavel = [registro['alu_responsavel_cpf']];
-                // const { rows: registrosResponsavel } = await conexao.query(sqlBuscarResponsavel, parametrosBuscarResponsavel);
-                // if (registrosResponsavel.length == 1) {
-                //     responsavel=registrosResponsavel[0];   
-                // }
-
-
-                // Buscar Escola
-                // let sqlBuscarEscola = `SELECT * FROM escola WHERE escola_id = $1`;
-                // let parametrosBuscarEscola = [registro['alu_escola_id']];
-                // const { rows: registrosEscola } = await conexao.query(sqlBuscarEscola, parametrosBuscarEscola);
-                // if (registrosEscola.length == 1) {
-                //     escola=registrosEscola[0];   
-                // }
+                let responsavel = await this.consultarResponsavel(registro['alu_responsavel_cpf'], conexao)
+                let escola = await this.consultarEscola(registro['alu_escola_id'], conexao)
+                if (!escola) {
+                    throw new Error("Erro ao consultar escola desse aluno: " + e.message);
+                }
+                if (!responsavel) {
+                    throw new Error("Erro ao consultar Responsavel desse aluno: " + e.message);
+                }
 
                 // Buscar FormularioSaude e Ficha (placeholder)
                 const formularioSaude = null;
@@ -236,9 +223,6 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
                     registro['alu_possui_sindrome'],
                     registro['alu_descricao'],
                     registro['alu_rg'],
-                    formularioSaude,
-                    ficha,
-                    registro['alu_dataInsercao_projeto'],
                     registro['alu_status'],
                     registro['alu_periodo_projeto'],
                     registro['alu_cep']
@@ -250,6 +234,56 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
         return listaAluno;
     }
 
+
+    async consultarResponsavel(cpf, conexao) {
+        try {
+            const sql = `SELECT * FROM responsavel r
+                           WHERE resp_cpf = $1`
+            const parametros = [cpf];
+            const resultado = await conexao.query(sql, parametros);
+            if (resultado.rows.length !== 1) {
+                throw new Error(`Responsavel com CPF ${cpf} nao encontrado.`);
+            }
+            const linhas = resultado.rows[0];
+
+            const responsavel = new Responsavel(
+                linhas['resp_cpf'],
+                linhas['resp_nome'],
+                linhas['resp_telefone']
+            );
+            return responsavel;
+        } catch (e) {
+            throw new Error("Erro ao consultar Responsavel desse aluno: " + e.message);
+        }
+    }
+
+
+    async consultarEscola(id, conexao) {
+        try {
+            const sql = `SELECT * FROM escola WHERE esc_id = $1`;
+            const parametros = [id];
+            const resultado = await conexao.query(sql, parametros);
+
+            if (resultado.rows.length !== 1) {
+                throw new Error(`Escola com ID ${id} não encontrada.`);
+            }
+
+            const linha = resultado.rows[0];
+
+            const escola = new Escola(
+                linha.esc_id,
+                linha.esc_nome,
+                linha.esc_telefone
+            );
+
+            return escola;
+        } catch (e) {
+            throw new Error("Erro ao consultar escola desse aluno: " + e.message);
+        }
+    }
+
+
+    // Excluir Não pode excluir fisicamente !!!!! ARRUMAR !!!!!
     async excluir(aluno, conexao) {
         if (aluno instanceof Aluno) {
             const sql = `DELETE FROM aluno WHERE alu_id = $1`;
@@ -260,56 +294,57 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
 
     async alterar(aluno, conexao) {
         if (aluno instanceof Aluno) {
-            const sql = `
-            UPDATE aluno SET 
-                alu_nome = $1,
-                alu_data_nascimento = $2,
-                alu_responsavel_cpf = $3,
-                alu_cidade = $4,
-                alu_rua = $5,
-                alu_bairro = $6,
-                alu_numero = $7,
-                alu_escola_id = $8,
-                alu_telefone = $9,
-                alu_periodo_escola = $10,
-                alu_realiza_acompanhamento = $11,
-                alu_possui_sindrome = $12,
-                alu_descricao = $13,
-                alu_rg = $14,
-                alu_formulario_saude = $15,
-                alu_ficha = $16,
-                alu_dataInsercao_projeto = $17,
-                alu_status = $18,
-                alu_periodo_projeto = $19,
-                alu_cep = $20
-            WHERE alu_id = $21
-        `;
+            try {
+                const sql = `
+                    UPDATE aluno SET 
+                        alu_nome = $1,
+                        alu_data_nascimento = $2,
+                        alu_responsavel_cpf = $3,
+                        alu_cidade = $4,
+                        alu_rua = $5,
+                        alu_bairro = $6,
+                        alu_numero = $7,
+                        alu_escola_id = $8,
+                        alu_telefone = $9,
+                        alu_periodo_escola = $10,
+                        alu_realiza_acompanhamento = $11,
+                        alu_possui_sindrome = $12,
+                        alu_descricao = $13,
+                        alu_rg = $14,
+                        alu_dataInsercao_projeto = $15,
+                        alu_status = $16,
+                        alu_periodo_projeto = $17,
+                        alu_cep = $18
+                    WHERE alu_id = $19
+                `;
 
-            const parametros = [
-                aluno.nome,
-                aluno.dataNascimento,
-                aluno.responsavel.cpf || null,
-                aluno.cidade,
-                aluno.rua,
-                aluno.bairro,
-                aluno.numero,
-                aluno.escola.id || null,
-                aluno.telefone,
-                aluno.periodoEscola,
-                aluno.realizaAcompanhamento,
-                aluno.possuiSindrome,
-                aluno.descricao,
-                aluno.rg,
-                aluno.formularioSaude,
-                aluno.ficha,
-                aluno.dataInsercaoProjeto,
-                aluno.status,
-                aluno.periodoProjeto,
-                aluno.cep,
-                aluno.id // este é o identificador usado no WHERE
-            ];
+                const parametros = [
+                    aluno.nome,
+                    aluno.dataNascimento,
+                    aluno.responsavel.cpf,
+                    aluno.cidade,
+                    aluno.rua,
+                    aluno.bairro,
+                    aluno.numero,
+                    aluno.escola.id,
+                    aluno.telefone,
+                    aluno.periodoEscola,
+                    aluno.realizaAcompanhamento,
+                    aluno.possuiSindrome,
+                    aluno.descricao,
+                    aluno.rg,
+                    aluno.dataInsercaoProjeto,
+                    aluno.status,
+                    aluno.periodoProjeto,
+                    aluno.cep,
+                    aluno.id // este é o identificador usado no WHERE
+                ];
 
-            await conexao.query(sql, parametros);
+                await conexao.query(sql, parametros);
+
+            } catch (e) {
+                throw new Error("Erro ao alterar aluno: " + e.message);
+            }
         }
     }
 

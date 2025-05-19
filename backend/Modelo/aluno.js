@@ -1,4 +1,6 @@
 import AlunoDAO from "../Persistencia/alunoDAO.js";
+import Responsavel from "./responsavel.js";
+import Escola from "./escola.js";
 
 export default class Aluno {
     #id;
@@ -16,17 +18,11 @@ export default class Aluno {
     #possuiSindrome;
     #descricao;
     #rg;
-    #formularioSaude;
-    #ficha;
-   // #Projeto;
     #status; // 0 para desligado 1 para ativo
     #periodoProjeto;
     #cep;
 
-
-    ////// TENHO Q ARRUMAR ESSA POHA TA FALTANDO ATRIBUTOS NOS LUGAR TIPO NO TOJSON;
-
-    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, cidade = "" ,rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", rg = "", formularioSaude = {}, ficha = {}, status = "", periodoProjeto = "",cep="") {
+    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, cidade = "" ,rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", rg = "", status = "", periodoProjeto = "",cep="") {
         this.#id = id;
         this.#nome = nome;
         this.#dataNascimento = dataNascimento;
@@ -42,8 +38,6 @@ export default class Aluno {
         this.#possuiSindrome = possuiSindrome;
         this.#descricao = descricao;
         this.#rg = rg;
-        this.#formularioSaude = formularioSaude;
-        this.#ficha = ficha;
         this.#status = status;
         this.#periodoProjeto = periodoProjeto;
         this.#cep = cep;
@@ -61,7 +55,11 @@ export default class Aluno {
     set dataNascimento(novoDataNascimento) { this.#dataNascimento = novoDataNascimento; }
 
 
-    get responsavel() { return this.#responsavel.toJSON(); }
+    get responsavel() { 
+
+        return this.#responsavel? this.#responsavel.toJSON(): null; 
+    
+    }
     set responsavel(novoResponsavel) {
         if (novoResponsavel instanceof Responsavel)
             this.#responsavel = novoResponsavel;
@@ -83,12 +81,13 @@ export default class Aluno {
     set numero(novoNumero) { this.#numero = novoNumero; }
 
 
-    get escola() { return this.#escola.toJSON(); }
+    get escola() {
+          return this.#escola ?  this.#escola.toJSON() : null; 
+        }
     set escola(novaEscola) {
         if (novaEscola instanceof Escola)
             this.#escola = novaEscola;
     }
-
 
     get telefone() { return this.#telefone; }
     set telefone(novoTelefone) { this.#telefone = novoTelefone; }
@@ -112,29 +111,6 @@ export default class Aluno {
     get rg() { return this.#rg; }
     set rg(novoRg) { this.#rg = novoRg; }
 
-
-    get formularioSaude() { return this.#formularioSaude; }
-    set formularioSaude(novoFormularioSaude) { 
-
-        this.#formularioSaude = novoFormularioSaude;
-
-        /*
-        if(novoFormularioSaude instanceof FormularioSaude)
-        this.#formularioSaude = novoFormularioSaude;*/
-    
-    
-    }
-
-
-    get ficha() {return this.#ficha /*return this.#ficha.toJSON();*/ }     /// ainda nn existe
-    set ficha(novoFicha) { 
-        this.#ficha = novoFicha; 
-
-        /*
-        if(novoFicha instanceof Ficha)
-            this.#ficha = novoFicha; 
-        */
-    }
     get status() { return this.#status; }
     set status(novoStatus) { this.#status = novoStatus; }
 
@@ -151,21 +127,18 @@ export default class Aluno {
             id: this.#id,
             nome: this.#nome,
             dataNascimento: this.#dataNascimento,
-            responsavel: this.#responsavel.toJSON() || null,
+            responsavel: this.#responsavel,
             cidade: this.#cidade,
             rua: this.#rua,
             bairro: this.#bairro,
             numero: this.#numero,
-            escola: this.#escola.toJSON() || null,
+            escola: this.#escola ,
             telefone: this.#telefone,
             periodoEscola: this.#periodoEscola,
             realizaAcompanhamento: this.#realizaAcompanhamento,
             possuiSindrome: this.#possuiSindrome,
             descricao: this.#descricao,
             rg: this.#rg,
-            formularioSaude: this.#formularioSaude,
-            ficha: this.#ficha,
-            //Projeto: this.#Projeto,
             status: this.#status,
             periodoProjeto: this.#periodoProjeto,
             cep: this.#cep
@@ -173,27 +146,38 @@ export default class Aluno {
     }
 
 
-    incluir(conexao) {
+    async incluir(conexao) {
         const alunoDAO = new AlunoDAO();
         alunoDAO.incluir(this, conexao);
     }
 
 
-    alterar(conexao) {
+    asyncalterar(conexao) {
         const alunoDAO = new AlunoDAO();
         alunoDAO.alterar(this, conexao);
     }
 
 
-    excluir(conexao) {
+    async excluir(conexao) {
         const alunoDAO = new AlunoDAO();
         alunoDAO.excluir(this, conexao);
     }
 
 
-    consultar(termo, tipo, conexao) {
+    async consultar(termo, tipo, conexao) {
         const alunoDAO = new AlunoDAO();
         return alunoDAO.consultar(termo, tipo, conexao);
+    }
+
+
+    async consultarResponsavel(cpf, conexao) {
+        const alunoDAO = new AlunoDAO();
+        return alunoDAO.consultarResponsavel(cpf, conexao);
+    }
+
+    async consultarEscola(id, conexao) {
+        const alunoDAO = new AlunoDAO();
+        return alunoDAO.consultarEscola(id, conexao);
     }
 
 }
