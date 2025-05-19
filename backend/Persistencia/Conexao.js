@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 
 
 import pg from 'pg';
 
+=======
+// Conexao.js
+import pg from 'pg';
+
+>>>>>>> c2b0235a20b069566a4b878d91b247cd97b1635e
 const { Pool } = pg;
 
 let pool;
@@ -10,7 +16,10 @@ export default async function conectar() {
   if (!pool) {
     pool = new Pool({
       connectionString: process.env.SUPABASE_URL_CONEXAO,
+<<<<<<< HEAD
       //connectionString: process.env.MEU_SUPABASE_URL_CONEXAO,
+=======
+>>>>>>> c2b0235a20b069566a4b878d91b247cd97b1635e
       max: 20,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 60000,
@@ -20,6 +29,7 @@ export default async function conectar() {
     });
   }
 
+<<<<<<< HEAD
   return await pool.connect(); // client com `.release()`
 }
 
@@ -62,3 +72,7 @@ export default async function conectar() {
 
 
 
+=======
+  return await pool.connect();
+}
+>>>>>>> c2b0235a20b069566a4b878d91b247cd97b1635e

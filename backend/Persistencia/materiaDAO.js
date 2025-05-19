@@ -1,99 +1,67 @@
 import Materia from "../Modelo/materia.js";
-
-//import conectar from "./Conexao.js";
+import supabase from "./Conexao.js";
 export default class MateriaDAO {
-    
 
-    async incluir(materia, conexao) {
+
+    async incluir(materia, supabase) {
         if (materia instanceof Materia) {
-            try{
-                //const conexao = await conectar();
-                const sql = `INSERT INTO materia(mat_nome, mat_desc)
-                VALUES (?, ?)`;
-                let parametros = [ materia.nome, materia.descricao ];
-                await conexao.execute(sql, parametros);
-                //await conexao.release();
-            }
-            catch (e) {
-                throw new Error("Erro ao inserir matéria: " + e.message);
-            }
+            //const conexao = await conectar();
+            const sql = `INSERT INTO materia(mat_nome, mat_desc)
+            VALUES ($1, $2)`;
+            let parametros = [materia.nome, materia.descricao];
+            await supabase.query(sql, parametros);
+            //await conexao.release();
         }
     }
 
-    async alterar(materia, conexao) {
+    async alterar(materia, supabase) {
         if (materia instanceof Materia) {
-            try{
-                //const conexao = await conectar();
-                const sql = `UPDATE materia SET mat_nome = ?, mat_desc = ?
-                WHERE mat_id = ?;
-                `;
-                let parametros = [
-                    materia.nome,
-                    materia.descricao,
-                    materia.id
-                ]; 
-                await conexao.execute(sql, parametros);
-                //await conexao.release();
-            }
-            catch (e) {
-                throw new Error("Erro ao alterar matéria: " + e.message);
-            }
+            //const conexao = await conectar();
+            const sql = `UPDATE materia SET mat_nome = $1, mat_desc = $2
+            WHERE mat_id = $3;
+            `;
+            let parametros = [
+                materia.nome,
+                materia.descricao,
+                materia.id
+            ];
+            await supabase.query(sql, parametros);
+            //await conexao.release();
         }
     }
-    
-    async consultar(termo, conexao) {
-        try {
-          // Query base: sempre seleciona os campos que existem
-          let sql = 'SELECT mat_id, mat_nome, mat_desc FROM materia';
-          const parametros = [];
-      
-          if (termo) {
-            if (!isNaN(termo)) {
-              // se termo for numérico, pesquisa por ID exato
-              sql += ' WHERE mat_id = ?';
-              parametros.push(termo);
-            } else {
-              // senão, pesquisa por nome parcial
-              sql += ' WHERE mat_nome LIKE ?';
-              parametros.push(`%${termo}%`);
-            }
-          }
-          // Executa sempre uma query não-vazia
-          const [linhas] = await conexao.execute(sql, parametros);
-      
-          // Mapeia cada linha para o objeto Materia
-          return linhas.map(linha =>
+
+    async consultar(termo, supabase) {
+        // Query base: sempre seleciona os campos que existem
+        let sql = 'SELECT * FROM materia';
+        const parametros = [];
+
+        if (termo) {
+            sql += ' WHERE mat_nome ILIKE $1';
+            parametros = ['%' + termo + '%'];
+        }
+        // Executa sempre uma query não-vazia
+        const result = await supabase.query(sql, parametros);
+
+        // extrai o array de rows
+        const linhas = result.rows;
+
+        // Mapeia cada linha para o objeto Materia
+        return linhas.map(linha =>
             new Materia(linha.mat_id, linha.mat_nome, linha.mat_desc)
-          );
-        }
-        catch (e) {
-          throw new Error("Erro ao consultar matérias: " + e.message);
-        }
+        );
     }
 
-    async excluir(materia, conexao) {
+    async excluir(materia, supabase) {
         if (materia instanceof Materia) {
-            try {
-                const deletedId = materia.id;
-    
-                // Exclui horários relacionados
-                await conexao.execute('DELETE FROM horario WHERE hora_mat_id = ?', [deletedId]);
-    
-                // Remove a matéria
-                await conexao.execute('DELETE FROM materia WHERE mat_id = ?', [deletedId]);
-    
-                // Reorganiza os IDs
-                await conexao.execute('UPDATE materia SET mat_id = mat_id - 1 WHERE mat_id > ?', [deletedId]);
-    
-                // Corrige o AUTO_INCREMENT
-                const [rows] = await conexao.execute('SELECT MAX(mat_id) AS maxId FROM materia');
-                const nextId = (rows[0].maxId || 0) + 1;
-                await conexao.execute(`ALTER TABLE materia AUTO_INCREMENT = ${nextId}`);
-    
-                return true;
-            } catch (e) {
-                throw new Error("Erro ao excluir matéria: " + e.message);
-            }
+            const deletedId = materia.id;
+
+            // Exclui horários relacionados
+            await supabase.query('DELETE FROM horario WHERE hora_mat_id = $1', [deletedId]);
+
+            // Remove a matéria
+            await supabase.query('DELETE FROM materia WHERE mat_id = $1', [deletedId]);
+
+            return true;
         }
     }
 }
