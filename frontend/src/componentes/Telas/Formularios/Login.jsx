@@ -18,7 +18,7 @@ export default function Login(props){
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch("http://localhost:6543/funcionarios/"+email);
+            const response = await fetch("http://localhost:3000/funcionarios/"+email);
             if (!response.ok){
                 setMensagem("Funcionário não cadastrado.");
                 return;
@@ -40,7 +40,7 @@ export default function Login(props){
             
 
         }catch(e){
-            setMensagem("Erro ao carregar os funcionarios.");
+            setMensagem("Funcionario não cadastrado.");
         }
     }
 

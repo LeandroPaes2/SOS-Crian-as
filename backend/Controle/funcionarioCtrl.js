@@ -200,10 +200,10 @@ export default class FuncionarioCtrl {
 
     async consultar(requisicao, resposta) {
 
-        const conexao = await conectar();
-
         resposta.type("application/json");
+        let conexao;
         if (requisicao.method == "GET") {
+
             let email = requisicao.params.email;
 
             //evitar que código tenha valor undefined
@@ -214,6 +214,7 @@ export default class FuncionarioCtrl {
             const funcionario = new Funcionario();
             //método consultar retorna uma lista de produtos
             try{
+                conexao = await conectar();
                 await conexao.query('BEGIN');
                 const listaFuncionario = await funcionario.consultar(email, conexao);
                 if (Array.isArray(listaFuncionario)) {
@@ -244,6 +245,7 @@ export default class FuncionarioCtrl {
                 throw e
             }
             finally {
+                if(conexao)
                 conexao.release();
             }
         }
