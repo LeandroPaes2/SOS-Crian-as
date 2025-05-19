@@ -13,7 +13,7 @@ import rotaFuncionario from './Rotas/rotaFuncionario.js';
 
 dotenv.config();
 
-const porta = process.env.PORTA_SERVIDOR || 3000;
+const porta = 3000;
 
 const app = express();
 

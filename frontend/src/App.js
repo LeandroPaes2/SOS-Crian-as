@@ -50,7 +50,7 @@ function App() {
                         <Route path="/relatorioMateria" element={<RelatorioMateria />} />
                         <Route path="/telaResponsavel" element={<TelaCadastroResponsavel />} />
                         <Route path="/cadastroResponsavel" element={<FormCadResponsavel />} />
-                        <Route path="/relatorioResponsavel" element={<RelatorioResponsaveis/>}/>
+                        <Route path="/relatorioResponsavel" element={<RelatorioResponsaveis/>}/>                
                         <Route path="/relatorioEvento" element={<RelatorioEventos />}/>
                         <Route path="/telaEvento" element={<TelaEvento/>}/>
                         <Route path="/cadastroEvento" element={<FormCadEvento />}/>

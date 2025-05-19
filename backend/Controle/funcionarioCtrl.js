@@ -241,12 +241,13 @@ export default class FuncionarioCtrl {
                 }*/
             }
             catch (e) {
-                await conexao.query('ROLLBACK');
+                if(conexao)
+                    await conexao.query('ROLLBACK');
                 throw e
             }
             finally {
                 if(conexao)
-                conexao.release();
+                    conexao.release();
             }
         }
         else {
