@@ -1,0 +1,26 @@
+.divGeral{
+    display: flex;
+    align-items: top;
+    justify-content: center;
+    flex-direction: row; 
+}
+
+.divDados{
+    background-color: white;
+    width: 500px;
+    height: 500px;
+    border-radius: 10px;
+    margin: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.divOpcoes{
+    background-color: white;
+    width: 200px;
+    height: 230px;
+    border-radius: 10px;
+    margin: 40px;
+    margin-right: 100px;
+}

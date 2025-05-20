@@ -57,7 +57,7 @@ export default function Menu(props){
                         <Nav.Link href="#home">Sobre</Nav.Link>
                 </Nav>
                 <div className='divLogin'>
-                    <span className="text-black">Usuário logado: <strong>{funcionario?.nome || 'Visitante'}</strong></span>
+                    <Button className="botaoUsuario" title='Acesse seu perfil aqui' as={Link} to="/dadosUsuario">Olá, <strong>{funcionario?.nome || 'Visitante'}</strong></Button>
                     <Button className="botaoSair" variant="outline-light" size="sm" onClick={handleLogout}>Sair</Button>
                 </div>
                 </Container>

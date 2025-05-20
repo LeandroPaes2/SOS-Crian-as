@@ -62,7 +62,7 @@ export default function Pagina(props) {
                 ) : (
                     <h5>Nenhum evento futuro disponível.</h5>
                 )}
-                <br />
+            
                 <MenuInicial />
                 {
                     props.children

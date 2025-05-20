@@ -27,6 +27,7 @@ import TelaCadastroHorario from './componentes/Telas/telaCadastroHorario';
 import FormCadHorario from './componentes/Telas/Formularios/FormCadHorario';
 import RelatorioHorario from './componentes/Telas/Relatorios/RelatorioHorario';
 import TelaLogin from './componentes/Telas/TelaLogin';
+import TelaDadosUsuario from './componentes/Telas/TelaDadosUsuario';
 
 function App() {
     return (
@@ -57,6 +58,7 @@ function App() {
                         <Route path="/telaHorario" element={<TelaCadastroHorario/>}/>
                         <Route path="/cadastroHorario" element={<FormCadHorario/>}/>
                         <Route path="/relatorioHorario" element={<RelatorioHorario/>}/>
+                        <Route path="/dadosUsuario" element={<TelaDadosUsuario/>}/>
                     </Routes>
                 </div>
             </Router>

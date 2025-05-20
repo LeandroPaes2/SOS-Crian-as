@@ -84,7 +84,7 @@ export default function Login(props){
                         </InputGroup>
                     </Form.Group>
                     <Form.Group className="mb-4" controlId="formBasicCheckbox">
-                        <Form.Check type="checkbox" label="Check me out" />
+                        <Form.Check type="checkbox" label="Mantenha-me conectado" />
                     </Form.Group>
                     <Button variant="primary" type="submit">
                         Entrar
