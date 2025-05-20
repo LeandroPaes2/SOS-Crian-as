@@ -9,6 +9,7 @@ import rotaAluno from './Rotas/rotaAluno.js';
 import rotaEvento from './Rotas/rotaEvento.js';
 import rotaFuncionario from './Rotas/rotaFuncionario.js';
 import rotaHorario from './Rotas/rotaHorario.js';
+import rotaFamilia from './Rotas/rotaFamilia.js';
 import supabase from './Persistencia/Conexao.js';
 
 dotenv.config();
@@ -34,6 +35,7 @@ app.use("/alunos", rotaAluno);
 app.use("/eventos", rotaEvento);
 app.use("/funcionarios",rotaFuncionario);
 app.use("/horarios", rotaHorario);
+app.use("/familias", rotaFamilia);
 
 app.get('/teste-conexao', async (req, res) => {
     try {
