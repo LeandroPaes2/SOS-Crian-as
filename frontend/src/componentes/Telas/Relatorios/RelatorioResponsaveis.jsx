@@ -38,7 +38,7 @@ export default function RelatorioResponsaveis() {
 
         if (window.confirm("Deseja realmente excluir o responsavel " + responsavel.nome + responsavel.cpf)) {
             if (!responsavel || !responsavel.cpf || !responsavel.nome || !responsavel.telefone) {
-                console.log(responsavel.cpf, responsavel.nome, responsavel.telefone);
+                //console.log(responsavel.cpf, responsavel.nome, responsavel.telefone);
                 setMensagem("Erro: responsavel inválido!");
                 setTimeout(() => setMensagem(""), 5000);
                 return;
@@ -62,7 +62,7 @@ export default function RelatorioResponsaveis() {
                 setMensagem("Erro de conexão com o servidor.");
             }
         }
-        window.location.reload()
+        window.location.reload();
     };
 
     const editarResponsaveis = async (responsavel) => {
@@ -162,9 +162,13 @@ export default function RelatorioResponsaveis() {
                     <p>Quatidade de responsaveis cadastrados: {listaDeResponsaveis.length}</p>
                 </Container>
                 <div>
-                    <Button as={Link} to="/telaResponsavel" className="botaoPesquisa" variant="secondary">
-                        Voltar
-                    </Button>
+                        <Button as={Link} to="/telaResponsavel" className="botaoPesquisa" variant="secondary">
+                                Voltar
+                        </Button>
+
+                        <Button as={Link} to="/cadastroResponsavel" className="botaoPesquisa" variant="secondary">
+                                Cadastrar novo responsável
+                        </Button>
                 </div>
             </PaginaGeral>
         </>

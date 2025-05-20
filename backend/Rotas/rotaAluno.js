@@ -7,7 +7,7 @@ const rotaAluno = Router();
 rotaAluno.post("/", alunoCtrl.gravar);
 rotaAluno.put("/:id", alunoCtrl.alterar);
 rotaAluno.patch("/:id", alunoCtrl.alterar);
-rotaAluno.delete("/:id", alunoCtrl.excluir);
+rotaAluno.delete("/:id", alunoCtrl.desligar);
 rotaAluno.get("/:id", alunoCtrl.consultar); 
 rotaAluno.get("/", alunoCtrl.consultar);
 

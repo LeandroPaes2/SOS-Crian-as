@@ -1,0 +1,122 @@
+.botaoPesquisa {
+    width: 400px;
+    background-color: #e3436b;
+    border-color: #81233b;
+    margin: 5px;
+    width: 150px;
+}
+
+.divResp{
+    /*background-color: rgba(207, 97, 97, 0.9);*/
+    border-radius: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+
+}
+
+.divResp2{
+    margin: 2%;
+    border-radius: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+
+}
+
+.divTitulo{
+    padding-top: 3%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.divInput {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.formInput {
+    width: 400px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.topot {
+    padding-top: 100px;
+}
+
+.input-sucesso {
+    border: 2px solid #28a745 !important;
+    background-color: #e6ffed;
+}
+
+.input-warning-grossa {
+    border: 2px solid #dc3545 !important;
+    background-color: #f8d7da;
+}
+
+
+
+.texto-aviso-cep {
+    color: #050400;
+    /* tom de amarelo escuro */
+    background-color: #fff3cd;
+    /* fundo amarelo claro */
+    border: 2px solid #ffeeba;
+    /* borda destacada */
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+
+
+.cadastroAluno {
+    background-color: rgba(255, 255, 255, 0.9);
+    width: 60%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 100px;
+}
+
+.popover-custom {
+    max-width: 250px;
+    font-size: 0.95rem;
+    padding: 0.75rem;
+  }
+  
+  .popover-custom .popover-header {
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  .help-button {
+    text-decoration: none;
+    padding: 0;
+    color: #0d6efd; /* Azul padrão Bootstrap */
+  }
+  
+  .help-button:hover {
+    color: #0a58ca; /* Azul mais escuro no hover */
+  }
+
+  .input-error {
+  border: 1px solid red;
+}

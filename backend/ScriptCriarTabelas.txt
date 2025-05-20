@@ -1,0 +1,35 @@
+
+create table if not exists aluno (
+  alu_id INT generated always as identity,
+  alu_nome VARCHAR(100) not null,
+  alu_data_nascimento DATE not null,
+  alu_responsavel_cpf VARCHAR(14) not null,
+  alu_cidade VARCHAR(50) not null,
+  alu_rua VARCHAR(255) not null,
+  alu_bairro VARCHAR(50) not null,
+  alu_numero VARCHAR(20) not null,
+  alu_escola_id INT not null,
+  alu_telefone VARCHAR(20) not null,
+  alu_periodo_escola VARCHAR(10) not null,
+  alu_realiza_acompanhamento VARCHAR(200),
+  alu_possui_sindrome VARCHAR(200),
+  alu_descricao VARCHAR(300) not null,
+  alu_rg VARCHAR(20) not null,
+  --  alu_formulario_saude VARCHAR(20),
+  --  alu_ficha INT,
+  alu_status INT not null,
+  alu_periodo_projeto VARCHAR(10) not null,
+  alu_cep VARCHAR(20) not null,
+  -- PRIMARY KEY
+  constraint pk_aluno primary key (alu_id),
+  -- FOREIGN KEYS
+  constraint FK_aluno_escola foreign KEY (alu_escola_id) references escola (esc_id) on update CASCADE on delete RESTRICT,
+  constraint FK_aluno_responsavel foreign KEY (alu_responsavel_cpf) references responsavel (resp_cpf) on update CASCADE on delete RESTRICT,
+  -- CHECK CONSTRAINTS (Substituindo ENUMs)
+  constraint chk_aluno_periodo_escola check (alu_periodo_escola in ('Manhã', 'Tarde')),
+  constraint chk_aluno_periodo_projeto check (alu_periodo_projeto in ('Manhã', 'Tarde')),
+  constraint chk_aluno_status check (alu_status in (0, 1))
+);
+
+
+

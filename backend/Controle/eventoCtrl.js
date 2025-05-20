@@ -1,44 +1,56 @@
 //É a classe responsável por traduzir requisições HTTP e produzir respostas HTTP
-import Responsavel from "../Modelo/responsavel.js";
+import Evento from "../Modelo/evento.js";
 import conectar from "../Persistencia/Conexao.js";
+import EventoDAO from "../Persistencia/eventoDAO.js";
 
-export default class ResponsavelCtrl {
+export default class EventoCtrl {
 
     async gravar(requisicao, resposta){
         const conexao = await conectar();
         resposta.type("application/json");
-        
+      
         if (requisicao.method == 'POST' && requisicao.is("application/json")){
-            const cpf  = requisicao.body.cpf;
-            const nome = requisicao.body.nome;
-            const telefone = requisicao.body.telefone;
-            //pseudo validação
-            if (cpf && nome && telefone)
+            const nome  = requisicao.body.nome;
+            const data = requisicao.body.data;
+            const periodo = requisicao.body.periodo;
+            const horaInicio = requisicao.body.horaInicio;
+            const horaFim = requisicao.body.horaFim;
+            
+            if (nome && data && periodo && horaInicio && horaFim)
             {
-                const responsavel = new Responsavel(cpf, nome, telefone);
+                const evento = new Evento(0, nome, data, periodo, horaInicio, horaFim);
                 try{
                 await conexao.query("BEGIN");
-                //const resultado = await responsavel.incluir(conexao);
-                if(responsavel.incluir(conexao)){
+                const conflito = await EventoDAO.verificarConflito(evento, conexao);
+                if (conflito) {
+                    await conexao.query("ROLLBACK");
+                    resposta.status(400).json({
+                        status: false,
+                        mensagem: "Conflito de horário! Já existe um evento nesse dia, período e horário.",
+                    });
+                    return;
+                }
+
+                if(evento.incluir(conexao)){
                     await conexao.query("COMMIT");
                     resposta.status(200).json({
                         "status":true,
-                        "mensagem":"Responsavel adicionado com sucesso!",
-                        "cpf": responsavel.cpf
+                        "mensagem":"Evento adicionado com sucesso!",
+                        "nome": evento.nome
                     });
                 }
                 else{
                     await conexao.query("ROLLBACK");
                     resposta.status(500).json({
                         "status":false,
-                        "mensagem":"Não foi possível incluir o responsavel: " + erro.message
+                        "mensagem":"Não foi possível incluir o evento: " + erro.message
                     });
                 }
                 }catch(erro){
                     await conexao.query("ROLLBACK");
                     resposta.status(500).json({
                         "status":false,
-                        "mensagem":"Não foi possível incluir o responsavel: " + erro.message
+                        "mensagem":"Não foi possível incluir o evento: " + erro.message
                     });
                 }finally {
                     conexao.release();
@@ -68,33 +80,33 @@ export default class ResponsavelCtrl {
 
     async editar(requisicao, resposta){
         const conexao = await conectar();
-    
         resposta.type("application/json");
         if ((requisicao.method == 'PUT' || requisicao.method == 'PATCH') && requisicao.is("application/json")){
        
-            const cpf  = requisicao.params.cpf;
+            const id  = requisicao.params.id;
             const nome = requisicao.body.nome;
-            const telefone = requisicao.body.telefone;
+            const data = requisicao.body.data;
+            const periodo = requisicao.body.periodo;
+            const horaInicio = requisicao.body.horaInicio;
+            const horaFim = requisicao.body.horaFim;
         
-            if (cpf && nome && telefone)
+            if (id > 0 && nome && data && periodo && horaInicio && horaFim)
             {
-                const responsavel = new Responsavel(cpf, nome, telefone);
-                
+                const evento = new Evento(id, nome, data, periodo, horaInicio, horaFim);
                 try{
                     await conexao.query("BEGIN");
-                    //const resultado = await responsavel.alterar(conexao);
-                    if(responsavel.alterar(conexao)){
+                    if(evento.alterar(conexao)){
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
                             "status":true,
-                            "mensagem":"Responsavel alterado com sucesso!",
+                            "mensagem":"Evento alterado com sucesso!",
                         });
                     }
                     else{
                         await conexao.query("ROLLBACK");
                         resposta.status(500).json({
                             "status":false,
-                            "mensagem":"Não foi possível alterar o responsavel: " + erro.message
+                            "mensagem":"Não foi possível alterar o evento: " + erro.message
                         });
                     }
                 }
@@ -102,7 +114,7 @@ export default class ResponsavelCtrl {
                     await conexao.query("ROLLBACK");
                     resposta.status(500).json({
                         "status":false,
-                        "mensagem":"Não foi possível alterar o responsavel: " + erro.message
+                        "mensagem":"Não foi possível alterar o evento: " + erro.message
                     });
                 }finally{
                     conexao.release();
@@ -129,42 +141,37 @@ export default class ResponsavelCtrl {
     }
 
     async excluir(requisicao, resposta) {
-        
         const conexao = await conectar();
         resposta.type("application/json");
-        //Verificando se o método da requisição é POST e conteúdo é JSON
+        
         if (requisicao.method == 'DELETE') {
             //o código será extraída da URL (padrão REST)
-            const cpf = requisicao.params.cpf;
+            const id = requisicao.params.id;
             //pseudo validação
-            if (cpf) {
-                
-                const responsavel = new Responsavel(cpf);
+            if (id > 0) {
+                const evento = new Evento(id);
                 try{
-                   
                     await conexao.query("BEGIN");
-                    //const resultado = await responsavel.excluir(conexao);
                 
-                
-                    if(responsavel.excluir(conexao)){
+                    if(evento.excluir(conexao)){
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
                             "status": true,
-                            "mensagem": "Responsável excluído com sucesso!",
+                            "mensagem": "Evento excluído com sucesso!",
                         });
                     }
                     else{
                         await conexao.query("ROLLBACK");
                         resposta.status(500).json({
                             "status": false,
-                            "mensagem": "Não foi possível excluir o responsavel: " + erro.message
+                            "mensagem": "Não foi possível excluir o evento: " + erro.message
                         });
                     }
                 }catch(erro) {
                     await conexao.query("ROLLBACK");
                     resposta.status(500).json({
                         "status": false,
-                        "mensagem": "Não foi possível excluir o responsavel: " + erro.message
+                        "mensagem": "Não foi possível excluir o evento: " + erro.message
                     });
                 }finally{
                     conexao.release();
@@ -193,30 +200,28 @@ export default class ResponsavelCtrl {
         const conexao = await conectar();
         resposta.type("application/json");
         if (requisicao.method == "GET") {
-            let cpf = requisicao.params.cpf;
+            let id = requisicao.params.id;
 
-            //evitar que código tenha valor undefined
-            if (!cpf) {
-                cpf = "";
+            if (isNaN(id)) {
+                id = "";
             }
 
-            const responsavel = new Responsavel();
+            const evento = new Evento();
             
             try{
-                
                 await conexao.query("BEGIN");
-                const listaResponsavel = await responsavel.consultar(cpf, conexao);
+                const listaEvento = await evento.consultar(id, conexao);
                 
-                if(Array.isArray(listaResponsavel)){
+                if(Array.isArray(listaEvento)){
                     await conexao.query('COMMIT');
-                    resposta.status(200).json(listaResponsavel);
+                    resposta.status(200).json(listaEvento);
                 }
                 else{
                     await conexao.query('ROLLBACK');
                     resposta.status(404).json(
                         {
                             "status": false,
-                            "mensagem": "Nenhum responsavel encontrado."
+                            "mensagem": "Nenhum evento encontrado."
                         }
                     );
                 }
@@ -226,11 +231,10 @@ export default class ResponsavelCtrl {
                     resposta.status(500).json(
                         {
                             "status": false,
-                            "mensagem": "Erro ao consultar responsaveis: " + erro.message
+                            "mensagem": "Erro ao consultar evento: " + erro.message
                         }
                     );
             }finally{
-
                     conexao.release();
             }
 

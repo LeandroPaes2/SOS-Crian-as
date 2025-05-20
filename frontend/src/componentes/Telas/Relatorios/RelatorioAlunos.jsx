@@ -10,7 +10,6 @@ export default function RelatorioAlunos() {
 
     const [id, setId] = useState(0);
     const [nome, setNome] = useState("");
-    const [idade, setIdade] = useState(0);
     const [responsavel, setResponsavel] = useState("");
     const [endereco, setEndereco] = useState("");
     const [telefone, setTelefone] = useState("");

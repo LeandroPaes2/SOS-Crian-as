@@ -42,14 +42,14 @@ export default class HorarioCtrl {
                     await conexao.query("BEGIN");
 
                     // Verifica duplicidade
-                    const [linhas] = await conexao.query(
+                    const resultadoConsulta = await conexao.query(
                         `SELECT COUNT(*) AS total 
                          FROM horario 
-                         WHERE hora_hora = ? AND hora_semana = ?`,
+                         WHERE hora_hora = $1 AND hora_semana = $2`,
                         [hora, semana]
                     );
-                    
-                    
+
+                    const linhas = resultadoConsulta.rows;
 
                     if (linhas[0].total > 0) {
                         await conexao.query("ROLLBACK");
@@ -148,42 +148,44 @@ export default class HorarioCtrl {
     }
 
     async excluir(requisicao, resposta) {
-        resposta.type("application/json");
-        const conexao = await conectar();
-    
-        if (requisicao.method == 'DELETE') {
-            const id = requisicao.params.id;
-    
-            if (id) {
-                try {
-                    const horario = new Horario(id);
-                    await conexao.query("BEGIN");
-    
-                    const resultado = await horario.excluir(conexao);
-    
-                    if (resultado.affectedRows > 0) {
-                        await conexao.query("COMMIT");
-                        resposta.status(200).json({ status: true, mensagem: "Horário excluído com sucesso!" });
-                    } else {
-                        await conexao.query("ROLLBACK");
-                        resposta.status(500).json({ status: false, mensagem: "Erro ao excluir horário." });
-                    }
-    
-                } catch (erro) {
-                    console.error("Erro ao excluir horário:", erro);
-                    if (conexao) await conexao.query("ROLLBACK");
-                    resposta.status(500).json({ status: false, mensagem: "Não foi possível excluir o horário: " + erro.message });
-                } finally {
-                    if (conexao) conexao.release();
+    resposta.type("application/json");
+    const conexao = await conectar();
+
+    if (requisicao.method == 'DELETE') {
+        const id = requisicao.params.id;
+
+        if (id) {
+            try {
+                const horario = new Horario(id);
+                await conexao.query("BEGIN");
+
+                const linhasAfetadas = await horario.excluir(conexao);
+
+                if (linhasAfetadas > 0) {
+                    await conexao.query("COMMIT");
+                    resposta.status(200).json({ status: true, mensagem: "Horário excluído com sucesso!" });
+                } else {
+                    await conexao.query("ROLLBACK");
+                    resposta.status(404).json({ status: false, mensagem: "Horário não encontrado para exclusão." });
                 }
-            } else {
-                resposta.status(400).json({ status: false, mensagem: "Dados incompletos ou inválidos. Verifique a requisição." });
+
+            } catch (erro) {
+                console.error("Erro ao excluir horário:", erro);
+                if (conexao) await conexao.query("ROLLBACK");
+                resposta.status(500).json({ status: false, mensagem: "Não foi possível excluir o horário: " + erro.message });
+            } finally {
+                if (conexao) conexao.release();
             }
         } else {
-            resposta.status(400).json({ status: false, mensagem: "Requisição inválida!" });
+            resposta.status(400).json({ status: false, mensagem: "Dados incompletos ou inválidos. Verifique a requisição." });
         }
+    } else {
+        resposta.status(400).json({ status: false, mensagem: "Requisição inválida!" });
     }
-    
+}
+
+
+
 
     async consultar(requisicao, resposta) {
         resposta.type("application/json");

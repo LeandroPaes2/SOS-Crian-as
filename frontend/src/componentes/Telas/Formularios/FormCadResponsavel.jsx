@@ -91,12 +91,14 @@ export default function FormCadResponsavel(props) {
                 setTimeout(() =>setCpf(""), 3000);
                 setTimeout(() => setNome(""), 3000);
                 setTimeout(()=> setTelefone(""), 3000); 
-
                 setTimeout(() => setMensagem(""), 3000);
+                
+                if(editando){
+                    setTimeout(() => {
+                        navigate("/relatorioResponsavel"); 
+                    }, 3000); 
+                }
                 setEditando(false);
-                /*setTimeout(() => {
-                    navigate("/relatorioResponsavel"); 
-                }, 3000); */
             } else {
                 setMensagem(editando ? "Erro ao atualizar responsavel!": "Erro ao cadastrar o responsavel.");
             }
@@ -155,9 +157,12 @@ export default function FormCadResponsavel(props) {
                     />
                 </Form.Group>
 
-                <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
-                                Voltar
+                <Button as={Link} to="/telaResponsavel" className="botaoPesquisa" variant="secondary">
+                                Pagina inicial responsavel
                         </Button>
+                    <Button as={Link} to="/relatorioResponsavel" className="botaoPesquisa" variant="secondary">
+                            Relatorio 
+                    </Button>
                 <Button className="botaoPesquisa" variant="primary" type="submit">
                     {editando ? "Atualizar" : "Cadastrar"}
                 </Button>

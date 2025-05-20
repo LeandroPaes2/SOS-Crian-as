@@ -1,16 +1,14 @@
 import Materia from "../Modelo/materia.js";
 import supabase from "./Conexao.js";
-
-//import conectar from "./Conexao.js";
 export default class MateriaDAO {
-    
+
 
     async incluir(materia, supabase) {
         if (materia instanceof Materia) {
             //const conexao = await conectar();
             const sql = `INSERT INTO materia(mat_nome, mat_desc)
             VALUES ($1, $2)`;
-            let parametros = [ materia.nome, materia.descricao ];
+            let parametros = [materia.nome, materia.descricao];
             await supabase.query(sql, parametros);
             //await conexao.release();
         }
@@ -26,31 +24,31 @@ export default class MateriaDAO {
                 materia.nome,
                 materia.descricao,
                 materia.id
-            ]; 
+            ];
             await supabase.query(sql, parametros);
             //await conexao.release();
         }
     }
-    
-    async consultar(termo, supabase) {
-          // Query base: sempre seleciona os campos que existem
-          let sql = 'SELECT * FROM materia';
-          const parametros = [];
-      
-            if (termo) {
-              sql += ' WHERE mat_nome ILIKE $1';
-              parametros = ['%' + termo + '%'];
-            }
-          // Executa sempre uma query não-vazia
-          const result = await supabase.query(sql, parametros);
 
-          // extrai o array de rows
-          const linhas = result.rows;
-      
-          // Mapeia cada linha para o objeto Materia
-          return linhas.map(linha =>
+    async consultar(termo, supabase) {
+        // Query base: sempre seleciona os campos que existem
+        let sql = 'SELECT * FROM materia';
+        const parametros = [];
+
+        if (termo) {
+            sql += ' WHERE mat_nome ILIKE $1';
+            parametros = ['%' + termo + '%'];
+        }
+        // Executa sempre uma query não-vazia
+        const result = await supabase.query(sql, parametros);
+
+        // extrai o array de rows
+        const linhas = result.rows;
+
+        // Mapeia cada linha para o objeto Materia
+        return linhas.map(linha =>
             new Materia(linha.mat_id, linha.mat_nome, linha.mat_desc)
-          );
+        );
     }
 
     async excluir(materia, supabase) {
