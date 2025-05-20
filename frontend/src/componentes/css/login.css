@@ -1,6 +1,6 @@
 .formularioD{
     background-color: aliceblue;
-    width: 300px;
+    width: 350px;
     padding: 20px; /* Add some padding for the form */
     display: flex;
     flex-direction: column;
@@ -9,5 +9,25 @@
     border-radius: 8px; /* Optional: rounded corners */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
     margin: 0 auto;
+}
+
+.botaoSenha{
+    border-color: transparent;
+    text-decoration: underline;
+    background-color: transparent;
+    color: rgb(72, 72, 255);
+}
+
+.botaoSenha:hover{
+    color: blue;
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.divLogin{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 

@@ -39,7 +39,7 @@ export default function Menu(props){
                             {funcionario?.nivel !== "2" && (
                             <NavDropdown.Item href="#" >Funcionarios</NavDropdown.Item>
                             )}
-                            <NavDropdown.Item href="#" as={Link} to="/telaEvento">Eventos</NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/telaEvento">Eventos</NavDropdown.Item>
                         </NavDropdown>
                     
                         <NavDropdown title="Relatórios" id="basic-nav-dropdown">
