@@ -11,6 +11,12 @@
     margin-left: 10px;
     margin-right: 10px;
     width: 180px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 .botaoUsuario:hover {
@@ -29,12 +35,14 @@
   margin: 10px;
   font-weight: 500;
   margin-right: 15px;
-
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 
 .botaoSair {
   color: black;
-
   align-items: center; /* alinha verticalmente */
   justify-content: center; /* alinha horizontalmente */
   width: 50px; /* defina uma largura se necessário */
