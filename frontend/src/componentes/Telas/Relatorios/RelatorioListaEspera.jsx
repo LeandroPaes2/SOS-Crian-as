@@ -15,6 +15,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+// npm install jspdf jspdf-autotable
+
 export default function RelatorioListaEspera() {
     const navigate = useNavigate();
 
@@ -157,7 +159,7 @@ export default function RelatorioListaEspera() {
             return 0;
         });
 
-    const gerarPdfEImprimir = () => {
+    /*const gerarPdfEImprimir = () => {
         const doc = new jsPDF();
         if (filtroStatus !== "todos") {
             if (filtroStatus == "0")
@@ -207,7 +209,68 @@ export default function RelatorioListaEspera() {
             printWindow.focus();
             printWindow.print();
         };
+    };*/
+
+
+
+    const gerarPdfEImprimir = () => {
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        let titulo = "Todas as Crianças da Lista de Espera";
+        if (filtroStatus !== "todos") {
+            titulo = filtroStatus === "0"
+                ? "Relatório de Crianças Excluídas na Lista de Espera"
+                : "Relatório de Crianças Cadastradas na Lista de Espera";
+        }
+
+        const textWidth = doc.getTextWidth(titulo);
+        const textX = (pageWidth - textWidth) / 2;
+        doc.text(titulo, textX, 20);
+
+        const data = listaFiltrada.map(item => [
+            item.id,
+            item.aluno?.nome || "N/A",
+            item.aluno?.telefone || "N/A",
+            item.aluno?.responsavel?.nome || "N/A",
+            formatarData(item.dataInsercao),
+            getCorPrioridade(item.prioridade),
+            filtroStatus === "todos" ? getStatus(item.status) : null
+        ].filter(val => val !== null)); // remove o "status" se não for necessário
+
+        const head = filtroStatus === "todos"
+            ? [["ID", "Nome", "Telefone", "Responsável", "Data de Inserção", "Prioridade", "Status"]]
+            : [["ID", "Nome", "Telefone", "Responsável", "Data de Inserção", "Prioridade"]];
+
+        autoTable(doc, {
+            startY: 30,
+            head: head,
+            body: data,
+            styles: {
+                lineWidth: 0.2, // aumenta para bordas mais visíveis, ex: 0.5 ou 1
+                lineColor: [0, 0, 0], // preto
+                fillColor: [255, 255, 255],
+                textColor: 0,
+            },
+            headStyles: {
+                fillColor: [240, 240, 240], // cor de fundo do cabeçalho
+                textColor: 0,
+                fontStyle: 'bold',
+                lineWidth: 0.5,
+                lineColor: [0, 0, 0],
+            },
+        });
+
+
+        const pdfBlob = doc.output('blob');
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        const printWindow = window.open(pdfUrl);
+        printWindow.onload = () => {
+            printWindow.focus();
+            printWindow.print();
+        };
     };
+
 
     return (
         <PaginaGeral>
@@ -280,6 +343,12 @@ export default function RelatorioListaEspera() {
                 </Form.Group>
             </Form>
 
+            <div className="mt-4">
+                <Button as={Link} to="/telaListaEspera" variant="secondary" className="me-2">Voltar</Button>
+                <Button as={Link} to="/cadastroListaEspera" variant="secondary">Cadastrar</Button>
+                <Button variant="info" onClick={gerarPdfEImprimir}>Imprimir</Button>
+            </div>
+
             <Container className="mt-4">
                 <Table striped bordered hover>
                     <thead>
@@ -303,10 +372,32 @@ export default function RelatorioListaEspera() {
                                 <td>{getCorPrioridade(listaEspera.prioridade)}</td>
                                 <td>{formatarData(listaEspera.dataInsercao)}</td>
                                 <td>
-                                    {listaEspera.status !== 0 && (<Button variant="warning" className="me-2" onClick={() => alterarListaEspera(listaEspera)}>Editar</Button>)}
-                                    {listaEspera.status !== 0 && (<Button variant="danger" className="me-2" onClick={() => excluirListaEspera(listaEspera)}>Excluir</Button>)}
-                                    {listaEspera.status !== 0 && (<Button variant="success" onClick={() => matricularAluno(listaEspera)}>Matricular</Button>)}
+                                    {listaEspera.status !== 0 && (
+                                        <>
+                                            <Button
+                                                variant="warning"
+                                                className="me-2"
+                                                onClick={() => alterarListaEspera(listaEspera)}
+                                            >
+                                                Editar
+                                            </Button>
+                                            <Button
+                                                variant="danger"
+                                                className="me-2"
+                                                onClick={() => excluirListaEspera(listaEspera)}
+                                            >
+                                                Excluir
+                                            </Button>
+                                            <Button
+                                                variant="success"
+                                                onClick={() => matricularAluno(listaEspera)}
+                                            >
+                                                Matricular
+                                            </Button>
+                                        </>
+                                    )}
                                 </td>
+
                             </tr>
                         ))}
                     </tbody>
@@ -315,12 +406,6 @@ export default function RelatorioListaEspera() {
                 <p>Quantidade de crianças cadastradas na lista de espera: {listaFiltrada.length}</p>
 
             </Container>
-
-            <div className="mt-4">
-                <Button as={Link} to="/telaListaEspera" variant="secondary" className="me-2">Voltar</Button>
-                <Button as={Link} to="/cadastroListaEspera" variant="secondary">Cadastrar</Button>
-                <Button variant="info" onClick={gerarPdfEImprimir}>Imprimir</Button>
-            </div>
         </PaginaGeral>
     );
 }
