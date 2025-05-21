@@ -8,6 +8,7 @@ import logo from '../imagens/logo.png';
 import "../css/menu.css";
 import { useNavigate } from 'react-router-dom';
 import { useLogin } from "../../LoginContext.js";
+import { IoPerson, IoLogOut } from "react-icons/io5";
 
 export default function Menu(props){
 
@@ -56,9 +57,9 @@ export default function Menu(props){
                         </NavDropdown>
                         <Nav.Link href="#home">Sobre</Nav.Link>
                 </Nav>
-                <div className='divLogin'>
+                <div className='ms-auto d-flex align-items-center gap-2'>
                     <Button className="botaoUsuario" title='Acesse seu perfil aqui' as={Link} to="/dadosUsuario">Olá, <strong>{funcionario?.nome || 'Visitante'}</strong></Button>
-                    <Button className="botaoSair" variant="outline-light" size="sm" onClick={handleLogout}>Sair</Button>
+                    <Button className="botaoSair" size="sm" onClick={handleLogout}><IoLogOut/>Sair</Button>
                 </div>
                 </Container>
             </Navbar>

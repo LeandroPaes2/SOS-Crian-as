@@ -1,27 +1,77 @@
-.divGeral{
-    margin-top: 70px;
-    display: flex;
-    align-items: top;
-    justify-content: center;
-    flex-direction: row; 
+.container {
+  display: flex;
+  gap: 30px;
+  justify-content: space-around;
+  align-items: top;
+  margin-top: 50px;
 }
 
-.divDados{
-    background-color: white;
-    width: 500px;
-    height: 500px;
-    border-radius: 10px;
-    margin: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.sidebar {
+  background: white;
+  border-color: #81233b;
+  border-radius: 15px;
+  padding: 30px 20px;
+  width: 255px;
+  height: 230px;
+  border: 1.5px solid #a32b49; /* borda roxa */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8); /* sombra */
+  margin-top: 20px;
 }
 
-.divOpcoes{
-    background-color: white;
-    width: 200px;
-    height: 230px;
-    border-radius: 10px;
-    margin: 40px;
-    margin-right: 100px;
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 5px;
+  text-decoration: none;
+  color: #333;
+  margin-bottom: 15px;
+  transition: background 0.2s;
+  border-radius: 8px;
+}
+
+.sidebar a:hover {
+  background: #f0f0f0;
+}
+
+.content {
+  background: white;
+  border-radius: 15px;
+  padding: 40px;
+  width: 600px;
+  border: 1.5px solid #a32b49; /* borda roxa */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8); /* sombra */
+}
+
+.field {
+  margin-bottom: 20px;
+}
+
+.field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.field input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.senha-wrapper {
+  position: relative;
+}
+
+.senha-wrapper input {
+  padding-right: 35px;
+}
+
+.senha-wrapper .material-icons {
+  position: absolute;
+  right: 10px;
+  top: 9px;
+  cursor: pointer;
+  color: #555;
 }
