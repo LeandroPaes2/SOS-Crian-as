@@ -30,7 +30,16 @@ export default class FamiliaCtrl {
             const valorBeneficio = requisicao.body.valorBeneficio;
             const nomeBeneficio = requisicao.body.nomeBeneficio;
 
-            if (nome && sexo && dataNascimento && rg && cpf && companheiro && estadoCivil && profissao && situacaoTrabalho && escolaridade && rendaFamiliar && rendaValor && qtdeTrabalho && pensaoAlimentar && valorPensao && quemPagaPensao && beneficioSocial && qualBeneficio && valorBeneficio && nomeBeneficio) {
+            if (
+                nome != null && sexo != null && dataNascimento != null &&
+                rg != null && cpf != null && companheiro != null && estadoCivil != null &&
+                profissao != null && situacaoTrabalho != null && escolaridade != null &&
+                rendaFamiliar != null && rendaValor != null && qtdeTrabalho != null &&
+                pensaoAlimentar != null && valorPensao != null && quemPagaPensao != null &&
+                beneficioSocial != null && qualBeneficio != null &&
+                valorBeneficio != null && nomeBeneficio != null
+            ) {
+
                 try {
                     const familia = new Familia(0, nome, sexo, dataNascimento, rg, cpf, companheiro, estadoCivil, profissao, situacaoTrabalho, escolaridade, rendaFamiliar, rendaValor, qtdeTrabalho, pensaoAlimentar, valorPensao, quemPagaPensao, beneficioSocial, qualBeneficio, valorBeneficio, nomeBeneficio);
                     await conexao.query("BEGIN");
@@ -105,8 +114,8 @@ export default class FamiliaCtrl {
             const valorBeneficio = requisicao.body.valorBeneficio;
             const nomeBeneficio = requisicao.body.nomeBeneficio;
 
-            if(id && nome && sexo && dataNascimento && rg && cpf && companheiro && estadoCivil && profissao && situacaoTrabalho && escolaridade && rendaFamiliar && rendaValor && qtdeTrabalho && pensaoAlimentar && valorPensao && quemPagaPensao && beneficioSocial && qualBeneficio && valorBeneficio && nomeBeneficio) {
-                try{
+            if (id && nome && sexo && dataNascimento && rg && cpf && companheiro && estadoCivil && profissao && situacaoTrabalho && escolaridade && rendaFamiliar && rendaValor && qtdeTrabalho && pensaoAlimentar && valorPensao && quemPagaPensao && beneficioSocial && qualBeneficio && valorBeneficio && nomeBeneficio) {
+                try {
                     const familia = new Familia(id, nome, sexo, dataNascimento, rg, cpf, companheiro, estadoCivil, profissao, situacaoTrabalho, escolaridade, rendaFamiliar, rendaValor, qtdeTrabalho, pensaoAlimentar, valorPensao, quemPagaPensao, beneficioSocial, qualBeneficio, valorBeneficio, nomeBeneficio);
                     await conexao.query("BEGIN");
 
@@ -208,38 +217,37 @@ export default class FamiliaCtrl {
     }
 
     async consultar(requisicao, resposta) {
-        const conexao = await conectar();
-        resposta.type("application/json");
-
-        if (requisicao.method == 'GET') {
+        if (requisicao.method === 'GET') {
+            resposta.type("application/json");
+            const conexao = await conectar();
             const id = requisicao.params.id;
             const familia = new Familia();
 
-            try{
+            try {
                 const listaFamilia = await familia.consultar(id, conexao);
 
-                if(Array.isArray(listaFamilia) && listaFamilia.length > 0){
+                if (Array.isArray(listaFamilia)) {
                     resposta.status(200).json(listaFamilia);
-                }else{
+                } else {
                     resposta.status(500).json({
-                        "status": false,
-                        "mensagem": "Erro ao consultar familia" 
+                        status: false,
+                        mensagem: "Erro ao consultar família"
                     });
                 }
-            }catch(erro){
+            } catch (erro) {
                 resposta.status(500).json({
-                    "status": false,
-                    "mensagem": "Erro ao consultar familia: " + erro.message
+                    status: false,
+                    mensagem: "Erro ao consultar família: " + erro.message
                 });
-            }finally{
-                if(conexao)
-                    await conexao.release();
+            } finally {
+                if (conexao) await conexao.release();
             }
-        }else{
-            resposta.status(500).json({
-                "status": false,
-                "mensagem": "Nao foi possivel consultar a familia"
+        } else {
+            resposta.status(405).json({
+                status: false,
+                mensagem: "Método não permitido para esta rota"
             });
         }
     }
+
 }
