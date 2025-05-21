@@ -7,7 +7,7 @@
 }
 
 .sidebar {
-  background: white;
+  background: #f0f0f0;
   border-color: #81233b;
   border-radius: 15px;
   padding: 30px 20px;
@@ -35,7 +35,7 @@
 }
 
 .content {
-  background: white;
+  background: #f0f0f0;
   border-radius: 15px;
   padding: 40px;
   width: 600px;
@@ -53,6 +53,17 @@
   margin-bottom: 5px;
 }
 
+.botaoDados{
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.botaoDados:hover{
+  background-color: transparent;
+  border-color: #81233b;
+  color: #81233b;
+}
+
 .field input {
   width: 100%;
   padding: 10px;
@@ -66,6 +77,7 @@
 
 .senha-wrapper input {
   padding-right: 35px;
+  width: 480px;
 }
 
 .senha-wrapper .material-icons {

@@ -38,7 +38,6 @@ export default function VerificarEmail(){
         }
     }
 
-
     return(
         <div>
             <Alert className="alert-custom text-center mt-4 mb-4">

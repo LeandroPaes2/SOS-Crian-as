@@ -28,6 +28,8 @@ import FormCadHorario from './componentes/Telas/Formularios/FormCadHorario';
 import RelatorioHorario from './componentes/Telas/Relatorios/RelatorioHorario';
 import TelaDadosUsuario from './componentes/Telas/TelaDadosUsuario';
 import TelaVerificarEmail from './componentes/Telas/TelaVerificarEmail';
+import TelaEmailSenha from './componentes/Telas/TelaEmailSenha';
+import TelaAlterarSenha from './componentes/Telas/TelaAlterarSenha';
 
 function AppRoutes() {
     const { isLogado } = useLogin();
@@ -61,6 +63,8 @@ function AppRoutes() {
                     <Route path="/cadastroHorario" element={<FormCadHorario/>}/>
                     <Route path="/relatorioHorario" element={<RelatorioHorario/>}/>
                     <Route path="/dadosUsuario" element={<TelaDadosUsuario/>}/>
+                    <Route path="/telaEmailSenha" element={<TelaEmailSenha/>}/>
+                    <Route path="/alterarSenha" element={<TelaAlterarSenha/>}/>
                 </>
             )}
             {!isLogado && (

@@ -3,30 +3,38 @@ import "../../css/dadosUsuario.css";
 import { useState } from "react";
 import { IoPerson, IoLogOut } from "react-icons/io5";
 import { RiLockPasswordFill } from "react-icons/ri";
-import { Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Button, InputGroup } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function DadosUsuario(){
 
-    const { funcionario } = useLogin();
+    const { funcionario, logout } = useLogin();
     const [mostrarSenha, setMostrarSenha] = useState(false);
+    const navigate = useNavigate();
     
-    function buscarDados(){
+    /*function buscarDados(){
         const response = fetch("http://localhost:3000/funcionarios/"+funcionario.cpf);
         if(!response)
             console.log("Funcionario nao esta logado.");
+    }*/
+
+    const handleLogout = async (event) => {
+        logout();
+        navigate("/");
     }
 
     return(
      
         <div className="container">
         <div className="sidebar">
-            <Button href="#"><IoPerson/> Dados Pessoais</Button>
-            <Button as={Link} to="/telaEmailSenha">< RiLockPasswordFill/> Alterar Senha</Button>
-            <Button href="#"><IoLogOut/> Sair</Button>
+            <Button href="#" className="botaoDados"><IoPerson/> Dados Pessoais</Button>
+            <Button as={Link} to="/telaEmailSenha" className="botaoDados">< RiLockPasswordFill/> Alterar Senha</Button>
+            <Button href="#" className="botaoDados" onClick={handleLogout}><IoLogOut/> Sair</Button>
         </div>
 
         <div className="content">
+            <h5>Dados Pessoais</h5>
             <div className="field">
             <label>CPF</label>
             <input type="text" value={funcionario.cpf} disabled />
@@ -54,9 +62,10 @@ export default function DadosUsuario(){
                 value={funcionario.senha}
                 disabled
             />
-            <span className="material-icons" onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
-                {mostrarSenha ? "visibility_off" : "visibility"}
-            </span>
+            <InputGroup.Text onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
+                            {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
+                        </InputGroup.Text>
+            
             </div>
         </div>
         </div>
