@@ -98,7 +98,7 @@ export default function FormCadAluno(props) {
     async function buscarResp() {
         validarCPF(dados.responsavel.cpf);
         const cpf = dados.responsavel.cpf?.replace(/\D/g, ""); // Remove pontos e traços se houver
-        const url = `http://localhost:3000/responsaveis/${cpf}`;
+        const url = `http://localhost:3000/responsavel/${cpf}`;
 
         try {
             const response = await fetch(url, {
