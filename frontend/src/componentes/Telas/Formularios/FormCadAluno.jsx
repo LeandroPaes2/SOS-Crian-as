@@ -97,37 +97,40 @@ export default function FormCadAluno(props) {
 
     async function buscarResp() {
         validarCPF(dados.responsavel.cpf);
-        const cpf = dados.responsavel.cpf?.replace(/\D/g, ""); // Remove pontos e traços se houver
-        const url = `http://localhost:3000/responsavel/${cpf}`;
 
-        try {
-            const response = await fetch(url, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+        if(!cpfInvalido)
+        {
+            const url = `http://localhost:3000/responsaveis/${dados.responsavel.cpf}`;
 
-            if (!response.ok) {
-                throw new Error("Responsável não encontrado.");
-            } else
-                setRespNaoEncontrado(false);
-
-            const data = await response.json();
-
-            // Atualiza os dados 
-            setDados((prev) => ({
-                ...prev,
-                responsavel: {
-                    ...prev.responsavel,
-                    nome: data.nome,
-                    email: data.email,
-                    telefone: data.telefone,
-                },
-            }));
-        } catch (error) {
-            console.error("Erro ao buscar responsável:", error);
-            setRespNaoEncontrado(true);
+            try {
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+    
+                if (!response.ok) {
+                    throw new Error("Responsável não encontrado.");
+                } else
+                    setRespNaoEncontrado(false);
+    
+                const data = await response.json();
+    
+                // Atualiza os dados 
+                setDados((prev) => ({
+                    ...prev,
+                    responsavel: {
+                        ...prev.responsavel,
+                        nome: data.nome,
+                        email: data.email,
+                        telefone: data.telefone,
+                    },
+                }));
+            } catch (error) {
+                console.error("Erro ao buscar responsável:", error);
+                setRespNaoEncontrado(true);
+            }
         }
     }
     async function handleSubmit(e) {

@@ -1,3 +1,26 @@
+CREATE TABLE IF NOT EXISTS responsavel (
+    resp_cpf VARCHAR(14) NOT NULL,
+    resp_nome VARCHAR(50) NOT NULL,
+    resp_telefone VARCHAR(15) NOT NULL,
+    CONSTRAINT pk_responsavel PRIMARY KEY (resp_cpf)
+);
+
+INSERT INTO responsavel (resp_cpf, resp_nome, resp_telefone) VALUES 
+('435.829.608-46', 'Ariri', '(18)99621-1719'),
+('555.666.777-88', 'Carlos Pereira', '(11)92345-6789'),
+('999.888.777-66', 'Fernanda Lima', '(11)93456-7890'),
+('444.333.222-11', 'João Souza', '(11)94567-8901');
+
+
+CREATE TABLE IF NOT EXISTS escola (
+    esc_id SERIAL PRIMARY KEY,
+    esc_nome VARCHAR(100) NOT NULL
+);
+INSERT INTO escola (esc_nome) VALUES
+('Escola Municipal José de Anchieta'),
+('Escola Estadual Maria da Glória');
+
+
 
 create table if not exists aluno (
   alu_id INT generated always as identity,
@@ -23,13 +46,56 @@ create table if not exists aluno (
   -- PRIMARY KEY
   constraint pk_aluno primary key (alu_id),
   -- FOREIGN KEYS
-  constraint FK_aluno_escola foreign KEY (alu_escola_id) references escola (esc_id) on update CASCADE on delete RESTRICT,
-  constraint FK_aluno_responsavel foreign KEY (alu_responsavel_cpf) references responsavel (resp_cpf) on update CASCADE on delete RESTRICT,
+  --constraint FK_aluno_escola foreign KEY (alu_escola_id) references escola (esc_id) on update CASCADE on delete RESTRICT,
+  --constraint FK_aluno_responsavel foreign KEY (alu_responsavel_cpf) references responsavel (resp_cpf) on update CASCADE on delete RESTRICT,
   -- CHECK CONSTRAINTS (Substituindo ENUMs)
   constraint chk_aluno_periodo_escola check (alu_periodo_escola in ('Manhã', 'Tarde')),
   constraint chk_aluno_periodo_projeto check (alu_periodo_projeto in ('Manhã', 'Tarde')),
   constraint chk_aluno_status check (alu_status in (0, 1))
 );
 
+
+INSERT INTO aluno (
+    alu_nome, alu_data_nascimento, alu_responsavel_cpf, alu_cidade, alu_rua, alu_bairro, alu_numero,
+    alu_escola_id, alu_telefone, alu_periodo_escola, alu_realiza_acompanhamento, alu_possui_sindrome,
+    alu_descricao, alu_rg, alu_status, alu_periodo_projeto, alu_cep
+) VALUES 
+('Ana Clara da Silva', '2012-03-15', '111.222.333-44', 'São Paulo', 'Rua das Flores', 'Centro', '123',
+ 1, '(11) 91234-5678', 'Manhã', 'Psicopedagógico', 'Nenhuma',
+ 'Aluno comunicativo, participativo.', '98765432', 1, 'Tarde', '01001-000'),
+
+('Bruno Pereira Santos', '2010-07-22', '555.666.777-88', 'São Paulo', 'Av. Brasil', 'Vila Nova', '456',
+ 1, '(11) 92345-6789', 'Tarde', 'Fonoaudiologia', 'Transtorno de fala',
+ 'Necessita apoio na comunicação oral.', '87654321', 1, 'Manhã', '01002-000');
+
+
+CREATE TABLE familia ( 
+    fam_id SERIAL PRIMARY KEY,
+
+    fam_nome TEXT NOT NULL,
+    fam_sexo TEXT NOT NULL,
+    fam_data_nascimento DATE NOT NULL,
+    fam_rg TEXT NOT NULL,
+    fam_cpf TEXT NOT NULL UNIQUE,
+
+    fam_companheiro VARCHAR(255),
+    fam_estado_civil VARCHAR(50),
+    fam_profissao TEXT,
+    fam_situacao_trabalho TEXT,
+    fam_escolaridade TEXT,
+
+    fam_renda_familiar VARCHAR(10),
+    fam_renda_valor NUMERIC,
+    fam_qtde_trabalho INTEGER,
+
+    fam_pensao_alimentar VARCHAR(10),
+    fam_valor_pensao NUMERIC,
+    fam_quem_paga_pensao TEXT,
+
+    fam_beneficio_social VARCHAR(10),
+    fam_qual_beneficio TEXT,
+    fam_valor_beneficio NUMERIC,
+    fam_nome_beneficio TEXT
+);
 
 

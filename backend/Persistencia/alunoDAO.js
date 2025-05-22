@@ -162,11 +162,12 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
                 aluno.periodoProjeto,
                 aluno.cep
             ];
-            await conexao.query(sql, parametros);
+            const resp = await conexao.query(sql, parametros);
         }
         else {
             throw new Error("Objeto passado não é uma instância de Aluno");
         }
+        return false;
     }
 
     async consultar(termo, tipo, conexao) {
@@ -294,58 +295,51 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
 
     async alterar(aluno, conexao) {
         if (aluno instanceof Aluno) {
-            try {
-                const sql = `
+
+            const sql = `
                     UPDATE aluno SET 
                         alu_nome = $1,
                         alu_data_nascimento = $2,
-                        alu_responsavel_cpf = $3,
-                        alu_cidade = $4,
-                        alu_rua = $5,
-                        alu_bairro = $6,
-                        alu_numero = $7,
-                        alu_escola_id = $8,
-                        alu_telefone = $9,
-                        alu_periodo_escola = $10,
-                        alu_realiza_acompanhamento = $11,
-                        alu_possui_sindrome = $12,
-                        alu_descricao = $13,
-                        alu_rg = $14,
-                        alu_dataInsercao_projeto = $15,
-                        alu_status = $16,
-                        alu_periodo_projeto = $17,
-                        alu_cep = $18
-                    WHERE alu_id = $19
+                        alu_cidade = $3,
+                        alu_rua = $4,
+                        alu_bairro = $5,
+                        alu_numero = $6,
+                        alu_telefone = $7,
+                        alu_periodo_escola = $8,
+                        alu_realiza_acompanhamento = $9,
+                        alu_possui_sindrome = $10,
+                        alu_descricao = $11,
+                        alu_rg = $12,
+                        alu_status = $13,
+                        alu_periodo_projeto = $14,
+                        alu_cep = $15
+                    WHERE alu_id = $16
                 `;
 
-                const parametros = [
-                    aluno.nome,
-                    aluno.dataNascimento,
-                    aluno.responsavel.cpf,
-                    aluno.cidade,
-                    aluno.rua,
-                    aluno.bairro,
-                    aluno.numero,
-                    aluno.escola.id,
-                    aluno.telefone,
-                    aluno.periodoEscola,
-                    aluno.realizaAcompanhamento,
-                    aluno.possuiSindrome,
-                    aluno.descricao,
-                    aluno.rg,
-                    aluno.dataInsercaoProjeto,
-                    aluno.status,
-                    aluno.periodoProjeto,
-                    aluno.cep,
-                    aluno.id // este é o identificador usado no WHERE
-                ];
+            const parametros = [
+                aluno.nome,
+                aluno.dataNascimento,
+                aluno.cidade,
+                aluno.rua,
+                aluno.bairro,
+                aluno.numero,
+                aluno.telefone,
+                aluno.periodoEscola,
+                aluno.realizaAcompanhamento,
+                aluno.possuiSindrome,
+                aluno.descricao,
+                aluno.rg,
+                aluno.status,
+                aluno.periodoProjeto,
+                aluno.cep,
+                aluno.id // este é o identificador usado no WHERE
+            ];
 
-                await conexao.query(sql, parametros);
+            const resp = await conexao.query(sql, parametros);
+            return resp;
 
-            } catch (e) {
-                throw new Error("Erro ao alterar aluno: " + e.message);
-            }
         }
+        return false;
     }
 
 

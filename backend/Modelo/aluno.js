@@ -22,7 +22,7 @@ export default class Aluno {
     #periodoProjeto;
     #cep;
 
-    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, cidade = "" ,rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", rg = "", status = "", periodoProjeto = "",cep="") {
+    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, cidade = "" ,rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", rg = "", status = 0, periodoProjeto = "",cep="") {
         this.#id = id;
         this.#nome = nome;
         this.#dataNascimento = dataNascimento;
@@ -148,19 +148,19 @@ export default class Aluno {
 
     async incluir(conexao) {
         const alunoDAO = new AlunoDAO();
-        alunoDAO.incluir(this, conexao);
+        return alunoDAO.incluir(this, conexao);
     }
 
 
-    asyncalterar(conexao) {
+    async alterar(conexao) {
         const alunoDAO = new AlunoDAO();
-        alunoDAO.alterar(this, conexao);
+         return alunoDAO.alterar(this, conexao);
     }
 
 
     async excluir(conexao) {
         const alunoDAO = new AlunoDAO();
-        alunoDAO.excluir(this, conexao);
+       return alunoDAO.excluir(this, conexao);
     }
 
 
