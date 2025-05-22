@@ -219,7 +219,7 @@ export default class Familia {
 
     }
 
-    JSON(){
+    toJSON(){
         return{
             "id": this.#id,
             "nome": this.#nome,
@@ -247,17 +247,17 @@ export default class Familia {
 
     async incluir(conexao) {
         const familiaDAO = new FamiliaDAO();
-        await familiaDAO.incluir(this, conexao);
+        return await familiaDAO.incluir(this, conexao);
     }
 
     async alterar(conexao) {
         const familiaDAO = new FamiliaDAO();
-        await familiaDAO.alterar(this, conexao);
+        return await familiaDAO.alterar(this, conexao);
     }
 
     async excluir(conexao) {
         const familiaDAO = new FamiliaDAO();
-        await familiaDAO.excluir(this, conexao);
+        return await familiaDAO.excluir(this, conexao);
     }
 
     async consultar(termo, conexao) {

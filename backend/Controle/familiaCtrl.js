@@ -66,7 +66,7 @@ export default class FamiliaCtrl {
                     console.log(erro);
                     resposta.status(500).json({
                         "status": false,
-                        "mensagem": "Nao foi possivel incluir a familia"
+                        "mensagem": "Nao foi possivel incluir a familia: " + erro.message
                     });
                 } finally {
                     if (conexao)
@@ -121,7 +121,8 @@ export default class FamiliaCtrl {
 
                     const resultado = await familia.alterar(conexao);
 
-                    if (resultado) {
+
+                    if (resultado && resultado.rowCount > 0) {
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
                             "status": true,
@@ -130,7 +131,7 @@ export default class FamiliaCtrl {
                         });
                     } else {
                         await conexao.query("ROLLBACK");
-                        resposta.status(500).json({
+                        resposta.status(404).json({
                             "status": false,
                             "mensagem": "Nao foi possivel alterar a familia"
                         });
@@ -138,16 +139,16 @@ export default class FamiliaCtrl {
                 } catch (erro) {
                     if (conexao)
                         await conexao.query("ROLLBACK");
-                    console.log(erro);
                     resposta.status(500).json({
                         "status": false,
-                        "mensagem": "Nao foi possivel alterar a familia"
+                        "mensagem": "Nao foi possivel alterar a familia: " + erro.message
                     });
                 } finally {
                     if (conexao)
                         await conexao.end();
                 }
             } else {
+
                 resposta.status(500).json({
                     "status": false,
                     "mensagem": "Nao foi possivel alterar a familia"
@@ -217,35 +218,38 @@ export default class FamiliaCtrl {
     }
 
     async consultar(requisicao, resposta) {
+        resposta.type("application/json");
+        const conexao = await conectar();
+
         if (requisicao.method === 'GET') {
-            resposta.type("application/json");
-            const conexao = await conectar();
-            const id = requisicao.params.id;
+
+            let id = requisicao.params.id;
             const familia = new Familia();
 
             try {
                 const listaFamilia = await familia.consultar(id, conexao);
 
-                if (Array.isArray(listaFamilia)) {
+                if (Array.isArray(listaFamilia) && listaFamilia.length > 0) {
                     resposta.status(200).json(listaFamilia);
                 } else {
-                    resposta.status(500).json({
-                        status: false,
-                        mensagem: "Erro ao consultar família"
+                    resposta.status(404).json({
+                        "status": false,
+                        "mensagem": "Família não encontrada"
                     });
                 }
+
             } catch (erro) {
                 resposta.status(500).json({
-                    status: false,
-                    mensagem: "Erro ao consultar família: " + erro.message
+                    "status": false,
+                    "mensagem": "Erro ao consultar família: " + erro.message
                 });
             } finally {
                 if (conexao) await conexao.release();
             }
         } else {
             resposta.status(405).json({
-                status: false,
-                mensagem: "Método não permitido para esta rota"
+                "status": false,
+                "mensagem": "Método não permitido para esta rota"
             });
         }
     }

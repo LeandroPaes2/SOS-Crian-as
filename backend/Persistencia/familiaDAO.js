@@ -4,6 +4,13 @@ export default class FamiliaDAO {
 
     async incluir(familia, supabase) {
         if (familia instanceof Familia) {
+
+            const verifica = await supabase.query("SELECT 1 FROM familia WHERE fam_cpf = $1", [familia.cpf]);
+
+            if (verifica.rowCount > 0) {
+                throw new Error("CPF já cadastrado");
+            }
+
             const sql = `INSERT INTO familia(
             fam_nome, fam_sexo, fam_data_nascimento, fam_rg, fam_cpf,
             fam_companheiro, fam_estado_civil, fam_profissao, fam_situacao_trabalho, fam_escolaridade,
@@ -41,7 +48,9 @@ export default class FamiliaDAO {
             ];
 
             await supabase.query(sql, parametros);
+            return true;
         }
+        return false;
     }
 
 
@@ -49,10 +58,30 @@ export default class FamiliaDAO {
         if (familia instanceof Familia) {
             const sql = `
             UPDATE familia
-            SET fam_nome = $1, fam_sexo = $2, fam_dataNascimento = $3, fam_rg = $4, fam_cpf = $5, fam_companheiro = $6, fam_estado_civil = $7, fam_profissao = $8, fam_situacao_trabalho = $9, fam_escolaridade = $10, fam_renda_familiar = $11, fam_renda_valor = $12, fam_qtde_trabalho = $13, fam_pensao_alimentar = $14, fam_valor_pensao = $15, fam_quem_paga_pensao = $16, fam_beneficio_social = $17, fam_qual_beneficio = $18,fam_valor_beneficio = $19, fam_nome_beneficio = $20
-            WHERE fam_id = $21;
-            `;
-            let parametros = [
+            SET 
+                fam_nome = $1, 
+                fam_sexo = $2, 
+                fam_data_nascimento = $3, 
+                fam_rg = $4, 
+                fam_cpf = $5, 
+                fam_companheiro = $6,
+                fam_estado_civil = $7, 
+                fam_profissao = $8, 
+                fam_situacao_trabalho = $9, 
+                fam_escolaridade = $10,
+                fam_renda_familiar = $11, 
+                fam_renda_valor = $12, 
+                fam_qtde_trabalho = $13, 
+                fam_pensao_alimentar = $14,
+                fam_valor_pensao = $15, 
+                fam_quem_paga_pensao = $16, 
+                fam_beneficio_social = $17, 
+                fam_qual_beneficio = $18,
+                fam_valor_beneficio = $19, 
+                fam_nome_beneficio = $20
+            WHERE fam_id = $21
+        `;
+            const parametros = [
                 familia.nome,
                 familia.sexo,
                 familia.dataNascimento,
@@ -75,11 +104,13 @@ export default class FamiliaDAO {
                 familia.nomeBeneficio,
                 familia.id
             ];
+
             const resultado = await supabase.query(sql, parametros);
             return resultado;
         }
-        return null;
+        return false;
     }
+
 
     async consultar(termo, supabase) {
         let sql = "";
@@ -132,6 +163,8 @@ export default class FamiliaDAO {
             const sql = `DELETE FROM familia WHERE fam_id = $1`;
             const parametros = [familia.id];
             await supabase.query(sql, parametros);
+            return true;
         }
+        return null;
     }
 }
