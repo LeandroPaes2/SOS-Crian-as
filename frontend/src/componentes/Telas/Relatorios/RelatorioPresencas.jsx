@@ -72,23 +72,16 @@ export default function RelatorioPresenca() {
                             <th>Data/Hora</th>
                             <th>Matéria</th>
                             <th>Turma</th>
-                            <th>Alunos Presentes</th>
                         </tr>
                     </thead>
                     <tbody>
                         {presencas.map(presenca => (
                             <tr key={presenca.id}>
                                 <td>{formatarData(presenca.dataHora)}</td>
-                                <td>{presenca.materia?.nome || 'N/A'}</td>
+                                <td>{presenca.materia.nome || 'N/A'}</td>
                                 <td>
-                                    {presenca.turma?.cor || 'N/A'}
+                                    {presenca.turma.cor || 'N/A'}
                                     <br />
-                                </td>
-                                <td>
-                                    {presenca.alunosPresentes
-                                        ?.filter(ap => ap.presente)
-                                        .map(ap => ap.aluno?.nome || 'N/A')
-                                        .join(', ') || 'Nenhum'}
                                 </td>
                             </tr>
                         ))}

@@ -1,13 +1,10 @@
 import Presenca from "../Modelo/presenca.js";
-import conectar from "./Conexao.js";
+import supabase from "./Conexao.js";
 import Turma from "../Modelo/turma.js";
+import Materia from "../Modelo/materia.js";
 
 export default class PresencaDAO{
-    constructor()
-    {
-        this.init();
-    }
-
+    /*
     async init(){
         try{
             const conexao = await conectar();
@@ -25,7 +22,7 @@ export default class PresencaDAO{
             const sql2=`
             CREATE TABLE IF NOT EXISTS presenca_aluno (
             pre_id INT,
-            alu_num_protocolo INT,
+            alu_id INT,
             presente BOOLEAN,
             PRIMARY KEY (pre_id, alu_num_protocolo),
             FOREIGN KEY (pre_id) REFERENCES presenca(pre_id),
@@ -39,84 +36,84 @@ export default class PresencaDAO{
             console.log("Não foi possível iniciar o banco de dados: " + e.message);
         }
     }
+    */
 
-    async incluir(presenca, conexao){
-        try{
-            
-            const [validacao] = await conexao.execute(
-                `SELECT 1 FROM horario 
-                 WHERE hora_mat_id = ? AND hora_turm_id = ?`,
-                [presenca.materia.id, presenca.turma.id]
-            );
-    
-            if (validacao.length === 0) {
-                throw new Error('Matéria não oferecida para esta turma');
-            }
-           
-            const sqlPresenca = `INSERT INTO presenca (pre_data_hora, mat_id, turm_id) VALUES (?, ?, ?)`;
-            const paramsPresenca = [
-                presenca.dataHora,
-                presenca.materia.id,
-                presenca.turma.id
-            ];
-            const [result] = await conexao.execute(sqlPresenca, paramsPresenca);
-            const presencaId = result.insertId;
-            for (const ap of presenca.alunosPresentes) {
-                const sql = `INSERT INTO presenca_aluno (pre_id, alu_num_protocolo, presente) VALUES (?, ?, ?)`;
-                await conexao.execute(sql, [presencaId, ap.aluno.numProtocolo, ap.presente]);
-            }
-        }
-        catch (e) {
-            throw new Error("Erro ao inserir presença: " + e.message);
-        }
-    }
+    async incluir(presenca, supabase) {
+    // Validação (corrigir acesso a rows)
+        const sqlValida = `SELECT 1 FROM horario WHERE hora_mat_id = $1 AND hora_turm_id = $2`;
+        const validacaoResult = await supabase.query(sqlValida, [presenca.materia.id, presenca.turma.id]);
+        if (validacaoResult.rows.length === 0) throw new Error('Matéria não oferecida para esta turma');
 
-    async consultar(conexao){
-        try{
-            const sql = `SELECT * FROM presenca`;
-            const [registros] = await conexao.execute(sql);
-            return registros.map(reg => new Presenca(
-                reg.pre_id,
-                reg.pre_data_hora,
-                new Materia(reg.mat_id),
-                new Turma(reg.turm_id)
-            ));
-        }
-        catch (e) {
-            throw new Error("Erro ao consultar presenças: " + e.message);
-        }
-    }
-
-    async consultarTurmasPorMateria(materiaId, conexao) {
-        let sql = `
-            SELECT t.* 
-            FROM horario h
-            JOIN turma t ON h.hora_turm_id = t.turm_id
-            WHERE h.hora_mat_id = ?
-            GROUP BY t.turm_id
+        // Inserir presença com RETURNING
+        const sqlPresenca = `
+            INSERT INTO presenca (pre_data_hora, mat_id, turm_id) 
+            VALUES ($1, $2, $3) 
+            RETURNING pre_id
         `;
-        const [linhas] = await conexao.execute(sql, [materiaId]);
-        return linhas.map(linha => new Turma(
-            linha.turm_id,
-            linha.turm_cor,
-            linha.turm_per
+        const result = await supabase.query(sqlPresenca, [
+            presenca.dataHora, 
+            presenca.materia.id, 
+            presenca.turma.id
+        ]);
+        const presencaId = result.rows[0].pre_id;
+
+        // Inserir alunos (correção de acesso a rows)
+        for (const ap of presenca.alunosPresentes) {
+            const sqlAluno = `
+                INSERT INTO presenca_aluno (pre_id, alu_id, presente) 
+                VALUES ($1, $2, $3)
+            `;
+            await supabase.query(sqlAluno, [
+                presencaId, 
+                ap.aluno.id,  // Agora usa alu_id
+                ap.presente
+            ]);
+        }
+    }
+
+    async consultar(supabase) {
+        const sql = `
+            SELECT 
+                p.pre_id AS id,
+                p.pre_data_hora AS "dataHora",
+                m.mat_nome AS "materiaNome",
+                t.turm_cor AS "turmaCor"
+            FROM presenca p
+            JOIN materia m ON p.mat_id = m.mat_id
+            JOIN turma t ON p.turm_id = t.turm_id
+        `;
+
+        const result = await supabase.query(sql);
+        return result.rows.map(row => new Presenca(
+            row.id,
+            new Date(row.dataHora),
+            new Materia(0, row.materiaNome),
+            new Turma(0, row.turmaCor, '')
         ));
     }
 
-    async excluir(presenca, conexao)
+    async consultarTurmasPorMateria(materiaId, supabase) {
+        const sql = `
+            SELECT DISTINCT
+                t.turm_id   AS id,
+                t.turm_cor  AS cor,
+                t.turm_per  AS periodo
+            FROM horario h
+            JOIN turma   t ON h.hora_turm_id = t.turm_id
+            WHERE h.hora_mat_id = $1
+        `;
+        // Correção: Acessar result.rows
+        const result = await supabase.query(sql, [materiaId]);
+        const rows = result.rows;
+        return rows.map(r => new Turma(r.id, r.cor, r.periodo));
+    }
+
+    async excluir(presenca, supabase)
     {
-        try{
-            const deletedId = presenca.id;
-            const sql = `DELETE FROM presenca WHERE pre_id = ?`;
-            await conexao.execute(sql, [presenca.id]);
-            await conexao.execute('UPDATE presnca SET pre_id = pre_id - 1 WHERE pre_id > ?', [deletedId]);
-                // Ajusta o AUTO_INCREMENT para continuar a sequência corretamente
-            const [rows] = await conexao.execute('SELECT MAX(pre_id) AS maxId FROM presenca');
-            const nextId = (rows[0].maxId || 0) + 1;
-            await conexao.execute(`ALTER TABLE presenca AUTO_INCREMENT = ${nextId}`);
-        }
-        catch (e) {
-            throw new Error("Erro ao excluir presença: " + e.message);
+        if(presenca instanceof Presenca)
+        {
+            const sql = `DELETE FROM presenca WHERE pre_id = $1`;
+            await supabase.query(sql, [presenca.id]);
         }
     }
 }

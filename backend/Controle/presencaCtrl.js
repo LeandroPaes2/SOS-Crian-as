@@ -1,60 +1,44 @@
 import Materia from "../Modelo/materia.js";
 import Presenca from "../Modelo/presenca.js";
 import Turma from "../Modelo/turma.js";
-import conectar from "../Persistencia/Conexao.js";
+import criarConexao from "../Persistencia/Conexao.js";
 import Aluno from "../Modelo/aluno.js"
-import PresencaDAO from "../Persistencia/presencaDAO.js";
 
 export default class PresencaCtrl{
-    async gravar(requisicao, resposta)
-    {
-        const conexao = await conectar();
+    async gravar(requisicao, resposta) {
+        const conexao = await criarConexao();
         resposta.type("application/json");
-        if (requisicao.method == 'POST' && requisicao.is("application/json")){
-            const { materiaId, turmaId, alunos } = req.body;
-            if(materiaId && turmaId && alunos)
-            {
-                const presenca = new Presenca(0,new Date,new Materia(materiaId),new Turma(turmaId),alunos.map(a => ({ aluno: new Aluno(a.id), presente: a.presente })));
-                try{
+        if (requisicao.method === 'POST' && requisicao.is("application/json")) {
+            const { materiaId, turmaId, alunos } = requisicao.body; // corrigido: usar requisicao.body
+            if (materiaId && turmaId && alunos) {
+                const presenca = new Presenca(
+                    0,
+                    new Date(),
+                    new Materia(materiaId),
+                    new Turma(turmaId),
+                    alunos.map(a => ({ aluno: new Aluno(a.alunoId), presente: a.presente }))
+                );
+                try {
                     await conexao.query('BEGIN');
-                        if(presenca.incluir(conexao)){
-                            await conexao.query('COMMIT');
-                            resposta.status(200).json({
-                                "status":true,
-                                mensagem:"Presença adicionada com sucesso!",
-                        });
-                    }
-                    else
-                    {
-                        await conexao.query('ROLLBACK');
-                        //await conexao.release();
-                        resposta.status(500).json({
-                            "status":false,
-                            mensagem:"Não foi possível adicionar a presença: "
-                        });
-                    }   
-                }
-                catch (e) {
+                    await presenca.gravar(conexao);
+                    await conexao.query('COMMIT');
+                    resposta.status(200).json({ status: true, mensagem: "Presença adicionada com sucesso!" });
+                } catch (e) {
                     await conexao.query('ROLLBACK');
-                    throw e
-                }
-                finally {
+                    resposta.status(500).json({ status: false, mensagem: "Erro ao salvar presença: " + e.message });
+                } finally {
                     conexao.release();
                 }
+            } else {
+                resposta.status(400).json({ status: false, mensagem: "Informe corretamente todos os dados de uma presença conforme documentação da API." });
+                conexao.release();
             }
-            else
-            {
-                resposta.status(400).json(
-                    {
-                        "status":false,
-                        mensagem:"Informe corretamente todos os dados de uma presença conforme documentação da API."
-                    }
-                );
-            }
+        } else {
+            resposta.status(400).json({ status: false, mensagem: "Requisição inválida! Consulte a documentação da API." });
         }
     }
     async consultar(requisicao, resposta) {
-        const conexao = await conectar();
+        const conexao = await criarConexao();
         resposta.type("application/json");
         if (requisicao.method === "GET") {
             const presenca = new Presenca();
@@ -87,34 +71,25 @@ export default class PresencaCtrl{
 
     async consultarTurmasPorMateria(requisicao, resposta) {
         resposta.type("application/json");
-        const conexao = await conectar();
+        const conexao = await criarConexao();
+        const materiaId = requisicao.params.materiaId;
         try {
             await conexao.query("BEGIN");
-            const materiaId = requisicao.params.materiaId;
-            const dao = new PresencaDAO();
-            const turmas = await dao.consultarTurmasPorMateria(materiaId, conexao);
-            if(Array.isArray(turmas))
-            {
-                await conexao.query("COMMIT");
-                resposta.status(200).json(turmas);
-            }
-            else {
-                await conexao.query("ROLLBACK");
-                resposta.status(500).json({ status: false, mensagem: "Formato inesperado na resposta" });
-            }
+            const presenca = new Presenca();
+            const turmas = await presenca.consultarTurmasPorMateria(materiaId, conexao);
+            const lista = Array.isArray(turmas) ? turmas : [];
+            await conexao.query("COMMIT");
+            resposta.status(200).json(lista);
         } catch (erro) {
-            if (conexao) await conexao.query("ROLLBACK");
-            resposta.status(500).json({ status: false, mensagem: "Erro ao consultar turma por matéria: " + erro.message });
-        }
-        finally {
-            if (conexao) {
-                conexao.release();
-            }
+            await conexao.query("ROLLBACK");
+            resposta.status(500).json({ status: false, mensagem: "Erro ao consultar turmas por matéria: " + erro.message });
+        } finally {
+            conexao.release();
         }
     }
 
     async excluir(requisicao, resposta) {
-        const conexao = await conectar();
+        const conexao = await criarConexao();
         resposta.type("application/json");
         if (requisicao.method === "DELETE") {
             const id = parseInt(requisicao.params.id);

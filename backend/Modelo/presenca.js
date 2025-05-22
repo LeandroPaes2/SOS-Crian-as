@@ -42,30 +42,35 @@ export default class Presenca{
     toJSON()
     {
         return {
-            id: this.#id,
-            dataHora: this.#dataHora,
-            materia: this.#materia.toJSON(),
-            turma: this.#turma.toJSON(),
-            alunosPresentes: this.#alunosPresentes.map(ap => ({
-                aluno: ap.aluno.toJSON(),
-                presente: ap.presente
+            "id": this.#id,
+            "dataHora": this.#dataHora,
+            "materia": this.#materia.toJSON(),
+            "turma": this.#turma.toJSON(),
+            "alunosPresentes": this.#alunosPresentes.map(ap => ({
+                "aluno": ap.aluno.toJSON(),
+                "presente": ap.presente
             }))
         }
     }
 
-    async gravar(conexao) {
+    async gravar(supabase) {
         const presencaDAO = new PresencaDAO();
-        await presencaDAO.incluir(this, conexao);
+        await presencaDAO.incluir(this, supabase);
     }
 
-    async consultar(conexao) {
+    async consultar(supabase) {
         const presencaDAO = new PresencaDAO();
-        return await presencaDAO.consultar(conexao);
+        return await presencaDAO.consultar(supabase);
     }
 
-    async excluir(conexao) {
+    async consultarTurmasPorMateria(materiaId, supabase){
         const presencaDAO = new PresencaDAO();
-        await presencaDAO.excluir(this, conexao);
+        return await presencaDAO.consultarTurmasPorMateria(materiaId, supabase);
+    }
+
+    async excluir(supabase) {
+        const presencaDAO = new PresencaDAO();
+        await presencaDAO.excluir(this, supabase);
     }
 
 }

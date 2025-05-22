@@ -3,6 +3,7 @@ import { Form, Button, Alert, Spinner, Table } from 'react-bootstrap';
 import PaginaGeral from '../../layouts/PaginaGeral';
 import { Link, useNavigate } from 'react-router-dom';
 
+
 export default function FormCadPresenca() {
     const [materias, setMaterias] = useState([]);
     const [turmas, setTurmas] = useState([]);
@@ -61,7 +62,7 @@ export default function FormCadPresenca() {
                     
                     const presencasIniciais = {};
                     data.forEach(aluno => {
-                        presencasIniciais[aluno.numProtocolo] = true;
+                        presencasIniciais[aluno.id] = true; // Usar aluno.id em vez de numProtocolo
                     });
                     
                     setAlunos(data);
@@ -88,8 +89,8 @@ export default function FormCadPresenca() {
             setCarregando(true);
             
             const alunosPresentes = alunos.map(aluno => ({
-                alunoId: aluno.numProtocolo,
-                presente: presencas[aluno.numProtocolo] || false
+                alunoId: aluno.id, // Alterado de numProtocolo para id
+                presente: presencas[aluno.id] || false
             }));
 
             const response = await fetch('http://localhost:3000/presencas', {
@@ -194,15 +195,15 @@ export default function FormCadPresenca() {
                             </thead>
                             <tbody>
                                 {alunos.map(aluno => (
-                                    <tr key={aluno.numProtocolo}>
+                                    <tr key={aluno.id}>
                                         <td>{aluno.nome}</td>
                                         <td>
                                             <Form.Check
                                                 type="checkbox"
-                                                checked={presencas[aluno.numProtocolo] || false}
+                                                checked={presencas[aluno.id] || false}
                                                 onChange={(e) => setPresencas({
                                                     ...presencas,
-                                                    [aluno.numProtocolo]: e.target.checked
+                                                    [aluno.id]: e.target.checked
                                                 })}
                                             />
                                         </td>
