@@ -11,6 +11,11 @@ export default function EmailSenha(){
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        if (!email) {
+            setMensagem("Preencha todos os campos!");
+            return;
+        }
         try {
             const response = await fetch("http://localhost:3000/funcionarios/"+email);
             if (!response.ok){

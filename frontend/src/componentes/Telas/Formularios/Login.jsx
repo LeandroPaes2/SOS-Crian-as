@@ -37,7 +37,6 @@ export default function Login(props){
             }
             login(dados[0], manterConectado);
             setMensagem("");
-            navigate("/telaMenu");
 
         }catch(e){
             setMensagem("Funcionario não cadastrado.");

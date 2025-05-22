@@ -7,14 +7,10 @@ import rotaMateria from './Rotas/rotaMateria.js';
 import rotaResponsavel from './Rotas/rotaResponsavel.js';
 import rotaAluno from './Rotas/rotaAluno.js';
 import rotaHorario from './Rotas/rotaHorario.js';
-import supabase from './Persistencia/Conexao.js';
 import rotaEvento from './Rotas/rotaEvento.js';
 import rotaFuncionario from './Rotas/rotaFuncionario.js';
-=========
-import rotaHorario from './Rotas/rotaHorario.js';
 import supabase from './Persistencia/Conexao.js';
 import rotaFamilia from './Rotas/rotaFamilia.js';
->>>>>>>>> Temporary merge branch 2
 
 dotenv.config();
 
@@ -36,14 +32,10 @@ app.use("/escolas", rotaEscola);
 app.use("/materias", rotaMateria);
 app.use("/responsaveis", rotaResponsavel);
 app.use("/alunos", rotaAluno);
-<<<<<<<<< Temporary merge branch 1
 app.use("/eventos", rotaEvento);
 app.use("/funcionarios",rotaFuncionario);
-
-=========
 app.use("/horarios", rotaHorario);
 app.use("/familias", rotaFamilia);
->>>>>>>>> Temporary merge branch 2
 
 app.get('/teste-conexao', async (req, res) => {
     try {

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Alert, Form, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { GoArrowLeft } from "react-icons/go";
-import { useLogin } from "../../LoginContext";
-import "../css/alterarSenha.css";
+import { useLogin } from "../../../LoginContext";
+import "../../css/alterarSenha.css";
 
 export default function AlterarSenha(){
 
@@ -13,6 +13,15 @@ export default function AlterarSenha(){
     const [confirmarSenha, setConfirmarSenha] = useState("");
     const {funcionario, logout} = useLogin();
     const navigate = useNavigate();
+
+    const verificarVoltar= async (event)=>{
+        event.preventDefault();
+
+        if(window.confirm("Deseja realmente voltar? O processo nao sera concluido.")){
+            navigate("/dadosUsuario");
+            return;
+        }
+    }
 
     const handleSubmit = async (event) => {
         event.preventDefault(); // Evita recarregar a página
@@ -87,7 +96,7 @@ export default function AlterarSenha(){
                     </Form.Group>
                     <br />
                     <div className="divVoltar">
-                        <Button className="botaoVoltar" as={Link} to="/dadosUsuario">
+                        <Button className="botaoVoltar" onClick={verificarVoltar}>
                         <GoArrowLeft /> Voltar
                         </Button>
                         <Button variant="primary" type="submit" className="botaoEnviar">

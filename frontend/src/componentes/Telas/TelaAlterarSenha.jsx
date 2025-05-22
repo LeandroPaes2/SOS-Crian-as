@@ -1,5 +1,5 @@
 import PaginaGeral from "../layouts/PaginaGeral";
-import AlterarSenha from "./AlterarSenha";
+import AlterarSenha from "../Telas/Formularios/AlterarSenha";
 
 export default function TelaAlterarSenha(){
     return(
