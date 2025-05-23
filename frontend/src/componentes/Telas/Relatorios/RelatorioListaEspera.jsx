@@ -34,7 +34,7 @@ export default function RelatorioListaEspera() {
 
     const ordenarOptions = [
         { name: 'Data', value: 'dataInsercao' },
-        { name: 'Prioridade', value: 'prioridade' },
+        { name: 'Cor', value: 'cor' },
         { name: 'ID', value: 'id' },
         { name: 'Nome', value: 'nome' },
     ];
@@ -113,12 +113,6 @@ export default function RelatorioListaEspera() {
         return `${dia}/${mes}/${ano}`;
     };
 
-    const getCorPrioridade = (prioridade) => {
-        if (prioridade === 1) return "AZUL";
-        if (prioridade === 2) return "VERMELHO";
-        return prioridade;
-    };
-
     const getStatus = (status) => {
         if (status === 0) return "CADASTRADO";
         if (status === 1) return "EXCLUIDO";
@@ -135,16 +129,16 @@ export default function RelatorioListaEspera() {
             if (ordenarPor === "nome") {
                 const compNome = a.aluno.nome.localeCompare(b.aluno.nome);
                 if (compNome !== 0) return compNome;
-                const compPrioridade = a.prioridade - b.prioridade;
-                if (compPrioridade !== 0) return compPrioridade;
+                const compCor = a.aluno.cor.localeCompare(b.aluno.cor);
+                if (compCor !== 0) return compCor;
                 return new Date(a.dataInsercao) - new Date(b.dataInsercao);
             }
 
             if (ordenarPor === "id") return a.id - b.id;
 
-            if (ordenarPor === "prioridade") {
-                const compPrioridade = a.prioridade - b.prioridade;
-                if (compPrioridade !== 0) return compPrioridade;
+            if (ordenarPor === "cor") {
+                const compCor = a.aluno.cor.localeCompare(b.aluno.cor);
+                if (compCor !== 0) return compCor;
                 const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
                 return compData !== 0 ? compData : a.aluno.nome.localeCompare(b.aluno.nome);
             }
@@ -152,8 +146,8 @@ export default function RelatorioListaEspera() {
             if (ordenarPor === "dataInsercao") {
                 const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
                 if (compData !== 0) return compData;
-                const compPrioridade = a.prioridade - b.prioridade;
-                return compPrioridade !== 0 ? compPrioridade : a.aluno.nome.localeCompare(b.aluno.nome);
+                const compCor = a.aluno.cor.localeCompare(b.aluno.cor);
+                return compCor !== 0 ? compCor : a.aluno.nome.localeCompare(b.aluno.nome);
             }
 
             return 0;
@@ -172,12 +166,12 @@ export default function RelatorioListaEspera() {
                 item.aluno?.telefone || "N/A",
                 item.aluno?.responsavel?.nome || "N/A",
                 formatarData(item.dataInsercao),
-                getCorPrioridade(item.prioridade)
+                getCorCor(item.cor)
             ]);
 
             autoTable(doc, {
             startY: 30,
-            head: [["ID", "Nome","Telefone", "Responsável", "Data de Inserção", "Prioridade"]],
+            head: [["ID", "Nome","Telefone", "Responsável", "Data de Inserção", "Cor"]],
             body: data,
         });
         }
@@ -190,13 +184,13 @@ export default function RelatorioListaEspera() {
                 item.aluno?.telefone || "N/A",
                 item.aluno?.responsavel?.nome || "N/A",
                 formatarData(item.dataInsercao),
-                getCorPrioridade(item.prioridade),
+                getCorCor(item.cor),
                 getStatus(item.status)
             ]);
 
             autoTable(doc, {
             startY: 30,
-            head: [["ID", "Nome","Telefone", "Responsável", "Data de Inserção", "Prioridade", "Status"]],
+            head: [["ID", "Nome","Telefone", "Responsável", "Data de Inserção", "Cor", "Status"]],
             body: data,
         });
         }
@@ -234,13 +228,13 @@ export default function RelatorioListaEspera() {
             item.aluno?.telefone || "N/A",
             item.aluno?.responsavel?.nome || "N/A",
             formatarData(item.dataInsercao),
-            getCorPrioridade(item.prioridade),
+            item.cor,
             filtroStatus === "todos" ? getStatus(item.status) : null
         ].filter(val => val !== null)); // remove o "status" se não for necessário
 
         const head = filtroStatus === "todos"
-            ? [["ID", "Nome", "Telefone", "Responsável", "Data de Inserção", "Prioridade", "Status"]]
-            : [["ID", "Nome", "Telefone", "Responsável", "Data de Inserção", "Prioridade"]];
+            ? [["ID", "Nome", "Telefone", "Responsável", "Data de Inserção", "Cor", "Status"]]
+            : [["ID", "Nome", "Telefone", "Responsável", "Data de Inserção", "Cor"]];
 
         autoTable(doc, {
             startY: 30,
@@ -348,7 +342,7 @@ export default function RelatorioListaEspera() {
                 <Button as={Link} to="/cadastroListaEspera" variant="secondary">Cadastrar</Button>
                 <Button variant="info" onClick={gerarPdfEImprimir}>Imprimir</Button>
             </div>
-
+            <p>Quantidade de crianças cadastradas na lista de espera: {listaFiltrada.length}</p>
             <Container className="mt-4">
                 <Table striped bordered hover>
                     <thead>
@@ -357,7 +351,7 @@ export default function RelatorioListaEspera() {
                             <th>Nome</th>
                             <th>Responsável</th>
                             <th>Telefone</th>
-                            <th>Prioridade</th>
+                            <th>Cor</th>
                             <th>Data Inserção</th>
                             <th>Ações</th>
                         </tr>
@@ -369,7 +363,7 @@ export default function RelatorioListaEspera() {
                                 <td>{listaEspera.aluno?.nome}</td>
                                 <td>{listaEspera.aluno?.responsavel?.nome}</td>
                                 <td>{listaEspera.aluno?.telefone}</td>
-                                <td>{getCorPrioridade(listaEspera.prioridade)}</td>
+                                <td>{listaEspera.cor}</td>
                                 <td>{formatarData(listaEspera.dataInsercao)}</td>
                                 <td>
                                     {listaEspera.status !== 0 && (
@@ -402,8 +396,6 @@ export default function RelatorioListaEspera() {
                         ))}
                     </tbody>
                 </Table>
-
-                <p>Quantidade de crianças cadastradas na lista de espera: {listaFiltrada.length}</p>
 
             </Container>
         </PaginaGeral>

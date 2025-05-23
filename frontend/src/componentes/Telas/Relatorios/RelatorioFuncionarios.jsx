@@ -130,16 +130,23 @@ export default function RelatorioFuncionarios(){
                         </Form.Group>
                     </Form>
                     <br />
+                    <div>
+                        <Button as={Link} to="/telaFuncionario" className="botaoPesquisa" variant="secondary">
+                                Voltar
+                        </Button>
+                        <Button as={Link} to="/cadastroFuncionario" className="botaoPesquisa" variant="secondary">
+                                                        Cadastrar
+                        </Button>
+                </div>
+                <br />
                 <Container>
                     <Table striped bordered hover>
                         <thead>
                             <tr>
                                 <th>Nome</th>
-                                <th>CPF</th>
                                 <th>Cargo</th>
                                 <th>Nivel</th>
                                 <th>Email</th>
-                                <th>Senha</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -150,11 +157,9 @@ export default function RelatorioFuncionarios(){
                                     return (
                                         <tr> 
                                             <td>{funcionario.nome}</td>
-                                            <td>{funcionario.cpf}</td>
                                             <td>{funcionario.cargo}</td>
                                             <td>{funcionario.nivel}</td>
                                             <td>{funcionario.email}</td>
-                                            <td>{funcionario.senha}</td>
                                             <td>
                                             <Button
                                                 as={Link}
@@ -162,11 +167,9 @@ export default function RelatorioFuncionarios(){
                                                 state={{
                                                     editando: true,
                                                     nome: funcionario.nome,
-                                                    cpf: funcionario.cpf,
                                                     cargo: funcionario.cargo,
                                                     nivel: funcionario.nivel,
-                                                    email: funcionario.email,
-                                                    senha: funcionario.senha
+                                                    email: funcionario.email
                                                 }}
                                                 variant="warning"
                                                 >
@@ -193,14 +196,6 @@ export default function RelatorioFuncionarios(){
                     </Table>
                     <p>Quatidade de funcionarios cadastradas: {listaDeFuncionarios.length}</p>
                 </Container>
-                <div>
-                        <Button as={Link} to="/telaFuncionario" className="botaoPesquisa" variant="secondary">
-                                Voltar
-                        </Button>
-                        <Button as={Link} to="/cadastroFuncionario" className="botaoPesquisa" variant="secondary">
-                                                        Cadastrar
-                        </Button>
-                </div>
             </PaginaGeral>
         </>
     );
