@@ -8,7 +8,7 @@ export default class ListaEsperaCtrl {
 
         if (req.method === "POST" && req.is("application/json")) {
             const aluno = req.body.aluno || {};
-            const prioridade = req.body.prioridade;
+            const cor = req.body.cor;
             const status = req.body.status;
             const dataInsercao = new Date().toISOString().split('T')[0];
 
@@ -19,7 +19,7 @@ export default class ListaEsperaCtrl {
                 });
             }
 
-            if (!isNaN(prioridade) && !isNaN(status)) {
+            if (!isNaN(cor) && !isNaN(status)) {
                 let conexao;
                 try {
                     const objAluno = new Aluno(
@@ -52,7 +52,7 @@ export default class ListaEsperaCtrl {
                         aluno.id,
                         objAluno,
                         dataInsercao,
-                        prioridade,
+                        cor,
                         status
                     );
 
@@ -87,7 +87,7 @@ export default class ListaEsperaCtrl {
             const id = req.body.id;
             const aluno = req.body.aluno || {};
             const dataInsercao = req.body.dataInsercao;
-            const prioridade = req.body.prioridade;
+            const cor = req.body.cor;
             const status = req.body.status;
 
             const objAluno = new Aluno(
@@ -115,7 +115,7 @@ export default class ListaEsperaCtrl {
                 aluno.cep
             );
 
-            if (num >=0 && id > 0 && dataInsercao && prioridade >= 0 && status > -1 && status < 2) {
+            if (num >=0 && id > 0 && dataInsercao && cor >= 0 && status > -1 && status < 2) {
                 let conexao;
                 try {
                     const listaEspera = new ListaEspera(
@@ -123,7 +123,7 @@ export default class ListaEsperaCtrl {
                         id,
                         objAluno,
                         dataInsercao,
-                        prioridade,
+                        cor,
                         status
                     );
 

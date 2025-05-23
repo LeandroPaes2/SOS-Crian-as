@@ -14,7 +14,7 @@ export default class ListaEsperaDAO {
                      lista_espera_num SERIAL PRIMARY KEY NOT NULL,
                      alu_id INT NOT NULL,
                      lista_espera_dataInsercao DATE NOT NULL,
-                     lista_espera_prioridade INT NOT NULL,
+                     lista_espera_cor VARCHAR(15) NOT NULL,
                      lista_espera_status INT NOT NULL,
                      CONSTRAINT fk_listaEspera_aluno FOREIGN KEY (alu_id) 
                          REFERENCES aluno(alu_id)
@@ -48,13 +48,13 @@ export default class ListaEsperaDAO {
         // Caso contrário, permite a inserção
         const sqlInsercao = `
     INSERT INTO listaespera (
-        alu_id, lista_espera_dataInsercao, lista_espera_prioridade, lista_espera_status
+        alu_id, lista_espera_dataInsercao, lista_espera_cor, lista_espera_status
     ) VALUES ($1, $2, $3, $4)
 `;
         const parametrosInsercao = [
             listaEspera.id,
             listaEspera.dataInsercao,
-            listaEspera.prioridade,
+            listaEspera.cor,
             listaEspera.status
         ];
         await conexao.query(sqlInsercao, parametrosInsercao);
@@ -82,9 +82,9 @@ export default class ListaEsperaDAO {
                 )
             `;
             parametros = [`%${termo.aluno.nome}%`];
-        } else if (termo?.prioridade) {
-            sql = `SELECT * FROM listaespera WHERE lista_espera_prioridade = $1`;
-            parametros = [termo.prioridade];
+        } else if (termo?.cor) {
+            sql = `SELECT * FROM listaespera WHERE lista_espera_cor = $1`;
+            parametros = [termo.cor];
         } else if (termo?.status) {
             sql = `SELECT * FROM listaespera WHERE lista_espera_status = $1`;
             parametros = [termo.status];
@@ -101,7 +101,7 @@ export default class ListaEsperaDAO {
                 id: registro.alu_id,
                 aluno: aluno[0],
                 dataInsercao: registro.lista_espera_datainsercao,
-                prioridade: registro.lista_espera_prioridade,
+                cor: registro.lista_espera_cor,
                 status: registro.lista_espera_status
             });
         }
@@ -186,13 +186,13 @@ export default class ListaEsperaDAO {
         const sql = `
             UPDATE listaespera SET  
                 lista_espera_dataInsercao = $1,
-                lista_espera_prioridade = $2,
+                lista_espera_cor = $2,
                 lista_espera_status = $3
             WHERE lista_espera_num = $4
         `;
         const parametros = [
             listaEspera.dataInsercao,
-            listaEspera.prioridade,
+            listaEspera.cor,
             listaEspera.status,
             listaEspera.num
         ];

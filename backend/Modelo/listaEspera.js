@@ -6,15 +6,15 @@ export default class ListaEspera {
     #id;
     #aluno;
     #dataInsercao;
-    #prioridade;
+    #cor;
     #status;
 
-    constructor(num=0, id=0, aluno={}, dataInsercao="", prioridade = 0, status=0) {
+    constructor(num=0, id=0, aluno={}, dataInsercao="", cor = "", status=0) {
         this.#num = num;
         this.#id = id;
         this.#aluno = aluno;
         this.#dataInsercao = dataInsercao;
-        this.#prioridade = prioridade;
+        this.#cor = cor;
         this.#status = status;
     }
 
@@ -33,8 +33,8 @@ export default class ListaEspera {
     get dataInsercao() { return this.#dataInsercao; }
     set dataInsercao(valor) { this.#dataInsercao = valor; }
 
-    get prioridade() { return this.#prioridade; }
-    set prioridade(valor) { this.#prioridade = valor; }
+    get cor() { return this.#cor; }
+    set cor(valor) { this.#cor = valor; }
 
     get status() { return this.#status; }
     set status(valor) { this.#status = valor; }
@@ -47,7 +47,7 @@ export default class ListaEspera {
             id: this.#id,
             aluno: this.#aluno.toJSON(),
             dataInsercao: this.#dataInsercao,
-            prioridade: this.#prioridade,
+            cor: this.#cor,
             status: this.#status
         };
     }
