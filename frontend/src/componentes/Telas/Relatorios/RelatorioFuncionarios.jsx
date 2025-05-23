@@ -167,9 +167,11 @@ export default function RelatorioFuncionarios(){
                                                 state={{
                                                     editando: true,
                                                     nome: funcionario.nome,
+                                                    cpf: funcionario.cpf,
                                                     cargo: funcionario.cargo,
                                                     nivel: funcionario.nivel,
-                                                    email: funcionario.email
+                                                    email: funcionario.email,
+                                                    cpf: funcionario.cpf
                                                 }}
                                                 variant="warning"
                                                 >
