@@ -29,14 +29,14 @@ export default class ResponsavelDAO {
         if (responsavel instanceof Responsavel) {
             try{
             const sql = `INSERT INTO responsavel(resp_cpf, resp_nome,resp_telefone)
-                VALUES (?, ?,?)
+                VALUES ($1, $2, $3)
             `;
             let parametros = [
                 responsavel.cpf,
                 responsavel.nome,
                 responsavel.telefone
             ];
-            await conexao.execute(sql, parametros);
+            await conexao.query(sql, parametros);
             }catch(e){
                 throw new Error("Erro ao incluir funcionário: " + e.message);
             }
@@ -46,15 +46,15 @@ export default class ResponsavelDAO {
     async alterar(responsavel, conexao) {
         if (responsavel instanceof Responsavel) {
             try{
-            const sql = `UPDATE responsavel SET resp_nome=?, resp_telefone=?
-                WHERE  resp_cpf = ?
+            const sql = `UPDATE responsavel SET resp_nome=$1, resp_telefone=$2
+                WHERE  resp_cpf = $3
             `;
             let parametros = [
                 responsavel.nome,
                 responsavel.telefone,
                 responsavel.cpf
             ]; 
-            await conexao.execute(sql, parametros);
+            await conexao.query(sql, parametros);
             }catch(e){
                 throw new Error("Erro ao alterar funcionário: " + e.message);
             }
@@ -67,14 +67,15 @@ export default class ResponsavelDAO {
         let parametros = [];
         if (!termo) {
             sql = `SELECT * FROM responsavel`;
-            parametros = ['%' + termo + '%'];
+            parametros = [];
         }
         else {
             sql = `SELECT * FROM responsavel r
-                   WHERE resp_cpf = ?`
+                   WHERE resp_cpf = $1`
             parametros = [termo];
         }
-        const [linhas, campos] = await conexao.execute(sql, parametros);
+        const resultado = await conexao.query(sql, parametros);
+        const linhas = resultado.rows;
         let listaResponsavel = [];
         for (const linha of linhas) {
             const responsavel = new Responsavel(
@@ -86,18 +87,18 @@ export default class ResponsavelDAO {
         }
         return listaResponsavel;
         }catch(e){
-            throw new Error("Erro ao consultar funcionários: " + e.message);
+            throw new Error("Erro ao consultar responsaveis: " + e.message);
         }
     }
 
     async excluir(responsavel, conexao) {
         if (responsavel instanceof Responsavel) {
             try{
-            const sql = `DELETE FROM responsavel WHERE resp_cpf = ?`;
+            const sql = `DELETE FROM responsavel WHERE resp_cpf = $1`;
             let parametros = [
                 responsavel.cpf
             ]; 
-            await conexao.execute(sql, parametros);
+            await conexao.query(sql, parametros);
             }catch(e){
                 throw new Error("Erro ao excluir funcionário: " + e.message);
             }

@@ -37,7 +37,7 @@ export default class FuncionarioDAO {
             try {
              //   const conexao = await conectar();
                 const sql = `INSERT INTO funcionario(func_nome, func_cpf, func_cargo, func_nivel, func_email, func_senha)
-                             VALUES (?, ?, ?, ?, ?, ?)`;
+                             VALUES ($1, $2, $3, $4, $5, $6)`;
                 const parametros = [
                     funcionario.nome,
                     funcionario.cpf,
@@ -46,7 +46,7 @@ export default class FuncionarioDAO {
                     funcionario.email,
                     funcionario.senha
                 ];
-                await conexao.execute(sql, parametros);
+                await conexao.query(sql, parametros);
              //   await conexao.release();
             } catch (e) {
                 throw new Error("Erro ao incluir funcionário: " + e.message);
@@ -59,8 +59,8 @@ export default class FuncionarioDAO {
             try {
             //    const conexao = await conectar();
                 const sql = `UPDATE funcionario 
-                             SET func_nome = ?, func_cargo = ?, func_nivel = ?, func_email = ?, func_senha = ? 
-                             WHERE func_cpf = ?`;
+                             SET func_nome = $1, func_cargo = $2, func_nivel = $3, func_email = $4, func_senha = $5 
+                             WHERE func_cpf = $6`;
                 const parametros = [
                     funcionario.nome,
                     funcionario.cargo,
@@ -69,7 +69,7 @@ export default class FuncionarioDAO {
                     funcionario.senha,
                     funcionario.cpf
                 ];
-                await conexao.execute(sql, parametros);
+                await conexao.query(sql, parametros);
              //   await conexao.release();
             } catch (e) {
                 throw new Error("Erro ao alterar funcionário: " + e.message);
@@ -81,8 +81,8 @@ export default class FuncionarioDAO {
         if (funcionario instanceof Funcionario) {
             try {
              //   const conexao = await conectar();
-                const sql = `DELETE FROM funcionario WHERE func_cpf = ?`;
-                await conexao.execute(sql, [funcionario.cpf]);
+                const sql = `DELETE FROM funcionario WHERE func_cpf = $1`;
+                await conexao.query(sql, [funcionario.cpf]);
              //   await conexao.release();
             } catch (e) {
                 throw new Error("Erro ao excluir funcionário: " + e.message);
@@ -95,17 +95,28 @@ export default class FuncionarioDAO {
             let sql = "";
             let parametros = [];
     
-            if (!termo || (typeof termo !== 'object')) {
-                sql = `SELECT * FROM funcionario ORDER BY func_nome`;
-            } else if (termo.nome) {
-                sql = `SELECT * FROM funcionario WHERE func_nome LIKE ? ORDER BY func_nome`;
-                parametros = ['%' + termo.nome + '%'];
-            } else if (termo.email) {
-                sql = `SELECT * FROM funcionario WHERE func_email LIKE ? ORDER BY func_nome`;
-                parametros = ['%' + termo.email + '%'];
-            }
+                if (!termo) {
+                    sql = `SELECT * FROM funcionario ORDER BY func_nome`;
+                } 
+                else if (typeof termo === 'string') {
+                    sql = `SELECT * FROM funcionario WHERE func_email = $1 ORDER BY func_nome`;
+                    parametros = [termo];
+                } 
+                else if (typeof termo === 'object') {
+                    if (termo.nome) {
+                        sql = `SELECT * FROM funcionario WHERE func_nome LIKE $1 ORDER BY func_nome`;
+                        parametros = ['%' + termo.nome + '%'];
+                    } else if (termo.email) {
+                        sql = `SELECT * FROM funcionario WHERE func_email LIKE $1 ORDER BY func_nome`;
+                        parametros = ['%' + termo.email + '%'];
+                    } else {
+                        // Caso não tenha filtro válido, lista tudo
+                        sql = `SELECT * FROM funcionario ORDER BY func_nome`;
+                    }
+                }     
     
-            const [linhas] = await conexao.execute(sql, parametros);
+            const resultado = await conexao.query(sql, parametros);
+            const linhas = resultado.rows;
             return linhas.map(linha => new Funcionario(
                 linha['func_nome'],
                 linha['func_cpf'],

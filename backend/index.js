@@ -6,15 +6,17 @@ import rotaEscola from './Rotas/rotaEscola.js';
 import rotaMateria from './Rotas/rotaMateria.js';
 import rotaResponsavel from './Rotas/rotaResponsavel.js';
 import rotaAluno from './Rotas/rotaAluno.js';
+import rotaHorario from './Rotas/rotaHorario.js';
+import supabase from './Persistencia/Conexao.js';
 import rotaEvento from './Rotas/rotaEvento.js';
 import rotaFuncionario from './Rotas/rotaFuncionario.js';
 import rotaHorario from './Rotas/rotaHorario.js';
-import rotaFamilia from './Rotas/rotaFamilia.js';
 import supabase from './Persistencia/Conexao.js';
+import rotaFamilia from './Rotas/rotaFamilia.js';
 
 dotenv.config();
 
-const porta = process.env.PORTA_SERVIDOR || 3000;
+const porta = 3000;
 
 const app = express();
 

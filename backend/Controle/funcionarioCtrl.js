@@ -200,22 +200,23 @@ export default class FuncionarioCtrl {
 
     async consultar(requisicao, resposta) {
 
-        const conexao = await conectar();
-
         resposta.type("application/json");
+        let conexao;
         if (requisicao.method == "GET") {
-            let nome = requisicao.params.nome;
+
+            let email = requisicao.params.email;
 
             //evitar que código tenha valor undefined
-            if (!nome) {
-                nome = "";
+            if (!email) {
+                email = "";
             }
 
             const funcionario = new Funcionario();
             //método consultar retorna uma lista de produtos
             try{
+                conexao = await conectar();
                 await conexao.query('BEGIN');
-                const listaFuncionario = await funcionario.consultar(nome, conexao);
+                const listaFuncionario = await funcionario.consultar(email, conexao);
                 if (Array.isArray(listaFuncionario)) {
                     await conexao.query('COMMIT');
                     resposta.status(200).json(listaFuncionario);
@@ -240,11 +241,13 @@ export default class FuncionarioCtrl {
                 }*/
             }
             catch (e) {
-                await conexao.query('ROLLBACK');
+                if(conexao)
+                    await conexao.query('ROLLBACK');
                 throw e
             }
             finally {
-                conexao.release();
+                if(conexao)
+                    conexao.release();
             }
         }
         else {

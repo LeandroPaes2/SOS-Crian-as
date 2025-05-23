@@ -27,7 +27,7 @@ export default class EventoDAO {
             evento.horaFim
         ];
     
-        const [linhas] = await conexao.execute(sql, parametros);
+        const [linhas] = await conexao.query(sql, parametros);
         return linhas.length > 0; // Se tiver algum resultado, há conflito
     }
     /*constructor() {
@@ -58,7 +58,7 @@ export default class EventoDAO {
         if (evento instanceof Evento) {
             try{
             const sql = `INSERT INTO evento(eve_nome, eve_data,eve_periodo, eve_horaInicio, eve_horaFim)
-                VALUES (?,?,?,?,?)
+                VALUES ($1,$2,$3,$4,$5)
             `;
 
             /*const [dia, mes, ano] = evento.data.split('/');
@@ -71,7 +71,7 @@ export default class EventoDAO {
                 evento.horaInicio,
                 evento.horaFim
             ];
-            const resultado = await conexao.execute(sql, parametros);
+            const resultado = await conexao.query(sql, parametros);
             evento.id = resultado[0].insertId;
             }catch(e){
                 throw new Error("Erro ao incluir evento: " + e.message);
@@ -82,8 +82,8 @@ export default class EventoDAO {
     async alterar(evento, conexao) {
         if (evento instanceof Evento) {
             try{
-            const sql = `UPDATE evento SET eve_nome=?, eve_data=?, eve_periodo=?, eve_horaInicio=?, eve_horaFim=?
-                WHERE  eve_id = ?
+            const sql = `UPDATE evento SET eve_nome=$1, eve_data=$2, eve_periodo=$3, eve_horaInicio=$4, eve_horaFim=$5
+                WHERE  eve_id = $6
             `;
             let parametros = [
                 evento.nome,
@@ -93,7 +93,7 @@ export default class EventoDAO {
                 evento.horaFim,
                 evento.id
             ]; 
-            await conexao.execute(sql, parametros);
+            await conexao.query(sql, parametros);
             }catch(e){
                 throw new Error("Erro ao alterar evento: " + e.message);
             }
@@ -112,10 +112,11 @@ export default class EventoDAO {
         }
         else {
             sql = `SELECT * FROM evento e
-                   WHERE eve_id = ?`
+                   WHERE eve_id = $1`
             parametros = [termo];
         }
-        const [linhas, campos] = await conexao.execute(sql, parametros);
+        const resultado = await conexao.query(sql, parametros);
+        const linhas = resultado.rows;        
         let listaEvento = [];
         for (const linha of linhas) {
             const evento = new Evento(
@@ -137,11 +138,11 @@ export default class EventoDAO {
     async excluir(evento, conexao) {
         if (evento instanceof Evento) {
             try{
-            const sql = `DELETE FROM evento WHERE eve_id = ?`;
+            const sql = `DELETE FROM evento WHERE eve_id = $1`;
             let parametros = [
                 evento.id
             ]; 
-            await conexao.execute(sql, parametros);
+            await conexao.query(sql, parametros);
             }catch(e){
                 throw new Error("Erro ao excluir evento: " + e.message);
             }

@@ -1,14 +1,13 @@
-import { Alert, Form, Button, InputGroup, FormControl } from "react-bootstrap";
-import "../../css/login.css";
-import { useState, useEffect } from "react";
+import { Alert, Form, Button, InputGroup } from "react-bootstrap";
 import { useNavigate, Link } from 'react-router-dom';
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useLogin } from "../../../LoginContext.js";
+import { useState } from "react";
+import { GoArrowLeft } from "react-icons/go";
+import "../../css/verificarEmail.css";
 
-export default function Login(props){
+export default function VerificarEmail(){
 
     const [email, setEmail] = useState("");
-    const [senha, setSenha] = useState("");
     const [listaDeFuncionarios, setListaDeFuncionarios] = useState([])
     const [mensagem, setMensagem] = useState("");
     const navigate = useNavigate();
@@ -26,30 +25,24 @@ export default function Login(props){
             }
             const dados = await response.json();
             console.log(dados);
-            if(senha!==dados[0].senha){
-                setMensagem("Senha incorreta.");
-                return;
-            }
+            
             if(!dados || dados.length==0){
                 setMensagem("Funcionário não cadastrado.");
                 setTimeout(() => setMensagem(""), 3000);
                 return;
             }
-            login(dados[0], manterConectado);
             setMensagem("");
 
         }catch(e){
-            setMensagem("Funcionario não cadastrado.");
+            setMensagem("E-Mail não cadastrado.");
         }
     }
 
-    return (
+    return(
         <div>
-            <br />
             <Alert className="alert-custom text-center mt-4 mb-4">
-                    <h2 className="titulo-alert">Sistema SOS Crianças</h2>
+                    <h2 className="titulo-alert">Recuperar Senha</h2>
             </Alert>
-            <br />
             {mensagem && <Alert className="mt-02 mb-02 success text-center" variant={
                 mensagem.includes("sucesso")
                 ? "success"
@@ -58,40 +51,25 @@ export default function Login(props){
                 : "warning"
                     }>
                 {mensagem}
-                </Alert>} 
+            </Alert>} 
             <div className="divForm">
                 <Form onSubmit={handleSubmit} id="formularioLogin"  className="formularioD">
-                    <Form.Group className="mb-4" controlId="email">
+                    <Form.Group className="campoEmail" controlId="email">
                         <Form.Label>E-Mail</Form.Label>
                         <Form.Control type="email" placeholder="Enter your email" 
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}/>
                     </Form.Group>
-
-                    <Form.Group className="mb-4" controlId="senha">
-                    <Form.Label>Senha</Form.Label>
-                        <InputGroup>
-                        <Form.Control type={mostrarSenha ? "text" : "password"} 
-                        placeholder="Senha" 
-                        required
-                        value={senha}
-                        onChange={(e) => setSenha(e.target.value)}/>
-                        <InputGroup.Text onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
-                            {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
-                        </InputGroup.Text>
-                        </InputGroup>
-                    </Form.Group>
-                    <Button className="botaoSenha" as={Link} to="/verificarEmail">
-                        Esqueceu a senha?
-                    </Button>
-                    <Form.Group className="mb-4" controlId="formBasicCheckbox">
-                        <Form.Check type="checkbox" label="Mantenha-me conectado"
-                            onChange={() => setManterConectado(!manterConectado)}/>                    
-                    </Form.Group>
-                    <Button variant="primary" type="submit">
-                        Entrar
-                    </Button>
+                    <br />
+                    <div className="divVoltar">
+                        <Button className="botaoVoltar" as={Link} to="/">
+                        <GoArrowLeft /> Voltar
+                        </Button>
+                        <Button variant="primary" type="submit" className="botaoEnviar">
+                            Enviar email 
+                        </Button>
+                    </div>
                 </Form>
             </div>
         </div>

@@ -1,0 +1,45 @@
+.botaoVoltar{
+    background-color: transparent;
+    border-color: transparent;
+    color: #b92c51;
+}
+
+.campoEmail{
+    margin: 5px;
+    width: 300px;
+}
+
+.divForm{
+    width: 100%;
+}
+
+.divVoltar{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.botaoVoltar:hover{
+    background-color: transparent;
+    border-color: transparent;
+    color: #81233b;
+    text-decoration: underline;
+}
+
+.botaoVoltar:active{
+    background-color: transparent;
+    border-color: transparent;
+    color: #81233b;
+    text-decoration: underline;
+}
+
+.botaoEnviar{
+    background-color: #da3460;
+    border-color: #81233b;
+}
+
+.botaoEnviar:hover{
+    background-color: #a73652;
+    border-color: #81233b;
+}
