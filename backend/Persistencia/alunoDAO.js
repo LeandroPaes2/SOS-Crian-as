@@ -171,118 +171,69 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
     }
 
     async consultar(termo, tipo, conexao) {
-        let sql = '';
-        let parametros = [];
-
-        if (tipo === 0 || tipo === 1) {
-            sql = `SELECT * FROM aluno WHERE alu_nome ILIKE $1`;  // ILIKE para busca sem diferenciar maiúsculas/minúsculas
-            parametros = ['%' + termo + '%'];  // Use o % para buscar partes do nome, se necessário
-        } else if (tipo === 2) {
-            sql = `SELECT * FROM aluno WHERE alu_rg ILIKE $1`;  // ILIKE para busca sem diferenciar maiúsculas/minúsculas
-            parametros = ['%' + termo + '%'];  // % para busca parcial
-        } else if (tipo === 3) {
-            sql = `SELECT * FROM aluno WHERE alu_id = $1`;
-            parametros = [termo];
-        }
-
-        const reg = await conexao.query(sql, parametros);
-
-        const registros = reg.rows;
-        const listaAluno = [];
-
-        for (const registro of registros) {
-
-            if (registro) {
-
-                let responsavel = await this.consultarResponsavel(registro['alu_responsavel_cpf'], conexao)
-                let escola = await this.consultarEscola(registro['alu_escola_id'], conexao)
-                if (!escola) {
-                    throw new Error("Erro ao consultar escola desse aluno: " + e.message);
-                }
-                if (!responsavel) {
-                    throw new Error("Erro ao consultar Responsavel desse aluno: " + e.message);
-                }
-
-                // Buscar FormularioSaude e Ficha (placeholder)
-                const formularioSaude = null;
-                const ficha = null;
-
-                // Criar o objeto Aluno
-                const aluno = new Aluno(
-                    registro['alu_id'],
-                    registro['alu_nome'],
-                    registro['alu_data_nascimento'],
-                    responsavel,
-                    registro['alu_cidade'],
-                    registro['alu_rua'],
-                    registro['alu_bairro'],
-                    registro['alu_numero'],
-                    escola,
-                    registro['alu_telefone'],
-                    registro['alu_periodo_escola'],
-                    registro['alu_realiza_acompanhamento'],
-                    registro['alu_possui_sindrome'],
-                    registro['alu_descricao'],
-                    registro['alu_rg'],
-                    registro['alu_status'],
-                    registro['alu_periodo_projeto'],
-                    registro['alu_cep']
-                );
-                listaAluno.push(aluno);
-            }
-        }
-
-        return listaAluno;
-    }
-
-
-    async consultarResponsavel(cpf, conexao) {
         try {
-            const sql = `SELECT * FROM responsavel r
-                           WHERE resp_cpf = $1`
-            const parametros = [cpf];
-            const resultado = await conexao.query(sql, parametros);
-            if (resultado.rows.length !== 1) {
-                throw new Error(`Responsavel com CPF ${cpf} nao encontrado.`);
-            }
-            const linhas = resultado.rows[0];
+            let sql = '';
+            let parametros = [];
 
-            const responsavel = new Responsavel(
-                linhas['resp_cpf'],
-                linhas['resp_nome'],
-                linhas['resp_telefone']
-            );
-            return responsavel;
-        } catch (e) {
-            throw new Error("Erro ao consultar Responsavel desse aluno: " + e.message);
-        }
-    }
-
-
-    async consultarEscola(id, conexao) {
-        try {
-            const sql = `SELECT * FROM escola WHERE esc_id = $1`;
-            const parametros = [id];
-            const resultado = await conexao.query(sql, parametros);
-
-            if (resultado.rows.length !== 1) {
-                throw new Error(`Escola com ID ${id} não encontrada.`);
+            if (tipo === 0 || tipo === 1) {
+                sql = `SELECT * FROM aluno WHERE alu_nome ILIKE $1`;  // ILIKE para busca sem diferenciar maiúsculas/minúsculas
+                parametros = ['%' + termo + '%'];  // Use o % para buscar partes do nome, se necessário
+            } else if (tipo === 2) {
+                sql = `SELECT * FROM aluno WHERE alu_rg ILIKE $1`;  // ILIKE para busca sem diferenciar maiúsculas/minúsculas
+                parametros = ['%' + termo + '%'];  // % para busca parcial
+            } else if (tipo === 3) {
+                sql = `SELECT * FROM aluno WHERE alu_id = $1`;
+                parametros = [termo];
             }
 
-            const linha = resultado.rows[0];
+            const reg = await conexao.query(sql, parametros);
+            const registros = reg.rows;
+            const listaAluno = [];
 
-            const escola = new Escola(
-                linha.esc_id,
-                linha.esc_nome,
-                linha.esc_telefone
-            );
+            for (const registro of registros) {
+                if (registro) {
+                    let responsavel = new Responsavel(registro['alu_responsavel_cpf']);
+                    responsavel = await responsavel.consultar(registro['alu_responsavel_cpf'], conexao);
 
-            return escola;
+                    let escola = new Escola(registro['alu_escola_id']);
+                    escola = await escola.consultar(registro['alu_escola_id'], conexao); // Corrigido para chamar o método correto
+
+                    if (!escola) {
+                        throw new Error("Erro ao consultar escola desse aluno.");
+                    }
+                    if (!responsavel) {
+                        throw new Error("Erro ao consultar Responsável desse aluno.");
+                    }
+
+                    // Criar o objeto Aluno
+                    const aluno = new Aluno(
+                        registro['alu_id'],
+                        registro['alu_nome'],
+                        registro['alu_data_nascimento'],
+                        responsavel,
+                        registro['alu_cidade'],
+                        registro['alu_rua'],
+                        registro['alu_bairro'],
+                        registro['alu_numero'],
+                        escola,
+                        registro['alu_telefone'],
+                        registro['alu_periodo_escola'],
+                        registro['alu_realiza_acompanhamento'],
+                        registro['alu_possui_sindrome'],
+                        registro['alu_descricao'],
+                        registro['alu_rg'],
+                        registro['alu_status'],
+                        registro['alu_periodo_projeto'],
+                        registro['alu_cep']
+                    );
+                    listaAluno.push(aluno);
+                }
+            }
+            return listaAluno;
         } catch (e) {
-            throw new Error("Erro ao consultar escola desse aluno: " + e.message);
+            throw new Error("Erro ao consultar aluno: " + e.message);
         }
     }
-
 
     // Excluir Não pode excluir fisicamente !!!!! ARRUMAR !!!!!
     async excluir(aluno, conexao) {

@@ -170,5 +170,14 @@ export default class Aluno {
     }
 
 
+    async consultarResponsavel(cpf, conexao) {
+        const alunoDAO = new AlunoDAO();
+        return alunoDAO.consultarResponsavel(cpf, conexao);
+    }
+
+    async consultarEscola(id, conexao) {
+        const alunoDAO = new AlunoDAO();
+        return alunoDAO.consultarEscola(id, conexao);
+    }
 
 }
