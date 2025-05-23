@@ -58,7 +58,16 @@ export default class MateriaDAO {
             // Exclui horários relacionados
             await supabase.query('DELETE FROM horario WHERE hora_mat_id = $1', [deletedId]);
 
-            // Remove a matéria
+            const presencas = await supabase.query(
+                'SELECT pre_id FROM presenca WHERE mat_id = $1',
+                [deletedId]
+            );
+            
+            for (const presenca of presencas.rows) {
+                await supabase.query('DELETE FROM presenca_aluno WHERE pre_id = $1', [presenca.pre_id]);
+                await supabase.query('DELETE FROM presenca WHERE pre_id = $1', [presenca.pre_id]);
+            }
+            
             await supabase.query('DELETE FROM materia WHERE mat_id = $1', [deletedId]);
 
             return true;

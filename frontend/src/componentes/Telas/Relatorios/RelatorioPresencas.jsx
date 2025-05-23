@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Table, Alert, Button, Spinner } from 'react-bootstrap';
+import { Container, Table, Alert, Button, Spinner } from 'react-bootstrap';
 import PaginaGeral from '../../layouts/PaginaGeral';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import "../../css/telaTurma.css"
 
 export default function RelatorioPresenca() {
     const [presencas, setPresencas] = useState([]);
     const [mensagem, setMensagem] = useState('');
     const [carregando, setCarregando] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function carregarPresencas() {
@@ -29,6 +31,39 @@ export default function RelatorioPresenca() {
         carregarPresencas();
     }, []);
 
+    const excluirPresencas = async (presenca) => {
+        if (window.confirm(`Deseja realmente excluir a presença de ${presenca.materia.nome}?`)) {
+            if (!presenca || !presenca.id) {
+                setMensagem("Erro: presença inválida!");
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/presencas/${presenca.id}`, {
+                    method: "DELETE"
+                });
+
+                if (response.ok) {
+                    setMensagem("Presença excluída com sucesso!");
+                    setPresencas(presencas.filter(p => p.id !== presenca.id));
+                } else {
+                    setMensagem("Erro ao excluir a presença.");
+                }
+
+                setTimeout(() => {
+                    setMensagem("");
+                }, 3000);
+
+            } catch (error) {
+                console.error("Erro ao conectar com o backend:", error);
+                setMensagem("Erro de conexão com o servidor.");
+                setTimeout(() => {
+                    setMensagem("");
+                }, 3000);
+            }
+        }
+    };
+
     const formatarData = (dataString) => {
         const opcoes = {
             day: '2-digit',
@@ -41,59 +76,83 @@ export default function RelatorioPresenca() {
     };
 
     return (
-        <PaginaGeral>
-            <h2 className="text-center mb-4">Relatório de Presenças</h2>
-            
-            <div className="d-flex justify-content-between mb-4">
-                <Button as={Link} to="/cadastroPresenca" variant="primary">
-                    Nova Presença
-                </Button>
-            </div>
+        <div className="topo">
+            <PaginaGeral>
+                <Container className="form-container mt-4">
+                    <h2 className="text-center mb-4">Relatório de Presenças</h2>
 
-            {mensagem && (
-                <Alert variant="danger" className="text-center">
-                    {mensagem}
-                </Alert>
-            )}
+                    {mensagem && (
+                        <Alert
+                            className="text-center"
+                            variant={
+                                mensagem.toLowerCase().includes("sucesso")
+                                    ? "success"
+                                    : mensagem.toLowerCase().includes("erro")
+                                        ? "danger"
+                                        : "warning"
+                            }
+                        >
 
-            {carregando ? (
-                <div className="text-center">
-                    <Spinner animation="border" />
-                    <p>Carregando presenças...</p>
-                </div>
-            ) : presencas.length === 0 ? (
-                <Alert variant="info" className="text-center">
-                    Nenhuma presença registrada ainda
-                </Alert>
-            ) : (
-                <Table striped bordered hover responsive>
-                    <thead>
-                        <tr>
-                            <th>Data/Hora</th>
-                            <th>Matéria</th>
-                            <th>Turma</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {presencas.map(presenca => (
-                            <tr key={presenca.id}>
-                                <td>{formatarData(presenca.dataHora)}</td>
-                                <td>{presenca.materia.nome || 'N/A'}</td>
-                                <td>
-                                    {presenca.turma.cor || 'N/A'}
-                                    <br />
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            )}
+                            {mensagem}
+                        </Alert>
+                    )}
 
-            <div className="text-center mt-4">
-                <Button as={Link} to="/" variant="secondary">
-                    Voltar ao Início
-                </Button>
-            </div>
-        </PaginaGeral>
+                    {presencas.length === 0 ? (
+                        <Alert variant="info">Nenhuma presença registrada</Alert>
+                    ) : (
+                        <Table striped bordered hover responsive>
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Matéria</th>
+                                    <th>Turma</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {presencas.map(presenca => (
+                                    <tr key={presenca.id}>
+                                        <td>{formatarData(presenca.dataHora)}</td>
+                                        <td>{presenca.materia.nome || 'N/A'}</td>
+                                        <td>
+                                            {presenca.turma.cor || 'N/A'}
+                                            <br />
+                                        </td>
+                                        <td>
+                                            <Button
+                                                onClick={() => navigate("/cadastroPresenca", {
+                                                state: {
+                                                    id: presenca.id,
+                                                    materia: presenca.materia,
+                                                    turma: presenca.turma,
+                                                    alunosPresentes: presenca.alunosPresentes
+                                                }
+                                            })}
+                                            >
+                                                ✏️
+                                            </Button>
+                                            <Button
+                                                onClick={() => excluirPresencas(presenca)}
+                                                variant="danger"
+                                                size="sm"
+                                                title="Excluir"
+                                            >
+                                                🗑️
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    )}
+
+                    <div>
+                        <Button as={Link} to="/telaPresenca" className="botaoPesquisa" variant="secondary">
+                            Voltar
+                        </Button>
+                    </div>
+                </Container>
+            </PaginaGeral>
+        </div>
     );
 }

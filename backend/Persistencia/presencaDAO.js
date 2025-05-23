@@ -108,12 +108,49 @@ export default class PresencaDAO{
         return rows.map(r => new Turma(r.id, r.cor, r.periodo));
     }
 
+    async alterar(presenca, supabase) {
+        // Inicia transação
+        await supabase.query('BEGIN');
+
+        try {
+            // Passo 1: Excluir registros antigos de alunos
+            await supabase.query(
+                'DELETE FROM presenca_aluno WHERE pre_id = $1',
+                [presenca.id]
+            );
+
+            // Passo 2: Inserir novos registros de alunos
+            for (const ap of presenca.alunosPresentes) {
+                await supabase.query(
+                    'INSERT INTO presenca_aluno (pre_id, alu_id, presente) VALUES ($1, $2, $3)',
+                    [presenca.id, ap.aluno.id, ap.presente]
+                );
+            }
+
+            // Passo 3: Atualizar data/hora da presença
+            await supabase.query(
+                'UPDATE presenca SET pre_data_hora = $1 WHERE pre_id = $2',
+                [presenca.dataHora, presenca.id]
+            );
+
+            // Commit da transação
+            await supabase.query('COMMIT');
+        } catch (erro) {
+            await supabase.query('ROLLBACK');
+            throw erro;
+        }
+    }
+
     async excluir(presenca, supabase)
     {
         if(presenca instanceof Presenca)
         {
+            const deletedId = presenca.id;
+            const sql2 = `DELETE FROM presenca_aluno WHERE pre_id = $1`;
+            await supabase.query(sql2, [deletedId]);
             const sql = `DELETE FROM presenca WHERE pre_id = $1`;
-            await supabase.query(sql, [presenca.id]);
+            await supabase.query(sql, [deletedId]);
+            return true;
         }
     }
 }

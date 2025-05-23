@@ -88,6 +88,56 @@ export default class PresencaCtrl{
         }
     }
 
+    async alterar(requisicao, resposta) {
+        const conexao = await criarConexao();
+        resposta.type("application/json");
+
+        if (requisicao.method === 'PUT' && requisicao.is("application/json")) {
+            const { id, materiaId, turmaId, alunos } = requisicao.body;
+
+            try {
+                // Validação básica
+                if (!id || !materiaId || !turmaId || !alunos) {
+                    throw new Error("Dados incompletos para alteração");
+                }
+
+                // Cria objeto Presenca com dados atualizados
+                const presenca = new Presenca(
+                    id,
+                    new Date(), // Mantém a data original ou ajuste conforme necessário
+                    new Materia(materiaId),
+                    new Turma(turmaId),
+                    alunos.map(a => ({ 
+                        aluno: new Aluno(a.alunoId), 
+                        presente: a.presente 
+                    }))
+                );
+
+                await conexao.query('BEGIN');
+                await presenca.alterar(conexao); // Chama o método DAO
+                await conexao.query('COMMIT');
+
+                resposta.status(200).json({
+                    status: true,
+                    mensagem: "Presença alterada com sucesso!"
+                });
+            } catch (erro) {
+                await conexao.query('ROLLBACK');
+                resposta.status(500).json({
+                    status: false,
+                    mensagem: "Erro ao alterar presença: " + erro.message
+                });
+            } finally {
+                conexao.release();
+            }
+        } else {
+            resposta.status(400).json({
+                status: false,
+                mensagem: "Requisição inválida!"
+            });
+        }
+    }
+    
     async excluir(requisicao, resposta) {
         const conexao = await criarConexao();
         resposta.type("application/json");

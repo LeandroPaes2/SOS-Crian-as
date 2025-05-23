@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Form, Button, Alert, Spinner, Table } from 'react-bootstrap';
-import PaginaGeral from '../../layouts/PaginaGeral';
-import { Link, useNavigate } from 'react-router-dom';
-
+import { useState, useEffect } from "react";
+import { Form, Button, Alert, Table } from "react-bootstrap";
+import PaginaGeral from "../../layouts/PaginaGeral";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export default function FormCadPresenca() {
     const [materias, setMaterias] = useState([]);
@@ -11,22 +10,36 @@ export default function FormCadPresenca() {
     const [selectedMateria, setSelectedMateria] = useState('');
     const [selectedTurma, setSelectedTurma] = useState('');
     const [presencas, setPresencas] = useState({});
-    const [carregando, setCarregando] = useState(false);
     const [mensagem, setMensagem] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+    const [editando, setEditando] = useState(false);
+
+    // Carrega dados iniciais para edição
+    useEffect(() => {
+        if (location.state?.id) {
+            setEditando(true);
+            setSelectedMateria(location.state.materia.id);
+            setSelectedTurma(location.state.turma.id);
+            
+            // Preenche presenças com dados da edição
+            const presencasIniciais = {};
+            location.state.alunosPresentes.forEach(ap => {
+                presencasIniciais[ap.aluno.id] = ap.presente;
+            });
+            setPresencas(presencasIniciais);
+        }
+    }, [location.state]);
 
     // Carrega matérias ao iniciar
     useEffect(() => {
         async function carregarMaterias() {
             try {
-                setCarregando(true);
                 const res = await fetch('http://localhost:3000/materias');
                 const data = await res.json();
                 setMaterias(data);
             } catch (error) {
                 setMensagem('Erro ao carregar matérias: ' + error.message);
-            } finally {
-                setCarregando(false);
             }
         }
         carregarMaterias();
@@ -37,14 +50,13 @@ export default function FormCadPresenca() {
         async function carregarTurmas() {
             if (selectedMateria) {
                 try {
-                    setCarregando(true);
-                    const res = await fetch(`http://localhost:3000/presencas/materia/${selectedMateria}/turmas`);
+                    const res = await fetch(
+                        `http://localhost:3000/presencas/materia/${selectedMateria}/turmas`
+                    );
                     const data = await res.json();
                     setTurmas(data);
                 } catch (error) {
                     setMensagem('Erro ao carregar turmas: ' + error.message);
-                } finally {
-                    setCarregando(false);
                 }
             }
         }
@@ -56,21 +68,23 @@ export default function FormCadPresenca() {
         async function carregarAlunos() {
             if (selectedTurma) {
                 try {
-                    setCarregando(true);
                     const res = await fetch('http://localhost:3000/alunos');
                     const data = await res.json();
                     
-                    const presencasIniciais = {};
-                    data.forEach(aluno => {
-                        presencasIniciais[aluno.id] = true; // Usar aluno.id em vez de numProtocolo
-                    });
+                    // Mantém presenças existentes em modo edição
+                    const novasPresencas = {...presencas};
+                    if (!editando) {
+                        data.forEach(aluno => {
+                            if (!(aluno.id in novasPresencas)) {
+                                novasPresencas[aluno.id] = true;
+                            }
+                        });
+                    }
                     
                     setAlunos(data);
-                    setPresencas(presencasIniciais);
+                    setPresencas(novasPresencas);
                 } catch (error) {
                     setMensagem('Erro ao carregar alunos: ' + error.message);
-                } finally {
-                    setCarregando(false);
                 }
             }
         }
@@ -86,18 +100,20 @@ export default function FormCadPresenca() {
         }
 
         try {
-            setCarregando(true);
-            
             const alunosPresentes = alunos.map(aluno => ({
-                alunoId: aluno.id, // Alterado de numProtocolo para id
+                alunoId: aluno.id,
                 presente: presencas[aluno.id] || false
             }));
 
-            const response = await fetch('http://localhost:3000/presencas', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+            const url = editando 
+                ? `http://localhost:3000/presencas/${location.state.id}`
+                : 'http://localhost:3000/presencas';
+            
+            const method = editando ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     materiaId: selectedMateria,
                     turmaId: selectedTurma,
@@ -106,22 +122,27 @@ export default function FormCadPresenca() {
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao salvar presenças');
+                throw new Error(editando 
+                    ? 'Erro ao atualizar presenças' 
+                    : 'Erro ao registrar presenças');
             }
 
-            setMensagem('Presenças registradas com sucesso!');
+            setMensagem(editando 
+                ? 'Presenças atualizadas com sucesso!' 
+                : 'Presenças registradas com sucesso!');
+            
             setTimeout(() => navigate('/relatorioPresenca'), 2000);
             
         } catch (error) {
-            setMensagem('Erro: ' + error.message);
-        } finally {
-            setCarregando(false);
+            setMensagem(error.message);
         }
     };
 
     return (
         <PaginaGeral>
-            <h2 className="text-center mb-4">Cadastro de Presenças</h2>
+            <h2 className="text-center mb-4">
+                {editando ? 'Editar Presenças' : 'Cadastrar Presenças'}
+            </h2>
             
             {mensagem && (
                 <Alert variant={mensagem.includes('sucesso') ? 'success' : 'danger'}>
@@ -136,8 +157,8 @@ export default function FormCadPresenca() {
                             <Form.Label>Matéria</Form.Label>
                             <Form.Select
                                 value={selectedMateria}
-                                onChange={(e) => setSelectedMateria(e.target.value)}
-                                disabled={carregando}
+                                onChange={(e) => !editando && setSelectedMateria(e.target.value)}
+                                disabled={editando}
                                 required
                             >
                                 <option value="">Selecione uma matéria</option>
@@ -155,11 +176,8 @@ export default function FormCadPresenca() {
                             <Form.Label>Turma</Form.Label>
                             <Form.Select
                                 value={selectedTurma}
-                                onChange={(e) => {
-                                    setSelectedTurma(e.target.value);
-                                    setAlunos([]);
-                                }}
-                                disabled={carregando || !selectedMateria}
+                                onChange={(e) => !editando && setSelectedTurma(e.target.value)}
+                                disabled={editando}
                                 required
                             >
                                 <option value="">Selecione uma turma</option>
@@ -176,16 +194,9 @@ export default function FormCadPresenca() {
                     </div>
                 </div>
 
-                {carregando && alunos.length === 0 && selectedTurma && (
-                    <div className="text-center">
-                        <Spinner animation="border" />
-                        <p>Carregando alunos...</p>
-                    </div>
-                )}
-
                 {alunos.length > 0 && (
                     <>
-                        <h4 className="mt-4 mb-3">Lista de Alunos</h4>
+                        <h4 className="mt-4 mb-3">Registro de Presenças</h4>
                         <Table striped bordered hover responsive>
                             <thead>
                                 <tr>
@@ -222,15 +233,9 @@ export default function FormCadPresenca() {
                     <Button 
                         type="submit" 
                         variant="primary"
-                        disabled={carregando || alunos.length === 0}
+                        disabled={alunos.length === 0}
                     >
-                        {carregando ? (
-                            <>
-                                <Spinner animation="border" size="sm" /> Salvando...
-                            </>
-                        ) : (
-                            'Salvar Presenças'
-                        )}
+                        {editando ? 'Atualizar Presenças' : 'Salvar Presenças'}
                     </Button>
                 </div>
             </Form>
