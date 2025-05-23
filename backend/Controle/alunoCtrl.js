@@ -44,9 +44,9 @@ export default class AlunoCtrl {
                     let aluno = new Aluno();
 
                     let objResponsavel = await aluno.consultarResponsavel(responsavel.cpf, conexao);
-                    let objEscola =await aluno.consultarEscola(escola.id, conexao);
-                    
-                     const alunoCompleto = new Aluno(
+                    let objEscola = await aluno.consultarEscola(escola.id, conexao);
+
+                    const alunoCompleto = new Aluno(
                         0,
                         nome,
                         dataNascimento,
@@ -118,22 +118,22 @@ export default class AlunoCtrl {
             } = req.body;
 
             const dadosValidos =
-                id !== undefined  &&
+                id !== undefined &&
                 nome && dataNascimento &&
                 responsavel &&
                 cidade &&
                 rua && numero &&
-                escola && 
+                escola &&
                 telefone && periodoEscola &&
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
                 descricao &&
-                rg && status  && periodoProjeto && cep && bairro;
+                rg && status && periodoProjeto && cep && bairro;
             if (dadosValidos) {
                 let conexao;
                 try {
                     const objResponsavel = null;
-                    const objEscola =null;
+                    const objEscola = null;
 
 
                     // const objFormularioSaude = null; //gambiarra pra rodar por enquanto

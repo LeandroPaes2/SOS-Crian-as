@@ -342,5 +342,4 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
         return false;
     }
 
-
 }

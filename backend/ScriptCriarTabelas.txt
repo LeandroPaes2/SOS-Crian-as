@@ -1,3 +1,18 @@
+create table if not exists funcionario(
+func_cpf varchar(14),
+func_nome varchar(100),
+func_cargo varchar(100),
+func_nivel varchar(10),
+func_email varchar(100),
+func_senha varchar(200),
+
+constraint PK_funcionario PRIMARY KEY (func_cpf)
+);
+
+insert into funcionario(func_cpf,func_nome,func_cargo,func_nivel,func_email,func_senha)
+    values("569.381.598-66","Savoldi","ADM","3","sav@g","1234");
+
+
 CREATE TABLE IF NOT EXISTS responsavel (
     resp_cpf VARCHAR(14) NOT NULL,
     resp_nome VARCHAR(50) NOT NULL,

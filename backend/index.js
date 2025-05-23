@@ -10,8 +10,6 @@ import rotaHorario from './Rotas/rotaHorario.js';
 import supabase from './Persistencia/Conexao.js';
 import rotaEvento from './Rotas/rotaEvento.js';
 import rotaFuncionario from './Rotas/rotaFuncionario.js';
-import rotaHorario from './Rotas/rotaHorario.js';
-import supabase from './Persistencia/Conexao.js';
 import rotaFamilia from './Rotas/rotaFamilia.js';
 
 dotenv.config();
