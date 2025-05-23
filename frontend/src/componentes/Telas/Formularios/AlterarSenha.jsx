@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Alert, Form, Button } from "react-bootstrap";
+import { Alert, Form, Button, InputGroup } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { GoArrowLeft } from "react-icons/go";
 import { useLogin } from "../../../LoginContext";
 import "../../css/alterarSenha.css";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function AlterarSenha(){
 
@@ -11,6 +12,7 @@ export default function AlterarSenha(){
     const [senhaAtual, setSenhaAtual] = useState("");
     const [novaSenha, setNovaSenha] = useState("");
     const [confirmarSenha, setConfirmarSenha] = useState("");
+    const [mostrarSenha, setMostrarSenha] = useState(false);
     const {funcionario, logout} = useLogin();
     const navigate = useNavigate();
 
@@ -25,6 +27,18 @@ export default function AlterarSenha(){
 
     const handleSubmit = async (event) => {
         event.preventDefault(); // Evita recarregar a página
+
+        if(senhaAtual!==funcionario.senha){
+            setMensagem("Senha atual incorreta!");
+            return;
+        }
+        else if(novaSenha!==confirmarSenha){
+            setMensagem("Novas senhas não sao iguais!");
+            return;
+        }else if(senhaAtual==novaSenha){
+            setMensagem("Senha atual e antiga são iguais!");
+            return;
+        }
 
         const url = `http://localhost:3000/funcionarios/${funcionario.cpf}`;
         const method = "PUT";
@@ -60,7 +74,7 @@ export default function AlterarSenha(){
     return(
         <div>
             <Alert className="alert-custom text-center mt-4 mb-4">
-                    <h2 className="titulo-alert">Recuperar Senha</h2>
+                    <h2 className="titulo-alert">Alterar Senha</h2>
             </Alert>
             {mensagem && <Alert className="mt-02 mb-02 success text-center" variant={
                 mensagem.includes("sucesso")
@@ -79,6 +93,9 @@ export default function AlterarSenha(){
                         required
                         value={senhaAtual}
                         onChange={(e) => setSenhaAtual(e.target.value)}/>
+                        <InputGroup.Text onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
+                            {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
+                        </InputGroup.Text>
                     </Form.Group>
                     <Form.Group className="campoNovaSenha" controlId="novaSenha">
                         <Form.Label>Nova Senha</Form.Label>
@@ -86,6 +103,9 @@ export default function AlterarSenha(){
                         required
                         value={novaSenha}
                         onChange={(e) => setNovaSenha(e.target.value)}/>
+                        <InputGroup.Text onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
+                            {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
+                        </InputGroup.Text>
                     </Form.Group>
                     <Form.Group className="campoConfirmarSenha" controlId="confirmarSenha">
                         <Form.Label>Confirme a senha nova</Form.Label>
@@ -93,6 +113,9 @@ export default function AlterarSenha(){
                         required
                         value={confirmarSenha}
                         onChange={(e) => setConfirmarSenha(e.target.value)}/>
+                        <InputGroup.Text onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
+                            {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
+                        </InputGroup.Text>
                     </Form.Group>
                     <br />
                     <div className="divVoltar">
