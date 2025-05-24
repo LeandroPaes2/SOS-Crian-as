@@ -3,49 +3,70 @@ import Evento from "../Modelo/evento.js";
 import conectar from "../Persistencia/Conexao.js";
 import EventoDAO from "../Persistencia/eventoDAO.js";
 
+async function verificarConflito(evento, conexao) {
+        const sql = `
+            SELECT * FROM evento 
+            WHERE eve_dataInicio = $1 
+            AND NOT ($2 >= eve_horaFim OR $3 <= eve_horaInicio)
+        `;
+        const parametros = [
+            evento.dataInicio, // ou eve_data
+            evento.horaInicio,
+            evento.horaFim
+        ];
+
+        const resultado = await conexao.query(sql, parametros);
+        return resultado.rows.length > 0;
+    }
+
 export default class EventoCtrl {
 
     async gravar(requisicao, resposta){
-        const conexao = await conectar();
+        
         resposta.type("application/json");
       
         if (requisicao.method == 'POST' && requisicao.is("application/json")){
             const nome  = requisicao.body.nome;
-            const data = requisicao.body.data;
+            const tipoEvento = requisicao.body.tipoEvento;
+            const dataInicio = requisicao.body.dataInicio;
+            const dataFim = requisicao.body.dataFim;
             const periodo = requisicao.body.periodo;
             const horaInicio = requisicao.body.horaInicio;
             const horaFim = requisicao.body.horaFim;
             
-            if (nome && data && periodo && horaInicio && horaFim)
+            if (nome && tipoEvento && dataInicio && dataFim && periodo && horaInicio && horaFim)
             {
-                const evento = new Evento(0, nome, data, periodo, horaInicio, horaFim);
+                let conexao;
                 try{
-                await conexao.query("BEGIN");
-                const conflito = await EventoDAO.verificarConflito(evento, conexao);
-                if (conflito) {
-                    await conexao.query("ROLLBACK");
-                    resposta.status(400).json({
-                        status: false,
-                        mensagem: "Conflito de horário! Já existe um evento nesse dia, período e horário.",
-                    });
-                    return;
-                }
+                    conexao = await conectar();
+                    await conexao.query("BEGIN");
+                    const evento = new Evento(0, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim);
+                    const conflito = await verificarConflito(evento, conexao);
+                    if (conflito) {
+                        await conexao.query("ROLLBACK");
+                        resposta.status(400).json({
+                            status: false,
+                            mensagem: "Conflito de horário! Já existe um evento nesse dia, período e horário.",
+                        });
+                        return;
+                    }
 
-                if(evento.incluir(conexao)){
-                    await conexao.query("COMMIT");
-                    resposta.status(200).json({
-                        "status":true,
-                        "mensagem":"Evento adicionado com sucesso!",
-                        "nome": evento.nome
-                    });
-                }
-                else{
-                    await conexao.query("ROLLBACK");
-                    resposta.status(500).json({
-                        "status":false,
-                        "mensagem":"Não foi possível incluir o evento: " + erro.message
-                    });
-                }
+                    const resultado = await evento.incluir(conexao);
+                    if(resultado){
+                        await conexao.query("COMMIT");
+                        resposta.status(200).json({
+                            "status":true,
+                            "mensagem":"Evento adicionado com sucesso!",
+                            "nome": evento.nome
+                        });
+                    }
+                    else{
+                        await conexao.query("ROLLBACK");
+                        resposta.status(500).json({
+                            "status":false,
+                            "mensagem":"Não foi possível incluir o evento: " + erro.message
+                        });
+                    }
                 }catch(erro){
                     await conexao.query("ROLLBACK");
                     resposta.status(500).json({
@@ -79,23 +100,38 @@ export default class EventoCtrl {
     }
 
     async editar(requisicao, resposta){
-        const conexao = await conectar();
         resposta.type("application/json");
         if ((requisicao.method == 'PUT' || requisicao.method == 'PATCH') && requisicao.is("application/json")){
        
             const id  = requisicao.params.id;
             const nome = requisicao.body.nome;
-            const data = requisicao.body.data;
+            const tipoEvento = requisicao.body.tipoEvento;
+            const dataInicio = requisicao.body.dataInicio;
+            const dataFim = requisicao.body.dataFim;
             const periodo = requisicao.body.periodo;
             const horaInicio = requisicao.body.horaInicio;
             const horaFim = requisicao.body.horaFim;
         
-            if (id > 0 && nome && data && periodo && horaInicio && horaFim)
+            if (id > 0 && nome && tipoEvento && dataInicio && dataFim && periodo && horaInicio && horaFim)
             {
-                const evento = new Evento(id, nome, data, periodo, horaInicio, horaFim);
+                let conexao;
+
                 try{
+                    conexao = await conectar();
                     await conexao.query("BEGIN");
-                    if(evento.alterar(conexao)){
+                    const evento = new Evento(id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim);
+                    const conflito = await this.verificarConflito(evento, conexao);
+                    if (conflito) {
+                        await conexao.query("ROLLBACK");
+                        resposta.status(400).json({
+                            status: false,
+                            mensagem: "Conflito de horário! Já existe um evento nesse dia, período e horário.",
+                        });
+                        return;
+                    }
+
+                    const resultado = evento.alterar(conexao);
+                    if(resultado){
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
                             "status":true,
@@ -141,7 +177,6 @@ export default class EventoCtrl {
     }
 
     async excluir(requisicao, resposta) {
-        const conexao = await conectar();
         resposta.type("application/json");
         
         if (requisicao.method == 'DELETE') {
@@ -149,8 +184,10 @@ export default class EventoCtrl {
             const id = requisicao.params.id;
             //pseudo validação
             if (id > 0) {
+                let conexao;
                 const evento = new Evento(id);
                 try{
+                    conexao = await conectar();
                     await conexao.query("BEGIN");
                 
                     if(evento.excluir(conexao)){
@@ -197,7 +234,7 @@ export default class EventoCtrl {
     }
 
     async consultar(requisicao, resposta) {
-        const conexao = await conectar();
+  
         resposta.type("application/json");
         if (requisicao.method == "GET") {
             let id = requisicao.params.id;
@@ -207,8 +244,9 @@ export default class EventoCtrl {
             }
 
             const evento = new Evento();
-            
+            let conexao;
             try{
+                conexao = await conectar();
                 await conexao.query("BEGIN");
                 const listaEvento = await evento.consultar(id, conexao);
                 
@@ -227,7 +265,6 @@ export default class EventoCtrl {
                 }
                     
             }catch(erro) {
-                await conexao.query('ROLLBACK');
                     resposta.status(500).json(
                         {
                             "status": false,
@@ -235,6 +272,7 @@ export default class EventoCtrl {
                         }
                     );
             }finally{
+                if(conexao)
                     conexao.release();
             }
 

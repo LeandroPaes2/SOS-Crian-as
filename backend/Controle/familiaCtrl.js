@@ -12,36 +12,36 @@ export default class FamiliaCtrl {
             const nome = requisicao.body.nome;
             const sexo = requisicao.body.sexo;
             const dataNascimento = requisicao.body.dataNascimento;
-            const rg = requisicao.body.rg;
-            const cpf = requisicao.body.cpf;
-            const companheiro = requisicao.body.companheiro;
-            const estadoCivil = requisicao.body.estadoCivil;
-            const profissao = requisicao.body.profissao;
-            const situacaoTrabalho = requisicao.body.situacaoTrabalho;
+            const profissao = requisicao.body.profissao
             const escolaridade = requisicao.body.escolaridade;
-            const rendaFamiliar = requisicao.body.rendaFamiliar;
-            const rendaValor = requisicao.body.rendaValor;
-            const qtdeTrabalho = requisicao.body.qtdeTrabalho;
-            const pensaoAlimentar = requisicao.body.pensaoAlimentar;
-            const valorPensao = requisicao.body.valorPensao;
-            const quemPagaPensao = requisicao.body.quemPagaPensao;
-            const beneficioSocial = requisicao.body.beneficioSocial;
-            const qualBeneficio = requisicao.body.qualBeneficio;
-            const valorBeneficio = requisicao.body.valorBeneficio;
-            const nomeBeneficio = requisicao.body.nomeBeneficio;
+            const grauParentesco = requisicao.body.grauParentesco;
+            const irmaos = requisicao.body.irmaos;
+            const temContato = requisicao.body.temContato;
 
-            if (
-                nome != null && sexo != null && dataNascimento != null &&
-                rg != null && cpf != null && companheiro != null && estadoCivil != null &&
-                profissao != null && situacaoTrabalho != null && escolaridade != null &&
-                rendaFamiliar != null && rendaValor != null && qtdeTrabalho != null &&
-                pensaoAlimentar != null && valorPensao != null && quemPagaPensao != null &&
-                beneficioSocial != null && qualBeneficio != null &&
-                valorBeneficio != null && nomeBeneficio != null
-            ) {
+            if (nome && sexo && dataNascimento && escolaridade && grauParentesco) {
+
+                if(irmaos.includes("pai") || irmaos.includes("mae")){
+                    if(!temContato){
+                        await conexao.query("ROLLBACK");
+                        return resposta.status(400).json(
+                        {
+                            "status":false,
+                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                        });
+                    }
+                }else{
+                    if(temContato=="Sim"){
+                        await conexao.query("ROLLBACK");
+                        return resposta.status(400).json(
+                        {
+                            "status":false,
+                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                        });
+                    }
+                }
 
                 try {
-                    const familia = new Familia(0, nome, sexo, dataNascimento, rg, cpf, companheiro, estadoCivil, profissao, situacaoTrabalho, escolaridade, rendaFamiliar, rendaValor, qtdeTrabalho, pensaoAlimentar, valorPensao, quemPagaPensao, beneficioSocial, qualBeneficio, valorBeneficio, nomeBeneficio);
+                    const familia = new Familia(0, nome, sexo, dataNascimento, profissao, escolaridade, grauParentesco, irmaos, temContato);
                     await conexao.query("BEGIN");
 
                     const resultado = await familia.incluir(conexao);
@@ -96,27 +96,37 @@ export default class FamiliaCtrl {
             const nome = requisicao.body.nome;
             const sexo = requisicao.body.sexo;
             const dataNascimento = requisicao.body.dataNascimento;
-            const rg = requisicao.body.rg;
-            const cpf = requisicao.body.cpf;
-            const companheiro = requisicao.body.companheiro;
-            const estadoCivil = requisicao.body.estadoCivil;
             const profissao = requisicao.body.profissao;
-            const situacaoTrabalho = requisicao.body.situacaoTrabalho;
             const escolaridade = requisicao.body.escolaridade;
-            const rendaFamiliar = requisicao.body.rendaFamiliar;
-            const rendaValor = requisicao.body.rendaValor;
-            const qtdeTrabalho = requisicao.body.qtdeTrabalho;
-            const pensaoAlimentar = requisicao.body.pensaoAlimentar;
-            const valorPensao = requisicao.body.valorPensao;
-            const quemPagaPensao = requisicao.body.quemPagaPensao;
-            const beneficioSocial = requisicao.body.beneficioSocial;
-            const qualBeneficio = requisicao.body.qualBeneficio;
-            const valorBeneficio = requisicao.body.valorBeneficio;
-            const nomeBeneficio = requisicao.body.nomeBeneficio;
+            const grauParentesco = requisicao.body.grauParentesco;
+            const irmaos = requisicao.body.irmaos;
+            const temContato = requisicao.body.temContato;
+            
 
-            if (id && nome && sexo && dataNascimento && rg && cpf && companheiro && estadoCivil && profissao && situacaoTrabalho && escolaridade && rendaFamiliar && rendaValor && qtdeTrabalho && pensaoAlimentar && valorPensao && quemPagaPensao && beneficioSocial && qualBeneficio && valorBeneficio && nomeBeneficio) {
+            if (id>0 && nome && sexo && dataNascimento && escolaridade && grauParentesco) {
+
+                if(irmaos.includes("pai") || irmaos.includes("mae")){
+                    if(!temContato){
+                        await conexao.query("ROLLBACK");
+                        return resposta.status(400).json(
+                        {
+                            "status":false,
+                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                        });
+                    }
+                }else{
+                    if(temContato=="Sim"){
+                        await conexao.query("ROLLBACK");
+                        return resposta.status(400).json(
+                        {
+                            "status":false,
+                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                        });
+                    }
+                }
+
                 try {
-                    const familia = new Familia(id, nome, sexo, dataNascimento, rg, cpf, companheiro, estadoCivil, profissao, situacaoTrabalho, escolaridade, rendaFamiliar, rendaValor, qtdeTrabalho, pensaoAlimentar, valorPensao, quemPagaPensao, beneficioSocial, qualBeneficio, valorBeneficio, nomeBeneficio);
+                    const familia = new Familia(id, nome, sexo, dataNascimento, profissao, escolaridade, grauParentesco, irmaos, temContato);
                     await conexao.query("BEGIN");
 
                     const resultado = await familia.alterar(conexao);
@@ -141,7 +151,7 @@ export default class FamiliaCtrl {
                         await conexao.query("ROLLBACK");
                     resposta.status(500).json({
                         "status": false,
-                        "mensagem": "Nao foi possivel alterar a familia: " + erro.message
+                        "mensagem": "Nao foi possivel: " + erro.message
                     });
                 } finally {
                     if (conexao)
@@ -151,7 +161,8 @@ export default class FamiliaCtrl {
 
                 resposta.status(500).json({
                     "status": false,
-                    "mensagem": "Nao foi possivel alterar a familia"
+                    "mensagem": "Nao foi possivel alterar."
+                    
                 });
             }
         } else {
@@ -174,7 +185,7 @@ export default class FamiliaCtrl {
 
             if (id) {
                 try {
-                    const familia = new Familia(id, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                    const familia = new Familia(id);
                     await conexao.query("BEGIN");
                     const resultado = await familia.excluir(conexao);
 
@@ -234,7 +245,7 @@ export default class FamiliaCtrl {
                 } else {
                     resposta.status(404).json({
                         "status": false,
-                        "mensagem": "Família não encontrada"
+                        "mensagem": "Não há família cadastrada."
                     });
                 }
 

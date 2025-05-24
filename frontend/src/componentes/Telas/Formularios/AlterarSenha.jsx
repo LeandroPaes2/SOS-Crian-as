@@ -48,11 +48,16 @@ export default function AlterarSenha(){
             if(!window.confirm("Deseja realmente alterar a senha?")){
                 return;
             }
+            const funcionarioAtualizado = {
+                ...funcionario,
+                senha: novaSenha,
+            };
 
             const response = await fetch(url, {
                 method: method,
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(funcionario),
+                
+                body: JSON.stringify(funcionarioAtualizado),
             });
 
             if (response.ok) {

@@ -35,8 +35,17 @@ export const LoginProvider = ({ children }) => {
         sessionStorage.removeItem("funcionario");
     };
 
+    const atualizarFuncionario = (dadosAtualizados) => {
+        setFuncionario(dadosAtualizados);
+        if (localStorage.getItem("funcionario")) {
+        localStorage.setItem("funcionario", JSON.stringify(dadosAtualizados));
+        } else if (sessionStorage.getItem("funcionario")) {
+            sessionStorage.setItem("funcionario", JSON.stringify(dadosAtualizados));
+        }
+    };
+
     return (
-        <LoginContext.Provider value={{funcionario, isLogado, setIsLogado, login, logout }}>
+        <LoginContext.Provider value={{funcionario, isLogado, setIsLogado, login, logout, atualizarFuncionario }}>
             {children}
         </LoginContext.Provider>
     );

@@ -54,12 +54,13 @@ export default class ResponsavelCtrl {
                 }
                 
                 let conexao;
-                const responsavel = new Responsavel(cpf, rg, nome, telefone, email, sexo, estCivil, conjuge, profissao, situTrabalho, escolaridade, rendaFamiliar, valorRenda, qtdeTrabalhadores, pensaoAlimenticia, valorPensao, pagadorPensao, beneficioSocial, tipoBeneficio, valorBeneficio, beneficiario);
+                const responsavel = new Responsavel(cpf, rg, nome, telefone, email, sexo, dtNascimento, estCivil, conjuge, profissao, situTrabalho, escolaridade, rendaFamiliar, valorRenda, qtdeTrabalhadores, pensaoAlimenticia, valorPensao, pagadorPensao, beneficioSocial, tipoBeneficio, valorBeneficio, beneficiario);
                 try{
                     conexao=await conectar();
                     await conexao.query("BEGIN");
+                    const resultado = await responsavel.incluir(conexao);
                     
-                    if(responsavel.incluir(conexao)){
+                    if(resultado){
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
                             "status":true,
@@ -304,7 +305,6 @@ export default class ResponsavelCtrl {
                 }
                     
             }catch(erro) {
-                await conexao.query('ROLLBACK');
                     resposta.status(500).json(
                         {
                             "status": false,
@@ -312,7 +312,7 @@ export default class ResponsavelCtrl {
                         }
                     );
             }finally{
-
+                if(conexao)
                     conexao.release();
             }
 

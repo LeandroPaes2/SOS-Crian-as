@@ -201,7 +201,7 @@ export default class Responsavel{
         this.#beneficiario=novoBeneficiario;
     }
 
-    constructor(cpf="", rg="", nome="", telefone="", email="", sexo="", dtNascimento="", estCivil="", conjuge="", profissao="", situTrabalho="", escolaridade="", rendaFamiliar=0.00, valorRenda=0.00, qtdeTrabalhadores=0, pensaoAlimenticia="", valorPensao=0.00, pagadorPensao="", beneficioSocial="", tipoBeneficio="", valorBeneficio=0.00, beneficiario=""){
+    constructor(cpf="", rg="", nome="", telefone="", email="", sexo="", dtNascimento="", estCivil="", conjuge="", profissao="", situTrabalho="", escolaridade="", rendaFamiliar="", valorRenda=0.00, qtdeTrabalhadores=0, pensaoAlimenticia="", valorPensao=0.00, pagadorPensao="", beneficioSocial="", tipoBeneficio="", valorBeneficio=0.00, beneficiario=""){
         this.#cpf=cpf;
         this.#rg=rg;
         this.#nome=nome;
@@ -255,7 +255,7 @@ export default class Responsavel{
 
     async incluir(conexao){
         const respDAO = new ResponsavelDAO();
-        await respDAO.incluir(this, conexao);
+        return await respDAO.incluir(this, conexao);
     }
 
     async consultar(termo, conexao){
@@ -265,11 +265,11 @@ export default class Responsavel{
 
     async excluir(conexao){
         const respDAO = new ResponsavelDAO();
-        await respDAO.excluir(this, conexao);
+        return await respDAO.excluir(this, conexao);
     }
 
     async alterar(conexao){
         const respDAO = new ResponsavelDAO();
-        await respDAO.alterar(this, conexao);
+        return await respDAO.alterar(this, conexao);
     }
 }

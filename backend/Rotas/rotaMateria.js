@@ -4,11 +4,11 @@ import MateriaCtrl from "../Controle/materiaCtrl.js";
 const matCtrl = new MateriaCtrl();
 const rotaMateria = Router();
 
-rotaMateria.post("/", matCtrl.gravar);
-rotaMateria.put("/:id", matCtrl.editar);
-rotaMateria.patch("/:id", matCtrl.editar);
-rotaMateria.delete("/:id", matCtrl.excluir);
-rotaMateria.get("/:id", matCtrl.consultar);
-rotaMateria.get("/",matCtrl.consultar);
+rotaMateria.post("/",autenticarToken, autorizarNivel("1", "2"), matCtrl.gravar);
+rotaMateria.put("/:id",autenticarToken, autorizarNivel("1", "2"), matCtrl.editar);
+rotaMateria.patch("/:id",autenticarToken, autorizarNivel("1", "2"), matCtrl.editar);
+rotaMateria.delete("/:id",autenticarToken, autorizarNivel("1", "2"), matCtrl.excluir);
+rotaMateria.get("/:id",autenticarToken, autorizarNivel("1", "2"), matCtrl.consultar);
+rotaMateria.get("/",autenticarToken, autorizarNivel("1", "2"),matCtrl.consultar);
 
 export default rotaMateria;
