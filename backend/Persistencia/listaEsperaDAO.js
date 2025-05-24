@@ -1,5 +1,7 @@
 //import conectar from "./Conexao.js";
 
+import Aluno from "../Modelo/aluno.js";
+
 export default class ListaEsperaDAO {
 
     /* constructor() {
@@ -94,7 +96,9 @@ export default class ListaEsperaDAO {
         const listaListaEspera = [];
 
         for (const registro of resultado.rows) {
-            const aluno = await this.consultarAluno(registro.alu_id, conexao);
+            //const aluno = await this.consultarAluno(registro.alu_id, conexao);
+            var aluno = new Aluno;
+            aluno = await aluno.consultar(registro.alu_id, 3, conexao);
 
             listaListaEspera.push({
                 num: registro.lista_espera_num,
@@ -108,7 +112,7 @@ export default class ListaEsperaDAO {
 
         return listaListaEspera;
     }
-
+/*
     async consultarAluno(alu_id, conexao) {
         const sql = `SELECT * FROM aluno WHERE alu_id = $1`;
         const parametros = [alu_id];
@@ -175,7 +179,7 @@ export default class ListaEsperaDAO {
             nome: linha.resp_nome,
             telefone: linha.resp_telefone
         }));
-    }
+    }*/
 
     async excluir(listaEspera, conexao) {
         const sql = `DELETE FROM listaespera WHERE lista_espera_num = $1`;

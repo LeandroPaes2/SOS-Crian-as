@@ -1,5 +1,4 @@
 import Aluno from "../Modelo/aluno.js";
-import ResponsavelCtrl from "../Controle/responsavelCtrl.js";
 import Responsavel from "../Modelo/responsavel.js";
 import Escola from "../Modelo/escola.js";
 import conectar from "../Persistencia/Conexao.js";
@@ -10,7 +9,6 @@ export default class AlunoCtrl {
 
         if (req.method === "POST" && req.is("application/json")) {
             const {
-                id,
                 nome,
                 dataNascimento,
                 responsavel,
@@ -25,24 +23,10 @@ export default class AlunoCtrl {
                 possuiSindrome,
                 descricao,
                 rg,
-                formularioSaude,
-                ficha,
                 status,
                 periodoProjeto,
                 cep
             } = req.body;
-
-            // Validação de campos obrigatórios (inclusive os objetos filhos)
-            /*
-            responsavel && responsavel.cpf && responsavel.nome &&
-            responsavel.telefone && responsavel.email && responsavel.parentesco &&
-
-
-            escola && escola.codigo && escola.nome && escola.endereco &&
-            */
-
-
-
 
             const dadosValidos =
                 nome && dataNascimento &&
@@ -52,48 +36,18 @@ export default class AlunoCtrl {
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
                 descricao &&
-                rg && status && periodoProjeto && cep && bairro;
-            if (1) {
+                rg && status && periodoProjeto && cep && bairro && escola && escola.id && responsavel && responsavel.cpf
+            if (dadosValidos) {
                 let conexao;
                 try {
+                    conexao = await conectar();
+                    let aluno = new Aluno();
 
-                    /*
-                    const objResponsavel = ResponsavelCtrl.buscar(responsavel.cpf,conexao);
+                    let objResponsavel = await aluno.consultarResponsavel(responsavel.cpf, conexao);
+                    let objEscola =await aluno.consultarEscola(escola.id, conexao);
                     
-                    
-                        //tem q ser assim mas nn funciona no momento
-                    */
-
-
-
-
-                    const objResponsavel = new Responsavel(
-                        responsavel.cpf,
-                        responsavel.nome,
-                        responsavel.telefone,
-                        responsavel.email,
-                        responsavel.parentesco
-                    );
-
-                    const objEscola = new Escola(
-                        escola.codigo,
-                        escola.nome,
-                        escola.endereco
-                    );
-
-
-                    const objFormularioSaude = null; //gambiarra pra rodar por enquanto
-                    const objFicha = null;
-
-                    /*
-                    const objFormularioSaude = new FormularioSaude(
-                        formularioSaude.id,
-                        // RESTO DOS ATRIBUTOS
-                    );
-                    */
-
-                    const aluno = new Aluno(
-                        id,
+                     const alunoCompleto = new Aluno(
+                        0,
                         nome,
                         dataNascimento,
                         objResponsavel,
@@ -108,25 +62,22 @@ export default class AlunoCtrl {
                         possuiSindrome,
                         descricao,
                         rg,
-                        objFormularioSaude,
-                        objFicha,
                         status,
                         periodoProjeto,
                         cep
                     );
 
-                    conexao = await conectar();
+
                     await conexao.query("BEGIN");
-                    try
-                    {
-                        await aluno.incluir(conexao);
+                    try {
+                        await alunoCompleto.incluir(conexao);
                         await conexao.query("COMMIT");
                         res.status(200).json({ status: true, mensagem: "Aluno cadastrado com sucesso!" });
-                    } catch(erro){
+                    } catch (erro) {
                         await conexao.query("ROLLBACK");
-                        res.status(500).json({ status: false, mensagem: "Erro ao cadastrar aluno. Verifique os dados informados."+ erro.message });
+                        res.status(500).json({ status: false, mensagem: "Erro ao cadastrar aluno. Verifique os dados informados." + erro.message });
                     }
-                    
+
                 } catch (erro) {
                     if (conexao) await conexao.query("ROLLBACK");
                     res.status(500).json({ status: false, mensagem: "Erro interno ao cadastrar aluno: " + erro.message });
@@ -161,8 +112,6 @@ export default class AlunoCtrl {
                 possuiSindrome,
                 descricao,
                 rg,
-                formularioSaude,
-                ficha,
                 status,
                 periodoProjeto,
                 cep
@@ -171,11 +120,10 @@ export default class AlunoCtrl {
             const dadosValidos =
                 id !== undefined && id !== 0 &&
                 nome && dataNascimento &&
-                responsavel && responsavel.cpf && responsavel.nome &&
-                responsavel.telefone && responsavel.email && responsavel.parentesco &&
+                responsavel &&
                 cidade &&
                 rua && numero &&
-                escola && escola.codigo && escola.nome && escola.endereco &&
+                escola && 
                 telefone && periodoEscola &&
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
@@ -303,7 +251,7 @@ export default class AlunoCtrl {
             res.status(400).json({ status: false, mensagem: "Requisição inválida! Use o método DELETE." });
         }
     }
-/*
+
     async consultar(req, res) {
         res.type("application/json");
 
@@ -320,7 +268,7 @@ export default class AlunoCtrl {
             }
             if (termo == "") {
                 tipo = 0;
-                termo = "%";
+                termo = "";
             }
 
             const aluno = new Aluno();
@@ -345,30 +293,5 @@ export default class AlunoCtrl {
         } else {
             res.status(400).json({ status: false, mensagem: "Requisição inválida! Use o método GET." });
         }
-    }*/
-
-
-        async consultar(req, res) {
-                res.type("application/json");
-        
-                if (req.method === "GET") {
-                    let id = req.params.id;
-                    const aluno = new Aluno();
-                    const conexao = await conectar();
-        
-                    try {
-                        await conexao.query('BEGIN');
-                        const listaAlu = await aluno.consultar(id, conexao);
-                        await conexao.query('COMMIT');
-                        res.status(200).json(listaAlu);
-                    } catch (e) {
-                        await conexao.query('ROLLBACK');
-                        res.status(500).json({ status: false, mensagem: e.message });
-                    } finally {
-                        conexao.release();
-                    }
-                } else {
-                    res.status(400).json({ status: false, mensagem: "Requisição inválida! Use o método GET." });
-                }
-            }
+    }
 }

@@ -1,7 +1,6 @@
-import conectar from "./Conexao.js";
 import Aluno from "../Modelo/aluno.js";
-import Responsavel from "../Modelo/responsavel.js";
 import Escola from "../Modelo/escola.js";
+import Responsavel from "../Modelo/responsavel.js";
 
 export default class AlunoDAO {
 
@@ -119,32 +118,30 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
     async incluir(aluno, conexao) {
         if (aluno instanceof Aluno) {
             const sql = `
-    INSERT INTO aluno (
-        alu_nome,
-        alu_data_nascimento,
-        alu_responsavel_cpf,
-        alu_cidade,
-        alu_rua,
-        alu_bairro,
-        alu_numero,
-        alu_escola_id,
-        alu_telefone,
-        alu_periodo_escola,
-        alu_realiza_acompanhamento,
-        alu_possui_sindrome,
-        alu_descricao,
-        alu_rg,
-        alu_formulario_saude,
-        alu_ficha,
-        alu_status,
-        alu_periodo_projeto,
-        alu_cep
-    )
-    VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-    $11, $12, $13, $14, $15, $16, $17, $18, $19
-);
-`;
+                INSERT INTO aluno (
+                    alu_nome,
+                    alu_data_nascimento,
+                    alu_responsavel_cpf,
+                    alu_cidade,
+                    alu_rua,
+                    alu_bairro,
+                    alu_numero,
+                    alu_escola_id,
+                    alu_telefone,
+                    alu_periodo_escola,
+                    alu_realiza_acompanhamento,
+                    alu_possui_sindrome,
+                    alu_descricao,
+                    alu_rg,
+                    alu_status,
+                    alu_periodo_projeto,
+                    alu_cep
+                )
+                VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+                $11, $12, $13, $14, $15, $16, $17
+            );
+            `;
 
             const parametros = [
                 aluno.nome,
@@ -161,63 +158,55 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
                 aluno.possuiSindrome,
                 aluno.descricao,
                 aluno.rg,
-                aluno.formularioSaude,
-                aluno.ficha,
                 aluno.status,
                 aluno.periodoProjeto,
                 aluno.cep
             ];
             await conexao.query(sql, parametros);
         }
+        else {
+            throw new Error("Objeto passado não é uma instância de Aluno");
+        }
     }
-    /*
-        async consultar(termo, tipo, conexao) {
-    
-            let sql = ``;
-            let parametros = [];
-            if (tipo === 0) {
-                sql = `SELECT * FROM aluno WHERE alu_nome = ?`;
-                parametros = [termo];
-            } else if (tipo === 1) {
-                sql = `SELECT * FROM aluno WHERE alu_nome = ?`;
-                parametros = [termo];
-            } else if (tipo === 2) {
-                sql = `SELECT * FROM aluno WHERE alu_rg = ?`;
-                parametros = [termo];
-            } else if (tipo === 3) {
-                sql = `SELECT * FROM aluno WHERE alu_id = ?`;
-                parametros = [termo];
-            }
-    
-    
-            const [registros] = await conexao.query(sql, parametros);
-            const listaAluno = [];
-    
-            for (const registro of registros) {
-                // Buscar Responsável pelo CPF
-                /*
-                const respon = await responsavel.consultar(registro['alu_responsavel_cpf'], conexao);
-                const responsavel = new Responsavel(respon.cpf, respon.nome, respon.telefone);
-                
-    
-                const responsavel = {};
-                // Buscar FormularioSaude pelo aluno_id
+
+    async consultar(termo, tipo, conexao) {
+        let sql = '';
+        let parametros = [];
+
+        if (tipo === 0 || tipo === 1) {
+            sql = `SELECT * FROM aluno WHERE alu_nome ILIKE $1`;  // ILIKE para busca sem diferenciar maiúsculas/minúsculas
+            parametros = ['%' + termo + '%'];  // Use o % para buscar partes do nome, se necessário
+        } else if (tipo === 2) {
+            sql = `SELECT * FROM aluno WHERE alu_rg ILIKE $1`;  // ILIKE para busca sem diferenciar maiúsculas/minúsculas
+            parametros = ['%' + termo + '%'];  // % para busca parcial
+        } else if (tipo === 3) {
+            sql = `SELECT * FROM aluno WHERE alu_id = $1`;
+            parametros = [termo];
+        }
+
+        const reg = await conexao.query(sql, parametros);
+
+        const registros = reg.rows;
+        const listaAluno = [];
+
+        for (const registro of registros) {
+
+            if (registro) {
+
+                let responsavel = await this.consultarResponsavel(registro['alu_responsavel_cpf'], conexao)
+                let escola = await this.consultarEscola(registro['alu_escola_id'], conexao)
+                if (!escola) {
+                    throw new Error("Erro ao consultar escola desse aluno: " + e.message);
+                }
+                if (!responsavel) {
+                    throw new Error("Erro ao consultar Responsavel desse aluno: " + e.message);
+                }
+
+                // Buscar FormularioSaude e Ficha (placeholder)
                 const formularioSaude = null;
-    
-    
-    
-                // Buscar Ficha pelo aluno_id
                 const ficha = null;
-    
-    
-                // Buscar Escola pelo ID
-                /*
-                const esco = await escola.consultar(registro['alu_escola_id'], conexao);
-                const escola = new Escola(esco.nome, esco.endereco, esco.telefone, esco.tipo);
-    
-                const escola = {};
-    
-                // Agora sim criar o Aluno com os objetos completos
+
+                // Criar o objeto Aluno
                 const aluno = new Aluno(
                     registro['alu_id'],
                     registro['alu_nome'],
@@ -233,92 +222,68 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
                     registro['alu_realiza_acompanhamento'],
                     registro['alu_possui_sindrome'],
                     registro['alu_descricao'],
-                    registro['rg'],
-                    formularioSaude,
-                    ficha,
-                    registro['alu_dataInsercao_projeto'],
+                    registro['alu_rg'],
                     registro['alu_status'],
                     registro['alu_periodo_projeto'],
                     registro['alu_cep']
-                )
+                );
                 listaAluno.push(aluno);
             }
-            return listaAluno;
-        }*/
-
-    async consultar(termo, conexao) {
-       let sql;
-        let parametros = [];
-
-        if (termo) {
-            sql = `SELECT * FROM aluno WHERE alu_id = $1`;
-            parametros = [termo];
-        } else {
-            sql = `SELECT * FROM aluno`;  // << pegar todos
         }
 
-        const resultado = await conexao.query(sql, parametros);
-        const alunos = [];
-
-        for (const registro of resultado.rows) {
-            const responsavel = await this.consultarResponsavel(registro.alu_responsavel_cpf, conexao);
-            const escola = {}; // ou await this.consultarEscola(registro.alu_escola_id, conexao);
-
-            alunos.push({
-                id: registro.alu_id,
-                nome: registro.alu_nome,
-                dataNascimento: registro.alu_data_nascimento,
-                responsavel: responsavel[0],
-                cidade: registro.alu_cidade,
-                rua: registro.alu_rua,
-                bairro: registro.alu_bairro,
-                numero: registro.alu_numero,
-                escola: escola[0],
-                telefone: registro.alu_telefone,
-                periodoEscola: registro.alu_periodo_escola,
-                realizaAcompanhamento: registro.alu_realiza_acompanhamento,
-                possuiSindrome: registro.alu_possui_sindrome,
-                descricao: registro.alu_descricao,
-                rg: registro.alu_rg,
-                formularioSaude: null,
-                ficha: null,
-                dataInsercaoProjeto: registro.alu_dataInsercao_projeto,
-                status: registro.alu_status,
-                periodoProjeto: registro.alu_periodo_projeto,
-                cep: registro.alu_cep
-            });
-        }
-
-        return alunos;
+        return listaAluno;
     }
 
-    async consultarEscola(esc_id, conexao) {
-        const sql = `SELECT * FROM escola WHERE esc_id = $1`;
-        const parametros = [esc_id];
-        const resultado = await conexao.query(sql, parametros);
-
-        return resultado.rows.map(linha => ({
-            id: linha.esc_id,
-            nome: linha.esc_nome,
-            endereco: linha.esc_endereco,
-            telefone: linha.esc_telefone,
-            tipo: linha.esc_tipo
-        }));
-    }
 
     async consultarResponsavel(cpf, conexao) {
-        const sql = `SELECT * FROM responsavel WHERE resp_cpf = $1`;
-        const parametros = [cpf];
-        const resultado = await conexao.query(sql, parametros);
+        try {
+            const sql = `SELECT * FROM responsavel r
+                           WHERE resp_cpf = $1`
+            const parametros = [cpf];
+            const resultado = await conexao.query(sql, parametros);
+            if (resultado.rows.length !== 1) {
+                throw new Error(`Responsavel com CPF ${cpf} nao encontrado.`);
+            }
+            const linhas = resultado.rows[0];
 
-        return resultado.rows.map(linha => ({
-            cpf: linha.resp_cpf,
-            nome: linha.resp_nome,
-            telefone: linha.resp_telefone
-        }));
+            const responsavel = new Responsavel(
+                linhas['resp_cpf'],
+                linhas['resp_nome'],
+                linhas['resp_telefone']
+            );
+            return responsavel;
+        } catch (e) {
+            throw new Error("Erro ao consultar Responsavel desse aluno: " + e.message);
+        }
     }
 
 
+    async consultarEscola(id, conexao) {
+        try {
+            const sql = `SELECT * FROM escola WHERE esc_id = $1`;
+            const parametros = [id];
+            const resultado = await conexao.query(sql, parametros);
+
+            if (resultado.rows.length !== 1) {
+                throw new Error(`Escola com ID ${id} não encontrada.`);
+            }
+
+            const linha = resultado.rows[0];
+
+            const escola = new Escola(
+                linha.esc_id,
+                linha.esc_nome,
+                linha.esc_telefone
+            );
+
+            return escola;
+        } catch (e) {
+            throw new Error("Erro ao consultar escola desse aluno: " + e.message);
+        }
+    }
+
+
+    // Excluir Não pode excluir fisicamente !!!!! ARRUMAR !!!!!
     async excluir(aluno, conexao) {
         if (aluno instanceof Aluno) {
             const sql = `DELETE FROM aluno WHERE alu_id = $1`;
@@ -329,59 +294,59 @@ CONSTRAINT chk_aluno_status CHECK (alu_status IN (0, 1))
 
     async alterar(aluno, conexao) {
         if (aluno instanceof Aluno) {
-            const sql = `
-            UPDATE aluno SET 
-                alu_nome = $1,
-                alu_data_nascimento = $2,
-                alu_responsavel_cpf = $3,
-                alu_cidade = $4,
-                alu_rua = $5,
-                alu_bairro = $6,
-                alu_numero = $7,
-                alu_escola_id = $8,
-                alu_telefone = $9,
-                alu_periodo_escola = $10,
-                alu_realiza_acompanhamento = $11,
-                alu_possui_sindrome = $12,
-                alu_descricao = $13,
-                alu_rg = $14,
-                alu_formulario_saude = $15,
-                alu_ficha = $16,
-                alu_status = $17,
-                alu_periodo_projeto = $18,
-                alu_cep = $19
-            WHERE alu_id = $20
-        `;
+            try {
+                const sql = `
+                    UPDATE aluno SET 
+                        alu_nome = $1,
+                        alu_data_nascimento = $2,
+                        alu_responsavel_cpf = $3,
+                        alu_cidade = $4,
+                        alu_rua = $5,
+                        alu_bairro = $6,
+                        alu_numero = $7,
+                        alu_escola_id = $8,
+                        alu_telefone = $9,
+                        alu_periodo_escola = $10,
+                        alu_realiza_acompanhamento = $11,
+                        alu_possui_sindrome = $12,
+                        alu_descricao = $13,
+                        alu_rg = $14,
+                        alu_dataInsercao_projeto = $15,
+                        alu_status = $16,
+                        alu_periodo_projeto = $17,
+                        alu_cep = $18
+                    WHERE alu_id = $19
+                `;
 
-            const parametros = [
-                aluno.nome,
-                aluno.dataNascimento,
-                aluno.responsavel.cpf,
-                aluno.cidade,
-                aluno.rua,
-                aluno.bairro,
-                aluno.numero,
-                aluno.escola.id,
-                aluno.telefone,
-                aluno.periodoEscola,
-                aluno.realizaAcompanhamento,
-                aluno.possuiSindrome,
-                aluno.descricao,
-                aluno.rg,
-                aluno.formularioSaude,
-                aluno.ficha,
-                aluno.status,
-                aluno.periodoProjeto,
-                aluno.cep,
-                aluno.id
-            ];
+                const parametros = [
+                    aluno.nome,
+                    aluno.dataNascimento,
+                    aluno.responsavel.cpf,
+                    aluno.cidade,
+                    aluno.rua,
+                    aluno.bairro,
+                    aluno.numero,
+                    aluno.escola.id,
+                    aluno.telefone,
+                    aluno.periodoEscola,
+                    aluno.realizaAcompanhamento,
+                    aluno.possuiSindrome,
+                    aluno.descricao,
+                    aluno.rg,
+                    aluno.dataInsercaoProjeto,
+                    aluno.status,
+                    aluno.periodoProjeto,
+                    aluno.cep,
+                    aluno.id // este é o identificador usado no WHERE
+                ];
 
-            await conexao.query(sql, parametros);
-            return true;
+                await conexao.query(sql, parametros);
+
+            } catch (e) {
+                throw new Error("Erro ao alterar aluno: " + e.message);
+            }
         }
-        return false;
     }
-
 
 
 }
