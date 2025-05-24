@@ -1,16 +1,14 @@
-.formularioD{
+.formularioL{
+    
     background-color: aliceblue;
-    width: 350px;
-    padding: 20px; /* Add some padding for the form */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    position: absolute;
+    top: 30%;
+    left: 15%;
+    width: 70%;
+    padding: 20px;
+    border-radius: 10px;
     justify-content: center;
-    border-radius: 8px; /* Optional: rounded corners */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-    margin: 0 auto;
 }
-
 .botaoSenha{
     border-color: transparent;
     text-decoration: underline;
@@ -31,3 +29,38 @@
     flex-direction: column;
 }
 
+.texto {
+    width: 28%;
+    text-align: left;
+    margin-left: 62%;
+
+}
+
+.imagemLogin{
+    background-color: #dc4c6c;
+    left: 0%;
+    top: 0%;
+    width: 50%;
+    height: 100%;
+    position: absolute;
+ 
+}
+
+@keyframes fadeSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+}
+
+.alert-animado {
+  animation: fadeSlide 5s ease-in-out forwards;
+}
