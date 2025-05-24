@@ -191,15 +191,16 @@ export default function FormCadListaEspera() {
     };
 
     return (
+
         <div className="cadastroListaEspera">
             <PaginaGeral>
                 <Alert className="mt-2 mb-2 text-center" variant="dark">
-                    <h2>Lista de Espera</h2>
+                    <h2>{editando ? "Editar Criança na Lista de Espera" : "Cadastrar Criança na Lista de Espera"}</h2>
                 </Alert>
 
                 {mensagem && <Alert variant="info">{mensagem}</Alert>}
+                <Form onSubmit={handleSubmit}>
 
-                <Form onSubmit={handleSubmit} className="form topot">
                     <div className="cadastroListaEspera" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         <Form.Group>
                             <Form.Label>Numero do Protocolo</Form.Label>
@@ -238,11 +239,16 @@ export default function FormCadListaEspera() {
                                 onChange={manipularMudanca}
                             >
                                 <option value="">Selecione uma cor</option>
-                                <option value="azul">Azul</option>
-                                <option value="vermelho">Vermelho</option>
+                                <option value="AMARELO">AMARELO</option>
+                                <option value="AZUL">AZUL</option>
+                                <option value="VERMELHO">VERMELHO</option>
+                                <option value="ROXO">ROXO</option>
+                                <option value="VERDE">VERDE</option>
+                                <option value="LARANJA">LARANJA</option>
+                                <option value="CINZA">CINZA</option>
                             </Form.Select>
                         </Form.Group>
-                       <div className="d-flex justify-content-between">
+                        <div className="d-flex justify-content-between">
                             <Button as={Link} to="/telaListaEspera" className="botaoPesquisa" variant="secondary">
                                 Voltar
                             </Button>

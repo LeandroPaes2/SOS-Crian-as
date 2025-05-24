@@ -25,6 +25,7 @@ export default function RelatorioListaEspera() {
     const [pesquisaNome, setPesquisaNome] = useState("");
     const [filtroStatus, setFiltroStatus] = useState("1");
     const [ordenarPor, setOrdenarPor] = useState("dataInsercao");
+    const [mostrarFiltros, setMostrarFiltros] = useState(true);
 
     const statusOptions = [
         { name: 'Ativos', value: '1' },
@@ -153,60 +154,6 @@ export default function RelatorioListaEspera() {
             return 0;
         });
 
-    /*const gerarPdfEImprimir = () => {
-        const doc = new jsPDF();
-        if (filtroStatus !== "todos") {
-            if (filtroStatus == "0")
-                doc.text("Relatório de Crianças Excluidas na Lista de Espera", 14, 20);
-            else
-                doc.text("Relatório de Crianças Cadastradas na Lista de Espera", 14, 20);
-            const data = listaFiltrada.map(item => [
-                item.id,
-                item.aluno?.nome || "N/A",
-                item.aluno?.telefone || "N/A",
-                item.aluno?.responsavel?.nome || "N/A",
-                formatarData(item.dataInsercao),
-                getCorCor(item.cor)
-            ]);
-
-            autoTable(doc, {
-            startY: 30,
-            head: [["ID", "Nome","Telefone", "Responsável", "Data de Inserção", "Cor"]],
-            body: data,
-        });
-        }
-        else {
-            doc.text("Todas as Crianças da Lista de Espera", 14, 20);
-
-            const data = listaFiltrada.map(item => [
-                item.id,
-                item.aluno?.nome || "N/A",
-                item.aluno?.telefone || "N/A",
-                item.aluno?.responsavel?.nome || "N/A",
-                formatarData(item.dataInsercao),
-                getCorCor(item.cor),
-                getStatus(item.status)
-            ]);
-
-            autoTable(doc, {
-            startY: 30,
-            head: [["ID", "Nome","Telefone", "Responsável", "Data de Inserção", "Cor", "Status"]],
-            body: data,
-        });
-        }
-        
-
-        const pdfBlob = doc.output('blob');
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        const printWindow = window.open(pdfUrl);
-        printWindow.onload = () => {
-            printWindow.focus();
-            printWindow.print();
-        };
-    };*/
-
-
-
     const gerarPdfEImprimir = () => {
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
@@ -272,56 +219,75 @@ export default function RelatorioListaEspera() {
                 <h2>Lista de Espera</h2>
             </Alert>
 
-            <div style={{
-                position: 'sticky',
-                top: 0,
-                backgroundColor: 'white',
-                zIndex: 1000,
-                padding: '10px',
-                borderBottom: '1px solid #ccc',
-                boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-                width: '70%',
-                margin: '0 auto',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-            }}>
-                <h5>Filtrar Status:</h5>
-                <ButtonGroup className="mb-2 me-3">
-                    {statusOptions.map((radio, idx) => (
-                        <ToggleButton
-                            key={idx}
-                            id={`status-${idx}`}
-                            type="radio"
-                            variant="outline-primary"
-                            name="status"
-                            value={radio.value}
-                            checked={filtroStatus === radio.value}
-                            onChange={(e) => setFiltroStatus(e.currentTarget.value)}
-                        >
-                            {radio.name}
-                        </ToggleButton>
-                    ))}
-                </ButtonGroup>
 
-                <h5 className="mt-2">Ordenar Por:</h5>
-                <ButtonGroup className="mb-2">
-                    {ordenarOptions.map((radio, idx) => (
-                        <ToggleButton
-                            key={idx}
-                            id={`ordenar-${idx}`}
-                            type="radio"
-                            variant="outline-success"
-                            name="ordenar"
-                            value={radio.value}
-                            checked={ordenarPor === radio.value}
-                            onChange={(e) => setOrdenarPor(e.currentTarget.value)}
-                        >
-                            {radio.name}
-                        </ToggleButton>
-                    ))}
-                </ButtonGroup>
-            </div>
+            {mostrarFiltros ? (
+                <div style={{
+                    position: 'fixed',
+                    top: '100px', // ajuste conforme a altura da barra de menu
+                    right: '20px',
+                    width: '250px',
+                    backgroundColor: 'white',
+                    padding: '10px',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                    border: '1px solid #ccc',
+                    zIndex: 1050
+                }}>
+                    <div>
+                        <h5>Filtrar Status:</h5>
+                        <ButtonGroup className="mb-2 me-3">
+                            {statusOptions.map((radio, idx) => (
+                                <ToggleButton
+                                    key={idx}
+                                    id={`status-${idx}`}
+                                    type="radio"
+                                    variant="outline-primary"
+                                    name="status"
+                                    value={radio.value}
+                                    checked={filtroStatus === radio.value}
+                                    onChange={(e) => setFiltroStatus(e.currentTarget.value)}
+                                >
+                                    {radio.name}
+                                </ToggleButton>
+                            ))}
+                        </ButtonGroup>
+                    </div>
+                    <div style={{ marginTop: '10px' }}>
+                        <h5 className="mt-2">Ordenar Por:</h5>
+                        <ButtonGroup className="mb-2">
+                            {ordenarOptions.map((radio, idx) => (
+                                <ToggleButton
+                                    key={idx}
+                                    id={`ordenar-${idx}`}
+                                    type="radio"
+                                    variant="outline-success"
+                                    name="ordenar"
+                                    value={radio.value}
+                                    checked={ordenarPor === radio.value}
+                                    onChange={(e) => setOrdenarPor(e.currentTarget.value)}
+                                >
+                                    {radio.name}
+                                </ToggleButton>
+                            ))}
+                        </ButtonGroup>
+                    </div>
+                    <button onClick={() => setMostrarFiltros(false)} style={{ marginTop: '10px' }}>
+                        &gt;
+                    </button>
+                </div>
+            ) : (
+                <button
+                    onClick={() => setMostrarFiltros(true)}
+                    style={{
+                        position: 'fixed',
+                        top: '80px',
+                        right: '20px',
+                        zIndex: 1050,
+                        padding: '5px 10px'
+                    }}
+                >
+                    &lt;
+                </button>
+            )}
 
             <Form className="mt-3">
                 <Form.Group controlId="formPesquisaNome">
@@ -398,6 +364,6 @@ export default function RelatorioListaEspera() {
                 </Table>
 
             </Container>
-        </PaginaGeral>
+        </PaginaGeral >
     );
 }

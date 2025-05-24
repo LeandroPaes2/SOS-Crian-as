@@ -34,41 +34,41 @@ export default function FormCadFuncionario() {
     }, [editando, location.state]);
 
     function manipularMudanca(evento) {
-    const elemento = evento.target.name;
-    const valor = evento.target.value;
+        const elemento = evento.target.name;
+        const valor = evento.target.value;
 
-    // Atualiza o estado normalmente
-    const novoFuncionario = { ...funcionario, [elemento]: valor };
+        // Atualiza o estado normalmente
+        const novoFuncionario = { ...funcionario, [elemento]: valor };
 
-    // Se o campo alterado for o cargo, atualize o nível automaticamente
-    if (elemento === "cargo") {
-        switch (valor) {
-            case "ASSITENTE SOCIAL":
-                novoFuncionario.nivel = 4;
-                break;
-            case "AUXILIAR ADMINISTRATIVO":
-                novoFuncionario.nivel = 3;
-                break;
-            case "EDUCADOR SOCIAL I":
-                novoFuncionario.nivel = 1;
-                break;
-            case "PSICOLOGO":
-            case "RH":
-                novoFuncionario.nivel = 5;
-                break;
-            case "EDUCADOR":
-                novoFuncionario.nivel = 2;
-                break;
-            case "COORDENADOR":
-                novoFuncionario.nivel = 6;
-                break;
-            default:
-                novoFuncionario.nivel = "";
+        // Se o campo alterado for o cargo, atualize o nível automaticamente
+        if (elemento === "cargo") {
+            switch (valor) {
+                case "ASSITENTE SOCIAL":
+                    novoFuncionario.nivel = 4;
+                    break;
+                case "AUXILIAR ADMINISTRATIVO":
+                    novoFuncionario.nivel = 3;
+                    break;
+                case "EDUCADOR SOCIAL I":
+                    novoFuncionario.nivel = 1;
+                    break;
+                case "PSICOLOGO":
+                case "RH":
+                    novoFuncionario.nivel = 5;
+                    break;
+                case "EDUCADOR":
+                    novoFuncionario.nivel = 2;
+                    break;
+                case "COORDENADOR":
+                    novoFuncionario.nivel = 6;
+                    break;
+                default:
+                    novoFuncionario.nivel = "";
+            }
         }
-    }
 
-    setFuncionario(novoFuncionario);
-}
+        setFuncionario(novoFuncionario);
+    }
 
 
     function validarCPF(cpf) {
@@ -112,7 +112,7 @@ export default function FormCadFuncionario() {
             return;
         }
 
-            const url = editando ? `http://localhost:3000/funcionarios/${funcionario.cpf}` : "http://localhost:3000/funcionarios";
+        const url = editando ? `http://localhost:3000/funcionarios/${funcionario.cpf}` : "http://localhost:3000/funcionarios";
         const method = editando ? "PUT" : "POST";
 
         try {
@@ -137,14 +137,13 @@ export default function FormCadFuncionario() {
 
 
     return (
-         <div className="cadastroFuncionario">
+        <div className="cadastroFuncionario">
             <PaginaGeral>
                 <Alert className="mt-2 mb-2 text-center" variant="dark">
-                    <h2>Funcionários</h2>
+                    <h2>{editando ? "Editar Funcionário" : "Cadastro de Funcionário"}</h2>
                 </Alert>
 
                 {mensagem && <Alert variant="info">{mensagem}</Alert>}
-
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
                         <Form.Label>Nome</Form.Label>
@@ -225,13 +224,13 @@ export default function FormCadFuncionario() {
                     </Form.Group>}
 
                     <div className="d-flex justify-content-between">
-                            <Button as={Link} to="/telaFuncionario" className="botaoPesquisa" variant="secondary">
-                                Voltar
-                            </Button>
-                            <Button className="botaoPesquisa" variant="primary" type="submit">
-                                {editando ? "Atualizar" : "Cadastrar"}
-                            </Button>
-                        </div>
+                        <Button as={Link} to="/telaFuncionario" className="botaoPesquisa" variant="secondary">
+                            Voltar
+                        </Button>
+                        <Button className="botaoPesquisa" variant="primary" type="submit">
+                            {editando ? "Atualizar" : "Cadastrar"}
+                        </Button>
+                    </div>
                 </Form>
             </PaginaGeral>
         </div>
