@@ -59,7 +59,7 @@ export default class Funcionario {
     }
 
 
-    constructor(nome = "", cpf = 0, cargo = "", nivel = "", email = "", senha = "") {
+    constructor(nome = "", cpf = 0, cargo = "", nivel = 0, email = "", senha = "") {
         this.#nome = nome;
         this.#cpf = cpf;
         this.#cargo = cargo;

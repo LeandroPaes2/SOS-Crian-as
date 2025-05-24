@@ -2,6 +2,7 @@ import { Alert, Form, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import "../../css/listaEsperaForm.css";
 
 export default function FormCadListaEspera() {
     const navigate = useNavigate();
@@ -181,7 +182,7 @@ export default function FormCadListaEspera() {
             }
 
             setMensagem(editando ? "Atualizado com sucesso!" : "Cadastrado com sucesso!");
-            setTimeout(() => navigate("/telaListaEspera"), 2000);
+            setTimeout(() => navigate("/relatorioListaEspera"), 2000);
 
         } catch (erro) {
             console.error('Erro ao salvar:', erro);
@@ -190,7 +191,7 @@ export default function FormCadListaEspera() {
     };
 
     return (
-        <div>
+        <div className="cadastroListaEspera">
             <PaginaGeral>
                 <Alert className="mt-2 mb-2 text-center" variant="dark">
                     <h2>Lista de Espera</h2>
@@ -241,14 +242,13 @@ export default function FormCadListaEspera() {
                                 <option value="vermelho">Vermelho</option>
                             </Form.Select>
                         </Form.Group>
-
-                        <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-                            <Button type="submit" className="botaoPesquisa">
+                       <div className="d-flex justify-content-between">
+                            <Button as={Link} to="/telaListaEspera" className="botaoPesquisa" variant="secondary">
+                                Voltar
+                            </Button>
+                            <Button className="botaoPesquisa" variant="primary" type="submit">
                                 {editando ? "Atualizar" : "Cadastrar"}
                             </Button>
-                            <Link to="/telaListaEspera">
-                                <Button variant="secondary" className="botaoPesquisa">Cancelar</Button>
-                            </Link>
                         </div>
                     </div>
                 </Form>

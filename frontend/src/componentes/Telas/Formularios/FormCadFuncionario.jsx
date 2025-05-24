@@ -2,15 +2,17 @@ import { Alert, Form, Button } from "react-bootstrap";
 import "../../css/telaFuncionario.css";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../layouts/PaginaGeral";
-import { Link } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
+import "../../css/funcionarioForm.css";
 
 export default function FormCadFuncionario() {
+    const navigate = useNavigate();
     const [funcionario, setFuncionario] = useState({
         nome: "",
         cpf: "",
         cargo: "",
-        nivel: "",
+        nivel: 0,
         email: "",
         senha: ""
     });
@@ -32,10 +34,42 @@ export default function FormCadFuncionario() {
     }, [editando, location.state]);
 
     function manipularMudanca(evento) {
-        const elemento = evento.target.name;
-        const valor = evento.target.value;
-        setFuncionario({ ...funcionario, [elemento]: valor });
+    const elemento = evento.target.name;
+    const valor = evento.target.value;
+
+    // Atualiza o estado normalmente
+    const novoFuncionario = { ...funcionario, [elemento]: valor };
+
+    // Se o campo alterado for o cargo, atualize o nível automaticamente
+    if (elemento === "cargo") {
+        switch (valor) {
+            case "assitente social":
+                novoFuncionario.nivel = 4;
+                break;
+            case "auxiliar administrativo":
+                novoFuncionario.nivel = 3;
+                break;
+            case "educador social I":
+                novoFuncionario.nivel = 1;
+                break;
+            case "psicologo":
+            case "rh":
+                novoFuncionario.nivel = 5;
+                break;
+            case "educador":
+                novoFuncionario.nivel = 2;
+                break;
+            case "coordenador":
+                novoFuncionario.nivel = 6;
+                break;
+            default:
+                novoFuncionario.nivel = "";
+        }
     }
+
+    setFuncionario(novoFuncionario);
+}
+
 
     function validarCPF(cpf) {
         cpf = cpf.replace(/[^\d]+/g, '');
@@ -65,49 +99,45 @@ export default function FormCadFuncionario() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+
         // Verifique se todos os campos necessários estão preenchidos
-        if (!funcionario.nome || !funcionario.cpf || !funcionario.cargo || !funcionario.nivel || !funcionario.email || !funcionario.senha) {
+        if (!funcionario.nome || !funcionario.cpf || !funcionario.cargo || !funcionario.email || !funcionario.senha) {
             setMensagem("Preencha todos os campos!");
             return;
         }
-    
+
         // Verifique se o CPF é válido
         if (!validarCPF(funcionario.cpf)) {
             setMensagem("CPF inválido");
             return;
         }
-    
-        const url = editando ? `http://localhost:3000/funcionarios/${funcionario.cpf}` : "http://localhost:3000/funcionarios";
+
+            const url = editando ? `http://localhost:3000/funcionarios/${funcionario.cpf}` : "http://localhost:3000/funcionarios";
         const method = editando ? "PUT" : "POST";
-    
+
         try {
             const response = await fetch(url, {
                 method: method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(funcionario)
             });
-            
+
             if (!response.ok) {
-                const errorDetails = await response.json();
-                console.error("Detalhes do erro:", errorDetails);
-                setMensagem(`Erro: ${errorDetails.mensagem || 'Verifique os dados fornecidos.'}`);
-            } else {
-                const data = await response.json();
-                console.log("Funcionário atualizado:", data);
-                setMensagem(editando ? "Funcionário atualizado com sucesso!" : "Funcionário cadastrado com sucesso!");
+                throw new Error("Erro ao salvar dados.");
             }
-            
-            
+
+            setMensagem(editando ? "Atualizado com sucesso!" : "Cadastrado com sucesso!");
+            setTimeout(() => navigate("/relatorioFuncionario"), 2000);
+
         } catch (error) {
             console.error("Erro ao conectar com o backend:", error);
             setMensagem("Erro de conexão com o servidor.");
         }
     };
-    
+
 
     return (
-        <div>
+         <div className="cadastroFuncionario">
             <PaginaGeral>
                 <Alert className="mt-2 mb-2 text-center" variant="dark">
                     <h2>Funcionários</h2>
@@ -120,7 +150,7 @@ export default function FormCadFuncionario() {
                         <Form.Label>Nome</Form.Label>
                         <Form.Control
                             type="text"
-                            id = "nome"
+                            id="nome"
                             placeholder="Digite o nome"
                             value={funcionario.nome}
                             name="nome"
@@ -132,7 +162,7 @@ export default function FormCadFuncionario() {
                         <Form.Label>CPF</Form.Label>
                         <Form.Control
                             type="text"
-                            id = "cpf"
+                            id="cpf"
                             placeholder="Digite o CPF"
                             value={funcionario.cpf}
                             name="cpf"
@@ -145,36 +175,36 @@ export default function FormCadFuncionario() {
                         <Form.Label>Cargo</Form.Label>
                         <Form.Select
                             value={funcionario.cargo}
-                            id = "cargo"
+                            id="cargo"
                             name="cargo"
                             onChange={manipularMudanca}
                         >
                             <option value="">Selecione um cargo</option>
-                            <option value="coordenador">Coordenador</option>
-                            <option value="professor">Professor</option>
+                            <option value="assitente social">ASSITENTE SOCIAL</option>
+                            <option value="auxiliar administrativo">AUXILIAR ADMINISTRATIVO</option>
+                            <option value="coordenador">COORDENADOR</option>
+                            <option value="educador">EDUCADOR</option>
+                            <option value="educador social I">EDUCADOR SOCIAL I</option>
+                            <option value="psicologo">PSICÓLOGO</option>
+                            <option value="rh">RH</option>
                         </Form.Select>
                     </Form.Group>
 
                     <Form.Group className="mb-3">
                         <Form.Label>Nível</Form.Label>
-                        <Form.Select
+                        <Form.Control
+                            type="text"
+                            id="nivel"
                             value={funcionario.nivel}
-                            nivel = "cargo"
-                            name="nivel"
-                            onChange={manipularMudanca}
-                        >
-                            <option value="">Selecione um nível</option>
-                            <option value="alto">Alto</option>
-                            <option value="medio">Médio</option>
-                            <option value="baixo">Baixo</option>
-                        </Form.Select>
+                            readOnly
+                        />
                     </Form.Group>
 
                     <Form.Group className="mb-3">
                         <Form.Label>Email</Form.Label>
                         <Form.Control
                             type="email"
-                            id = "email"
+                            id="email"
                             placeholder="xxxx@gmail.com"
                             value={funcionario.email}
                             name="email"
@@ -186,7 +216,7 @@ export default function FormCadFuncionario() {
                         <Form.Label>Senha</Form.Label>
                         <Form.Control
                             type="password"
-                            id = "senha"
+                            id="senha"
                             placeholder="Digite a senha"
                             value={funcionario.senha}
                             name="senha"
@@ -194,12 +224,14 @@ export default function FormCadFuncionario() {
                         />
                     </Form.Group>
 
-                    <Button as={Link} to="/telaFuncionario" className="botaoPesquisa" variant="secondary">
-                        Voltar
-                    </Button>
-                    <Button className="botaoPesquisa" variant="primary" type="submit">
-                        {editando ? "Atualizar" : "Cadastrar"}
-                    </Button>
+                    <div className="d-flex justify-content-between">
+                            <Button as={Link} to="/telaFuncionario" className="botaoPesquisa" variant="secondary">
+                                Voltar
+                            </Button>
+                            <Button className="botaoPesquisa" variant="primary" type="submit">
+                                {editando ? "Atualizar" : "Cadastrar"}
+                            </Button>
+                        </div>
                 </Form>
             </PaginaGeral>
         </div>
