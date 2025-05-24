@@ -12,6 +12,7 @@
     justify-content: center;     /* Centraliza na vertical */
     align-items: center;         /* Centraliza na horizontal */
     text-align: center;          /* Centraliza texto */
+    
   }
   
   
@@ -20,4 +21,8 @@
     color: #343a40; /* Cor que combina com seu menu */
     font-size: 2rem;
     letter-spacing: 1px;
+  }
+
+  .top{
+    padding-top: 90px;
   }

@@ -44,9 +44,9 @@ export default class AlunoCtrl {
                     let aluno = new Aluno();
 
                     let objResponsavel = await aluno.consultarResponsavel(responsavel.cpf, conexao);
-                    let objEscola =await aluno.consultarEscola(escola.id, conexao);
-                    
-                     const alunoCompleto = new Aluno(
+                    let objEscola = await aluno.consultarEscola(escola.id, conexao);
+
+                    const alunoCompleto = new Aluno(
                         0,
                         nome,
                         dataNascimento,
@@ -118,37 +118,26 @@ export default class AlunoCtrl {
             } = req.body;
 
             const dadosValidos =
-                id !== undefined && id !== 0 &&
+                id !== undefined &&
                 nome && dataNascimento &&
                 responsavel &&
                 cidade &&
                 rua && numero &&
-                escola && 
+                escola &&
                 telefone && periodoEscola &&
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
                 descricao &&
-                rg && status != 0 && periodoProjeto && cep && bairro;
+                rg && status && periodoProjeto && cep && bairro;
             if (dadosValidos) {
                 let conexao;
                 try {
-                    const objResponsavel = new Responsavel(
-                        responsavel.cpf,
-                        responsavel.nome,
-                        responsavel.telefone,
-                        responsavel.email,
-                        responsavel.parentesco
-                    );
-
-                    const objEscola = new Escola(
-                        escola.codigo,
-                        escola.nome,
-                        escola.endereco
-                    );
+                    const objResponsavel = null;
+                    const objEscola = null;
 
 
-                    const objFormularioSaude = null; //gambiarra pra rodar por enquanto
-                    const objFicha = null;  //gambiarra pra rodar por enquanto
+                    // const objFormularioSaude = null; //gambiarra pra rodar por enquanto
+                    // const objFicha = null;  //gambiarra pra rodar por enquanto
 
                     /*
                     const objFormularioSaude = new FormularioSaude(
@@ -175,8 +164,8 @@ export default class AlunoCtrl {
                         possuiSindrome,
                         descricao,
                         rg,
-                        objFormularioSaude,
-                        objFicha,
+                        // objFormularioSaude,
+                        // objFicha,
                         status,
                         periodoProjeto,
                         cep

@@ -68,6 +68,11 @@ export default class Presenca{
         return await presencaDAO.consultarTurmasPorMateria(materiaId, supabase);
     }
 
+    async consultarPorId(supabase) {
+        const presencaDAO = new PresencaDAO();
+        return await presencaDAO.consultarPorId(this.id, supabase);
+    }
+    
     async alterar(supabase) {
         const presencaDAO = new PresencaDAO();
         await presencaDAO.alterar(this, supabase);

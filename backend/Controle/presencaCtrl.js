@@ -87,13 +87,38 @@ export default class PresencaCtrl{
             conexao.release();
         }
     }
+    
+    async consultarPorId(requisicao, resposta) {
+        const conexao = await criarConexao();
+        resposta.type("application/json");
+        
+        try {
+            const id = parseInt(requisicao.params.id);
+            if (isNaN(id)) {
+                throw new Error("ID inválido");
+            }
+    
+            const presenca = new Presenca(id);
+            const presencaCompleta = await presenca.consultarPorId(conexao);
+            
+            resposta.status(200).json(presencaCompleta);
+        } catch (erro) {
+            resposta.status(500).json({
+                status: false,
+                mensagem: "Erro ao buscar presença: " + erro.message
+            });
+        } finally {
+            conexao.release();
+        }
+    }
 
     async alterar(requisicao, resposta) {
         const conexao = await criarConexao();
         resposta.type("application/json");
 
         if (requisicao.method === 'PUT' && requisicao.is("application/json")) {
-            const { id, materiaId, turmaId, alunos } = requisicao.body;
+            const id = requisicao.params.id;
+            const {materiaId, turmaId, alunos } = requisicao.body;
 
             try {
                 // Validação básica

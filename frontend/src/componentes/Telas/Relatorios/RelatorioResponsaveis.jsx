@@ -162,13 +162,9 @@ export default function RelatorioResponsaveis() {
                     <p>Quatidade de responsaveis cadastrados: {listaDeResponsaveis.length}</p>
                 </Container>
                 <div>
-                        <Button as={Link} to="/telaResponsavel" className="botaoPesquisa" variant="secondary">
-                                Voltar
-                        </Button>
-
-                        <Button as={Link} to="/cadastroResponsavel" className="botaoPesquisa" variant="secondary">
-                                Cadastrar novo responsável
-                        </Button>
+                <Button as={Link} to="/telaResponsavel" className="botaoPesquisa" variant="secondary">
+                        Voltar
+                    </Button>
                 </div>
             </PaginaGeral>
         </>

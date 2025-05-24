@@ -1,79 +1,107 @@
-import { Alert, Form, Button } from "react-bootstrap";
+import { Alert, Form, Button, InputGroup, FormControl } from "react-bootstrap";
 import "../../css/login.css";
-import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
-
-export default function Login(props){
+import { useNavigate, Link } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useLogin } from "../../../LoginContext.js";
+import logo2 from "../../imagens/logo2.PNG";
+import Navbar from 'react-bootstrap/Navbar';
+export default function Login(props) {
 
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [listaDeFuncionarios, setListaDeFuncionarios] = useState([])
     const [mensagem, setMensagem] = useState("");
     const navigate = useNavigate();
-
-    const formulario = document.getElementById("formularioLogin");
+    const [mostrarSenha, setMostrarSenha] = useState(false);
+    const { login } = useLogin();
+    const [manterConectado, setManterConectado] = useState(false);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
         try {
-            console.log(email);
-            const response = fetch("http://localhost:3000/funcionarios/"+email);
-            if (!response.ok) 
-                throw new Error("Funcionario nao cadastrado");
-            const dados = response.json();
-                
-            /*setTimeout(() => {
-                navigate("/relatorioResponsavel"); 
-            }, 3000);*/
+            const response = await fetch("http://localhost:3000/funcionarios/" + email);
+            if (!response.ok) {
+                setMensagem("Funcionário não cadastrado.");
+                return;
+            }
+            const dados = await response.json();
+            console.log(dados);
+            if (senha !== dados[0].senha) {
+                setMensagem("Senha incorreta.");
+                return;
+            }
+            if (!dados || dados.length == 0) {
+                setMensagem("Funcionário não cadastrado.");
+                return;
+            }
+            login(dados[0], manterConectado);
+            setMensagem("");
 
-        }catch(e){
-            console.error("Funcionario nao cadastrado ", e);
-            setMensagem("Erro ao carregar os funcionarios.");
+        } catch (e) {
+            setMensagem("Funcionario não cadastrado.");
         }
-
+        setTimeout(() => setMensagem(""), 5000);
     }
 
     return (
         <div>
-            <br />
-            <Alert className="alert-custom text-center mt-4 mb-4">
-                    <h2 className="titulo-alert">Sistema SOS Crianças</h2>
-            </Alert>
-            <br />
-            {mensagem && <Alert className="mt-02 mb-02 success text-center" variant={
-                mensagem.includes("sucesso")
-                ? "success"
-                : mensagem.includes("Erro") || mensagem.includes("erro") || mensagem.includes("Preencha") || mensagem.includes("invalido")
-                ? "danger"
-                : "warning"
-                    }>
-                {mensagem}
-                </Alert>} 
-            <div className="divForm">
-                <Form onSubmit={handleSubmit} id="formularioLogin"  className="formularioD">
-                    <Form.Group className="mb-4" controlId="email">
-                        <Form.Label>E-Mail</Form.Label>
-                        <Form.Control type="email" placeholder="Enter your email" 
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}/>
-                    </Form.Group>
+            {mensagem && (
+                <Alert
+                    className="alert-animado mt-2 mb-2 text-center"
+                    style={{ position: 'absolute', top: '20%', left: '43%' }}
+                    variant={
+                        mensagem.includes("sucesso")
+                            ? "success"
+                            : mensagem.includes("nao cadastrado") || mensagem.includes("erro") || mensagem.includes("incorreta")
+                                ? "danger"
+                                : "warning"
+                    }
+                >
+                    {mensagem}
+                </Alert>
+            )}
 
-                    <Form.Group className="mb-4" controlId="senha">
-                    <Form.Label>Senha</Form.Label>
-                        <Form.Control type="password" placeholder="Senha" 
-                        required
-                        value={senha}
-                        onChange={(e) => setSenha(e.target.value)}/>
-                    </Form.Group>
-                    <Form.Group className="mb-4" controlId="formBasicCheckbox">
-                        <Form.Check type="checkbox" label="Check me out" />
-                    </Form.Group>
-                    <Button variant="primary" type="submit">
-                        Entrar
-                    </Button>
+            <div className="formularioL">
+                <div className="imagemLogin"></div>
+                <Navbar.Brand><img src={logo2} style={{ width: '300px', position: 'absolute', top: '20%', left: '12%' }} /></Navbar.Brand>
+                <Form onSubmit={handleSubmit} id="formularioLogin"  >
+                    <div className="texto">
+                        <Form.Group className="mb-4" controlId="email">
+                            <Form.Label>E-Mail</Form.Label>
+                            <Form.Control type="email" placeholder="Enter your email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)} />
+                        </Form.Group>
+
+                        <Form.Group className="mb-4" controlId="senha">
+                            <Form.Label>Senha</Form.Label>
+                            <InputGroup>
+                                <Form.Control type={mostrarSenha ? "text" : "password"}
+                                    placeholder="Senha"
+                                    required
+                                    value={senha}
+                                    onChange={(e) => setSenha(e.target.value)} />
+                                <InputGroup.Text onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
+                                    {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
+                                </InputGroup.Text>
+                            </InputGroup>
+                        </Form.Group>
+                        <Button className="botaoSenha" as={Link} to="/verificarEmail">
+                            Esqueceu a senha?
+                        </Button>
+                        <Form.Group className="mb-4" controlId="formBasicCheckbox">
+                            <Form.Check type="checkbox" label="Mantenha-me conectado"
+                                onChange={() => setManterConectado(!manterConectado)} />
+                        </Form.Group>
+                        <div style={{ display: "flex", justifyContent: "center" }}>
+                            <Button variant="primary" type="submit">
+                                Entrar
+                            </Button>
+                        </div>
+
+                    </div>
                 </Form>
             </div>
         </div>

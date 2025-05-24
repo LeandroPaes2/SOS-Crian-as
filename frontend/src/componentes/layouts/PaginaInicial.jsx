@@ -4,7 +4,8 @@ import { Container } from "react-bootstrap";
 import Menu from './Menu';
 import MenuInicial from './MenuInicial';
 import { useState, useEffect } from "react";
-import "../css/aviso.css";
+import "../css/aviso.css"
+
 
 function dataNova(dataISO) {
     const data = new Date(dataISO);
@@ -16,16 +17,16 @@ function dataNova(dataISO) {
 
 export default function Pagina(props) {
 
-    const [listaDeEventos, setListaDeEventos ] = useState([]);
+    const [listaDeEventos, setListaDeEventos] = useState([]);
 
     useEffect(() => {  //é executado uma única vez quando o componente monta, ou seja, quando a página/carregamento do componente acontece pela primeira vez.
         //Ele serve pra carregar os elementos que você precisa assim que a página abrir, como buscar dados no backend
         const buscarEventos = async () => {
             try {
                 const response = await fetch("http://localhost:3000/eventos");
-                if (!response.ok) 
+                if (!response.ok)
                     throw new Error("Erro ao buscar eventos");
-                
+
                 const dados = await response.json();
                 setListaDeEventos(dados); // Atualiza o estado com os dados do backend
                 if (dados.length > 0) {
@@ -34,7 +35,7 @@ export default function Pagina(props) {
                 }
             } catch (error) {
                 console.error("Erro ao buscar eventos:", error);
-                
+
             }
         };
 
@@ -43,12 +44,13 @@ export default function Pagina(props) {
 
 
     const eventoProximo = [...listaDeEventos]
-    .filter(e => new Date(e.data).getTime() >= new Date().getTime()) // Pega só os eventos futuros (ou de hoje)
-    .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())[0]; // Ordena e pega o mais próximo
+        .filter(e => new Date(e.data).getTime() >= new Date().getTime()) // Pega só os eventos futuros (ou de hoje)
+        .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())[0]; // Ordena e pega o mais próximo
 
     return (
         <>
-            <Container>
+            <Container fluid>
+                <div className='top'>
                 <Menu titulo="Sistema SOS Crianças" />
                 <br />
                 {eventoProximo ? (
@@ -60,13 +62,14 @@ export default function Pagina(props) {
                         <p><strong>Fim:</strong> {eventoProximo.horaFim}</p>
                     </div>
                 ) : (
-                    <h5>Nenhum evento futuro disponível.</h5>
+                    <h5 className='aviso-custom'>Nenhum evento futuro disponível.</h5>
                 )}
-                <br />
+
                 <MenuInicial />
                 {
                     props.children
                 }
+                </div>
             </Container>
         </>
     );

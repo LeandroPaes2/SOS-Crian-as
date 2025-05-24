@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Form, Button, Alert, Table } from "react-bootstrap";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import "../../css/telaTurma.css";
 
 export default function FormCadPresenca() {
     const [materias, setMaterias] = useState([]);
@@ -21,8 +22,20 @@ export default function FormCadPresenca() {
             setEditando(true);
             setSelectedMateria(location.state.materia.id);
             setSelectedTurma(location.state.turma.id);
-            
-            // Preenche presenças com dados da edição
+
+            // Atualiza matérias sem duplicatas
+            setMaterias(prev => {
+                const exists = prev.some(m => m.id === location.state.materia.id);
+                return exists ? prev : [...prev, location.state.materia];
+            });
+
+            // Atualiza turmas sem duplicatas
+            setTurmas(prev => {
+                const exists = prev.some(t => t.id === location.state.turma.id);
+                return exists ? prev : [...prev, location.state.turma];
+            });
+
+            // Preenche presenças
             const presencasIniciais = {};
             location.state.alunosPresentes.forEach(ap => {
                 presencasIniciais[ap.aluno.id] = ap.presente;
@@ -30,7 +43,7 @@ export default function FormCadPresenca() {
             setPresencas(presencasIniciais);
         }
     }, [location.state]);
-
+    
     // Carrega matérias ao iniciar
     useEffect(() => {
         async function carregarMaterias() {
@@ -64,32 +77,42 @@ export default function FormCadPresenca() {
     }, [selectedMateria]);
 
     // Carrega alunos quando turma é selecionada
-    useEffect(() => {
-        async function carregarAlunos() {
-            if (selectedTurma) {
-                try {
-                    const res = await fetch('http://localhost:3000/alunos');
-                    const data = await res.json();
-                    
-                    // Mantém presenças existentes em modo edição
-                    const novasPresencas = {...presencas};
+    const carregarAlunos = useCallback(async () => {
+        if (selectedTurma || editando) {
+            try {
+                const res = await fetch('http://localhost:3000/alunos');
+                const data = await res.json();
+
+                // Mantém presenças existentes
+                setPresencas(prevPresencas => {
+                    const novasPresencas = { ...prevPresencas };
+
                     if (!editando) {
                         data.forEach(aluno => {
                             if (!(aluno.id in novasPresencas)) {
                                 novasPresencas[aluno.id] = true;
                             }
                         });
+                    } else {
+                        data.forEach(aluno => {
+                            if (!(aluno.id in novasPresencas)) {
+                                novasPresencas[aluno.id] = false;
+                            }
+                        });
                     }
-                    
-                    setAlunos(data);
-                    setPresencas(novasPresencas);
-                } catch (error) {
-                    setMensagem('Erro ao carregar alunos: ' + error.message);
-                }
+                    return novasPresencas;
+                });
+
+                setAlunos(data);
+            } catch (error) {
+                setMensagem('Erro ao carregar alunos: ' + error.message);
             }
         }
+    }, [selectedTurma, editando]); // presencas não é mais necessário
+
+    useEffect(() => {
         carregarAlunos();
-    }, [selectedTurma]);
+    }, [carregarAlunos]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -139,106 +162,102 @@ export default function FormCadPresenca() {
     };
 
     return (
-        <PaginaGeral>
-            <h2 className="text-center mb-4">
-                {editando ? 'Editar Presenças' : 'Cadastrar Presenças'}
-            </h2>
-            
-            {mensagem && (
-                <Alert variant={mensagem.includes('sucesso') ? 'success' : 'danger'}>
-                    {mensagem}
-                </Alert>
-            )}
-
-            <Form onSubmit={handleSubmit}>
-                <div className="row mb-3">
-                    <div className="col-md-6">
-                        <Form.Group controlId="formMateria">
-                            <Form.Label>Matéria</Form.Label>
-                            <Form.Select
-                                value={selectedMateria}
-                                onChange={(e) => !editando && setSelectedMateria(e.target.value)}
-                                disabled={editando}
-                                required
-                            >
-                                <option value="">Selecione uma matéria</option>
-                                {materias.map(materia => (
-                                    <option key={materia.id} value={materia.id}>
-                                        {materia.nome}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-                    </div>
-                    
-                    <div className="col-md-6">
-                        <Form.Group controlId="formTurma">
-                            <Form.Label>Turma</Form.Label>
-                            <Form.Select
-                                value={selectedTurma}
-                                onChange={(e) => !editando && setSelectedTurma(e.target.value)}
-                                disabled={editando}
-                                required
-                            >
-                                <option value="">Selecione uma turma</option>
-                                {turmas.map(turma => (
-                                    <option key={turma.id} value={turma.id}>
-                                        {turma.cor} - {turma.periodo}
-                                    </option>
-                                ))}
-                                {turmas.length === 0 && selectedMateria && (
-                                    <option disabled>Nenhuma turma encontrada para esta matéria</option>
-                                )}
-                            </Form.Select>
-                        </Form.Group>
-                    </div>
-                </div>
-
-                {alunos.length > 0 && (
-                    <>
-                        <h4 className="mt-4 mb-3">Registro de Presenças</h4>
-                        <Table striped bordered hover responsive>
-                            <thead>
-                                <tr>
-                                    <th>Aluno</th>
-                                    <th>Presente</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {alunos.map(aluno => (
-                                    <tr key={aluno.id}>
-                                        <td>{aluno.nome}</td>
-                                        <td>
-                                            <Form.Check
-                                                type="checkbox"
-                                                checked={presencas[aluno.id] || false}
-                                                onChange={(e) => setPresencas({
-                                                    ...presencas,
-                                                    [aluno.id]: e.target.checked
-                                                })}
-                                            />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-                    </>
+        <div className="cadastroTurma">
+            <PaginaGeral>
+                <h2 className="text-center mb-4">
+                    {editando ? 'Editar' : 'Cadastrar'}
+                </h2>
+                
+                {mensagem && (
+                    <Alert variant={mensagem.includes('sucesso') ? 'success' : 'danger'}>
+                        {mensagem}
+                    </Alert>
                 )}
 
-                <div className="d-flex justify-content-between mt-4">
-                    <Button as={Link} to="/relatorioPresenca" variant="secondary">
+                <Form onSubmit={handleSubmit}>
+                    <div className="row mb-3">
+                        <div className="col-md-6">
+                            <Form.Group controlId="formMateria">
+                                <Form.Label>Matéria</Form.Label>
+                                <Form.Select
+                                    value={selectedMateria}
+                                    onChange={(e) => !editando && setSelectedMateria(e.target.value)}
+                                    disabled={editando}
+                                    required
+                                >
+                                    <option value="">Selecione uma matéria</option>
+                                    {materias.map(materia => (
+                                        <option key={materia.id} value={materia.id}>
+                                            {materia.nome}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+                        </div>
+                        
+                        <div className="col-md-6">
+                            <Form.Group controlId="formTurma">
+                                <Form.Label>Turma</Form.Label>
+                                <Form.Select
+                                    value={selectedTurma}
+                                    onChange={(e) => !editando && setSelectedTurma(e.target.value)}
+                                    disabled={editando}
+                                    required
+                                >
+                                    <option value="">Selecione uma turma</option>
+                                    {turmas.map(turma => (
+                                        <option key={turma.id} value={turma.id}>
+                                            {turma.cor} - {turma.periodo}
+                                        </option>
+                                    ))}
+                                    {turmas.length === 0 && selectedMateria && (
+                                        <option disabled>Nenhuma turma encontrada para esta matéria</option>
+                                    )}
+                                </Form.Select>
+                            </Form.Group>
+                        </div>
+                    </div>
+
+                    {alunos.length > 0 && (
+                        <>
+                            <h4 className="mt-4 mb-3">Registro de Presenças</h4>
+                            <Table striped bordered hover responsive>
+                                <thead>
+                                    <tr>
+                                        <th>Aluno</th>
+                                        <th>Presente</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {alunos.map((aluno) => (
+                                        <tr key={aluno.id}>
+                                            <td>{aluno.nome}</td>
+                                            <td>
+                                                <Form.Check
+                                                    type="checkbox"
+                                                    checked={presencas[aluno.id] || false}
+                                                    onChange={(e) => setPresencas({
+                                                        ...presencas,
+                                                        [aluno.id]: e.target.checked
+                                                    })}
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                        </>
+                    )}
+
+                    <Button as={Link} to="/telaPresenca" className="botaoPesquisa" variant="secondary">
                         Voltar
                     </Button>
-                    
-                    <Button 
-                        type="submit" 
-                        variant="primary"
-                        disabled={alunos.length === 0}
-                    >
-                        {editando ? 'Atualizar Presenças' : 'Salvar Presenças'}
+
+                    <Button type="submit" className="botaoPesquisa" variant="primary" disabled={alunos.length === 0}>
+                        {editando ? 'Atualizar' : 'Salvar'}
                     </Button>
-                </div>
-            </Form>
-        </PaginaGeral>
+                </Form>
+            </PaginaGeral>
+        </div>
     );
 }

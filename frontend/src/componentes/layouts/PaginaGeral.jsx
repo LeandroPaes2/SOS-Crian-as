@@ -6,7 +6,7 @@ import Menu from './Menu';
 export default function PaginaGeral(props) {
     return (
         <>
-            <Container>
+            <Container className='container'>
                 <Menu />
                 {
                     props.children

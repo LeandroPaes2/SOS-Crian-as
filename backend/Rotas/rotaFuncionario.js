@@ -8,10 +8,12 @@ const funcCtrl = new FuncionarioCtrl();
 const rotaFuncionario = Router();
 
 rotaFuncionario.post("/", funcCtrl.gravar);
-rotaFuncionario.put("/:email", funcCtrl.editar);
-rotaFuncionario.patch("/:email", funcCtrl.editar);
-rotaFuncionario.delete("/:email", funcCtrl.excluir);
+rotaFuncionario.put("/:cpf", funcCtrl.editar);
+rotaFuncionario.patch("/:cpf", funcCtrl.editar);
+rotaFuncionario.delete("/:cpf", funcCtrl.excluir);
 rotaFuncionario.get("/:email", funcCtrl.consultar);
+rotaFuncionario.get("/",funcCtrl.consultar);
+rotaFuncionario.get("/:cpf", funcCtrl.consultar);
 rotaFuncionario.get("/",funcCtrl.consultar);
 
 export default rotaFuncionario;

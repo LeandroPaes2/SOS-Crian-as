@@ -97,37 +97,40 @@ export default function FormCadAluno(props) {
 
     async function buscarResp() {
         validarCPF(dados.responsavel.cpf);
-        const cpf = dados.responsavel.cpf?.replace(/\D/g, ""); // Remove pontos e traços se houver
-        const url = `http://localhost:3000/responsavel/${cpf}`;
 
-        try {
-            const response = await fetch(url, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+        if(!cpfInvalido)
+        {
+            const url = `http://localhost:3000/responsaveis/${dados.responsavel.cpf}`;
 
-            if (!response.ok) {
-                throw new Error("Responsável não encontrado.");
-            } else
-                setRespNaoEncontrado(false);
-
-            const data = await response.json();
-
-            // Atualiza os dados 
-            setDados((prev) => ({
-                ...prev,
-                responsavel: {
-                    ...prev.responsavel,
-                    nome: data.nome,
-                    email: data.email,
-                    telefone: data.telefone,
-                },
-            }));
-        } catch (error) {
-            console.error("Erro ao buscar responsável:", error);
-            setRespNaoEncontrado(true);
+            try {
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+    
+                if (!response.ok) {
+                    throw new Error("Responsável não encontrado.");
+                } else
+                    setRespNaoEncontrado(false);
+    
+                const data = await response.json();
+    
+                // Atualiza os dados 
+                setDados((prev) => ({
+                    ...prev,
+                    responsavel: {
+                        ...prev.responsavel,
+                        nome: data.nome,
+                        email: data.email,
+                        telefone: data.telefone,
+                    },
+                }));
+            } catch (error) {
+                console.error("Erro ao buscar responsável:", error);
+                setRespNaoEncontrado(true);
+            }
         }
     }
     async function handleSubmit(e) {
@@ -552,17 +555,11 @@ export default function FormCadAluno(props) {
     };
 
     return (
-        <div className="cadastroAluno">
+        
             <PaginaGeral>
-                <Alert className="mt-2 mb-2 text-center" variant="dark">
-                    <h2>{editando ? "Editar Aluno" : "Cadastro de Aluno"}</h2>
-                </Alert>
-
                 {mensagem && <Alert variant="info">{mensagem}</Alert>}
-
-                <Form onSubmit={handleSubmit}>
-
-
+    
+                <Form onSubmit={handleSubmit} className="formularioD">
                     <div className="divResp">
                         <div className="divTitulo">
                             <strong> <h4>Responsavel</h4></strong>
@@ -572,15 +569,15 @@ export default function FormCadAluno(props) {
                                 <Form.Label>CPF:</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    placeholder="Digite o CPF do(da) Responsavel"
+                                    placeholder="Digite o CPF do responsável"
                                     name="responsavel.cpf"
                                     value={dados.responsavel.cpf || ""}
-                                    className={erros.responsavel ? "input-error" : ""}
                                     onChange={handleChange}
+                                    className={erros.responsavel ? 'input-error' : ''}
                                 />
                                 {cpfInvalido && (
                                     <Form.Text className="texto-aviso-cep">
-                                        CPF invalio
+                                        CPF inválido
                                     </Form.Text>
                                 )}
                             </Form.Group>
@@ -589,10 +586,9 @@ export default function FormCadAluno(props) {
                                 <Form.Control
                                     type="text"
                                     disabled
-                                    placeholder="Digite o CPF do(da) Responsavel"
+                                    placeholder="Digite o CPF do responsável"
                                     name="responsavel.nome"
                                     value={dados.responsavel.nome || ""}
-
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3" id="responsavel.email">
@@ -600,10 +596,9 @@ export default function FormCadAluno(props) {
                                 <Form.Control
                                     type="text"
                                     disabled
-                                    placeholder="Digite o CPF do(da) Responsavel"
+                                    placeholder="Digite o CPF do responsável"
                                     name="responsavel.email"
                                     value={dados.responsavel.email || ""}
-
                                 />
                             </Form.Group>
                             <Form.Group className="mb-3" id="responsavel.telefone">
@@ -611,10 +606,9 @@ export default function FormCadAluno(props) {
                                 <Form.Control
                                     type="text"
                                     disabled
-                                    placeholder="Digite o CPF do(da) Responsavel"
+                                    placeholder="Digite o CPF do responsável"
                                     name="responsavel.nome"
                                     value={dados.responsavel.telefone || ""}
-
                                 />
                             </Form.Group>
                             <Row className="mb-2 align-items-center">
@@ -643,13 +637,9 @@ export default function FormCadAluno(props) {
                                     </OverlayTrigger>
                                 </Col>
                             </Row>
-
                         </div>
                     </div>
-
-
-
-
+    
                     <div className="divTitulo">
                         <strong> <h4>Aluno</h4>  </strong>
                     </div>
@@ -674,7 +664,6 @@ export default function FormCadAluno(props) {
                             className={erros.dataNascimento ? 'input-error' : ''}
                         />
                     </Form.Group>
-
                     <Form.Group className="mb-3" id="rg">
                         <Form.Label>RG:</Form.Label>
                         <Form.Control
@@ -753,7 +742,6 @@ export default function FormCadAluno(props) {
                             value={dados.possuiSindrome || ""}
                             onChange={handleChange}
                             className={erros.possuiSindrome ? 'input-error' : ''}
-
                         />
                     </Form.Group>
                     <Form.Group className="mb-3" id="descricao">
@@ -766,9 +754,7 @@ export default function FormCadAluno(props) {
                             onChange={handleChange}
                         />
                     </Form.Group>
-
-
-
+    
                     <div className="divTitulo">
                         <strong> <h4>Escola</h4>  </strong>
                     </div>
@@ -862,7 +848,7 @@ export default function FormCadAluno(props) {
                         />
                         {cepNaoEncontrado && (
                             <Form.Text className="texto-aviso-cep">
-                                Cep não encontrado, preencha manualmente.
+                                CEP não encontrado, preencha manualmente.
                             </Form.Text>
                         )}
                     </Form.Group>
@@ -878,7 +864,7 @@ export default function FormCadAluno(props) {
                         />
                         {cepNaoEncontrado && (
                             <Form.Text className="texto-aviso-cep">
-                                Cep não encontrado, preencha manualmente.
+                                CEP não encontrado, preencha manualmente.
                             </Form.Text>
                         )}
                     </Form.Group>
@@ -894,7 +880,7 @@ export default function FormCadAluno(props) {
                         />
                         {cepNaoEncontrado && (
                             <Form.Text className="texto-aviso-cep">
-                                Cep não encontrado, preencha manualmente.
+                                CEP não encontrado, preencha manualmente.
                             </Form.Text>
                         )}
                     </Form.Group>
@@ -913,13 +899,12 @@ export default function FormCadAluno(props) {
                         <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
                             Voltar
                         </Button>
-                        <Button className="botaoPesquisa" variant="primary" type="submit" onClick={handleSubmit}>
-                            {editando ? "AtualizaR" : "Cadastrar"}
+                        <Button className="botaoPesquisa" variant="primary" type="submit">
+                            {editando ? "Atualizar" : "Cadastrar"}
                         </Button>
                     </div>
                 </Form>
             </PaginaGeral>
-        </div >
-
     );
+    
 }

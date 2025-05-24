@@ -86,15 +86,7 @@
 
 
 
-.cadastroAluno {
-    background-color: rgba(255, 255, 255, 0.9);
-    width: 60%;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 100px;
-}
+
 
 .popover-custom {
     max-width: 250px;
@@ -120,3 +112,38 @@
   .input-error {
   border: 1px solid red;
 }
+
+.formularioD {
+    max-width: 80%; /* Largura máxima do formulário */
+    width: 100%; /* Largura total em telas menores */
+    padding: 30px; /* Padding interno */
+    border-radius: 10px; /* Bordas arredondadas */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    margin: 0 auto; /* Centraliza o formulário */
+}
+/* Estilo dos botões */
+.botaoPesquisa {
+    width: 100%; /* Botões ocupam toda a largura */
+    background-color: #007bff; /* Cor de fundo do botão */
+    border-color: #007bff; /* Cor da borda do botão */
+    color: white; /* Cor do texto */
+    margin-top: 10px; /* Espaço acima do botão */
+    transition: background-color 0.3s; /* Transição suave */
+}
+.botaoPesquisa:hover {
+    background-color: #0056b3; /* Cor do botão ao passar o mouse */
+}
+
+/* Estilo dos campos de entrada */
+.input-error {
+    border: 2px solid #dc3545; /* Borda vermelha para erro */
+}
+
+.texto-aviso-cep {
+    color: #dc3545; /* Cor do texto de aviso */
+    background-color: #f8d7da; /* Fundo claro para aviso */
+    border: 1px solid #f5c6cb; /* Borda do aviso */
+    padding: 5px; /* Padding do aviso */
+    border-radius: 5px; /* Bordas arredondadas do aviso */
+}
+

@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS funcionario (
+                        func_nome VARCHAR(50) NOT NULL,
+                        func_cpf VARCHAR(14) NOT NULL UNIQUE,
+                        func_cargo VARCHAR(20) NOT NULL,
+                        func_nivel VARCHAR(20) NOT NULL,
+                        func_email VARCHAR(50) NOT NULL,
+                        func_senha VARCHAR(15) NOT NULL,
+                        CONSTRAINT pk_funcionario PRIMARY KEY(func_cpf)
+                    );
+
+INSERT INTO (func_nome, func_cpf, func_cargo, func_nivel, func_email, func_senha) VALUES ("0785.436.508-79", "Roberto Carlos", "RH", "3", "arianelima@gmail.com", "minhaSenha*");
+INSERT INTO (func_nome, func_cpf, func_cargo, func_nivel, func_email, func_senha) VALUES ("435.829.608-46", "Cleide da Silva", "Professora", "1", "arianelimacampos16@gmail.com", "senhaAri*20");

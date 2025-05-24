@@ -2,6 +2,7 @@ import Presenca from "../Modelo/presenca.js";
 import supabase from "./Conexao.js";
 import Turma from "../Modelo/turma.js";
 import Materia from "../Modelo/materia.js";
+import Aluno from "../Modelo/aluno.js";
 
 export default class PresencaDAO{
     /*
@@ -73,23 +74,106 @@ export default class PresencaDAO{
 
     async consultar(supabase) {
         const sql = `
-            SELECT 
+            SELECT DISTINCT
                 p.pre_id AS id,
                 p.pre_data_hora AS "dataHora",
+                m.mat_id AS "materiaId",
                 m.mat_nome AS "materiaNome",
-                t.turm_cor AS "turmaCor"
+                t.turm_id AS "turmaId",
+                t.turm_cor AS "turmaCor",
+                a.alu_id AS "alunoId",
+                a.alu_nome AS "alunoNome",
+                pa.presente
             FROM presenca p
             JOIN materia m ON p.mat_id = m.mat_id
             JOIN turma t ON p.turm_id = t.turm_id
+            LEFT JOIN presenca_aluno pa ON p.pre_id = pa.pre_id
+            LEFT JOIN aluno a ON pa.alu_id = a.alu_id
         `;
 
-        const result = await supabase.query(sql);
-        return result.rows.map(row => new Presenca(
-            row.id,
-            new Date(row.dataHora),
-            new Materia(0, row.materiaNome),
-            new Turma(0, row.turmaCor, '')
-        ));
+        try {
+            const result = await supabase.query(sql);
+            const rows = result.rows;
+            
+            // Agrupa os registros por presença
+            const presencasMap = new Map();
+            
+            rows.forEach(row => {
+                if (!presencasMap.has(row.id)) {
+                    presencasMap.set(row.id, new Presenca(
+                        row.id,
+                        new Date(row.dataHora),
+                        new Materia(row.materiaId, row.materiaNome),
+                        new Turma(row.turmaId, row.turmaCor, ''),
+                        []
+                    ));
+                }
+                
+                if (row.alunoId) {
+                    presencasMap.get(row.id).alunosPresentes.push({
+                        aluno: new Aluno(row.alunoId, row.alunoNome),
+                        presente: row.presente
+                    });
+                }
+            });
+
+            return Array.from(presencasMap.values());
+            
+        } catch (erro) {
+            console.error("Erro na consulta de presenças:", erro);
+            throw erro;
+        }
+    }
+
+    async consultarPorId(id, supabase) {
+        const sql = `
+            SELECT 
+                p.pre_id AS id,
+                p.pre_data_hora AS "dataHora",
+                m.mat_id AS "materiaId",
+                m.mat_nome AS "materiaNome",
+                t.turm_id AS "turmaId",
+                t.turm_cor AS "turmaCor",
+                a.alu_id AS "alunoId",
+                a.alu_nome AS "alunoNome",
+                pa.presente
+            FROM presenca p
+            JOIN materia m ON p.mat_id = m.mat_id
+            JOIN turma t ON p.turm_id = t.turm_id
+            LEFT JOIN presenca_aluno pa ON p.pre_id = pa.pre_id
+            LEFT JOIN aluno a ON pa.alu_id = a.alu_id
+            WHERE p.pre_id = $1
+        `;
+    
+        try {
+            const result = await supabase.query(sql, [id]);
+            if (result.rows.length === 0) {
+                throw new Error("Presença não encontrada");
+            }
+    
+            // Processamento dos dados igual ao método consultar()
+            const presenca = new Presenca(
+                result.rows[0].id,
+                new Date(result.rows[0].dataHora),
+                new Materia(result.rows[0].materiaId, result.rows[0].materiaNome),
+                new Turma(result.rows[0].turmaId, result.rows[0].turmaCor, '')
+            );
+    
+            // Adiciona alunos presentes
+            result.rows.forEach(row => {
+                if (row.alunoId) {
+                    presenca.alunosPresentes.push({
+                        aluno: new Aluno(row.alunoId, row.alunoNome),
+                        presente: row.presente
+                    });
+                }
+            });
+    
+            return presenca;
+        } catch (erro) {
+            console.error("Erro ao consultar presença por ID:", erro);
+            throw erro;
+        }
     }
 
     async consultarTurmasPorMateria(materiaId, supabase) {

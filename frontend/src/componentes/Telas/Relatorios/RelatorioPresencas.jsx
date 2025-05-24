@@ -1,67 +1,71 @@
 import { useState, useEffect } from 'react';
-import { Container, Table, Alert, Button, Spinner } from 'react-bootstrap';
+import { Container, Table, Alert, Button, Form} from 'react-bootstrap';
 import PaginaGeral from '../../layouts/PaginaGeral';
 import { Link, useNavigate } from 'react-router-dom';
 import "../../css/telaTurma.css"
 
 export default function RelatorioPresenca() {
     const [presencas, setPresencas] = useState([]);
+    const [materias, setMaterias] = useState([]);
+    const [turmas, setTurmas] = useState([]);
+    const [filtros, setFiltros] = useState({
+        materia: '',
+        turma: '',
+        data: ''
+    });
     const [mensagem, setMensagem] = useState('');
-    const [carregando, setCarregando] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
-        async function carregarPresencas() {
+        async function carregarDados() {
             try {
-                const resposta = await fetch('http://localhost:3000/presencas');
-                
-                if (!resposta.ok) {
-                    throw new Error('Erro ao carregar presenças');
-                }
-                
-                const dados = await resposta.json();
-                setPresencas(dados);
-                setMensagem('');
-            } catch (erro) {
-                setMensagem(erro.message);
-            } finally {
-                setCarregando(false);
-            }
-        }
-        carregarPresencas();
-    }, []);
+                // Carrega presenças
+                const resPresencas = await fetch('http://localhost:3000/presencas');
+                if (!resPresencas.ok) throw new Error('Erro ao carregar presenças');
+                const dadosPresencas = await resPresencas.json();
+                setPresencas(dadosPresencas);
 
-    const excluirPresencas = async (presenca) => {
-        if (window.confirm(`Deseja realmente excluir a presença de ${presenca.materia.nome}?`)) {
-            if (!presenca || !presenca.id) {
-                setMensagem("Erro: presença inválida!");
-                return;
-            }
+                // Carrega matérias
+                const resMaterias = await fetch('http://localhost:3000/materias');
+                const dadosMaterias = await resMaterias.json();
+                setMaterias(dadosMaterias);
 
-            try {
-                const response = await fetch(`http://localhost:3000/presencas/${presenca.id}`, {
-                    method: "DELETE"
-                });
-
-                if (response.ok) {
-                    setMensagem("Presença excluída com sucesso!");
-                    setPresencas(presencas.filter(p => p.id !== presenca.id));
-                } else {
-                    setMensagem("Erro ao excluir a presença.");
-                }
-
-                setTimeout(() => {
-                    setMensagem("");
-                }, 3000);
+                // Carrega turmas
+                const resTurmas = await fetch('http://localhost:3000/turmas');
+                const dadosTurmas = await resTurmas.json();
+                setTurmas(dadosTurmas);
 
             } catch (error) {
-                console.error("Erro ao conectar com o backend:", error);
-                setMensagem("Erro de conexão com o servidor.");
-                setTimeout(() => {
-                    setMensagem("");
-                }, 3000);
+                setMensagem(error.message);
             }
         }
+        carregarDados();
+    }, []);
+
+    const handleFiltroChange = (e) => {
+        const { name, value } = e.target;
+        setFiltros(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const filtrarPresencas = () => {
+        return presencas.filter(presenca => {
+            const dataPresenca = new Date(presenca.dataHora).toISOString().split('T')[0];
+            const filtroData = filtros.data ? dataPresenca === filtros.data : true;
+            
+            return (
+                (filtros.materia ? presenca.materia.id.toString() === filtros.materia : true) &&
+                (filtros.turma ? presenca.turma.id.toString() === filtros.turma : true) &&
+                filtroData
+            );
+        });
+    };
+
+    const excluirPresencas = async (presenca) => {
+        // Mantenha a mesma função de exclusão que você já tinha
+        // ...
     };
 
     const formatarData = (dataString) => {
@@ -79,26 +83,77 @@ export default function RelatorioPresenca() {
         <div className="topo">
             <PaginaGeral>
                 <Container className="form-container mt-4">
-                    <h2 className="text-center mb-4">Relatório de Presenças</h2>
+                    <Alert className="alert-custom text-center" variant="dark">
+                        <h2 className="titulo-alert">Presenças</h2>
+                    </Alert>
 
+                    {/* Filtros */}
+                    <div className="mb-4">
+                        <Form>
+                            <div className="row g-3">
+                                <div className="col-md-4">
+                                    <Form.Group controlId="filtroMateria">
+                                        <Form.Label>Matéria</Form.Label>
+                                        <Form.Select
+                                            name="materia"
+                                            value={filtros.materia}
+                                            onChange={handleFiltroChange}
+                                        >
+                                            <option value="">Todas matérias</option>
+                                            {materias.map(materia => (
+                                                <option key={materia.id} value={materia.id}>
+                                                    {materia.nome}
+                                                </option>
+                                            ))}
+                                        </Form.Select>
+                                    </Form.Group>
+                                </div>
+
+                                <div className="col-md-4">
+                                    <Form.Group controlId="filtroTurma">
+                                        <Form.Label>Turma</Form.Label>
+                                        <Form.Select
+                                            name="turma"
+                                            value={filtros.turma}
+                                            onChange={handleFiltroChange}
+                                        >
+                                            <option value="">Todas turmas</option>
+                                            {turmas.map(turma => (
+                                                <option key={turma.id} value={turma.id}>
+                                                    {turma.cor} - {turma.periodo}
+                                                </option>
+                                            ))}
+                                        </Form.Select>
+                                    </Form.Group>
+                                </div>
+
+                                <div className="col-md-4">
+                                    <Form.Group controlId="filtroData">
+                                        <Form.Label>Data</Form.Label>
+                                        <Form.Control
+                                            type="date"
+                                            name="data"
+                                            value={filtros.data}
+                                            onChange={handleFiltroChange}
+                                        />
+                                    </Form.Group>
+                                </div>
+                            </div>
+                        </Form>
+                    </div>
+
+                    {/* Mantenha o restante do seu código existente */}
                     {mensagem && (
-                        <Alert
-                            className="text-center"
-                            variant={
-                                mensagem.toLowerCase().includes("sucesso")
-                                    ? "success"
-                                    : mensagem.toLowerCase().includes("erro")
-                                        ? "danger"
-                                        : "warning"
-                            }
-                        >
-
+                        <Alert className="text-center" variant={
+                            mensagem.toLowerCase().includes("sucesso") ? "success" :
+                            mensagem.toLowerCase().includes("erro") ? "danger" : "warning"
+                        }>
                             {mensagem}
                         </Alert>
                     )}
 
-                    {presencas.length === 0 ? (
-                        <Alert variant="info">Nenhuma presença registrada</Alert>
+                    {filtrarPresencas().length === 0 ? (
+                        <Alert variant="info">Nenhuma presença encontrada com os filtros selecionados</Alert>
                     ) : (
                         <Table striped bordered hover responsive>
                             <thead>
@@ -110,24 +165,23 @@ export default function RelatorioPresenca() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {presencas.map(presenca => (
-                                    <tr key={presenca.id}>
+                                {filtrarPresencas().map((presenca) => (
+                                    <tr key={`${presenca.id}`}>
                                         <td>{formatarData(presenca.dataHora)}</td>
                                         <td>{presenca.materia.nome || 'N/A'}</td>
                                         <td>
                                             {presenca.turma.cor || 'N/A'}
                                             <br />
+                                            {presenca.turma.periodo && `(${presenca.turma.periodo})`}
                                         </td>
                                         <td>
+                                            {/* Mantenha seus botões de ação existentes */}
                                             <Button
-                                                onClick={() => navigate("/cadastroPresenca", {
-                                                state: {
-                                                    id: presenca.id,
-                                                    materia: presenca.materia,
-                                                    turma: presenca.turma,
-                                                    alunosPresentes: presenca.alunosPresentes
-                                                }
-                                            })}
+                                                onClick={() => navigate("/cadastroPresenca", {state: {id: presenca.id, materia: presenca.materia, turma: presenca.turma, alunosPresentes: presenca.alunosPresentes, dataHora: presenca.dataHora}})}
+                                                variant="warning"
+                                                size="sm"
+                                                className="me-2"
+                                                title="Editar"
                                             >
                                                 ✏️
                                             </Button>
@@ -145,7 +199,7 @@ export default function RelatorioPresenca() {
                             </tbody>
                         </Table>
                     )}
-
+                    
                     <div>
                         <Button as={Link} to="/telaPresenca" className="botaoPesquisa" variant="secondary">
                             Voltar
