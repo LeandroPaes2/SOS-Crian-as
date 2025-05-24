@@ -174,18 +174,18 @@ export default class FuncionarioDAO {
 
     async alterar(funcionario, conexao) {
         if (funcionario instanceof Funcionario) {
-            try { 
+            try {
                 var func = new Funcionario();
                 const sqlBusca = `SELECT func_senha FROM funcionario WHERE func_cpf = $1`;
                 const parametrosBusca = [
                     func.cpf
                 ];
                 ;
-                if(await conexao.query(sqlBusca, parametrosBusca) !== funcionario.senha){
-                     // Criptografando a senha antes de atualizar
+                if (await conexao.query(sqlBusca, parametrosBusca) !== funcionario.senha) {
+                    // Criptografando a senha antes de atualizar
                     var senhaCriptografada = await bcrypt.hash(funcionario.senha, 10);
                 }
-                else{
+                else {
                     var senhaCriptografada = func.senha;
                 }
 
@@ -234,7 +234,7 @@ export default class FuncionarioDAO {
         }
     }
 
-    async verificarSenha(cpf, senha, conexao) {
+    /*async verificarSenha(cpf, senha, conexao) {
         try {
             const sql = `SELECT func_senha FROM funcionario WHERE func_cpf = $1`;
             const resultado = await conexao.query(sql, [cpf]);
@@ -249,7 +249,38 @@ export default class FuncionarioDAO {
         } catch (e) {
             throw new Error("Erro ao verificar senha: " + e.message);
         }
+    }*/
+
+    async autenticar(email, senha, conexao) {
+        try {
+            const sql = `SELECT * FROM funcionario WHERE func_email = $1`;
+            const resultado = await conexao.query(sql, [email]);
+
+            if (resultado.rows.length === 0) {
+                return null; // Funcionário não encontrado
+            }
+
+            const linha = resultado.rows[0];
+            const senhaCorreta = await bcrypt.compare(senha, linha.func_senha);
+
+            if (senhaCorreta) {
+                return new Funcionario(
+                    linha.func_nome,
+                    linha.func_cpf,
+                    linha.func_cargo,
+                    linha.func_nivel,
+                    linha.func_email,
+                    linha.func_senha
+                );
+            } else {
+                return null; // Senha incorreta
+            }
+        } catch (e) {
+            throw new Error("Erro ao verificar senha: " + e.message);
+        }
     }
+
+
 
     async excluir(funcionario, conexao) {
         if (funcionario instanceof Funcionario) {

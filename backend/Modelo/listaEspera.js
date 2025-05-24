@@ -71,4 +71,5 @@ export default class ListaEspera {
            const dao = new ListaEsperaDAO();
            return await dao.consultar(termo, conexao);
     }
+
 }

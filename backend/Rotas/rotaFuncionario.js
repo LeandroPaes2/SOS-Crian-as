@@ -11,8 +11,10 @@ rotaFuncionario.post("/", funcCtrl.gravar);
 rotaFuncionario.put("/:cpf", funcCtrl.editar);
 rotaFuncionario.patch("/:cpf", funcCtrl.editar);
 rotaFuncionario.delete("/:cpf", funcCtrl.excluir);
+rotaFuncionario.post("/login", funcCtrl.autenticar);
 rotaFuncionario.get("/:nome?", funcCtrl.consultar);
 rotaFuncionario.get("/",funcCtrl.consultar);
+
 
 export default rotaFuncionario;
 

@@ -146,4 +146,38 @@ export default class FuncionarioCtrl {
             });
         }
     }
+
+    async autenticar(req, res) {
+        const { email, senha } = req.body;
+        const conexao = await conectar();
+
+        if (req.method === "POST") {
+            try {
+
+                const funcionario = new Funcionario();
+                const funcSenhaCorreta = await funcionario.autenticar(email, senha, conexao);
+
+                if (funcSenhaCorreta !== null) {
+                    res.status(200).json({
+                        mensagem: `Login do funcionario ${funcSenhaCorreta.nome} realizado com sucesso`,
+                        funcionario: funcSenhaCorreta
+                    });
+                } else {
+                    res.status(401).json({ erro: "Senha incorreta" });
+                }
+            } catch (e) {
+                await conexao.query('ROLLBACK');
+                res.status(500).json({ status: false, mensagem: e.message });
+            } finally {
+                conexao.release();
+            }
+        } else {
+            res.status(400).json({
+                "status": false,
+                "mensagem": "Requisição inválida! Consulte a documentação da API."
+            });
+        }
+    }
+
+
 }
