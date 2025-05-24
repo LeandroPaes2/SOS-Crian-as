@@ -43,23 +43,23 @@ export default function FormCadFuncionario() {
     // Se o campo alterado for o cargo, atualize o nível automaticamente
     if (elemento === "cargo") {
         switch (valor) {
-            case "assitente social":
+            case "ASSITENTE SOCIAL":
                 novoFuncionario.nivel = 4;
                 break;
-            case "auxiliar administrativo":
+            case "AUXILIAR ADMINISTRATIVO":
                 novoFuncionario.nivel = 3;
                 break;
-            case "educador social I":
+            case "EDUCADOR SOCIAL I":
                 novoFuncionario.nivel = 1;
                 break;
-            case "psicologo":
-            case "rh":
+            case "PSICOLOGO":
+            case "RH":
                 novoFuncionario.nivel = 5;
                 break;
-            case "educador":
+            case "EDUCADOR":
                 novoFuncionario.nivel = 2;
                 break;
-            case "coordenador":
+            case "COORDENADOR":
                 novoFuncionario.nivel = 6;
                 break;
             default:
@@ -180,13 +180,13 @@ export default function FormCadFuncionario() {
                             onChange={manipularMudanca}
                         >
                             <option value="">Selecione um cargo</option>
-                            <option value="assitente social">ASSITENTE SOCIAL</option>
-                            <option value="auxiliar administrativo">AUXILIAR ADMINISTRATIVO</option>
-                            <option value="coordenador">COORDENADOR</option>
-                            <option value="educador">EDUCADOR</option>
-                            <option value="educador social I">EDUCADOR SOCIAL I</option>
-                            <option value="psicologo">PSICÓLOGO</option>
-                            <option value="rh">RH</option>
+                            <option value="ASSITENTE SOCIAL">ASSITENTE SOCIAL</option>
+                            <option value="AUXILIAR ADMINISTRATIVO">AUXILIAR ADMINISTRATIVO</option>
+                            <option value="COORDENADOR">COORDENADOR</option>
+                            <option value="EDUCADOR">EDUCADOR</option>
+                            <option value="EDUCADOR SOCIAL I">EDUCADOR SOCIAL I</option>
+                            <option value="PSICOLOGO">PSICÓLOGO</option>
+                            <option value="RH">RH</option>
                         </Form.Select>
                     </Form.Group>
 
@@ -212,7 +212,7 @@ export default function FormCadFuncionario() {
                         />
                     </Form.Group>
 
-                    <Form.Group className="mb-3">
+                    {!editando && <Form.Group className="mb-3">
                         <Form.Label>Senha</Form.Label>
                         <Form.Control
                             type="password"
@@ -222,7 +222,7 @@ export default function FormCadFuncionario() {
                             name="senha"
                             onChange={manipularMudanca}
                         />
-                    </Form.Group>
+                    </Form.Group>}
 
                     <div className="d-flex justify-content-between">
                             <Button as={Link} to="/telaFuncionario" className="botaoPesquisa" variant="secondary">
