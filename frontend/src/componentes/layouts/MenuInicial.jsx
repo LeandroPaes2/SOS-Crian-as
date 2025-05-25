@@ -13,11 +13,12 @@ import { useLogin } from "../../LoginContext.js";
 
 export default function MenuInicial() {
 
-    const { funcionario }=useLogin();
+const { funcionario }=useLogin();
+    console.log(funcionario.nivel);
 
     return (
         <div className="divBotao">
-            {funcionario?.nivel === "1" || funcionario?.nivel==="4" ||  funcionario?.nivel==="3" &&(
+            {(funcionario?.nivel == 1 || funcionario?.nivel===4 ||  funcionario?.nivel===3) &&(
             
                     <Button as={Link} to="/telaAluno" className='botaoMenu' variant="primary" size="lg">
                         <img src={alunos} style={{width: '100px'}} />
@@ -25,7 +26,7 @@ export default function MenuInicial() {
                         Alunos
                     </Button>
             )}
-            {funcionario?.nivel === "6" || funcionario?.nivel==="5" ||  funcionario?.nivel==="3" || funcionario?.nivel === "4" &&(
+            {(funcionario?.nivel === 6 || funcionario?.nivel===5 ||  funcionario?.nivel===3 || funcionario?.nivel === 4) &&(
                 
                 <Button className='botaoMenu' variant="primary" size="lg">
                     <img src={funcionarios} style={{width: '100px'}} />
@@ -33,7 +34,7 @@ export default function MenuInicial() {
                     Funcionários
                 </Button>
             )}
-            {funcionario?.nivel === "1" || funcionario?.nivel==="2" &&(
+            {(funcionario?.nivel === 1 || funcionario?.nivel===2) &&(
                 <>
                 <Button as={Link} to="/telaMateria" className='botaoMenu' variant="primary" size="lg">
                         <img src={materias} style={{width: '100px'}} />
@@ -47,14 +48,14 @@ export default function MenuInicial() {
                     </Button>
                     </>
             )}
-            {funcionario?.nivel !== "4" &&(
+            {funcionario?.nivel !== 4 &&(
                  <Button as={Link} to="/telaEvento" className='botaoMenu' variant="primary" size="lg">
                         <img src={responsavel} style={{width: '100px'}} />
                         <br/>
                         Eventos
                     </Button>
             )}
-            {funcionario?.nivel === "1" || funcionario?.nivel === "2" &&(
+            {(funcionario?.nivel === 1 || funcionario?.nivel === 2) &&(
                 <Button as={Link} to="/telaTurma" className='botaoMenu' variant="primary" size="lg">
                         <img src={turmas} style={{width: '100px'}} />
                         <br/>

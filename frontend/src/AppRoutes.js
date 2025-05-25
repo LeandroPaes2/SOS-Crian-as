@@ -38,6 +38,8 @@ import FormCadFuncionario from './componentes/Telas/Formularios/FormCadFuncionar
 import RelatorioListaEspera from './componentes/Telas/Relatorios/RelatorioListaEspera';
 import TelaCadastroListaEspera from './componentes/Telas/TelaCadastroListaEspera';
 import FormCadListaEspera from './componentes/Telas/Formularios/FormCadListaEspera';
+import TelaRecuperarSenha from './componentes/Telas/TelaRecuperarSenha';
+import TelaRVerificarCodigo from './componentes/Telas/TelaVerificarCodigo';
 
 function AppRoutes() {
     const { isLogado } = useLogin();
@@ -46,6 +48,8 @@ function AppRoutes() {
         <Routes>
             <Route path="/" element={isLogado ? <Navigate to="/telaMenu" /> : <TelaLogin />} />
             <Route path="/verificarEmail" element={<TelaVerificarEmail/>}/>
+            <Route path="/redefinirSenha" element={<TelaRecuperarSenha/>}/>
+            <Route path="/verificarCodigo" element={<TelaRVerificarCodigo/>}/>
             {isLogado && (
                 <>
                     <Route path="/telaMenu" element={<TelaMenu />} />

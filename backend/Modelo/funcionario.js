@@ -106,5 +106,10 @@ export default class Funcionario {
         return await funcDAO.autenticar(email, senha, conexao);
     }
 
+    async alterarSenhaFuncionario(email, senhaAtual, novaSenha, conexao){
+        const funcDAO = new FuncionarioDAO();
+        return await funcDAO.alterarSenhaFuncionario(email, senhaAtual, novaSenha, conexao);
+    }
+
 }
 

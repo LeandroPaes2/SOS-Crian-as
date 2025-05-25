@@ -5,12 +5,10 @@ import { IoPerson, IoLogOut } from "react-icons/io5";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { Button, InputGroup, Alert } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function DadosUsuario(){
 
     const { funcionario, logout, atualizarFuncionario } = useLogin();
-    const [mostrarSenha, setMostrarSenha] = useState(false);
     const [email, setEmail] = useState(funcionario.email);
     const [emailAlterado, setEmailAlterado] = useState(false);
     const [mensagem, setMensagem] = useState("");
@@ -94,7 +92,7 @@ export default function DadosUsuario(){
 
             <div className="field">
             <label>Email</label>
-            <input type="email" value={email} 
+            <input type="email" value={email} required
             onChange={(e) => {
                     setEmail(e.target.value);
                     setEmailAlterado(e.target.value !== funcionario.email); 
@@ -111,19 +109,12 @@ export default function DadosUsuario(){
             <input type="text" value={funcionario.cargo} disabled />
             </div>
 
-            <div className="field senha-wrapper">
-            <label>Senha</label>
-            <input
-                type={mostrarSenha ? "text" : "password"}
-                value={funcionario.senha}
-                disabled
-            />
-            <InputGroup.Text onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
-                            {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
-                        </InputGroup.Text>
+            <div className="field">
+            <label>Nível</label>
+            <input type="text" value={funcionario.nivel} disabled />
+            </div>
             
             </div>
-        </div>
         </div>
     );
 }

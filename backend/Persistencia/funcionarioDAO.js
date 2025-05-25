@@ -143,8 +143,11 @@ export default class FuncionarioDAO {
             }
 
             const linha = resultado.rows[0];
+            console.log("Senha digitada:", senha);
+            console.log("Hash armazenado:", linha.func_senha);
             const senhaCorreta = await bcrypt.compare(senha, linha.func_senha);
-
+            console.log("Senha correta?", senhaCorreta);
+            
             if (senhaCorreta) {
                 return new Funcionario(
                     linha.func_nome,
@@ -160,6 +163,40 @@ export default class FuncionarioDAO {
         } catch (e) {
             throw new Error("Erro ao verificar senha: " + e.message);
         }
+    }
+
+    async alterarSenhaFuncionario(email, senhaAtual, novaSenha, conexao) {
+         try {
+        const sqlSelect = `SELECT * FROM funcionario WHERE func_email = $1`;
+        const resultado = await conexao.query(sqlSelect, [email]);
+
+        if (resultado.rows.length === 0) {
+            return null; // Funcionário não encontrado
+        }
+
+        const linha = resultado.rows[0];
+        const senhaCorreta = await bcrypt.compare(senhaAtual, linha.func_senha);
+
+        if (!senhaCorreta) {
+            return null; // Senha atual incorreta
+        }
+
+        const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
+
+        const sqlUpdate = `UPDATE funcionario SET func_senha = $1 WHERE func_email = $2`;
+        await conexao.query(sqlUpdate, [novaSenhaHash, email]);
+
+        return new Funcionario(
+            linha.func_nome,
+            linha.func_cpf,
+            linha.func_cargo,
+            linha.func_nivel,
+            linha.func_email,
+            novaSenhaHash 
+        );
+    } catch (e) {
+        throw new Error("Erro ao alterar senha: " + e.message);
+    }
     }
 
 

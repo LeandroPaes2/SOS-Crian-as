@@ -1,74 +1,56 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Alert, Form, Button, InputGroup } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { GoArrowLeft } from "react-icons/go";
 import { useLogin } from "../../../LoginContext";
 import "../../css/alterarSenha.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-export default function AlterarSenha(){
 
+export default function RecuperarSenha(){
+
+    const location = useLocation();
     const [mensagem, setMensagem] = useState("");
-    const [senhaAtual, setSenhaAtual] = useState("");
+    const email = location.state?.email || "";
     const [novaSenha, setNovaSenha] = useState("");
     const [confirmarSenha, setConfirmarSenha] = useState("");
     const [mostrarSenha, setMostrarSenha] = useState(false);
     const {funcionario, logout} = useLogin();
+    const [token, setToken] = useState('');
     const navigate = useNavigate();
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token"); 
+    const query = new URLSearchParams(window.location.search);
+
 
     const verificarVoltar= async (event)=>{
         event.preventDefault();
 
         if(window.confirm("Deseja realmente voltar? O processo nao sera concluido.")){
-            navigate("/dadosUsuario");
+            navigate("/");
             return;
         }
     }
 
     const handleSubmit = async (event) => {
-        event.preventDefault(); // Evita recarregar a página
-
-        if(novaSenha!==confirmarSenha){
-            setMensagem("Novas senhas não sao iguais!");
-            return;
-        }else if(senhaAtual==novaSenha){
-            setMensagem("Senha atual e antiga são iguais!");
-            return;
-        }
-
-        const url = `http://localhost:3000/alterarSenha`;
-        const method = "PUT";
-        console.log(token);
-        try {
-
-            const response = await fetch(url, {
-                method: method,
-                headers: { "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                 },
-                
-                body: JSON.stringify({email: funcionario.email,
-                senhaAtual: senhaAtual,
-                novaSenha: novaSenha})
+        event.preventDefault();
+        try{
+            if(novaSenha!==confirmarSenha){
+                setMensagem("Senhas incompativeis.")
+                return;
+            }
+            const resposta = await fetch('http://localhost:3000/redefinirSenha', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, novaSenha }),
             });
 
-            if (response.ok) {
-                setMensagem("Senha alterada com sucesso! Aguarde para fazer login novamente.");
-                setTimeout(() => setMensagem(""), 3000);
-                setTimeout(() => {
-                    logout();
-                    navigate("/");
-                }, 3000); 
-            } 
-            else {
-                setMensagem("Erro ao atualizar senha!");
+            const dados = await resposta.json();
+            setMensagem(dados.mensagem || 'Erro ao redefinir senha');
+            } catch (erro) {
+                console.error(erro);
+                setMensagem('Erro ao conectar com o servidor');
             }
-        } catch (error) {
-            console.error("Erro ao conectar com o backend:", error);
-            setMensagem("Erro de conexão com o servidor.");
-        }
-    };
+    }
+
     return(
         <div>
             <Alert className="alert-custom text-center mt-4 mb-4">
@@ -85,16 +67,6 @@ export default function AlterarSenha(){
             </Alert>} 
             <div className="divForm">
                 <Form onSubmit={handleSubmit} id="formularioLogin"  className="formularioD">
-                    <Form.Group className="campoSenhaAtual" controlId="senhaAtual">
-                        <Form.Label>Senha Atual</Form.Label>
-                        <Form.Control type={mostrarSenha ? "text" : "password"} placeholder="Digite a senha atual" 
-                        required
-                        value={senhaAtual}
-                        onChange={(e) => setSenhaAtual(e.target.value)}/>
-                        <InputGroup.Text onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
-                            {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
-                        </InputGroup.Text>
-                    </Form.Group>
                     <Form.Group className="campoNovaSenha" controlId="novaSenha">
                         <Form.Label>Nova Senha</Form.Label>
                         <Form.Control type={mostrarSenha ? "text" : "password"} placeholder="Digite a senha nova" 
@@ -107,7 +79,7 @@ export default function AlterarSenha(){
                     </Form.Group>
                     <Form.Group className="campoConfirmarSenha" controlId="confirmarSenha">
                         <Form.Label>Confirme a senha nova</Form.Label>
-                        <Form.Control type="password" placeholder="Digite a senha nova" 
+                        <Form.Control type={mostrarSenha ? "text" : "password"} placeholder="Digite a senha nova" 
                         required
                         value={confirmarSenha}
                         onChange={(e) => setConfirmarSenha(e.target.value)}/>
@@ -120,7 +92,7 @@ export default function AlterarSenha(){
                         <Button className="botaoVoltar" onClick={verificarVoltar}>
                         <GoArrowLeft /> Voltar
                         </Button>
-                        <Button variant="primary" type="submit" className="botaoEnviar">
+                        <Button variant="primary" type="submit" className="botaoEnviar" onClick={handleSubmit}>
                             Alterar Senha
                         </Button>
                     </div>

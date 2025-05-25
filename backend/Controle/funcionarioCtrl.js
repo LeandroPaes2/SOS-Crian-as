@@ -1,7 +1,12 @@
 import Funcionario from "../Modelo/funcionario.js";
 import conectar from "../Persistencia/Conexao.js";
+import jwt from "jsonwebtoken";
+import sgMail from '@sendgrid/mail';
 
 export default class FuncionarioCtrl {
+    constructor() {
+        this.codigosRecuperacao = {}; // { email: { codigo, expira } }
+    }
     async gravar(requisicao, resposta) {
         const conexao = await conectar();
         resposta.type("application/json");
@@ -125,6 +130,34 @@ export default class FuncionarioCtrl {
         resposta.type("application/json");
 
         if (requisicao.method == "GET") {
+            let cpf = requisicao.params.cpf || "";
+            const funcionario = new Funcionario();
+            let conexao;
+            try {
+                conexao = await conectar();
+                await conexao.query('BEGIN');
+                const listaFuncionario = await funcionario.consultar({ cpf }, conexao);
+                await conexao.query('COMMIT');
+                resposta.status(200).json(listaFuncionario);
+            } catch (e) {
+                resposta.status(500).json({ status: false, mensagem: e.message });
+            } finally {
+                if(conexao)
+                    conexao.release();
+            }
+        } else {
+            resposta.status(400).json({
+                "status": false,
+                "mensagem": "Requisição inválida! Consulte a documentação da API."
+            });
+        }
+    }
+    
+    async consultarEmail(requisicao, resposta) {
+    
+        resposta.type("application/json");
+
+        if (requisicao.method == "GET") {
             let email = requisicao.params.email || "";
             const funcionario = new Funcionario();
             let conexao;
@@ -148,6 +181,32 @@ export default class FuncionarioCtrl {
         }
     }
 
+    async consultarPorEmail(email) {
+        let conexao;
+        try {
+            conexao = await conectar();
+        
+            const resultado = await conexao.query(
+                'SELECT * FROM funcionario WHERE func_email = $1',
+                [email]
+            );
+
+            if(conexao)
+                conexao.release();
+
+            if (resultado.rows.length === 0) {
+                return null; // ou lançar erro se preferir
+            }
+
+            return resultado.rows[0]; // retorna o funcionário encontrado
+
+        } catch (erro) {
+            console.error("Erro ao buscar funcionário por e-mail:", erro.message);
+            throw new Error("Erro ao buscar funcionário.");
+        }
+    }
+
+
     async autenticar(req, res) {
         const { email, senha } = req.body;
 
@@ -158,10 +217,19 @@ export default class FuncionarioCtrl {
                 const funcionario = new Funcionario();
                 const funcSenhaCorreta = await funcionario.autenticar(email, senha, conexao);
 
-                if (funcSenhaCorreta !== null) {
+                if (funcSenhaCorreta) {
+                    const token = jwt.sign(
+                    {
+                        email: funcSenhaCorreta.email,
+                        nivel: funcSenhaCorreta.nivel
+                    },
+                        process.env.JWT_SECRET,
+                        { expiresIn: "2h" } // você pode ajustar esse tempo
+                    );
                     res.status(200).json({
                         mensagem: `Login do funcionario ${funcSenhaCorreta.nome} realizado com sucesso`,
-                        funcionario: funcSenhaCorreta
+                        funcionario: funcSenhaCorreta,
+                        token: token
                     });
                 } else {
                     res.status(401).json({ erro: "Senha incorreta" });
@@ -180,5 +248,101 @@ export default class FuncionarioCtrl {
         }
     }
 
+    salvarCodigoRecuperacao(email, codigo) {
+        const expira = Date.now() + 10 * 60 * 1000;
+        this.codigosRecuperacao[email] = { codigo, expira };
+        console.log(`Código salvo para ${email}:`, codigo);
+    }
 
+    verificarCodigo(email, codigo) {
+        const registro = this.codigosRecuperacao[email];
+        console.log('Verificando código:', { email, codigoEnviado: codigo, codigoSalvo: registro?.codigo });
+        if (!registro) return false;
+        if (registro.codigo.toString() !== codigo.toString()) return false;
+        if (Date.now() > registro.expira) {
+            delete this.codigosRecuperacao[email];
+            return false;
+        }
+        return true;
+    }
+
+    removerCodigo(email) {
+        delete this.codigosRecuperacao[email];
+    }
+
+    async atualizarSenhaFuncionario(email, novaSenha) {
+        try {
+            const conexao = await conectar();
+            const client = await conexao.connect();
+
+            const hashNovaSenha = await bcrypt.hash(novaSenha, 10); // criptografa
+
+            const resultado = await client.query(
+                'UPDATE funcionario SET func_senha = $1 WHERE func_email = $2',
+                [hashNovaSenha, email]
+            );
+
+            client.release();
+
+            if (resultado.rowCount === 0) {
+                throw new Error("Funcionário não encontrado.");
+            }
+
+            return { sucesso: true, mensagem: "Senha atualizada com sucesso." };
+
+        } catch (erro) {
+            console.error("Erro ao atualizar senha:", erro.message);
+            throw new Error("Erro ao atualizar senha do funcionário.");
+        }
+    }
+
+    async alterarSenhaFuncionario(req, res) {
+    
+        if (req.method !== "PUT") {
+        return res.status(400).json({
+            status: false,
+            mensagem: "Requisição inválida! Consulte a documentação da API."
+        });
+        }
+
+        const { email, senhaAtual, novaSenha } = req.body;
+        console.log(email, senhaAtual, novaSenha);
+
+        let conexao;
+        try {
+            conexao = await conectar();
+            const funcionario = new Funcionario();
+
+            const funcSenhaAlterada = await funcionario.alterarSenhaFuncionario(
+                email,
+                senhaAtual,
+                novaSenha,
+                conexao
+            );
+
+            if (funcSenhaAlterada) {
+                const token = jwt.sign(
+                    {
+                        email: funcSenhaAlterada.email,
+                        nivel: funcSenhaAlterada.nivel
+                    },
+                    process.env.JWT_SECRET,
+                    { expiresIn: "2h" }
+                );
+
+                return res.status(200).json({
+                    mensagem: `Senha do funcionário ${funcSenhaAlterada.nome} alterada com sucesso`,
+                    funcionario: funcSenhaAlterada,
+                    token: token
+                });
+            } else {
+                return res.status(401).json({ erro: "Senha atual incorreta" });
+            }
+        } catch (e) {
+            console.error(e);
+            return res.status(500).json({ status: false, mensagem: "Erro ao atualizar senha: " + e.message });
+        } finally {
+            if (conexao) conexao.release();
+        }
+    }
 }

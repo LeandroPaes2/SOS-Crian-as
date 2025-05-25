@@ -35,9 +35,11 @@ export default function Login(props) {
             return;
             }
 
-            // Aqui você pode armazenar o token, se for retornado:
-            // localStorage.setItem("token", resultado.token);
-            login(resultado.funcionario, manterConectado);
+            const funcionarioComToken = {
+            ...resultado.funcionario,
+            token: resultado.token};
+
+            login(funcionarioComToken, manterConectado);;
             setMensagem("");
         } catch (e) {
             setMensagem("Erro ao tentar fazer login.");
