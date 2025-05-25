@@ -121,23 +121,24 @@ export default class FuncionarioCtrl {
     }
 
     async consultar(requisicao, resposta) {
-        const conexao = await conectar();
+    
         resposta.type("application/json");
 
         if (requisicao.method == "GET") {
-            let nome = requisicao.params.nome || "";
+            let email = requisicao.params.email || "";
             const funcionario = new Funcionario();
-
+            let conexao;
             try {
+                conexao = await conectar();
                 await conexao.query('BEGIN');
-                const listaFuncionario = await funcionario.consultar({ nome }, conexao);
+                const listaFuncionario = await funcionario.consultar({ email }, conexao);
                 await conexao.query('COMMIT');
                 resposta.status(200).json(listaFuncionario);
             } catch (e) {
-                await conexao.query('ROLLBACK');
                 resposta.status(500).json({ status: false, mensagem: e.message });
             } finally {
-                conexao.release();
+                if(conexao)
+                    conexao.release();
             }
         } else {
             resposta.status(400).json({
@@ -149,11 +150,11 @@ export default class FuncionarioCtrl {
 
     async autenticar(req, res) {
         const { email, senha } = req.body;
-        const conexao = await conectar();
 
         if (req.method === "POST") {
+            let conexao;
             try {
-
+                conexao = await conectar();
                 const funcionario = new Funcionario();
                 const funcSenhaCorreta = await funcionario.autenticar(email, senha, conexao);
 
@@ -166,10 +167,10 @@ export default class FuncionarioCtrl {
                     res.status(401).json({ erro: "Senha incorreta" });
                 }
             } catch (e) {
-                await conexao.query('ROLLBACK');
                 res.status(500).json({ status: false, mensagem: e.message });
             } finally {
-                conexao.release();
+                if(conexao)
+                    conexao.release();
             }
         } else {
             res.status(400).json({

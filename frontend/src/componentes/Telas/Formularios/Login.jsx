@@ -20,27 +20,29 @@ export default function Login(props) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch("http://localhost:3000/funcionarios/" + email);
-            if (!response.ok) {
-                setMensagem("Funcionário não cadastrado.");
-                return;
-            }
-            const dados = await response.json();
-            console.log(dados);
-            if (senha !== dados[0].senha) {
-                setMensagem("Senha incorreta.");
-                return;
-            }
-            if (!dados || dados.length == 0) {
-                setMensagem("Funcionário não cadastrado.");
-                return;
-            }
-            login(dados[0], manterConectado);
-            setMensagem("");
+            const response = await fetch("http://localhost:3000/funcionarios/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, senha })
+            });
 
+            const resultado = await response.json();
+
+            if (!response.ok) {
+            setMensagem(resultado.erro || resultado.mensagem || "Erro no login.");
+            return;
+            }
+
+            // Aqui você pode armazenar o token, se for retornado:
+            // localStorage.setItem("token", resultado.token);
+            login(resultado.funcionario, manterConectado);
+            setMensagem("");
         } catch (e) {
-            setMensagem("Funcionario não cadastrado.");
+            setMensagem("Erro ao tentar fazer login.");
         }
+
         setTimeout(() => setMensagem(""), 5000);
     }
 

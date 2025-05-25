@@ -82,7 +82,7 @@ export default class Funcionario {
 
     async incluir(conexao) {
         const funcDAO = new FuncionarioDAO();
-        await funcDAO.incluir(this, conexao); //this,conexao
+        return await funcDAO.incluir(this, conexao); //this,conexao
     }
 
     async consultar(termo, conexao) {
@@ -92,12 +92,12 @@ export default class Funcionario {
 
     async excluir(conexao) {
         const funcDAO = new FuncionarioDAO();
-        await funcDAO.excluir(this, conexao);
+        return await funcDAO.excluir(this, conexao);
     }
 
     async alterar(conexao) {
         const funcDAO = new FuncionarioDAO();
-        await funcDAO.alterar(this, conexao);
+        return await funcDAO.alterar(this, conexao);
     }
 
 
