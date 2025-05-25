@@ -3,6 +3,8 @@
 
 import { Router } from "express"; //micro-aplicação HTTP
 import TurmaCtrl from "../Controle/turmaCtrl.js";
+import autenticarToken from "../middleware/autenticarToken.js";
+import autorizarNivel from "../middleware/autorizarNivel.js";
 
 const turmCtrl = new TurmaCtrl();
 const rotaTurma = Router();

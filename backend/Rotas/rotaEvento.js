@@ -1,5 +1,7 @@
 import { Router } from "express"; //micro-aplicação HTTP
 import EventoCtrl from "../Controle/eventoCtrl.js";
+import autenticarToken from "../middleware/autenticarToken.js";
+import autorizarNivel from "../middleware/autorizarNivel.js";
 
 const eveCtrl = new EventoCtrl();
 const rotaEvento = Router();

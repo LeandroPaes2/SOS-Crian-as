@@ -1,5 +1,7 @@
 import { Router } from "express";
 import MateriaCtrl from "../Controle/materiaCtrl.js";
+import autenticarToken from "../middleware/autenticarToken.js";
+import autorizarNivel from "../middleware/autorizarNivel.js";
 
 const matCtrl = new MateriaCtrl();
 const rotaMateria = Router();

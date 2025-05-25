@@ -1,0 +1,69 @@
+.botaoPesquisa {
+    width: 400px;
+    background-color: #e3436b;
+    border-color: #81233b;
+    margin: 5px;
+    width: 150px;
+}
+
+.divInput {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.formInput {
+    width: 400px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.topot {
+    padding-top: 100px;
+}
+
+.input-sucesso {
+    border: 2px solid #28a745 !important;
+    background-color: #e6ffed;
+}
+
+.input-warning-grossa {
+    border: 2px solid #dc3545 !important;
+    background-color: #f8d7da;
+}
+
+
+
+.texto-aviso-cep {
+    color: #050400;
+    /* tom de amarelo escuro */
+    background-color: #fff3cd;
+    /* fundo amarelo claro */
+    border: 2px solid #ffeeba;
+    /* borda destacada */
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+
+
+.cadastroFuncionario {
+    background-color: rgba(255, 255, 255, 0.9);
+    width: 60%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 100px;
+}

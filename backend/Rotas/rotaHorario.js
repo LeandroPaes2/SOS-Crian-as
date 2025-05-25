@@ -1,5 +1,7 @@
 import { Router } from "express";
 import HorarioCtrl from "../Controle/horarioCtrl.js";
+import autenticarToken from "../middleware/autenticarToken.js";
+import autorizarNivel from "../middleware/autorizarNivel.js";
 
 const horarioCtrl = new HorarioCtrl();
 const rotaHorario = Router();

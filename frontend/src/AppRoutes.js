@@ -31,6 +31,14 @@ import TelaVerificarEmail from './componentes/Telas/TelaVerificarEmail';
 import TelaEmailSenha from './componentes/Telas/TelaEmailSenha';
 import TelaAlterarSenha from './componentes/Telas/TelaAlterarSenha';
 
+
+import RelatorioFuncionarios from './componentes/Telas/Relatorios/RelatorioFuncionarios';
+import TelaCadastroFuncionario from './componentes/Telas/TelaCadastroFuncionario';
+import FormCadFuncionario from './componentes/Telas/Formularios/FormCadFuncionario';
+import RelatorioListaEspera from './componentes/Telas/Relatorios/RelatorioListaEspera';
+import TelaCadastroListaEspera from './componentes/Telas/TelaCadastroListaEspera';
+import FormCadListaEspera from './componentes/Telas/Formularios/FormCadListaEspera';
+
 function AppRoutes() {
     const { isLogado } = useLogin();
 
@@ -65,6 +73,14 @@ function AppRoutes() {
                     <Route path="/dadosUsuario" element={<TelaDadosUsuario/>}/>
                     <Route path="/telaEmailSenha" element={<TelaEmailSenha/>}/>
                     <Route path="/alterarSenha" element={<TelaAlterarSenha/>}/>
+
+
+                    <Route path="/telaFuncionario" element={<TelaCadastroFuncionario />} />
+                    <Route path="/cadastroFuncionario" element={<FormCadFuncionario />} />
+                    <Route path="/relatorioFuncionario" element={<RelatorioFuncionarios />} />
+                    <Route path="/relatorioListaEspera" element={<RelatorioListaEspera />} />
+                    <Route path='/telaListaEspera' element={<TelaCadastroListaEspera />} />
+                    <Route path="/cadastroListaEspera" element={<FormCadListaEspera />} />
                 </>
             )}
             {!isLogado && (
