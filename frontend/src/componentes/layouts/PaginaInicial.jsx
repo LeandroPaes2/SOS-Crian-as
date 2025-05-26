@@ -18,12 +18,20 @@ function dataNova(dataISO) {
 export default function Pagina(props) {
 
     const [listaDeEventos, setListaDeEventos] = useState([]);
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");  
 
     useEffect(() => {  //é executado uma única vez quando o componente monta, ou seja, quando a página/carregamento do componente acontece pela primeira vez.
         //Ele serve pra carregar os elementos que você precisa assim que a página abrir, como buscar dados no backend
         const buscarEventos = async () => {
+            console.log(token);
             try {
-                const response = await fetch("http://localhost:3000/eventos");
+                const response = await fetch("http://localhost:3000/eventos", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json"
+                    }
+                });
                 if (!response.ok)
                     throw new Error("Erro ao buscar eventos");
 

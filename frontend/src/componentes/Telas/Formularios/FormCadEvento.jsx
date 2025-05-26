@@ -9,28 +9,33 @@ import { useLogin } from "../../../LoginContext";
 export default function FormCadEvento(props) {
     const [periodo, setPeriodo] = useState("");
     const [nome, setNome] = useState("");
-    const [data, setData] = useState("");
+    const [tipoEvento, setTipoEvento] = useState("");
+    const [dataInicio, setDataInicio] = useState("");
+    const [dataFim, setDataFim] = useState("");
     const [horaInicio, setHoraInicio] = useState("");
     const [horaFim, setHoraFim] = useState("");
     const [mensagem, setMensagem] = useState("");
     const [id, setId] = useState(0);
     const [editando, setEditando] = useState(false);
-    const [evento, setEvento] = useState(id, nome, data, periodo, horaInicio, horaFim);
+    const [evento, setEvento] = useState(id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim);
     const location = useLocation();
     const navigate = useNavigate();
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
     const rotaVoltar = editando ? "/relatorioEvento" : "/telaEvento";
 
     useEffect(() => {
-        if (location.state && location.state.id && location.state.nome && location.state.data && location.state.periodo && location.state.horaFim && location.state.horaInicio) {
+        if (location.state && location.state.id && location.state.nome && location.state.tipoEvento && location.state.dataInicio && location.state.dataFim && location.state.periodo && location.state.horaFim && location.state.horaInicio) {
             
             setId(location.state.id);
             setNome(location.state.nome);
-            setData(location.state.data);
+            setTipoEvento(location.state.tipoEvento);
+            setDataInicio(location.state.dataInicio);
+            setDataFim(location.state.dataFim);
             setPeriodo(location.state.periodo);
             setHoraFim(location.state.horaFim);
             setHoraInicio(location.state.horaInicio);
             setEditando(true);
-            console.log("Data recebida do location.state:", location.state.data);
+            console.log("Data recebida do location.state:", location.state.dataInicio);
         }
     }, [location.state]);
 
@@ -38,7 +43,7 @@ export default function FormCadEvento(props) {
     event.preventDefault();
 
     // Validação básica
-    if (!data || !nome || !periodo || !horaFim || !horaInicio) {
+    if (!dataInicio || !dataFim || !nome || !tipoEvento || !periodo || !horaFim || !horaInicio) {
         setMensagem("Preencha todos os campos!");
         return;
     }
@@ -48,7 +53,7 @@ export default function FormCadEvento(props) {
         return;
     }
 
-    const evento = { id, nome, data, periodo, horaInicio, horaFim };
+    const evento = { id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim };
     const url = editando ? `http://localhost:3000/eventos/${id}` : "http://localhost:3000/eventos";
     const method = editando ? "PUT" : "POST";
 
@@ -61,7 +66,9 @@ export default function FormCadEvento(props) {
 
         const response = await fetch(url, {
             method: method,
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", 
+                "Authorization": `Bearer ${token}`
+             },
             body: JSON.stringify(evento),
         });
 
@@ -72,7 +79,9 @@ export default function FormCadEvento(props) {
 
             setTimeout(() => {
                 setNome("");
-                setData("");
+                setTipoEvento("");
+                setDataInicio("");
+                setDataFim("");
                 setPeriodo("");
                 setHoraInicio("");
                 setHoraFim("");
@@ -140,12 +149,33 @@ export default function FormCadEvento(props) {
                         />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" id="data">
-                        <Form.Label>Data</Form.Label>
+                    <Form.Group className="mb-3" id="tipoEvento">
+                        <Form.Label>Tipo do Evento</Form.Label>
+                        <Form.Select
+                            value={tipoEvento}
+                            onChange={(e) => setTipoEvento(e.target.value)}
+                        >
+                            <option value="">Selecione o tipo</option>
+                            <option value="Festa">Festa</option>
+                            <option value="Passeio">Passeio</option>
+                            <option value="Outro">Outro</option>
+                        </Form.Select>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" id="dataInicio">
+                        <Form.Label>Data Inicio</Form.Label>
                         <Form.Control
                             type="date"
-                            value={data}
-                            onChange={(e) => setData(e.target.value)}
+                            value={dataInicio}
+                            onChange={(e) => setDataInicio(e.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" id="dataFim">
+                        <Form.Label>Data Fim</Form.Label>
+                        <Form.Control
+                            type="date"
+                            value={dataFim}
+                            onChange={(e) => setDataFim(e.target.value)}
                         />
                     </Form.Group>
 

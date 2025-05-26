@@ -7,6 +7,7 @@ export const useLogin = () => useContext(LoginContext);
 export const LoginProvider = ({ children }) => {
     const [funcionario, setFuncionario] = useState(null);
     const [isLogado, setIsLogado] = useState(false);
+    const [loading, setLoading] = useState(true);  // novo estado loading
 
     useEffect(() => {
         const armazenado =
@@ -16,6 +17,7 @@ export const LoginProvider = ({ children }) => {
             setFuncionario(funcionarioObj);
             setIsLogado(true);
         }
+        setLoading(false);  // terminou o carregamento
     }, []);
 
     const login = (funcionario, manterConectado) => {
@@ -28,7 +30,7 @@ export const LoginProvider = ({ children }) => {
         }
         setIsLogado(true);
         setFuncionario(funcionario);
-};
+    };
 
     const logout = () => {
         setFuncionario(null);
@@ -43,10 +45,10 @@ export const LoginProvider = ({ children }) => {
         setFuncionario(dadosAtualizados);
         if (localStorage.getItem("funcionario")) {
             localStorage.setItem("funcionario", JSON.stringify(dadosAtualizados));
-            localStorage.setItem("token", JSON.stringify(dadosAtualizados.token))
+            localStorage.setItem("token", dadosAtualizados.token);  // corrigido para não usar JSON.stringify no token
         } else if (sessionStorage.getItem("funcionario")) {
             sessionStorage.setItem("funcionario", JSON.stringify(dadosAtualizados));
-            sessionStorage.setItem("token", JSON.stringify(dadosAtualizados.token));
+            sessionStorage.setItem("token", dadosAtualizados.token);
         }
     };
 
@@ -55,9 +57,8 @@ export const LoginProvider = ({ children }) => {
     };
 
     return (
-        <LoginContext.Provider value={{funcionario, isLogado, setIsLogado, login, logout, atualizarFuncionario, getToken }}>
+        <LoginContext.Provider value={{ funcionario, isLogado, loading, setIsLogado, login, logout, atualizarFuncionario, getToken }}>
             {children}
         </LoginContext.Provider>
     );
 };
-

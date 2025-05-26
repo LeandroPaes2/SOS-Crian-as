@@ -19,12 +19,23 @@ const { funcionario }=useLogin();
     return (
         <div className="divBotao">
             {(funcionario?.nivel == 1 || funcionario?.nivel===4 ||  funcionario?.nivel===3) &&(
-            
+                <>
                     <Button as={Link} to="/telaAluno" className='botaoMenu' variant="primary" size="lg">
                         <img src={alunos} style={{width: '100px'}} />
                         <br/>
                         Alunos
                     </Button>
+                    <Button as={Link} to="/telaResponsavel" className='botaoMenu' variant="primary" size="lg">
+                        <img src={responsavel} style={{width: '100px'}} />
+                        <br/>
+                        Responsáveis
+                    </Button>
+                    <Button as={Link} to="/telaEscola" className='botaoMenu' variant="primary" size="lg">
+                        <img src={escolas} style={{width: '130px'}} />
+                        <br/>
+                        Escolas
+                    </Button>
+                    </>
             )}
             {(funcionario?.nivel === 6 || funcionario?.nivel===5 ||  funcionario?.nivel===3 || funcionario?.nivel === 4) &&(
                 
@@ -46,6 +57,11 @@ const { funcionario }=useLogin();
                         <br/>
                         Horários
                     </Button>
+                     <Button as={Link} to="/telaTurma" className='botaoMenu' variant="primary" size="lg">
+                        <img src={turmas} style={{width: '100px'}} />
+                        <br/>
+                        Turmas
+                    </Button>
                     </>
             )}
             {funcionario?.nivel !== 4 &&(
@@ -55,24 +71,7 @@ const { funcionario }=useLogin();
                         Eventos
                     </Button>
             )}
-            {(funcionario?.nivel === 1 || funcionario?.nivel === 2) &&(
-                <Button as={Link} to="/telaTurma" className='botaoMenu' variant="primary" size="lg">
-                        <img src={turmas} style={{width: '100px'}} />
-                        <br/>
-                        Turmas
-                    </Button>
-            )}
-                    <Button as={Link} to="/telaResponsavel" className='botaoMenu' variant="primary" size="lg">
-                        <img src={responsavel} style={{width: '100px'}} />
-                        <br/>
-                        Responsáveis
-                    </Button>
                     
-                    <Button as={Link} to="/telaEscola" className='botaoMenu' variant="primary" size="lg">
-                        <img src={escolas} style={{width: '130px'}} />
-                        <br/>
-                        Escolas
-                    </Button>
         </div>
     );
 }

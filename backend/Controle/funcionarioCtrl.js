@@ -248,7 +248,7 @@ export default class FuncionarioCtrl {
         }
     }
 
-    salvarCodigoRecuperacao(email, codigo) {
+    async salvarCodigoRecuperacao(email, codigo) {
         const expira = Date.now() + 10 * 60 * 1000;
         this.codigosRecuperacao[email] = { codigo, expira };
         console.log(`Código salvo para ${email}:`, codigo);
@@ -270,29 +270,39 @@ export default class FuncionarioCtrl {
         delete this.codigosRecuperacao[email];
     }
 
-    async atualizarSenhaFuncionario(email, novaSenha) {
+    async atualizarSenhaFuncionario(req, res) {
+        if (req.method !== "PUT") {
+        return res.status(400).json({
+            status: false,
+            mensagem: "Requisição inválida! Consulte a documentação da API."
+        });
+        }
+        const { email, novaSenha } = req.body;
+        let conexao;
         try {
-            const conexao = await conectar();
-            const client = await conexao.connect();
+            conexao = await conectar();
+            const funcionario = new Funcionario();
 
-            const hashNovaSenha = await bcrypt.hash(novaSenha, 10); // criptografa
-
-            const resultado = await client.query(
-                'UPDATE funcionario SET func_senha = $1 WHERE func_email = $2',
-                [hashNovaSenha, email]
+            const funcSenhaAlterada = await funcionario.atualizarSenhaFuncionario(
+                email,
+                novaSenha,
+                conexao
             );
 
-            client.release();
-
-            if (resultado.rowCount === 0) {
-                throw new Error("Funcionário não encontrado.");
+            if (funcSenhaAlterada) {
+                this.removerCodigo(email);
+                return res.status(200).json({
+                    mensagem: `Senha do funcionário ${funcSenhaAlterada.nome} alterada com sucesso`,
+                    funcionario: funcSenhaAlterada
+                });
+            } else {
+                return res.status(401).json({ erro: "Senha atual incorreta" });
             }
-
-            return { sucesso: true, mensagem: "Senha atualizada com sucesso." };
-
-        } catch (erro) {
-            console.error("Erro ao atualizar senha:", erro.message);
-            throw new Error("Erro ao atualizar senha do funcionário.");
+        } catch (e) {
+            console.error(e);
+            return res.status(500).json({ status: false, mensagem: "Erro ao atualizar senha: " + e.message });
+        } finally {
+            if (conexao) conexao.release();
         }
     }
 

@@ -165,6 +165,40 @@ export default class FuncionarioDAO {
         }
     }
 
+    async atualizarSenhaFuncionario(email, novaSenha, conexao){
+        try {
+        const sqlSelect = `SELECT * FROM funcionario WHERE func_email = $1`;
+        const resultado = await conexao.query(sqlSelect, [email]);
+        if (resultado.rows.length === 0) {
+            return null; // Funcionário não encontrado
+        }
+
+        const linha = resultado.rows[0];
+        const senhaCorreta = await bcrypt.compare(novaSenha, linha.func_senha);
+
+        if (senhaCorreta) {
+           throw new Error("Nova senha igual a senha atual "); // Senha atual incorreta
+        }
+
+        const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
+
+        const sqlUpdate = `UPDATE funcionario SET func_senha = $1 WHERE func_email = $2`;
+        await conexao.query(sqlUpdate, [novaSenhaHash, email]);
+
+        return new Funcionario(
+            linha.func_nome,
+            linha.func_cpf,
+            linha.func_cargo,
+            linha.func_nivel,
+            linha.func_email,
+            novaSenhaHash 
+        );
+
+        }catch (e) {
+        throw new Error("Erro ao atualizar senha: " + e.message);
+    }
+    }
+
     async alterarSenhaFuncionario(email, senhaAtual, novaSenha, conexao) {
          try {
         const sqlSelect = `SELECT * FROM funcionario WHERE func_email = $1`;

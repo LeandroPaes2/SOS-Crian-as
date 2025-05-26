@@ -79,7 +79,7 @@ export default class Evento{
     constructor(id=0, nome="", tipoEvento="", dataInicio="", dataFim="", periodo="", horaInicio="", horaFim=""){
         this.#id = id;
         this.#nome=nome;
-        this.#tipoEvento;
+        this.#tipoEvento=tipoEvento;
         this.#dataInicio = dataInicio;
         this.#dataFim=dataFim;
         this.#periodo=periodo;
@@ -102,6 +102,7 @@ export default class Evento{
 
     async incluir(conexao){
         const eveDAO = new EventoDAO();
+        console.log(this.#nome);
         return await eveDAO.incluir(this, conexao);
     }
 

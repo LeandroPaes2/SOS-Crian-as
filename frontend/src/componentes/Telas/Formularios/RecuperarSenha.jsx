@@ -40,7 +40,7 @@ export default function RecuperarSenha(){
             const resposta = await fetch('http://localhost:3000/redefinirSenha', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, novaSenha }),
+            body: JSON.stringify({ email: email, novaSenha: novaSenha }),
             });
 
             const dados = await resposta.json();

@@ -27,14 +27,24 @@ export default function RelatorioEventos() {
     const [periodo, setPeriodo] = useState("");
     const [horaInicio, setHoraInicio] = useState("");
     const [horaFim, setHoraFim]=useState("");
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");  
 
     useEffect(() => {  //é executado uma única vez quando o componente monta, ou seja, quando a página/carregamento do componente acontece pela primeira vez.
         //Ele serve pra carregar os elementos que você precisa assim que a página abrir, como buscar dados no backend
         const buscarEventos = async () => {
+            console.log(token);
             try {
-                const response = await fetch("http://localhost:3000/eventos");
-                if (!response.ok) 
+                const response = await fetch("http://localhost:3000/eventos", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json"
+                    }
+                });
+                if (!response.ok) {
+                    console.log("Status da resposta:", response.status);
                     throw new Error("Erro ao buscar eventos");
+                }
                 
                 const dados = await response.json();
                 setListaDeEventos(dados); // Atualiza o estado com os dados do backend
@@ -56,7 +66,11 @@ export default function RelatorioEventos() {
             }
             try{
                 const response = await fetch("http://localhost:3000/eventos/" + evento.id, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
                 });
                 if (response.ok) {
                     setMensagem("Evento excluido com sucesso!");
@@ -80,7 +94,9 @@ export default function RelatorioEventos() {
             state: { 
                 id: evento.id,
                 nome: evento.nome,
-                data: evento.data.split("T")[0],
+                tipoEvento: evento.tipoEvento,
+                dataInicio: evento.dataInicio.split("T")[0],
+                dataFim: evento.dataFim.split("T")[0],
                 periodo: evento.periodo,
                 horaInicio: evento.horaInicio,
                 horaFim: evento.horaFim
@@ -133,10 +149,11 @@ export default function RelatorioEventos() {
                     <Table striped bordered hover>
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>NOME</th>
+                                <th>TIPO</th>
                                 <th>PERIODO</th>
-                                <th>DATA</th>
+                                <th>DATA INICIO</th>
+                                <th>DATA FIM</th>
                                 <th>HORA INICIO</th>
                                 <th>HORA FIM</th>
                                 <th>AÇÕES</th>
@@ -148,10 +165,11 @@ export default function RelatorioEventos() {
 
                                     return (
                                         <tr>
-                                            <td>{evento.id}</td>
                                             <td>{evento.nome}</td>
+                                            <td>{evento.tipoEvento}</td>
                                             <td>{evento.periodo}</td>
-                                            <td>{dataNova(evento.data)}</td>
+                                            <td>{dataNova(evento.dataInicio)}</td>
+                                            <td>{dataNova(evento.dataFim)}</td>
                                             <td>{evento.horaInicio}</td>
                                             <td>{evento.horaFim}</td>
                                             <td>

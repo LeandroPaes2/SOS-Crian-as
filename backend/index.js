@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 import helmet from 'helmet';
 import jwt from 'jsonwebtoken';
 import sgMail from '@sendgrid/mail';
-
 import rotaTurma from './Rotas/rotaTurma.js';
 import rotaEscola from './Rotas/rotaEscola.js';
 import rotaMateria from './Rotas/rotaMateria.js';
@@ -60,8 +59,9 @@ app.post('/recuperarSenha', async (req, res) => {
         }
 
         const codigo = Math.floor(100000 + Math.random() * 900000).toString(); // Gera código de 6 dígitos
-        funcionarioCtrl.salvarCodigoRecuperacao(email, codigo); // Salva no banco
+        await funcionarioCtrl.salvarCodigoRecuperacao(email, codigo); // Salva no banco
         await emailService.enviarCodigo(email, codigo); // Envia por e-mail
+        console.log(codigo)
 
         res.json({ mensagem: "Código enviado por e-mail." });
     } catch (erro) {
@@ -83,17 +83,7 @@ app.post('/verificarCodigo', (req, res) => {
 
 app.put('/alterarSenha', funcionarioCtrl.alterarSenhaFuncionario);
 
-app.put('/redefinirSenha', async (req, res) => {
-    const { email, senhaAtual, novaSenha } = req.body;
-
-    try {
-        await funcionarioCtrl.atualizarSenhaFuncionario(email, senhaAtual, novaSenha);
-        funcionarioCtrl.removerCodigo(email); // remove da memória após redefinir
-        res.json({ mensagem: "Senha atualizada com sucesso." });
-    } catch (e) {
-        res.status(500).json({ mensagem: "Erro ao atualizar senha." });
-    }
-});
+app.put('/redefinirSenha', funcionarioCtrl.atualizarSenhaFuncionario);
 
 // Rotas principais
 app.use("/turmas", rotaTurma);

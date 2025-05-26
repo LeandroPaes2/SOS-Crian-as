@@ -48,6 +48,7 @@ export default class ResponsavelDAO {
 
     async incluir(responsavel, conexao) {
         if (responsavel instanceof Responsavel) {
+            
             try {
                 const sql = `INSERT INTO responsavel(resp_cpf, resp_rg, resp_nome, resp_telefone, resp_email, resp_sexo, resp_dtNascimento, resp_estCivil, resp_conjuge, resp_profissao, resp_situTrabalho, resp_escolaridade, resp_rendaFamiliar, resp_valorRenda, resp_qtdeTrabalhadores, resp_pensaoAlimenticia, resp_valorPensao, resp_pagadorPensao, resp_beneficioSocial, resp_tipoBeneficio, resp_valorBeneficio, resp_beneficiario)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
