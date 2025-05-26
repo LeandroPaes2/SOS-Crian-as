@@ -48,11 +48,6 @@ export default function FormCadEvento(props) {
         return;
     }
 
-    if (horaInicio === horaFim || horaParaNumero(horaFim) < horaParaNumero(horaInicio)) {
-        setMensagem("Horário de início e fim inválido.");
-        return;
-    }
-
     const evento = { id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim };
     const url = editando ? `http://localhost:3000/eventos/${id}` : "http://localhost:3000/eventos";
     const method = editando ? "PUT" : "POST";
@@ -103,12 +98,6 @@ export default function FormCadEvento(props) {
         setMensagem("Erro de conexão com o servidor.");
     }
 };
-
-
-    function horaParaNumero(hora) {
-        const [h, m] = hora.split(":").map(Number);
-        return h * 60 + m;
-    }
     
     return (
         <div>

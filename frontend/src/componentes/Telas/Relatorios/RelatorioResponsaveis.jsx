@@ -6,6 +6,14 @@ import FormCadResponsavel from "../Formularios/FormCadResponsavel";
 import { useNavigate } from "react-router-dom";
 import "../../css/alerts.css";
 
+function dataNova(dataISO) {
+    const data = new Date(dataISO);
+    const dia = String(data.getDate()).padStart(2, '0');
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const ano = data.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+}
+
 export default function RelatorioResponsaveis() {
 
     const [listaDeResponsaveis, setListaDeResponsaveis] = useState([]);
@@ -16,11 +24,18 @@ export default function RelatorioResponsaveis() {
     const [pesquisaNome, setPesquisaNome] = useState("");
     const navigate = useNavigate();
     const [editando, setEditando] = useState(false);
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     useEffect(() => {
         const buscarResponsaveis = async () => {
             try {
-                const response = await fetch("http://localhost:3000/responsaveis");
+                const response = await fetch("http://localhost:3000/responsaveis", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json"
+                    }
+                });
                 if (!response.ok) throw new Error("Erro ao buscar responsaveis");
 
                 const dados = await response.json();
@@ -37,7 +52,7 @@ export default function RelatorioResponsaveis() {
     const excluirResponsavel = async (responsavel) => {
 
         if (window.confirm("Deseja realmente excluir o responsavel " + responsavel.nome + responsavel.cpf)) {
-            if (!responsavel || !responsavel.cpf || !responsavel.nome || !responsavel.telefone) {
+            if (!responsavel || !responsavel.cpf || !responsavel.rg || !responsavel.nome || !responsavel.telefone) {
                 //console.log(responsavel.cpf, responsavel.nome, responsavel.telefone);
                 setMensagem("Erro: responsavel inválido!");
                 setTimeout(() => setMensagem(""), 5000);

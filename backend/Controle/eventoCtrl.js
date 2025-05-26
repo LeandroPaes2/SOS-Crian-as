@@ -32,6 +32,7 @@ async function verificarConflito(evento, conexao) {
     // 3. Verifica se não está cadastrando entre 12:00 e 13:30 (720 a 810 minutos)
     const almocoInicio = 720;
     const almocoFim = 810;
+
     if (!(fimMin <= almocoInicio || inicioMin >= almocoFim)) {
         throw new Error("Evento não pode ocorrer durante o horário de almoço (12:00-13:30).");
     }
@@ -46,8 +47,14 @@ async function verificarConflito(evento, conexao) {
     // 4. Verifica se dataFim não vem antes da dataInicio
     const dataInicio = new Date(evento.dataInicio);
     const dataFim = new Date(evento.dataFim);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
     if (dataFim < dataInicio) {
         throw new Error("Data de fim não pode ser anterior à data de início.");
+    }
+
+    if (dataInicio < hoje) {
+        throw new Error("Não é possível cadastrar eventos com data de início no passado.");
     }
 
     // 5. Verifica se já existe conflito com outro evento no mesmo dia

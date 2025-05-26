@@ -88,7 +88,7 @@ export default class ResponsavelCtrl {
                 });
             }
 
-            if (cpf && rg && nome && telefone && email && sexo && dtNascimento && estCivil && situTrabalho && escolaridade && rendaFamiliar && valorRenda>0.00 && qtdeTrabalhadores>=0 && pensaoAlimenticia && beneficioSocial)
+            if (cpf && rg && nome && telefone && email && sexo && dtNascimento && conjuge && estCivil && situTrabalho && escolaridade && rendaFamiliar && qtdeTrabalhadores>=0 && pensaoAlimenticia && beneficioSocial)
             {
                 if(pensaoAlimenticia=='Sim' ){
                     if(valorPensao<=0 || !pagadorPensao){
@@ -99,8 +99,19 @@ export default class ResponsavelCtrl {
                             "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
                         });
                     }
-                }else if(beneficioSocial=='Sim'){
+                }
+                if(beneficioSocial=='Sim'){
                     if(!tipoBeneficio || valorBeneficio<=0 || !beneficiario){
+                        await conexao.query("ROLLBACK");
+                        return resposta.status(400).json(
+                        {
+                            "status":false,
+                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                        });
+                    }
+                }
+                if(!rendaFamiliar.includes("Não")){
+                    if(!valorRenda || valorPensao<=0){
                         await conexao.query("ROLLBACK");
                         return resposta.status(400).json(
                         {
@@ -193,7 +204,7 @@ export default class ResponsavelCtrl {
             const valorBeneficio = requisicao.body.valorBeneficio;
             const beneficiario = requisicao.body.beneficiario;
         
-            if (cpf && rg && nome && telefone && email && sexo && dtNascimento && estCivil && situTrabalho && escolaridade && rendaFamiliar && valorRenda>0.00 && qtdeTrabalhadores>=0 && pensaoAlimenticia && beneficioSocial)
+            if (cpf && rg && nome && telefone && email && sexo && dtNascimento && conjuge && estCivil && situTrabalho && escolaridade && rendaFamiliar && valorRenda>0.00 && qtdeTrabalhadores>=0 && pensaoAlimenticia && beneficioSocial)
             {
                 if(pensaoAlimenticia=='Sim' ){
                     if(valorPensao<=0 || !pagadorPensao){

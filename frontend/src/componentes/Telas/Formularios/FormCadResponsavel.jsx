@@ -10,21 +10,60 @@ import { useNavigate } from 'react-router-dom';
 
 export default function FormCadResponsavel(props) {
     const [cpf, setCpf] = useState("");
+    const [rg, setRg] = useState("");
     const [nome, setNome] = useState("");
     const [telefone, setTelefone] = useState("");
+    const [email, setEmail] = useState("");
+    const [sexo, setSexo] = useState("");
+    const [dtNascimento, setDtNascimento] = useState("");
+    const [estCivil, setEstCivil] = useState("");
+    const [conjuge, setConjuge] = useState("");
+    const [profissao, setProfissao] = useState("");
+    const [situTrabalho, setSituTrabalho] = useState("");
+    const [escolaridade, setEscolaridade] = useState("");
+    const [rendaFamiliar, setRendaFamiliar] = useState("");
+    const [valorRenda, setValorRenda] = useState(0);
+    const [qtdeTrabalhadores, setQtdeTrabalhadores] = useState(0);
+    const [pensaoAlimenticia, setPensaoAlimenticia] = useState("");
+    const [valorPensao, setValorPensao] = useState(0);
+    const [pagadorPensao, setPagadorPensao] = useState("");
+    const [beneficioSocial, setBeneficioSocial] = useState("");
+    const [tipoBeneficio, setTipoBeneficio] = useState("");
+    const [valorBeneficio, setValorBeneficio] = useState(0);
+    const [beneficiario, setBeneficiario] = useState("");
     const [mensagem, setMensagem] = useState("");
     const location = useLocation();
     const [editando, setEditando] = useState(false);
     const [responsavel, setResponsavel] = useState(cpf, nome, telefone);
     const navigate = useNavigate();
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
     const rotaVoltar = editando ? "/relatorioResponsavel" : "/telaResponsavel";
 
 
     useEffect(() => {
-        if (location.state && location.state.cpf && location.state.nome && location.state.telefone) {
+        if (location.state && location.state.cpf && location.state.rg && location.state.nome && location.state.telefone && location.state.email && location.state.sexo && location.state.dtNascimento && location.state.estCivil && location.state.conjuge && location.state.situTrabalho && location.state.escolaridade && location.state.rendaFamiliar && location.state.qtdeTrabalhadores && location.state.pensaoAlimenticia && location.state.beneficioSocial) {
             setCpf(location.state.cpf);
+            setRg(location.state.rg);
             setNome(location.state.nome);
             setTelefone(location.state.telefone);
+            setEmail(location.state.email);
+            setSexo(location.state.sexo);
+            setDtNascimento(location.state.dtNascimento);
+            setEstCivil(location.state.estCivil);
+            setConjuge(location.state.conjuge);
+            setSituTrabalho(location.state.situTrabalho);
+            setProfissao(location.state.profissao);
+            setEscolaridade(location.state.escolaridade);
+            setRendaFamiliar(location.state.rendaFamiliar);
+            setValorRenda(location.state.valorRenda);
+            setQtdeTrabalhadores(location.state.qtdeTrabalhadores);
+            setPensaoAlimenticia(location.state.pensaoAlimenticia);
+            setValorPensao(location.state.valorPensao);
+            setPagadorPensao(location.state.pagadorPensao);
+            setBeneficioSocial(location.state.beneficioSocial);
+            setTipoBeneficio(location.state.tipoBeneficio);
+            setValorBeneficio(location.state.valorBeneficio);
+            setBeneficiario(location.state.beneficiario);
             setEditando(true);  // Ativa o modo de edição
         }
     }, [location.state]);
@@ -59,7 +98,7 @@ export default function FormCadResponsavel(props) {
         event.preventDefault(); // Evita recarregar a página
 
         // Verifica se os campos estão preenchidos
-        if (!cpf || !nome || !telefone) {
+        if (!cpf || !rg || !nome || !telefone || !email || !sexo || !dtNascimento || !estCivil || !conjuge || !situTrabalho || !escolaridade || !rendaFamiliar || !qtdeTrabalhadores || !pensaoAlimenticia || !beneficioSocial) {
             setMensagem("Preencha todos os campos!");
             return;
         }
@@ -70,7 +109,7 @@ export default function FormCadResponsavel(props) {
             return;
         }
 
-        const responsavel = { cpf, nome, telefone }; // Monta o objeto para enviar ao backend
+        const responsavel = { cpf,rg, nome, telefone, email, sexo, dtNascimento, estCivil, conjuge, profissao, situTrabalho, escolaridade, rendaFamiliar, valorRenda, qtdeTrabalhadores, pensaoAlimenticia, valorPensao, pagadorPensao, beneficioSocial, tipoBeneficio, valorBeneficio, beneficiario}; 
         const url = editando ? `http://localhost:3000/responsaveis/${cpf}` : "http://localhost:3000/responsaveis";
         const method = editando ? "PUT" : "POST";
 
@@ -82,15 +121,36 @@ export default function FormCadResponsavel(props) {
             }
             const response = await fetch(url, {
                 method: method,
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json",
+                    "Authorization":` Bearer ${token}`
+                 },
                 body: JSON.stringify(responsavel),
             });
 
             if (response.ok) {
                 setMensagem(editando ? "Responsavel atualizado com sucesso!" : "Responsavel cadastrado com sucesso!");
                 setTimeout(() =>setCpf(""), 3000);
+                setTimeout(() =>setRg(""), 3000);
                 setTimeout(() => setNome(""), 3000);
                 setTimeout(()=> setTelefone(""), 3000); 
+                setTimeout(() =>setEmail(""), 3000);
+                setTimeout(() =>setSexo(""), 3000);
+                setTimeout(() =>setDtNascimento(""), 3000);
+                setTimeout(() =>setEstCivil(""), 3000);
+                setTimeout(() =>setConjuge(""), 3000);
+                setTimeout(() =>setProfissao(""), 3000);
+                setTimeout(() =>setSituTrabalho(""), 3000);
+                setTimeout(() =>setEscolaridade(""), 3000);
+                setTimeout(() =>setRendaFamiliar(""), 3000);
+                setTimeout(() =>setValorRenda(""), 3000);
+                setTimeout(() =>setQtdeTrabalhadores(""), 3000);
+                setTimeout(() =>setPensaoAlimenticia(""), 3000);
+                setTimeout(() =>setValorPensao(""), 3000);
+                setTimeout(() =>setPagadorPensao(""), 3000);
+                setTimeout(() =>setBeneficioSocial(""), 3000);
+                setTimeout(() =>setTipoBeneficio(""), 3000);
+                setTimeout(() =>setValorBeneficio(""), 3000);
+                setTimeout(() =>setBeneficiario(""), 3000);
                 setTimeout(() => setMensagem(""), 3000);
                 
                 if(editando){
