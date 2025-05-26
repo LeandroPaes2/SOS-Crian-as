@@ -41,7 +41,11 @@ export default function Menu(props) {
                             {(funcionario?.nivel === 1 || funcionario?.nivel===4 ||  funcionario?.nivel==3) &&(
                             
                                     <NavDropdown.Item href="#" as={Link} to="/telaAluno" >Alunos</NavDropdown.Item>
+
                             )}
+
+                            {(funcionario?.nivel===4)&& (<NavDropdown.Item href="#" as={Link} to="/telaListaEspera" >Lista de Espera</NavDropdown.Item>)}
+
                              {(funcionario?.nivel === 6 || funcionario?.nivel===5 ||  funcionario?.nivel===3 || funcionario?.nivel ===4) &&(
                                 <NavDropdown.Item href="#" >Funcionarios</NavDropdown.Item>
                              )}

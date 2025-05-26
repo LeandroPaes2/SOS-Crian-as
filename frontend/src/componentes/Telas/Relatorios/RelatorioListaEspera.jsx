@@ -130,7 +130,7 @@ export default function RelatorioListaEspera() {
             if (ordenarPor === "nome") {
                 const compNome = a.aluno.nome.localeCompare(b.aluno.nome);
                 if (compNome !== 0) return compNome;
-                const compCor = a.aluno.cor.localeCompare(b.aluno.cor);
+                const compCor = a.cor.localeCompare(b.cor);
                 if (compCor !== 0) return compCor;
                 return new Date(a.dataInsercao) - new Date(b.dataInsercao);
             }
@@ -138,7 +138,7 @@ export default function RelatorioListaEspera() {
             if (ordenarPor === "id") return a.id - b.id;
 
             if (ordenarPor === "cor") {
-                const compCor = a.aluno.cor.localeCompare(b.aluno.cor);
+                const compCor = a.cor.localeCompare(b.cor);
                 if (compCor !== 0) return compCor;
                 const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
                 return compData !== 0 ? compData : a.aluno.nome.localeCompare(b.aluno.nome);
@@ -147,7 +147,7 @@ export default function RelatorioListaEspera() {
             if (ordenarPor === "dataInsercao") {
                 const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
                 if (compData !== 0) return compData;
-                const compCor = a.aluno.cor.localeCompare(b.aluno.cor);
+                const compCor = a.cor.localeCompare(b.cor);
                 return compCor !== 0 ? compCor : a.aluno.nome.localeCompare(b.aluno.nome);
             }
 

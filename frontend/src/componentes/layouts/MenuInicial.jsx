@@ -38,12 +38,19 @@ const { funcionario }=useLogin();
                     </>
             )}
             {(funcionario?.nivel === 6 || funcionario?.nivel===5 ||  funcionario?.nivel===3 || funcionario?.nivel === 4) &&(
-                
-                <Button className='botaoMenu' variant="primary" size="lg">
+                <>
+                <Button as={Link} to="/telaFuncionario" className='botaoMenu' variant="primary" size="lg">
                     <img src={funcionarios} style={{width: '100px'}} />
                     <br/>
                     Funcionários
                 </Button>
+                {(funcionario?.nivel === 4) && (
+                <Button as={Link} to="/telaListaEspera" className='botaoMenu' variant="primary" size="lg">
+                    <img src={funcionarios} style={{width: '100px'}} />
+                    <br/>
+                    Lista Espera
+                </Button>)}
+                </>
             )}
             {(funcionario?.nivel === 1 || funcionario?.nivel===2) &&(
                 <>
