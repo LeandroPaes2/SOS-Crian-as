@@ -1,277 +1,206 @@
-/*//DAO - Data Access Object
-import LisaEspera from "../Modelo/listaEspera.js";
-//import conectar from "../Controle/Conexao.js";
+//import conectar from "./Conexao.js";
 
-export default class LisaEsperaDAO {
-
-    constructor() {
-        this.init();
-    }
-
-        async init() {
-            try {
-                const conexao = await conectar();
-
-                await conexao.execute(`
-                    CREATE TABLE IF NOT EXISTS listaEspera (
-                        listEsp_id INTEGER NOT NULL AUTOINCREMENT,
-                        alu_id INTEGER NOT NULL,
-                        alu_nome VARCHAR(50) NOT NULL,
-                        listEsp_dataInsercao DATE NOT NULL,
-                        CONSTRAINT pk_listaEspera PRIMARY KEY(listEsp_id),
-                        CONSTRAINT fk_listaEspera_protocolo FOREIGN KEY (alu_id) REFERENCES listaEspera(alu_id),
-                        CONSTRAINT fk_listaEspera_nome FOREIGN KEY (alu_nome) REFERENCES listaEspera(alu_nome)
-                    )
-                `);                
-
-                await conexao.release();
-                console.log("Tabela 'listaEspera' foi recriada com sucesso.");
-            } catch (e) {
-                console.log("Não foi possível iniciar o banco de dados: " + e.message);
-            }
-        }
-        
-    async incluir(id, conexao) {
-        // Buscar o id do listaEspera correspondente ao protocolo
-        const [listaEspera] = await conexao.execute(`
-            SELECT alu_nome FROM listaEspera WHERE alu_id = ?
-        `, [id]);
-    
-        if (!listaEspera || listaEspera.length === 0) {
-            console.error('Nenhum listaEspera encontrado com esse protocolo.');
-            return;
-        }
-    
-        const nome = registros[0].alu_nome;
-    
-        // Inserir na lista de espera
-        await conexao.execute(`
-            INSERT INTO listaEspera (alu_id, alu_nome, listaEsp_dataInsercao)
-            VALUES (?, ?, DATE('now'))
-        `, [id, nome]);
-    
-        console.log('Registro inserido com sucesso!');
-    }
-    
-    async excluir(listaEspera, conexao) {
-        if (listaEspera instanceof LisaEspera) {
-            try {
-                const sql = `DELETE FROM listaEspera WHERE listaEsp_id = ?`;
-                await conexao.execute(sql, [listaEspera.id]);
-            } catch (e) {
-                throw new Error("Erro ao excluir funcionário: " + e.message);
-            }
-        }
-    }
-        async consultar(termo, conexao) {
-            try {
-                let sql = "";
-                let parametros = [];
-        
-                if (!termo) {
-                    sql = `SELECT * FROM listaEspera ORDER BY dataInsercao`;
-                } else {
-                    sql = `SELECT * FROM listaEspera WHERE nome LIKE ? ORDER BY func_nome`;
-                    parametros = ['%' + termo + '%'];
-                }
-        
-                const [linhas] = await conexao.execute(sql, parametros);
-                const listaLisaEspera = linhas.map(linha => new LisaEspera(
-                    linha['id'],
-                    linha['id'],
-                    linha['nome'],
-                    linha['dataInsercao']
-                ));
-                return listaLisaEspera;
-            } catch (e) {
-                throw new Error("Erro ao consultar funcionários: " + e.message);
-            }
-        }
-        
-}*/
-
-import ListaEspera from "../Modelo/listaEspera.js";
-import Responsavel from "../Modelo/responsavel.js";
-import Escola from "../Modelo/escola.js";
-import conectar from "../Controle/Conexao.js";
+import Aluno from "../Modelo/aluno.js";
 
 export default class ListaEsperaDAO {
 
-    constructor() {
-        this.init();
-    }
+    /* constructor() {
+         this.init();
+     }
+ 
+     async init() {
+         try {
+             const conexao = await conectar();
+             const sql = `
+                 CREATE TABLE IF NOT EXISTS listaespera (
+                     lista_espera_num SERIAL PRIMARY KEY NOT NULL,
+                     alu_id INT NOT NULL,
+                     lista_espera_dataInsercao DATE NOT NULL,
+                     lista_espera_cor VARCHAR(15) NOT NULL,
+                     lista_espera_status INT NOT NULL,
+                     CONSTRAINT fk_listaEspera_aluno FOREIGN KEY (alu_id) 
+                         REFERENCES aluno(alu_id)
+                         ON UPDATE CASCADE
+                         ON DELETE RESTRICT
+                 )
+             `;
+             await conexao.query(sql);
+             await conexao.release();
+         } catch (e) {
+             console.log("Erro ao iniciar banco de dados: " + e.message);
+         }
+     }*/
 
-   
-    async init() {
-        try {
-            /*
-            const sql2="DROP TABLE listaEspera";
-            await conexao.execute(sql2);
-            const sql = `CREATE TABLE IF NOT EXISTS listaEspera (
-                alu_id INT AUTO_INCREMENT PRIMARY KEY,
-                alu_nome VARCHAR(100) NOT NULL,
-                alu_idade INT NOT NULL,
-                alu_responsavel VARCHAR(100) NOT NULL,
-                alu_endereco VARCHAR(255) NOT NULL,
-                alu_telefone VARCHAR(20) NOT NULL,
-                alu_periodoProjeto VARCHAR(50) NOT NULL,
-                alu_periodoEscola VARCHAR(50) NOT NULL
-            );`;
-            */
-            let sql3 = `DROP TABLE listaEspera`;
-            let conexao = await conectar();
-            await conexao.execute(sql3);
-            sql3 = `CREATE TABLE IF NOT EXISTS listaEspera (
-            alu_id INT AUTO_INCREMENT,
-            alu_nome VARCHAR(100) NOT NULL,
-            alu_data_nascimento DATE NOT NULL,
-            alu_responsavel_cpf VARCHAR(14) NOT NULL,
-            alu_rua VARCHAR(255) NOT NULL,
-            alu_numero VARCHAR(10) NOT NULL,
-            alu_escola_id INT NOT NULL,
-            alu_telefone VARCHAR(20) NOT NULL,
-            alu_periodo_escola ENUM('Manhã', 'Tarde') NOT NULL,
-            alu_realiza_acompanhamento VARCHAR(200),
-            alu_possui_sindrome VARCHAR(200),
-            alu_descricao VARCHAR(300) NOT NULL,
-            alu_dataInsercao DATE NOT NULL,
-
-            CONSTRAINT pk_listaEspera PRIMARY KEY (alu_id),
-
-            -- assumindo que a tabela responsavel tem cpf como chave primária
-            CONSTRAINT fk_listaEspera_responsavel FOREIGN KEY (alu_responsavel_cpf) 
-                REFERENCES responsavel(res_cpf)
-                ON UPDATE CASCADE
-                ON DELETE RESTRICT,
-
-            CONSTRAINT fk_listaEspera_escola FOREIGN KEY (alu_escola_id) 
-                REFERENCES escola(esc_id)
-                ON UPDATE CASCADE
-                ON DELETE RESTRICT
-        );
-        `;
-            await conexao.execute(sql3);
-            await conexao.release();
-        } catch (e) {
-            console.log("Erro ao iniciar banco de dados: " + e.message);
-        }
-    }
     async incluir(listaEspera, conexao) {
-        if (listaEspera instanceof ListaEspera) {
-            const sql = `INSERT INTO listaEspera 
-            (
-                alu_nome, alu_data_nascimento, alu_responsavel_cpf, alu_rua, alu_numero, alu_escola_id, alu_telefone, 
-                alu_periodo_escola, alu_realiza_acompanhamento, alu_possui_sindrome, alu_descricao, alu_dataInsercao
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    
-            const parametros = [
-                listaEspera.nome,
-                listaEspera.dataNascimento,
-                listaEspera.responsavel.cpf,
-                listaEspera.rua,
-                listaEspera.numero,
-                listaEspera.escola.id,
-                listaEspera.telefone,
-                listaEspera.periodoEscola,
-                listaEspera.realizaAcompanhamento,
-                listaEspera.possuiSindrome,
-                listaEspera.descricao, 
-                listaEspera.dataInsercao
-            ];
-            await conexao.execute(sql, parametros);
+
+        // Verifica se já existe um registro ATIVO (status = 1) para esse aluno
+        const sqlBusca = `
+    SELECT 1 FROM listaespera 
+    WHERE alu_id = $1 AND lista_espera_status = 1
+    LIMIT 1
+`;
+        const parametrosBusca = [listaEspera.id];
+        const resultado = await conexao.query(sqlBusca, parametrosBusca);
+
+        // Se já existe um com status ativo, não permite novo cadastro
+        if (resultado.rows.length > 0) {
+            throw new Error("Criança já está ativa na lista de espera");
         }
+
+        // Caso contrário, permite a inserção
+        const sqlInsercao = `
+    INSERT INTO listaespera (
+        alu_id, lista_espera_dataInsercao, lista_espera_cor, lista_espera_status
+    ) VALUES ($1, $2, $3, $4)
+`;
+        const parametrosInsercao = [
+            listaEspera.id,
+            listaEspera.dataInsercao,
+            listaEspera.cor,
+            listaEspera.status
+        ];
+        await conexao.query(sqlInsercao, parametrosInsercao);
+
     }
-    
+
     async consultar(termo, conexao) {
-        let sql = ``;
+        let sql = `SELECT * FROM listaespera`;
         let parametros = [];
-        if (parseInt(termo)) {
-            sql = `SELECT * FROM listaEspera WHERE alu_id = ?`;
-            parametros = [termo];
-        } else {
-            sql = `SELECT * FROM listaEspera WHERE alu_nome LIKE ?`;
-            parametros = ['%' + termo + '%'];
+
+
+        if (termo?.id) {
+            sql = `SELECT * FROM listaespera WHERE alu_id = $1`;
+            parametros = [termo.id];
         }
-    
-        const [registros] = await conexao.execute(sql, parametros);
+        else if (termo?.num) {
+            sql = `SELECT * FROM listaespera WHERE lista_espera_num = $1`;
+            parametros = [termo.num];
+        }
+        else if (termo?.aluno && termo.aluno.nome) {
+            sql = `
+                SELECT * FROM listaespera 
+                WHERE alu_id = (
+                    SELECT alu_id FROM aluno WHERE alu_nome ILIKE $1 LIMIT 1
+                )
+            `;
+            parametros = [`%${termo.aluno.nome}%`];
+        } else if (termo?.cor) {
+            sql = `SELECT * FROM listaespera WHERE lista_espera_cor = $1`;
+            parametros = [termo.cor];
+        } else if (termo?.status) {
+            sql = `SELECT * FROM listaespera WHERE lista_espera_status = $1`;
+            parametros = [termo.status];
+        }
+
+        const resultado = await conexao.query(sql, parametros);
         const listaListaEspera = [];
-    
-        for (const registro of registros) {
-            // Buscar Responsável pelo CPF
-            const responsavel = new Responsavel();
-            const listaResp = await responsavel.consultar(registro['alu_responsavel_cpf'], conexao);
-            const responsavelCompleto = listaResp[0];  // supondo que venha um array
-    
-            // Buscar Escola pelo ID
-            const escola = new Escola();
-            const listaEscola = await escola.consultar(registro['alu_escola_id'], conexao);
-            const escolaCompleta = listaEscola[0];  // supondo que venha um array
-    
-            // Agora sim criar o ListaEspera com os objetos completos
-            const listaEspera = new ListaEspera(
-                registro['alu_id'],
-                registro['alu_nome'],
-                registro['alu_data_nascimento'],
-                responsavelCompleto,
-                registro['alu_rua'],
-                registro['alu_numero'],
-                escolaCompleta,
-                registro['alu_telefone'],
-                registro['alu_periodo_escola'],
-                registro['alu_realiza_acompanhamento'],
-                registro['alu_possui_sindrome'],
-                registro['alu_descricao'],
-                registro['alu_dataInsercao']
-            );
-            listaListaEspera.push(listaEspera);
+
+        for (const registro of resultado.rows) {
+            //const aluno = await this.consultarAluno(registro.alu_id, conexao);
+            var aluno = new Aluno;
+            aluno = await aluno.consultar(registro.alu_id, 3, conexao);
+
+            listaListaEspera.push({
+                num: registro.lista_espera_num,
+                id: registro.alu_id,
+                aluno: aluno[0],
+                dataInsercao: registro.lista_espera_datainsercao,
+                cor: registro.lista_espera_cor,
+                status: registro.lista_espera_status
+            });
         }
+
         return listaListaEspera;
     }
+/*
+    async consultarAluno(alu_id, conexao) {
+        const sql = `SELECT * FROM aluno WHERE alu_id = $1`;
+        const parametros = [alu_id];
+        const resultado = await conexao.query(sql, parametros);
+
+        const alunos = [];
+
+        for (const registro of resultado.rows) {
+            const responsavel = await this.consultarResponsavel(registro.alu_responsavel_cpf, conexao);
+
+            // o lele precisa consertar isso
+            // const escola = await this.consultarEscola(registro.alu_escola_id, conexao);
+            const escola = {};
+
+            alunos.push({
+                id: registro.alu_id,
+                nome: registro.alu_nome,
+                dataNascimento: registro.alu_data_nascimento,
+                responsavel: responsavel[0],
+                cidade: registro.alu_cidade,
+                rua: registro.alu_rua,
+                bairro: registro.alu_bairro,
+                numero: registro.alu_numero,
+                escola: escola[0],
+                telefone: registro.alu_telefone,
+                periodoEscola: registro.alu_periodo_escola,
+                realizaAcompanhamento: registro.alu_realiza_acompanhamento,
+                possuiSindrome: registro.alu_possui_sindrome,
+                descricao: registro.alu_descricao,
+                rg: registro.rg,
+                formularioSaude: null,
+                ficha: null,
+                dataInsercaoProjeto: registro.alu_dataInsercao_projeto,
+                status: registro.alu_status,
+                periodoProjeto: registro.alu_periodo_projeto,
+                cep: registro.alu_cep
+            });
+        }
+
+        return alunos;
+    }
+
+    async consultarEscola(esc_id, conexao) {
+        const sql = `SELECT * FROM escola WHERE esc_id = $1`;
+        const parametros = [esc_id];
+        const resultado = await conexao.query(sql, parametros);
+
+        return resultado.rows.map(linha => ({
+            id: linha.esc_id,
+            nome: linha.esc_nome,
+            endereco: linha.esc_endereco,
+            telefone: linha.esc_telefone,
+            tipo: linha.esc_tipo
+        }));
+    }
+
+    async consultarResponsavel(cpf, conexao) {
+        const sql = `SELECT * FROM responsavel WHERE resp_cpf = $1`;
+        const parametros = [cpf];
+        const resultado = await conexao.query(sql, parametros);
+
+        return resultado.rows.map(linha => ({
+            cpf: linha.resp_cpf,
+            nome: linha.resp_nome,
+            telefone: linha.resp_telefone
+        }));
+    }*/
 
     async excluir(listaEspera, conexao) {
-        if (listaEspera instanceof ListaEspera) {
-            const sql = `DELETE FROM listaEspera WHERE alu_id = ?`;
-            const parametros = [listaEspera.numProtocolo];
-            await conexao.execute(sql, parametros);
-        }
+        const sql = `DELETE FROM listaespera WHERE lista_espera_num = $1`;
+        await conexao.query(sql, [listaEspera.num]);
     }
-    
+
     async alterar(listaEspera, conexao) {
-        if (listaEspera instanceof ListaEspera) {
-            const sql = `
-                UPDATE listaEspera SET 
-                    alu_nome = ?, 
-                    alu_data_nascimento = ?, 
-                    alu_responsavel_cpf = ?, 
-                    alu_rua = ?, 
-                    alu_numero = ?, 
-                    alu_escola_id = ?, 
-                    alu_telefone = ?, 
-                    alu_periodo_escola = ?, 
-                    alu_realiza_acompanhamento = ?, 
-                    alu_possui_sindrome = ?, 
-                    alu_descricao = ?, 
-                    alu_dataInsercao = ?
-                WHERE alu_id = ?
-            `;
-            const parametros = [
-                listaEspera.nome,
-                listaEspera.dataNascimento,
-                listaEspera.responsavel.cpf,
-                listaEspera.rua,
-                listaEspera.numero,
-                listaEspera.escola.id,
-                listaEspera.telefone,
-                listaEspera.periodoEscola,
-                listaEspera.realizaAcompanhamento,
-                listaEspera.possuiSindrome,
-                listaEspera.descricao, 
-                listaEspera.dataInsercao,
-                listaEspera.numProtocolo
-            ];
-            await conexao.execute(sql, parametros);
-        }
+        const sql = `
+            UPDATE listaespera SET  
+                lista_espera_dataInsercao = $1,
+                lista_espera_cor = $2,
+                lista_espera_status = $3
+            WHERE lista_espera_num = $4
+        `;
+        const parametros = [
+            listaEspera.dataInsercao,
+            listaEspera.cor,
+            listaEspera.status,
+            listaEspera.num
+        ];
+        await conexao.query(sql, parametros);
     }
-    
 }
+

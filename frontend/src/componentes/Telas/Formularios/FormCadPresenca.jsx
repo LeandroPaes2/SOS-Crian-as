@@ -12,11 +12,11 @@ export default function FormCadPresenca() {
     const [selectedTurma, setSelectedTurma] = useState('');
     const [presencas, setPresencas] = useState({});
     const [mensagem, setMensagem] = useState('');
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
     const navigate = useNavigate();
     const location = useLocation();
     const [editando, setEditando] = useState(false);
 
-    // Carrega dados iniciais para edição
     useEffect(() => {
         if (location.state?.id) {
             setEditando(true);
@@ -35,7 +35,6 @@ export default function FormCadPresenca() {
                 return exists ? prev : [...prev, location.state.turma];
             });
 
-            // Preenche presenças
             const presencasIniciais = {};
             location.state.alunosPresentes.forEach(ap => {
                 presencasIniciais[ap.aluno.id] = ap.presente;
@@ -44,11 +43,13 @@ export default function FormCadPresenca() {
         }
     }, [location.state]);
     
-    // Carrega matérias ao iniciar
     useEffect(() => {
         async function carregarMaterias() {
             try {
-                const res = await fetch('http://localhost:3000/materias');
+                const res = await fetch('http://localhost:3000/materias',{
+                    method: "GET",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`}
+                });
                 const data = await res.json();
                 setMaterias(data);
             } catch (error) {
@@ -63,9 +64,10 @@ export default function FormCadPresenca() {
         async function carregarTurmas() {
             if (selectedMateria) {
                 try {
-                    const res = await fetch(
-                        `http://localhost:3000/presencas/materia/${selectedMateria}/turmas`
-                    );
+                    const res = await fetch(`http://localhost:3000/presencas/materia/${selectedMateria}/turmas`,{
+                        method: "GET",
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`}
+                    });
                     const data = await res.json();
                     setTurmas(data);
                 } catch (error) {
@@ -80,7 +82,10 @@ export default function FormCadPresenca() {
     const carregarAlunos = useCallback(async () => {
         if (selectedTurma || editando) {
             try {
-                const res = await fetch('http://localhost:3000/alunos');
+                const res = await fetch('http://localhost:3000/alunos',{
+                    method: "GET",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`}
+                });
                 const data = await res.json();
 
                 // Mantém presenças existentes
@@ -108,7 +113,7 @@ export default function FormCadPresenca() {
                 setMensagem('Erro ao carregar alunos: ' + error.message);
             }
         }
-    }, [selectedTurma, editando]); // presencas não é mais necessário
+    }, [selectedTurma, editando]);
 
     useEffect(() => {
         carregarAlunos();
@@ -136,7 +141,7 @@ export default function FormCadPresenca() {
 
             const response = await fetch(url, {
                 method: method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json' , "Authorization": `Bearer ${token}`},
                 body: JSON.stringify({
                     materiaId: selectedMateria,
                     turmaId: selectedTurma,

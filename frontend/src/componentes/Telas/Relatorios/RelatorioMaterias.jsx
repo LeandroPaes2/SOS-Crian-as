@@ -8,12 +8,19 @@ export default function RelatorioMateria() {
     const [listaDenomes, setListaDeNomes] = useState([]);
     const [mensagem, setMensagem] = useState("");
     const [pesquisaNome, setPesquisaNome] = useState("");
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");  
     const navigate = useNavigate();
 
     useEffect(() => {
         const buscarMateria = async () => {
             try {
-                const response = await fetch("http://localhost:3000/materias");
+                const response = await fetch("http://localhost:3000/materias",{
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json"
+                    }
+                });
                 if (!response.ok) throw new Error("Erro ao buscar matéria");
 
                 const dados = await response.json();
@@ -36,7 +43,11 @@ export default function RelatorioMateria() {
 
             try {
                 const response = await fetch("http://localhost:3000/materias/" + materia.id, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
                 });
 
                 if (response.ok) {
@@ -105,6 +116,7 @@ export default function RelatorioMateria() {
                             <Table striped bordered hover>
                                 <thead>
                                     <tr>
+                                        <th>ID</th>
                                         <th>Nome</th>
                                         <th>Descrição</th>
                                         <th>Ações</th>
@@ -122,6 +134,7 @@ export default function RelatorioMateria() {
                                             .map((materia) => {
                                                 return (
                                                     <tr key={materia.id}>
+                                                        <td>{materia.id}</td>
                                                         <td>{materia.nome}</td>
                                                         <td>{materia.descricao}</td>
                                                         <td>

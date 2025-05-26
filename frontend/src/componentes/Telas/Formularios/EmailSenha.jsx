@@ -17,7 +17,7 @@ export default function EmailSenha(){
             return;
         }
         try {
-            const response = await fetch("http://localhost:3000/funcionarios/"+email);
+            const response = await fetch("http://localhost:3000/funcionarios/email/"+email);
             if (!response.ok){
                 setMensagem("Funcionário não cadastrado.");
                 return;

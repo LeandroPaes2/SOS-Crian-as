@@ -1,53 +1,53 @@
-//DAO - Data Access Object
+import bcrypt from "bcrypt";  // Importando o bcrypt
 import Funcionario from "../Modelo/funcionario.js";
-//import conectar from "../Controle/Conexao.js";
 
 export default class FuncionarioDAO {
 
-   /* constructor() {
-        this.init();
-    }
-
-        async init() {
-            try {
-            //    const conexao = await conectar();
-
-                await conexao.execute(`
-                    CREATE TABLE IF NOT EXISTS funcionario (
-                        func_nome VARCHAR(50) NOT NULL,
-                        func_cpf VARCHAR(14) NOT NULL UNIQUE,
-                        func_cargo VARCHAR(20) NOT NULL,
-                        func_nivel VARCHAR(20) NOT NULL,
-                        func_email VARCHAR(50) NOT NULL,
-                        func_senha VARCHAR(15) NOT NULL,
-                        CONSTRAINT pk_funcionario PRIMARY KEY(func_cpf)
-                    )
-                `);
-
-            //    await conexao.release();
-                console.log("Tabela 'funcionario' foi recriada com sucesso.");
-            } catch (e) {
-                console.log("Não foi possível iniciar o banco de dados: " + e.message);
-            }
-        }
-        */
+    /* constructor() {
+         this.init();
+     }
+ 
+         async init() {
+             try {
+                 const conexao = await conectar();
+ 
+                 await conexao.execute(`
+                     CREATE TABLE IF NOT EXISTS funcionario (
+                         func_nome VARCHAR(50) NOT NULL,
+                         func_cpf VARCHAR(14) NOT NULL UNIQUE,
+                         func_cargo VARCHAR(20) NOT NULL,
+                         func_nivel VARCHAR(20) NOT NULL,
+                         func_email VARCHAR(50) NOT NULL,
+                         func_senha TEXT NOT NULL,
+                         CONSTRAINT pk_funcionario PRIMARY KEY(func_cpf)
+                     )
+                 `);
+ 
+                 await conexao.release();
+                 console.log("Tabela 'funcionario' foi recriada com sucesso.");
+             } catch (e) {
+                 console.log("Não foi possível iniciar o banco de dados: " + e.message);
+             }
+         }*/
 
     async incluir(funcionario, conexao) {
         if (funcionario instanceof Funcionario) {
             try {
-             //   const conexao = await conectar();
-                const sql = `INSERT INTO funcionario(func_nome, func_cpf, func_cargo, func_nivel, func_email, func_senha)
-                             VALUES ($1, $2, $3, $4, $5, $6)`;
+                // Criptografando a senha antes de salvar
+                const senhaCriptografada = await bcrypt.hash(funcionario.senha, 10);
+
+                const sql = `INSERT INTO funcionario 
+                (func_nome, func_cpf, func_cargo, func_nivel, func_email, func_senha)
+                VALUES ($1, $2, $3, $4, $5, $6)`;
                 const parametros = [
                     funcionario.nome,
                     funcionario.cpf,
                     funcionario.cargo,
                     funcionario.nivel,
                     funcionario.email,
-                    funcionario.senha
+                    senhaCriptografada
                 ];
                 await conexao.query(sql, parametros);
-             //   await conexao.release();
             } catch (e) {
                 throw new Error("Erro ao incluir funcionário: " + e.message);
             }
@@ -57,7 +57,20 @@ export default class FuncionarioDAO {
     async alterar(funcionario, conexao) {
         if (funcionario instanceof Funcionario) {
             try {
-            //    const conexao = await conectar();
+                var func = new Funcionario();
+                const sqlBusca = `SELECT func_senha FROM funcionario WHERE func_cpf = $1`;
+                const parametrosBusca = [
+                    func.cpf
+                ];
+                ;
+                if (await conexao.query(sqlBusca, parametrosBusca) !== funcionario.senha) {
+                    // Criptografando a senha antes de atualizar
+                    var senhaCriptografada = await bcrypt.hash(funcionario.senha, 10);
+                }
+                else {
+                    var senhaCriptografada = func.senha;
+                }
+
                 const sql = `UPDATE funcionario 
                              SET func_nome = $1, func_cargo = $2, func_nivel = $3, func_email = $4, func_senha = $5 
                              WHERE func_cpf = $6`;
@@ -66,68 +79,171 @@ export default class FuncionarioDAO {
                     funcionario.cargo,
                     funcionario.nivel,
                     funcionario.email,
-                    funcionario.senha,
+                    senhaCriptografada,
                     funcionario.cpf
                 ];
                 await conexao.query(sql, parametros);
-             //   await conexao.release();
             } catch (e) {
                 throw new Error("Erro ao alterar funcionário: " + e.message);
             }
         }
     }
 
-    async excluir(funcionario, conexao) {
-        if (funcionario instanceof Funcionario) {
-            try {
-             //   const conexao = await conectar();
-                const sql = `DELETE FROM funcionario WHERE func_cpf = $1`;
-                await conexao.query(sql, [funcionario.cpf]);
-             //   await conexao.release();
-            } catch (e) {
-                throw new Error("Erro ao excluir funcionário: " + e.message);
-            }
-        }
-    }
-    
     async consultar(termo, conexao) {
         try {
-            let sql = "";
+            let sql = "SELECT * FROM funcionario ORDER BY func_nome";
             let parametros = [];
-    
-                if (!termo) {
-                    sql = `SELECT * FROM funcionario ORDER BY func_nome`;
-                } 
-                else if (typeof termo === 'string') {
-                    sql = `SELECT * FROM funcionario WHERE func_email = $1 ORDER BY func_nome`;
-                    parametros = [termo];
-                } 
-                else if (typeof termo === 'object') {
-                    if (termo.nome) {
-                        sql = `SELECT * FROM funcionario WHERE func_nome LIKE $1 ORDER BY func_nome`;
-                        parametros = ['%' + termo.nome + '%'];
-                    } else if (termo.email) {
-                        sql = `SELECT * FROM funcionario WHERE func_email LIKE $1 ORDER BY func_nome`;
-                        parametros = ['%' + termo.email + '%'];
-                    } else {
-                        // Caso não tenha filtro válido, lista tudo
-                        sql = `SELECT * FROM funcionario ORDER BY func_nome`;
-                    }
-                }     
-    
+
+            if (termo?.nome) {
+                sql = "SELECT * FROM funcionario WHERE func_nome ILIKE $1 ORDER BY func_nome";
+                parametros = [`%${termo.nome}%`];
+            } else if (termo?.email) {
+                sql = "SELECT * FROM funcionario WHERE func_email ILIKE $1 ORDER BY func_nome";
+                parametros = [`%${termo.email}%`];
+            }
+
             const resultado = await conexao.query(sql, parametros);
-            const linhas = resultado.rows;
-            return linhas.map(linha => new Funcionario(
-                linha['func_nome'],
-                linha['func_cpf'],
-                linha['func_cargo'],
-                linha['func_nivel'],
-                linha['func_email'],
-                linha['func_senha']
+            return resultado.rows.map(linha => new Funcionario(
+                linha.func_nome,
+                linha.func_cpf,
+                linha.func_cargo,
+                linha.func_nivel,
+                linha.func_email,
+                linha.func_senha
             ));
         } catch (e) {
             throw new Error("Erro ao consultar funcionários: " + e.message);
         }
     }
-        
+
+    /*async verificarSenha(cpf, senha, conexao) {
+        try {
+            const sql = `SELECT func_senha FROM funcionario WHERE func_cpf = $1`;
+            const resultado = await conexao.query(sql, [cpf]);
+
+            if (resultado.rows.length > 0) {
+                const senhaArmazenada = resultado.rows[0].func_senha;
+                const senhaValida = await bcrypt.compare(senha, senhaArmazenada);
+                return senhaValida;
+            } else {
+                throw new Error("Funcionário não encontrado");
+            }
+        } catch (e) {
+            throw new Error("Erro ao verificar senha: " + e.message);
+        }
+    }*/
+
+    async autenticar(email, senha, conexao) {
+        try {
+            const sql = `SELECT * FROM funcionario WHERE func_email = $1`;
+            const resultado = await conexao.query(sql, [email]);
+
+            if (resultado.rows.length === 0) {
+                return null; // Funcionário não encontrado
+            }
+
+            const linha = resultado.rows[0];
+            console.log("Senha digitada:", senha);
+            console.log("Hash armazenado:", linha.func_senha);
+            const senhaCorreta = await bcrypt.compare(senha, linha.func_senha);
+            console.log("Senha correta?", senhaCorreta);
+            
+            if (senhaCorreta) {
+                return new Funcionario(
+                    linha.func_nome,
+                    linha.func_cpf,
+                    linha.func_cargo,
+                    linha.func_nivel,
+                    linha.func_email,
+                    linha.func_senha
+                );
+            } else {
+                return null; // Senha incorreta
+            }
+        } catch (e) {
+            throw new Error("Erro ao verificar senha: " + e.message);
+        }
+    }
+
+    async atualizarSenhaFuncionario(email, novaSenha, conexao){
+        try {
+        const sqlSelect = `SELECT * FROM funcionario WHERE func_email = $1`;
+        const resultado = await conexao.query(sqlSelect, [email]);
+        if (resultado.rows.length === 0) {
+            return null; // Funcionário não encontrado
+        }
+
+        const linha = resultado.rows[0];
+        const senhaCorreta = await bcrypt.compare(novaSenha, linha.func_senha);
+
+        if (senhaCorreta) {
+           throw new Error("Nova senha igual a senha atual "); // Senha atual incorreta
+        }
+
+        const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
+
+        const sqlUpdate = `UPDATE funcionario SET func_senha = $1 WHERE func_email = $2`;
+        await conexao.query(sqlUpdate, [novaSenhaHash, email]);
+
+        return new Funcionario(
+            linha.func_nome,
+            linha.func_cpf,
+            linha.func_cargo,
+            linha.func_nivel,
+            linha.func_email,
+            novaSenhaHash 
+        );
+
+        }catch (e) {
+        throw new Error("Erro ao atualizar senha: " + e.message);
+    }
+    }
+
+    async alterarSenhaFuncionario(email, senhaAtual, novaSenha, conexao) {
+         try {
+        const sqlSelect = `SELECT * FROM funcionario WHERE func_email = $1`;
+        const resultado = await conexao.query(sqlSelect, [email]);
+
+        if (resultado.rows.length === 0) {
+            return null; // Funcionário não encontrado
+        }
+
+        const linha = resultado.rows[0];
+        const senhaCorreta = await bcrypt.compare(senhaAtual, linha.func_senha);
+
+        if (!senhaCorreta) {
+            return null; // Senha atual incorreta
+        }
+
+        const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
+
+        const sqlUpdate = `UPDATE funcionario SET func_senha = $1 WHERE func_email = $2`;
+        await conexao.query(sqlUpdate, [novaSenhaHash, email]);
+
+        return new Funcionario(
+            linha.func_nome,
+            linha.func_cpf,
+            linha.func_cargo,
+            linha.func_nivel,
+            linha.func_email,
+            novaSenhaHash 
+        );
+    } catch (e) {
+        throw new Error("Erro ao alterar senha: " + e.message);
+    }
+    }
+
+
+
+    async excluir(funcionario, conexao) {
+        if (funcionario instanceof Funcionario) {
+            try {
+                const sql = `DELETE FROM funcionario WHERE func_cpf = $1`;
+                await conexao.query(sql, [funcionario.cpf]);
+            } catch (e) {
+                throw new Error("Erro ao excluir funcionário: " + e.message);
+            }
+        }
+    }
+
 }

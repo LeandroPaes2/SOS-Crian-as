@@ -3,16 +3,18 @@
 
 import { Router } from "express"; //micro-aplicação HTTP
 import TurmaCtrl from "../Controle/turmaCtrl.js";
+import autenticarToken from "../middleware/autenticarToken.js";
+import autorizarNivel from "../middleware/autorizarNivel.js";
 
 const turmCtrl = new TurmaCtrl();
 const rotaTurma = Router();
 
-rotaTurma.post("/", turmCtrl.gravar);
-rotaTurma.put("/:id", turmCtrl.editar);
-rotaTurma.patch("/:id", turmCtrl.editar);
-rotaTurma.delete("/:id", turmCtrl.excluir);
-rotaTurma.get("/:id", turmCtrl.consultar);
-rotaTurma.get("/",turmCtrl.consultar);
+rotaTurma.post("/", autenticarToken, autorizarNivel("1", "2"),turmCtrl.gravar);
+rotaTurma.put("/:id", autenticarToken, autorizarNivel("1", "2"),turmCtrl.editar);
+rotaTurma.patch("/:id",autenticarToken, autorizarNivel("1", "2"), turmCtrl.editar);
+rotaTurma.delete("/:id",autenticarToken, autorizarNivel("1", "2"), turmCtrl.excluir);
+rotaTurma.get("/:id",autenticarToken, autorizarNivel("1", "2"), turmCtrl.consultar);
+rotaTurma.get("/",autenticarToken, autorizarNivel("1", "2"),turmCtrl.consultar);
 
 export default rotaTurma;
 

@@ -8,34 +8,21 @@ import "../../css/verificarEmail.css";
 export default function VerificarEmail(){
 
     const [email, setEmail] = useState("");
-    const [listaDeFuncionarios, setListaDeFuncionarios] = useState([])
     const [mensagem, setMensagem] = useState("");
     const navigate = useNavigate();
-    const [mostrarSenha, setMostrarSenha] = useState(false);
-    const {login} = useLogin();
     const [manterConectado, setManterConectado] = useState(false);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        try {
-            const response = await fetch("http://localhost:3000/funcionarios/"+email);
-            if (!response.ok){
-                setMensagem("Funcionário não cadastrado.");
-                return;
-            }
-            const dados = await response.json();
-            console.log(dados);
-            
-            if(!dados || dados.length==0){
-                setMensagem("Funcionário não cadastrado.");
-                setTimeout(() => setMensagem(""), 3000);
-                return;
-            }
-            setMensagem("");
-
-        }catch(e){
-            setMensagem("E-Mail não cadastrado.");
-        }
+        console.log(email);
+        await fetch("http://localhost:3000/recuperarSenha", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+        setTimeout(() =>
+        setMensagem("Você receberá um codigo."), 3000);
+        navigate("/verificarCodigo", {state:{email}});
     }
 
     return(
@@ -44,7 +31,7 @@ export default function VerificarEmail(){
                     <h2 className="titulo-alert">Recuperar Senha</h2>
             </Alert>
             {mensagem && <Alert className="mt-02 mb-02 success text-center" variant={
-                mensagem.includes("sucesso")
+                mensagem.includes("codigo")
                 ? "success"
                 : mensagem.includes("nao cadastrado") || mensagem.includes("erro") || mensagem.includes("incorreta")
                 ? "danger"
@@ -66,7 +53,7 @@ export default function VerificarEmail(){
                         <Button className="botaoVoltar" as={Link} to="/">
                         <GoArrowLeft /> Voltar
                         </Button>
-                        <Button variant="primary" type="submit" className="botaoEnviar">
+                        <Button variant="primary" type="submit" className="botaoEnviar" onClick={handleSubmit}>
                             Enviar email 
                         </Button>
                     </div>

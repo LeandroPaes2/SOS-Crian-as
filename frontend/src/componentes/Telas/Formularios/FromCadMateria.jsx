@@ -12,6 +12,7 @@ export default function FormCadmateria() {
     const [mensagem, setMensagem] = useState("");
     const location = useLocation();
     const [editando, setEditando] = useState(false);
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     useEffect(() => {
         if (location.state && location.state.id && location.state.nome && location.state.descricao) {
@@ -40,7 +41,7 @@ export default function FormCadmateria() {
         try {
             const response = await fetch(url, {
                 method: method,
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`},
                 body: JSON.stringify(materia),
             });
 

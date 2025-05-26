@@ -2,49 +2,38 @@ import Familia from "../Modelo/familia.js";
 
 export default class FamiliaDAO {
 
+    /*CREATE TABLE IF NOT EXISTS familia(
+                fam_id INT NOT NULL AUTO_INCREMENT,
+                fam_nome VARCHAR(50) NOT NULL,
+                fam_sexo VARCHAR(10) NOT NULL CHECK (fam_sexo IN ('Masculino', 'Feminino', 'Outro')),
+                fam_dataNascimento DATE NOT NULL,
+                fam_profissao VARCHAR(50),
+                fam_escolaridade VARCHAR(60) NOT NULL,
+                fam_grauParentesco VARCHAR (50) NOT NULL,
+                fam_irmaos VARCHAR (50),
+                fam_temContato VARCHAR (5) NOT NULL CHECK (fam_temContato IN ('Sim', 'Nao'))
+                CONSTRAINT pk_familia PRIMARY KEY(fam_id),
+            );*/
+
     async incluir(familia, supabase) {
         if (familia instanceof Familia) {
 
-            const verifica = await supabase.query("SELECT 1 FROM familia WHERE fam_cpf = $1", [familia.cpf]);
-
-            if (verifica.rowCount > 0) {
-                throw new Error("CPF já cadastrado");
-            }
-
             const sql = `INSERT INTO familia(
-            fam_nome, fam_sexo, fam_data_nascimento, fam_rg, fam_cpf,
-            fam_companheiro, fam_estado_civil, fam_profissao, fam_situacao_trabalho, fam_escolaridade,
-            fam_renda_familiar, fam_renda_valor, fam_qtde_trabalho, fam_pensao_alimentar,
-            fam_valor_pensao, fam_quem_paga_pensao, fam_beneficio_social,
-            fam_qual_beneficio, fam_valor_beneficio, fam_nome_beneficio
+            fam_nome, fam_sexo, fam_dataNascimento, fam_profissao, fam_escolaridade, fam_grauParentesco, fam_irmaos, fam_temContato
         ) VALUES (
             $1, $2, $3, $4, $5,
-            $6, $7, $8, $9, $10,
-            $11, $12, $13, $14,
-            $15, $16, $17, $18, $19, $20
+            $6, $7, $8
         )`;
 
             const parametros = [
                 familia.nome,
                 familia.sexo,
                 familia.dataNascimento,
-                familia.rg,
-                familia.cpf,
-                familia.companheiro,
-                familia.estadoCivil,
                 familia.profissao,
-                familia.situacaoTrabalho,
                 familia.escolaridade,
-                familia.rendaFamiliar,
-                familia.rendaValor,
-                familia.qtdeTrabalho,
-                familia.pensaoAlimentar,
-                familia.valorPensao,
-                familia.quemPagaPensao,
-                familia.beneficioSocial,
-                familia.qualBeneficio,
-                familia.valorBeneficio,
-                familia.nomeBeneficio
+                familia.grauParentesco,
+                familia.irmaos,
+                familia.temContato
             ];
 
             await supabase.query(sql, parametros);
@@ -61,47 +50,23 @@ export default class FamiliaDAO {
             SET 
                 fam_nome = $1, 
                 fam_sexo = $2, 
-                fam_data_nascimento = $3, 
-                fam_rg = $4, 
-                fam_cpf = $5, 
-                fam_companheiro = $6,
-                fam_estado_civil = $7, 
-                fam_profissao = $8, 
-                fam_situacao_trabalho = $9, 
-                fam_escolaridade = $10,
-                fam_renda_familiar = $11, 
-                fam_renda_valor = $12, 
-                fam_qtde_trabalho = $13, 
-                fam_pensao_alimentar = $14,
-                fam_valor_pensao = $15, 
-                fam_quem_paga_pensao = $16, 
-                fam_beneficio_social = $17, 
-                fam_qual_beneficio = $18,
-                fam_valor_beneficio = $19, 
-                fam_nome_beneficio = $20
-            WHERE fam_id = $21
+                fam_dataNascimento = $3, 
+                fam_profissao = $4, 
+                fam_escolaridade = $5,
+                fam_grauParentesco = $6,
+                fam_irmaos = $7, 
+                fam_temContato = $8
+            WHERE fam_id = $9
         `;
             const parametros = [
                 familia.nome,
                 familia.sexo,
                 familia.dataNascimento,
-                familia.rg,
-                familia.cpf,
-                familia.companheiro,
-                familia.estadoCivil,
                 familia.profissao,
-                familia.situacaoTrabalho,
                 familia.escolaridade,
-                familia.rendaFamiliar,
-                familia.rendaValor,
-                familia.qtdeTrabalho,
-                familia.pensaoAlimentar,
-                familia.valorPensao,
-                familia.quemPagaPensao,
-                familia.beneficioSocial,
-                familia.qualBeneficio,
-                familia.valorBeneficio,
-                familia.nomeBeneficio,
+                familia.grauParentesco,
+                familia.irmaos,
+                familia.temContato,
                 familia.id
             ];
 
@@ -135,23 +100,11 @@ export default class FamiliaDAO {
                 linha['fam_nome'],
                 linha['fam_sexo'],
                 linha['fam_data_nascimento'],
-                linha['fam_rg'],
-                linha['fam_cpf'],
-                linha['fam_companheiro'],
-                linha['fam_estado_civil'],
                 linha['fam_profissao'],
-                linha['fam_situacao_trabalho'],
                 linha['fam_escolaridade'],
-                linha['fam_renda_familiar'],
-                linha['fam_renda_valor'],
-                linha['fam_qtde_trabalho'],
-                linha['fam_pensao_alimentar'],
-                linha['fam_valor_pensao'],
-                linha['fam_quem_paga_pensao'],
-                linha['fam_beneficio_social'],
-                linha['fam_qual_beneficio'],
-                linha['fam_valor_beneficio'],
-                linha['fam_nome_beneficio']
+                linha['fam_grauParentesco'],
+                linha['irmaos'],
+                linha['temContato']
             );
             listaFamilia.push(familia);
         }

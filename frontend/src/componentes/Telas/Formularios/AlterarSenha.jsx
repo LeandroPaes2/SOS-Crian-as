@@ -15,6 +15,7 @@ export default function AlterarSenha(){
     const [mostrarSenha, setMostrarSenha] = useState(false);
     const {funcionario, logout} = useLogin();
     const navigate = useNavigate();
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token"); 
 
     const verificarVoltar= async (event)=>{
         event.preventDefault();
@@ -28,11 +29,7 @@ export default function AlterarSenha(){
     const handleSubmit = async (event) => {
         event.preventDefault(); // Evita recarregar a página
 
-        if(senhaAtual!==funcionario.senha){
-            setMensagem("Senha atual incorreta!");
-            return;
-        }
-        else if(novaSenha!==confirmarSenha){
+        if(novaSenha!==confirmarSenha){
             setMensagem("Novas senhas não sao iguais!");
             return;
         }else if(senhaAtual==novaSenha){
@@ -40,19 +37,20 @@ export default function AlterarSenha(){
             return;
         }
 
-        const url = `http://localhost:3000/funcionarios/${funcionario.cpf}`;
+        const url = `http://localhost:3000/alterarSenha`;
         const method = "PUT";
-
+        console.log(token);
         try {
-
-            if(!window.confirm("Deseja realmente alterar a senha?")){
-                return;
-            }
 
             const response = await fetch(url, {
                 method: method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(funcionario),
+                headers: { "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                 },
+                
+                body: JSON.stringify({email: funcionario.email,
+                senhaAtual: senhaAtual,
+                novaSenha: novaSenha})
             });
 
             if (response.ok) {
@@ -89,7 +87,7 @@ export default function AlterarSenha(){
                 <Form onSubmit={handleSubmit} id="formularioLogin"  className="formularioD">
                     <Form.Group className="campoSenhaAtual" controlId="senhaAtual">
                         <Form.Label>Senha Atual</Form.Label>
-                        <Form.Control type="password" placeholder="Digite a senha atual" 
+                        <Form.Control type={mostrarSenha ? "text" : "password"} placeholder="Digite a senha atual" 
                         required
                         value={senhaAtual}
                         onChange={(e) => setSenhaAtual(e.target.value)}/>
@@ -99,7 +97,7 @@ export default function AlterarSenha(){
                     </Form.Group>
                     <Form.Group className="campoNovaSenha" controlId="novaSenha">
                         <Form.Label>Nova Senha</Form.Label>
-                        <Form.Control type="password" placeholder="Digite a senha nova" 
+                        <Form.Control type={mostrarSenha ? "text" : "password"} placeholder="Digite a senha nova" 
                         required
                         value={novaSenha}
                         onChange={(e) => setNovaSenha(e.target.value)}/>

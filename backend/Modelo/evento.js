@@ -4,7 +4,9 @@ export default class Evento{
     //atributos privados
     #id;
     #nome;
-    #data;
+    #tipoEvento;
+    #dataInicio;
+    #dataFim;
     #periodo;
     #horaInicio;
     #horaFim;
@@ -25,12 +27,28 @@ export default class Evento{
         this.#nome=novoNome;
     }
 
-    get data(){
-        return this.#data
+    get tipoEvento(){
+        return this.#tipoEvento;
     }
 
-    set data(novoData){
-        this.#data = novoData;
+    set tipoEvento(novoTipo){
+        this.#tipoEvento=novoTipo;
+    }
+
+    get dataInicio(){
+        return this.#dataInicio;
+    }
+
+    set dataInicio(novoData){
+        this.#dataInicio = novoData;
+    }
+
+    get dataFim(){
+        return this.#dataFim;
+    }
+
+    set dataFim(novaData){
+        this.#dataFim=novaData;
     }
 
     get periodo(){
@@ -58,10 +76,12 @@ export default class Evento{
     }
 
 
-    constructor(id=0, nome="", data="", periodo="", horaInicio="", horaFim=""){
+    constructor(id=0, nome="", tipoEvento="", dataInicio="", dataFim="", periodo="", horaInicio="", horaFim=""){
         this.#id = id;
         this.#nome=nome;
-        this.#data = data;
+        this.#tipoEvento=tipoEvento;
+        this.#dataInicio = dataInicio;
+        this.#dataFim=dataFim;
         this.#periodo=periodo;
         this.#horaInicio=horaInicio;
         this.#horaFim=horaFim;
@@ -71,7 +91,9 @@ export default class Evento{
         return {
             "id":this.#id,
             "nome":this.#nome,
-            "data":this.#data,
+            "tipoEvento": this.#tipoEvento,
+            "dataInicio":this.#dataInicio,
+            "dataFim":this.#dataFim,
             "periodo":this.#periodo,
             "horaInicio":this.#horaInicio,
             "horaFim":this.#horaFim
@@ -80,7 +102,8 @@ export default class Evento{
 
     async incluir(conexao){
         const eveDAO = new EventoDAO();
-        await eveDAO.incluir(this, conexao);
+        console.log(this.#nome);
+        return await eveDAO.incluir(this, conexao);
     }
 
     async consultar(termo, conexao){
@@ -90,12 +113,12 @@ export default class Evento{
 
     async excluir(conexao){
         const eveDAO = new EventoDAO();
-        await eveDAO.excluir(this, conexao);
+        return await eveDAO.excluir(this, conexao);
     }
 
     async alterar(conexao){
         const eveDAO = new EventoDAO();
-        await eveDAO.alterar(this, conexao);
+        return await eveDAO.alterar(this, conexao);
     }
 }
 

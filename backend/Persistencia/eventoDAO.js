@@ -1,49 +1,21 @@
 import Evento from "../Modelo/evento.js";
 
-/*function dataISOparaBR(dataISO) {
-    const data = new Date(dataISO);
-    const dia = String(data.getDate()).padStart(2, '0');
-    const mes = String(data.getMonth() + 1).padStart(2, '0'); // mês começa do zero
-    const ano = data.getFullYear();
-    return `${dia}/${mes}/${ano}`;
-}*/
-
-
 export default class EventoDAO {
-
-    static async verificarConflito(evento, conexao) {
-        const sql = `
-            SELECT * FROM evento 
-            WHERE eve_data = ? 
-            AND NOT (? >= eve_horaFim OR ? <= eve_horaInicio)
-        `;
-
-        //eve_data = ?: Filtra os eventos para trazer apenas os que acontecem no mesmo dia (eve_data). Esse ? será substituído pela data do evento que está tentando inserir.
-        //eve_periodo = ?: Filtra os eventos para trazer apenas os que acontecem no mesmo periodo(eve_data). Esse ? será substituído pela data do evento que está tentando inserir.
-    
-        const parametros = [
-            evento.data,
-            evento.horaInicio,
-            evento.horaFim
-        ];
-    
-        const [linhas] = await conexao.query(sql, parametros);
-        return linhas.length > 0; // Se tiver algum resultado, há conflito
-    }
-    /*constructor() {
-        //this.init();
-    }*/
 
     /*async init() {
         try 
         {
             const conexao = await conectar(); //retorna uma conexão
             const sql = `
-            CREATE TABLE IF NOT EXISTS responsavel(
-                resp_cpf VARCHAR(14) NOT NULL,
-                resp_nome VARCHAR(50) NOT NULL,
-                resp_telefone VARCHAR(1) NOT NULL,
-                CONSTRAINT pk_responsavel PRIMARY KEY(resp_cpf)
+            CREATE TABLE IF NOT EXISTS evento(
+                eve_id SERIAL PRIMARY KEY,
+                eve_nome VARCHAR (100) NOT NULL,
+                eve_tipoEvento VARCHAR (40) NOT NULL,
+                eve_dataInicio DATE NOT NULL,
+                eve_dataFim DATE NOT NULL,
+                eve_periodo VARCHAR (20) NOT NULL,
+                eve_horaInicio TIME NOT NULL,
+                eve_horaFim TIME NOT NULL
             );
         `;
             await conexao.execute(sql);
@@ -57,22 +29,23 @@ export default class EventoDAO {
     async incluir(evento, conexao) {
         if (evento instanceof Evento) {
             try{
-            const sql = `INSERT INTO evento(eve_nome, eve_data,eve_periodo, eve_horaInicio, eve_horaFim)
-                VALUES ($1,$2,$3,$4,$5)
-            `;
+                const sql = `INSERT INTO evento(eve_nome, eve_tipoEvento, eve_dataInicio, eve_dataFim, eve_periodo, eve_horaInicio, eve_horaFim)
+                    VALUES ($1,$2,$3,$4,$5, $6, $7)
+                    RETURNING eve_id
+                `;
 
-            /*const [dia, mes, ano] = evento.data.split('/');
-            const dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;*/
-
-            let parametros = [
-                evento.nome,
-                evento.data,
-                evento.periodo,
-                evento.horaInicio,
-                evento.horaFim
-            ];
-            const resultado = await conexao.query(sql, parametros);
-            evento.id = resultado[0].insertId;
+                let parametros = [
+                    evento.nome,
+                    evento.tipoEvento,
+                    evento.dataInicio,
+                    evento.dataFim,
+                    evento.periodo,
+                    evento.horaInicio,
+                    evento.horaFim
+                ];
+                const resultado = await conexao.query(sql, parametros);
+                this.id = resultado.rows[0].id;
+                return true;
             }catch(e){
                 throw new Error("Erro ao incluir evento: " + e.message);
             }
@@ -82,12 +55,14 @@ export default class EventoDAO {
     async alterar(evento, conexao) {
         if (evento instanceof Evento) {
             try{
-            const sql = `UPDATE evento SET eve_nome=$1, eve_data=$2, eve_periodo=$3, eve_horaInicio=$4, eve_horaFim=$5
-                WHERE  eve_id = $6
+            const sql = `UPDATE evento SET eve_nome=$1, eve_tipoEvento=$2, eve_dataInicio=$3, eve_dataFim=$4, eve_periodo=$5, eve_horaInicio=$6, eve_horaFim=$7
+                WHERE  eve_id = $8
             `;
             let parametros = [
                 evento.nome,
-                evento.data,
+                evento.tipoEvento,
+                evento.dataInicio,
+                evento.dataFim,
                 evento.periodo,
                 evento.horaInicio,
                 evento.horaFim,
@@ -105,16 +80,16 @@ export default class EventoDAO {
         try{
         let sql = "";
         let parametros = [];
-        if (isNaN(parseInt(termo))) {
-            sql = `SELECT * FROM evento e
-                   WHERE eve_nome LIKE ?`;
+        if (!termo) {
+            sql = `SELECT * FROM evento`;
+        } else if (isNaN(parseInt(termo))) {
+            sql = `SELECT * FROM evento e WHERE eve_nome LIKE $1`;
             parametros = ['%' + termo + '%'];
-        }
-        else {
-            sql = `SELECT * FROM evento e
-                   WHERE eve_id = $1`
+        } else {
+            sql = `SELECT * FROM evento e WHERE eve_id = $1`;
             parametros = [termo];
         }
+
         const resultado = await conexao.query(sql, parametros);
         const linhas = resultado.rows;        
         let listaEvento = [];
@@ -122,7 +97,9 @@ export default class EventoDAO {
             const evento = new Evento(
                 linha['eve_id'],
                 linha['eve_nome'],
-                linha['eve_data'],
+                linha['eve_tipoEvento'],
+                linha['eve_dataInicio'],
+                linha['eve_dataFim'],
                 linha['eve_periodo'],
                 linha['eve_horaInicio'],
                 linha['eve_horaFim']

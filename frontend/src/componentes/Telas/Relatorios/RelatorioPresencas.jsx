@@ -13,25 +13,42 @@ export default function RelatorioPresenca() {
         turma: '',
         data: ''
     });
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token"); 
     const [mensagem, setMensagem] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
         async function carregarDados() {
             try {
-                // Carrega presenças
-                const resPresencas = await fetch('http://localhost:3000/presencas');
-                if (!resPresencas.ok) throw new Error('Erro ao carregar presenças');
+                const resPresencas = await fetch('http://localhost:3000/presencas',{
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json"
+                    }
+                });
+                if (!resPresencas.ok) throw new Error('Erro ao carregar presenças',{});
                 const dadosPresencas = await resPresencas.json();
                 setPresencas(dadosPresencas);
 
-                // Carrega matérias
-                const resMaterias = await fetch('http://localhost:3000/materias');
+                const resMaterias = await fetch('http://localhost:3000/materias',{
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json"
+                    }
+                });
                 const dadosMaterias = await resMaterias.json();
                 setMaterias(dadosMaterias);
 
                 // Carrega turmas
-                const resTurmas = await fetch('http://localhost:3000/turmas');
+                const resTurmas = await fetch('http://localhost:3000/turmas',{
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json"
+                    }
+                });
                 const dadosTurmas = await resTurmas.json();
                 setTurmas(dadosTurmas);
 
@@ -64,8 +81,40 @@ export default function RelatorioPresenca() {
     };
 
     const excluirPresencas = async (presenca) => {
-        // Mantenha a mesma função de exclusão que você já tinha
-        // ...
+        if (window.confirm(`Deseja realmente excluir a presença de ${presenca.materia.nome}?`)) {
+            if (!presenca || !presenca.id) {
+                setMensagem("Erro: presença inválida!");
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/presencas/${presenca.id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (response.ok) {
+                    setMensagem("Presença excluída com sucesso!");
+                    setPresencas(presencas.filter(p => p.id !== presenca.id));
+                } else {
+                    setMensagem("Erro ao excluir a presença.");
+                }
+
+                setTimeout(() => {
+                    setMensagem("");
+                }, 3000);
+
+            } catch (error) {
+                console.error("Erro ao conectar com o backend:", error);
+                setMensagem("Erro de conexão com o servidor.");
+                setTimeout(() => {
+                    setMensagem("");
+                }, 3000);
+            }
+        }
     };
 
     const formatarData = (dataString) => {
@@ -142,7 +191,6 @@ export default function RelatorioPresenca() {
                         </Form>
                     </div>
 
-                    {/* Mantenha o restante do seu código existente */}
                     {mensagem && (
                         <Alert className="text-center" variant={
                             mensagem.toLowerCase().includes("sucesso") ? "success" :

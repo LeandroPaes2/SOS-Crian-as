@@ -2,6 +2,49 @@
 import Responsavel from "../Modelo/responsavel.js";
 import conectar from "../Persistencia/Conexao.js";
 
+function validarCPF(cpf) {
+    cpf = cpf.replace(/[^\d]+/g, ''); // remove caracteres não numéricos
+
+    if (cpf.length !== 11) return false;
+
+    // Elimina CPFs conhecidos inválidos
+    if (/^(\d)\1{10}$/.test(cpf)) return false;
+
+    let soma = 0;
+    let resto;
+
+    for (let i = 1; i <= 9; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.substring(9, 10))) return false;
+
+    soma = 0;
+    for (let i = 1; i <= 10; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.substring(10, 11))) return false;
+
+    return true;
+}
+
+function validarRG(rg) {
+    if (!rg) return false;
+
+    rg = rg.toUpperCase().replace(/[^0-9X]/g, ''); // permite números e o X
+
+    if (rg.length < 7 || rg.length > 9) return false;
+
+    // Só uma validação simples, pode ser melhorada conforme regras específicas estaduais
+
+    return true;
+}
+
 export default class ResponsavelCtrl {
 
     async gravar(requisicao, resposta){
@@ -31,7 +74,21 @@ export default class ResponsavelCtrl {
             const valorBeneficio = requisicao.body.valorBeneficio;
             const beneficiario = requisicao.body.beneficiario;
 
-            if (cpf && rg && nome && telefone && email && sexo && dtNascimento && estCivil && conjuge && situTrabalho && escolaridade && rendaFamiliar && valorRenda>0.00 && qtdeTrabalhadores>=0 && pensaoAlimenticia && beneficioSocial)
+            if (!validarCPF(cpf)) {
+                return resposta.status(400).json({
+                    status: false,
+                    mensagem: "CPF inválido."
+                });
+            }
+
+            if (!validarRG(rg)) {
+                return resposta.status(400).json({
+                    status: false,
+                    mensagem: "RG inválido."
+                });
+            }
+
+            if (cpf && rg && nome && telefone && email && sexo && dtNascimento && conjuge && estCivil && situTrabalho && escolaridade && rendaFamiliar && qtdeTrabalhadores>=0 && pensaoAlimenticia && beneficioSocial)
             {
                 if(pensaoAlimenticia=='Sim' ){
                     if(valorPensao<=0 || !pagadorPensao){
@@ -42,8 +99,19 @@ export default class ResponsavelCtrl {
                             "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
                         });
                     }
-                }else if(beneficioSocial=='Sim'){
+                }
+                if(beneficioSocial=='Sim'){
                     if(!tipoBeneficio || valorBeneficio<=0 || !beneficiario){
+                        await conexao.query("ROLLBACK");
+                        return resposta.status(400).json(
+                        {
+                            "status":false,
+                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                        });
+                    }
+                }
+                if(!rendaFamiliar.includes("Não")){
+                    if(!valorRenda || valorPensao<=0){
                         await conexao.query("ROLLBACK");
                         return resposta.status(400).json(
                         {
@@ -54,12 +122,14 @@ export default class ResponsavelCtrl {
                 }
                 
                 let conexao;
-                const responsavel = new Responsavel(cpf, rg, nome, telefone, email, sexo, estCivil, conjuge, profissao, situTrabalho, escolaridade, rendaFamiliar, valorRenda, qtdeTrabalhadores, pensaoAlimenticia, valorPensao, pagadorPensao, beneficioSocial, tipoBeneficio, valorBeneficio, beneficiario);
+                const responsavel = new Responsavel(cpf, rg, nome, telefone, email, sexo, dtNascimento, estCivil, conjuge, profissao, situTrabalho, escolaridade, rendaFamiliar, valorRenda, qtdeTrabalhadores, pensaoAlimenticia, valorPensao, pagadorPensao, beneficioSocial, tipoBeneficio, valorBeneficio, beneficiario);
+                console.log("Situacao Trabalho:", responsavel.situTrabalho);
                 try{
                     conexao=await conectar();
                     await conexao.query("BEGIN");
+                    const resultado = await responsavel.incluir(conexao);
                     
-                    if(responsavel.incluir(conexao)){
+                    if(resultado){
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
                             "status":true,
@@ -134,7 +204,7 @@ export default class ResponsavelCtrl {
             const valorBeneficio = requisicao.body.valorBeneficio;
             const beneficiario = requisicao.body.beneficiario;
         
-            if (cpf && rg && nome && telefone && email && sexo && dtNascimento && estCivil && conjuge && situTrabalho && escolaridade && rendaFamiliar && valorRenda>0.00 && qtdeTrabalhadores>=0 && pensaoAlimenticia && beneficioSocial)
+            if (cpf && rg && nome && telefone && email && sexo && dtNascimento && conjuge && estCivil && situTrabalho && escolaridade && rendaFamiliar && valorRenda>0.00 && qtdeTrabalhadores>=0 && pensaoAlimenticia && beneficioSocial)
             {
                 if(pensaoAlimenticia=='Sim' ){
                     if(valorPensao<=0 || !pagadorPensao){
@@ -304,7 +374,6 @@ export default class ResponsavelCtrl {
                 }
                     
             }catch(erro) {
-                await conexao.query('ROLLBACK');
                     resposta.status(500).json(
                         {
                             "status": false,
@@ -312,7 +381,7 @@ export default class ResponsavelCtrl {
                         }
                     );
             }finally{
-
+                if(conexao)
                     conexao.release();
             }
 

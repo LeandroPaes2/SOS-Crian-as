@@ -5,39 +5,6 @@ import Materia from "../Modelo/materia.js";
 import Aluno from "../Modelo/aluno.js";
 
 export default class PresencaDAO{
-    /*
-    async init(){
-        try{
-            const conexao = await conectar();
-            const sql=`
-            CREATE TABLE IF NOT EXISTS presenca (
-            pre_id INT AUTO_INCREMENT PRIMARY KEY,
-            pre_data_hora DATETIME NOT NULL,
-            mat_id INT NOT NULL,
-            turm_id INT NOT NULL,
-            FOREIGN KEY (mat_id) REFERENCES materia(mat_id),
-            FOREIGN KEY (turm_id) REFERENCES turma(turm_id)
-            );
-        `;
-            await conexao.execute(sql);
-            const sql2=`
-            CREATE TABLE IF NOT EXISTS presenca_aluno (
-            pre_id INT,
-            alu_id INT,
-            presente BOOLEAN,
-            PRIMARY KEY (pre_id, alu_num_protocolo),
-            FOREIGN KEY (pre_id) REFERENCES presenca(pre_id),
-            FOREIGN KEY (alu_num_protocolo) REFERENCES aluno(alu_num_protocolo)
-            );
-        `;
-            await conexao.execute(sql2);
-            await conexao.release();
-        }
-        catch (e) {
-            console.log("Não foi possível iniciar o banco de dados: " + e.message);
-        }
-    }
-    */
 
     async incluir(presenca, supabase) {
     // Validação (corrigir acesso a rows)
