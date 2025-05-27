@@ -220,5 +220,4 @@ export default class HorarioCtrl {
             resposta.status(400).json({ status: false, mensagem: "Requisição inválida!" });
         }
     }
-
 }

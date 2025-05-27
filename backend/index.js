@@ -10,6 +10,7 @@ import rotaMateria from './Rotas/rotaMateria.js';
 import rotaResponsavel from './Rotas/rotaResponsavel.js';
 import rotaAluno from './Rotas/rotaAluno.js';
 import rotaHorario from './Rotas/rotaHorario.js';
+import rotaPresenca from './Rotas/rotaPresenca.js';
 import rotaEvento from './Rotas/rotaEvento.js';
 import rotaFuncionario from './Rotas/rotaFuncionario.js';
 import rotaListaEspera from './Rotas/rotaListaEspera.js';
@@ -95,6 +96,8 @@ app.use("/eventos", rotaEvento);
 app.use("/funcionarios", rotaFuncionario);
 app.use("/listasEspera", rotaListaEspera);
 app.use("/horarios", rotaHorario);
+app.use("/presencas", rotaPresenca);
+
 app.use("/familias", rotaFamilia);
 
 // Teste de conexão

@@ -39,7 +39,11 @@ import TelaRecuperarSenha from './componentes/Telas/TelaRecuperarSenha';
 import TelaRVerificarCodigo from './componentes/Telas/TelaVerificarCodigo';
 import { Alert, Spinner } from 'react-bootstrap';
 import PrivateRoute from './PrivateRoutes';
-
+import TelaCadastroPresenca from './componentes/Telas/TelaCadastroPresenca';
+import FormCadPresenca from './componentes/Telas/Formularios/FormCadPresenca';
+import RelatorioPresenca from './componentes/Telas/Relatorios/RelatorioPresencas';
+import TelaCadastroFamilia from './componentes/Telas/telaCadastroFamilia';
+import FormCadFamilia from './componentes/Telas/Formularios/FormCadFamilia';
 function AppRoutes() {
     const { isLogado, loading } = useLogin();
 
@@ -75,6 +79,9 @@ function AppRoutes() {
                         <Route path="/telaHorario" element={<TelaCadastroHorario/>}/>
                         <Route path="/cadastroHorario" element={<FormCadHorario/>}/>
                         <Route path="/relatorioHorario" element={<RelatorioHorario/>}/>
+                        <Route path="/telaPresenca" element={<TelaCadastroPresenca/>}/>
+                        <Route path="/cadastroPresenca" element={<FormCadPresenca/>}/>
+                        <Route path="/relatorioPresenca" element={<RelatorioPresenca/>}/>
                     </Route>
                     <Route element={<PrivateRoute niveisPermitidos={[1, 4, 3]}/>}>
                         <Route path="/telaAluno" element={<TelaCadastroAluno />} />
@@ -86,6 +93,8 @@ function AppRoutes() {
                         <Route path="/telaEscola" element={< TelaCadastroEscola/>}/>
                         <Route path="/cadastroEscola" element={<FormCadEscola />} />
                         <Route path="/relatorioEscola" element={<RelatorioEscolas />} />
+                        <Route path="/telaFamilia" element={<TelaCadastroFamilia/>}/>
+                        <Route path="/cadastroFamilia" element={<FormCadFamilia/>}/>
                     </Route>
                     <Route element={<PrivateRoute niveisPermitidos={[6, 5, 3, 4]}/>}>
                         <Route path="/telaFuncionario" element={<TelaCadastroFuncionario />} />

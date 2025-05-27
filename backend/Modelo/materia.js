@@ -44,23 +44,23 @@ export default class Materia{
         }
     }
 
-    async incluir(conexao){
+    async incluir(supabase){
         const materiaDAO = new MateriaDAO();
-        await materiaDAO.incluir(this, conexao);
+        await materiaDAO.incluir(this, supabase);
     }
 
-    async consultar(termo, conexao){
+    async consultar(termo, supabase){
         const materiaDAO = new MateriaDAO();
-        return await materiaDAO.consultar(termo, conexao);
+        return await materiaDAO.consultar(termo, supabase);
     }
 
-    async excluir(conexao){
+    async excluir(supabase){
         const materiaDAO = new MateriaDAO();
-        await materiaDAO.excluir(this, conexao);
+        await materiaDAO.excluir(this, supabase);
     }
 
-    async alterar(conexao){
+    async alterar(supabase){
         const materiaDAO = new MateriaDAO();
-        await materiaDAO.alterar(this, conexao);
+        await materiaDAO.alterar(this, supabase);
     }
 }

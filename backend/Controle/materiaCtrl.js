@@ -1,10 +1,10 @@
 import Materia from "../Modelo/materia.js";
-import conectar from "../Persistencia/Conexao.js";
+import criarConexao from "../Persistencia/Conexao.js";
 
 export default class MateriaCtrl {
 
     async gravar(requisicao, resposta){
-        const conexao = await conectar();
+        const conexao = await criarConexao();
 
         resposta.type("application/json");
         if (requisicao.method == 'POST' && requisicao.is("application/json")){
@@ -65,7 +65,7 @@ export default class MateriaCtrl {
     }
 
     async editar(requisicao, resposta){
-        const conexao = await conectar();
+        const conexao = await criarConexao();
 
         resposta.type("application/json");
         if ((requisicao.method == 'PUT' || requisicao.method == 'PATCH') && requisicao.is("application/json")){
@@ -126,7 +126,7 @@ export default class MateriaCtrl {
     }
 
     async excluir(requisicao, resposta) {
-        const conexao = await conectar();
+        const conexao = await criarConexao();
 
         resposta.type("application/json");
         if (requisicao.method == 'DELETE') {
@@ -181,15 +181,16 @@ export default class MateriaCtrl {
     }
 
     async consultar(requisicao, resposta) {
-        const conexao = await conectar();
+        const conexao = await criarConexao();
 
         resposta.type("application/json");
         if (requisicao.method == "GET") {
-            const idParam   = requisicao.params.id;
             const nomeQuery = requisicao.body.nome;
             let termo = "";
-            if (idParam) termo = idParam;
-            else if (nomeQuery) termo = nomeQuery;
+            if (nomeQuery) 
+            {
+                termo = nomeQuery;
+            }
 
             const materia = new Materia();
             try{
