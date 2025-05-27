@@ -114,6 +114,7 @@
 }
 
 .formularioD {
+    background-color: white;
     max-width: 80%; /* Largura máxima do formulário */
     width: 100%; /* Largura total em telas menores */
     padding: 30px; /* Padding interno */
