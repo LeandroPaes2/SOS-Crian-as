@@ -39,12 +39,19 @@ export default function RecuperarSenha(){
             }
             const resposta = await fetch('http://localhost:3000/redefinirSenha', {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json'
+             },
             body: JSON.stringify({ email: email, novaSenha: novaSenha }),
             });
 
             const dados = await resposta.json();
+            
             setMensagem(dados.mensagem || 'Erro ao redefinir senha');
+             if (resposta.ok) {
+                setTimeout(() => {
+                    navigate('/'); // redireciona para a página de login
+                }, 3000); // espera 3 segundos antes de redirecionar
+            }
             } catch (erro) {
                 console.error(erro);
                 setMensagem('Erro ao conectar com o servidor');

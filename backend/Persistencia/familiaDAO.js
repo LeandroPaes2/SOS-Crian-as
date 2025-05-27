@@ -99,12 +99,12 @@ export default class FamiliaDAO {
                 linha['fam_id'],
                 linha['fam_nome'],
                 linha['fam_sexo'],
-                linha['fam_data_nascimento'],
+                linha['fam_dataNascimento'], 
                 linha['fam_profissao'],
                 linha['fam_escolaridade'],
-                linha['fam_grauParentesco'],
-                linha['irmaos'],
-                linha['temContato']
+                linha['fam_grauParentesco'], 
+                linha['fam_irmaos'],         
+                linha['fam_temContato']      
             );
             listaFamilia.push(familia);
         }

@@ -98,7 +98,7 @@ export default class Responsavel{
     }
 
     get profissao(){
-        this.#profissao;
+        return this.#profissao;
     }
 
     set profissao(novaProfissao){
@@ -106,7 +106,7 @@ export default class Responsavel{
     }
 
     get situTrabalho(){
-        this.#situTrabalho;
+        return this.#situTrabalho;
     }
 
     set situTrabalho(novoTrabalho){
@@ -114,7 +114,7 @@ export default class Responsavel{
     }
 
     get escolaridade(){
-        this.#escolaridade;
+        return this.#escolaridade;
     }
 
     set escolaridade(novaEscolaridade){
@@ -122,7 +122,7 @@ export default class Responsavel{
     }
 
     get rendaFamiliar(){
-        this.#rendaFamiliar;
+        return this.#rendaFamiliar;
     }
 
     set rendaFamiliar(novaRendaFamiliar){
@@ -130,7 +130,7 @@ export default class Responsavel{
     }
 
     get valorRenda(){
-        this.#valorRenda;
+        return this.#valorRenda;
     }
 
     set valorRenda(novoValorRenda){
@@ -138,7 +138,7 @@ export default class Responsavel{
     }
 
     get qtdeTrabalhadores(){
-        this.#qtdeTrabalhadores;
+        return this.#qtdeTrabalhadores;
     }
 
     set qtdeTrabalhadores(novaQtde){
@@ -146,7 +146,7 @@ export default class Responsavel{
     }
 
     get pensaoAlimenticia(){
-        this.#pensaoAlimenticia;
+        return this.#pensaoAlimenticia;
     }
 
     set pensaoAlimenticia(novaPensaoAlimenticia){
@@ -154,7 +154,7 @@ export default class Responsavel{
     }
 
     get valorPensao(){
-        this.#valorPensao;
+        return this.#valorPensao;
     }
 
     set valorPensao(novoValorPensao){
@@ -162,7 +162,7 @@ export default class Responsavel{
     }
 
     get pagadorPensao(){
-        this.#pagadorPensao;
+        return this.#pagadorPensao;
     }
 
     set pagadorPensao(novoPagador){
@@ -170,7 +170,7 @@ export default class Responsavel{
     }
 
     get beneficioSocial(){
-        this.#beneficioSocial;
+        return this.#beneficioSocial;
     }
 
     set beneficioSocial(novoBeneficio){
@@ -178,7 +178,7 @@ export default class Responsavel{
     }
 
     get tipoBeneficio(){
-        this.#tipoBeneficio;
+        return this.#tipoBeneficio;
     }
 
     set tipoBeneficio(novoTipo){
@@ -186,7 +186,7 @@ export default class Responsavel{
     }
 
     get valorBeneficio(){
-        this.#valorBeneficio;
+        return this.#valorBeneficio;
     }
 
     set valorBeneficio(novoValorBeneficio){
@@ -194,7 +194,7 @@ export default class Responsavel{
     }
 
     get beneficiario(){
-        this.#beneficiario;
+        return this.#beneficiario;
     }
 
     set beneficiario(novoBeneficiario){
@@ -255,7 +255,11 @@ export default class Responsavel{
 
     async incluir(conexao){
         const respDAO = new ResponsavelDAO();
-        return await respDAO.incluir(this, conexao);
+        console.log("Entrou no método incluir()");
+        const resultado = await respDAO.incluir(this, conexao);
+    console.log("Resultado retornado de respDAO.incluir:", resultado);
+    return resultado;
+        /*return await respDAO.incluir(this, conexao);*/
     }
 
     async consultar(termo, conexao){
