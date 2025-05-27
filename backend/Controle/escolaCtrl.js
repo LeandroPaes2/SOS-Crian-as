@@ -1,43 +1,36 @@
 import Escola from "../Modelo/escola.js";
 import conectar from "../Persistencia/Conexao.js";
+import EscolaDAO from "../Persistencia/escolaDAO.js";
 
 export default class EscolaCtrl {
 
     async gravar(requisicao, resposta) {
         const conexao = await conectar();
-    
+
         resposta.type("application/json");
-    
+
         if (requisicao.method == 'POST' && requisicao.is("application/json")) {
             const nome = requisicao.body.nome;
             const endereco = requisicao.body.endereco;
             const telefone = requisicao.body.telefone;
             const tipo = requisicao.body.tipo;
-    
+
             if (nome && endereco && telefone && tipo) {
                 try {
                     const escola = new Escola(0, nome, endereco, telefone, tipo);
+                    const dao = new EscolaDAO();
+
                     await conexao.query("BEGIN");
-    
-                    const resultado = await escola.incluir(conexao);
-    
-                    if (resultado) {
-                        await conexao.query("COMMIT");
-                        resposta.status(200).json({
-                            "status": true,
-                            "mensagem": "Escola adicionada com sucesso!",
-                            "nome": escola.nome
-                        });
-                    } else {
-                        await conexao.query("ROLLBACK");
-                        resposta.status(500).json({
-                            "status": false,
-                            "mensagem": "Não foi possível incluir a escola" 
-                        });
-                    }
-    
+                    const resultado = await dao.incluir(escola, conexao);
+
+                    await conexao.query("COMMIT");
+                    resposta.status(200).json({
+                        "status": true,
+                        "mensagem": "Escola adicionada com sucesso!",
+                        "nome": escola.nome
+                    });
                 } catch (erro) {
-                    if (conexao) 
+                    if (conexao)
                         await conexao.query("ROLLBACK");
                     resposta.status(500).json({
                         "status": false,
@@ -47,7 +40,8 @@ export default class EscolaCtrl {
                     if (conexao)
                         conexao.release();
                 }
-            } else {
+            }
+            else {
                 resposta.status(400).json({
                     "status": false,
                     "mensagem": "Informe corretamente todos os dados de uma escola conforme documentação da API."
@@ -60,7 +54,7 @@ export default class EscolaCtrl {
             });
         }
     }
-    
+
 
     async editar(requisicao, resposta) {
         resposta.type("application/json");
@@ -74,20 +68,20 @@ export default class EscolaCtrl {
             const tipo = requisicao.body.tipo;
 
             if (id && nome && endereco && telefone && tipo) {
-           
-                try{
+
+                try {
                     const escola = new Escola(id, nome, endereco, telefone, tipo);
                     await conexao.query("BEGIN");
                     const resultado = await escola.alterar(conexao);
 
-                    if(resultado){
+                    if (resultado) {
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
                             "status": true,
                             "mensagem": "Escola alterada com sucesso!",
                         });
                     }
-                    else{
+                    else {
                         await conexao.query("ROLLBACK");
                         resposta.status(500).json({
                             "status": false,
@@ -95,15 +89,15 @@ export default class EscolaCtrl {
                         });
                     }
 
-                }catch(erro){
-                    if (conexao) 
+                } catch (erro) {
+                    if (conexao)
                         await conexao.query("ROLLBACK");
                     resposta.status(500).json({
                         "status": false,
                         "mensagem": "Não foi possível alterar a escola: " + erro.message
                     });
-                } finally{
-                    if(conexao)
+                } finally {
+                    if (conexao)
                         conexao.release();
                 }
             }
@@ -130,89 +124,92 @@ export default class EscolaCtrl {
             const id = requisicao.params.id;
 
             if (id) {
-                
-                try{
-                    const escola = new Escola(id, null, null, null, null);  
-                    await conexao.query("BEGIN");
-                    const resultado = await escola.excluir(conexao);
+                try {
+                    const escola = new Escola(id, null, null, null, null);
+                    const dao = new EscolaDAO();
 
-                    if(resultado){
+                    await conexao.query("BEGIN");
+                    const resultado = await dao.excluir(escola, conexao);
+
+                    if (resultado === true) {
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
                             "status": true,
                             "mensagem": "Escola excluída com sucesso!",
                         });
-                    }else{
+                    } else {
+                        await conexao.query("ROLLBACK");
+                        resposta.status(404).json({
+                            "status": false,
+                            "mensagem": "Escola não encontrada para exclusão."
+                        });
+                    }
+                } catch (erro) {
                         await conexao.query("ROLLBACK");
                         resposta.status(500).json({
                             "status": false,
-                            "mensagem": "Não foi possível excluir a escola"
+                            "mensagem": "Não foi possível excluir a escola: " + erro.message
                         });
+                    } finally {
+                        if (conexao)
+                            conexao.release();
                     }
-                }catch(erro){
-                    if(conexao)
-                        await conexao.query("ROLLBACK");
-                    resposta.status(500).json({
+                }
+
+            else {
+                    resposta.status(400).json({
                         "status": false,
-                        "mensagem": "Não foi possível excluir a escola: " + erro.mensagem
+                        "mensagem": "Informe um código válido de uma escola conforme documentação da API."
                     });
                 }
-                
             }
             else {
                 resposta.status(400).json({
                     "status": false,
-                    "mensagem": "Informe um código válido de uma escola conforme documentação da API."
+                    "mensagem": "Requisição inválida! Consulte a documentação da API."
                 });
             }
         }
-        else {
-            resposta.status(400).json({
-                "status": false,
-                "mensagem": "Requisição inválida! Consulte a documentação da API."
-            });
-        }
-    }
 
     async consultar(requisicao, resposta) {
-        resposta.type("application/json");
-        const conexao = await conectar();
+            resposta.type("application/json");
+            const conexao = await conectar();
 
-        if (requisicao.method == "GET") {
-            let id = requisicao.params.id;
+            if (requisicao.method == "GET") {
+                let id = requisicao.params.id;
 
-            const escola = new Escola();
+                const escola = new Escola();
 
-            try{
-                
-                const listaEscola = await escola.consultar(id, conexao);
+                try {
 
-                if(Array.isArray(listaEscola) && listaEscola.length > 0){
-                    resposta.status(200).json(listaEscola);
-                }else{
+                    const listaEscola = await escola.consultar(id, conexao);
+
+                    if (Array.isArray(listaEscola) && listaEscola.length > 0) {
+                        resposta.status(200).json(listaEscola);
+                    } else {
+                        resposta.status(500).json({
+                            "status": false,
+                            "mensagem": "Erro ao consultar escola"
+                        });
+                    }
+
+                } catch (erro) {
                     resposta.status(500).json({
                         "status": false,
-                        "mensagem": "Erro ao consultar escola" 
+                        "mensagem": "Erro ao consultar escola: " + erro.message
                     });
+                } finally {
+                    if (conexao)
+                        conexao.release();
                 }
 
-            }catch(erro){
-                resposta.status(500).json({
-                    "status": false,
-                    "mensagem": "Erro ao consultar escola: " + erro.message
-                });
-            }finally{
-                if(conexao)
-                    conexao.release();
             }
+            else {
+                resposta.status(400).json({
+                    "status": false,
+                    "mensagem": "Requisição inválida! Consulte a documentação da API."
+                });
+            }
+        }
 
-        }
-        else {
-            resposta.status(400).json({
-                "status": false,
-                "mensagem": "Requisição inválida! Consulte a documentação da API."
-            });
-        }
     }
-
-}

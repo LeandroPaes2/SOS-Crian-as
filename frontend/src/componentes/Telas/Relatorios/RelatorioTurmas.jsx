@@ -13,21 +13,30 @@ export default function RelatorioTurmas() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const buscarTurmas = async () => {
-            try {
-                const response = await fetch("http://localhost:3000/turmas");
-                if (!response.ok) throw new Error("Erro ao buscar turmas");
+    const buscarTurmas = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) throw new Error("Token não encontrado. Faça login novamente.");
 
-                const dados = await response.json();
-                setListaDeTurmas(dados); // Atualiza o estado com os dados do backend
-            } catch (error) {
-                console.error("Erro ao buscar turmas:", error);
-                setMensagem("Erro ao carregar as turmas.");
-            }
-        };
+            const response = await fetch("http://localhost:3000/turmas", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
 
-        buscarTurmas();
-    }, []);
+            if (!response.ok) throw new Error("Erro ao buscar turmas");
+
+            const dados = await response.json();
+            setListaDeTurmas(dados);
+        } catch (error) {
+            console.error("Erro ao buscar turmas:", error);
+            setMensagem("Erro ao carregar as turmas.");
+        }
+    };
+
+    buscarTurmas();
+}, []);
+
 
     const excluirTurmas = async (turma) => {
         if (window.confirm("Deseja realmente excluir a turma " + turma.cor)) {

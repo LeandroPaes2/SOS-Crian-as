@@ -75,10 +75,13 @@ export default class EscolaDAO {
     }
 
     async excluir(escola, supabase) {
-        if (escola instanceof Escola) {
-            const sql = `DELETE FROM escola WHERE esc_id = $1`;
-            const parametros = [escola.id];
-            await supabase.query(sql, parametros);
-        }
+    if (escola instanceof Escola) {
+        const sql = `DELETE FROM escola WHERE esc_id = $1`;
+        const parametros = [escola.id];
+        const resultado = await supabase.query(sql, parametros);
+        return resultado.rowCount > 0;
     }
+    return false;
+}
+
 }

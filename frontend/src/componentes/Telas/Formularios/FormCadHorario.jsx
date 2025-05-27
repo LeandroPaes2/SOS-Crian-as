@@ -13,14 +13,22 @@ export default function FormCadHorario() {
     const [editando, setEditando] = useState(false);
     const [turmas, setTurmas] = useState([]);
     const [materias, setMaterias] = useState([]);
+    const [erros, setErros] = useState({
+        turma: false,
+        materia: false,
+        hora: false,
+        semana: false,
+    });
 
-    const turmaSelecionada = turmas.find(t => t.id === parseInt(turma));
-    const materiaSelecionada = materias.find(m => m.id === parseInt(materia));
+    const turmaSelecionada = turmas.find((t) => t.id === parseInt(turma));
+    const materiaSelecionada = materias.find((m) => m.id === parseInt(materia));
 
     const navigate = useNavigate();
     const location = useLocation();
 
     const rotaVoltar = editando ? "/relatorioHorario" : "/telaHorario";
+
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
         if (location.state) {
@@ -33,40 +41,118 @@ export default function FormCadHorario() {
         }
     }, [location.state]);
 
-    // Buscar turmas e matérias do backend
-    useEffect(() => {
-        fetch("http://localhost:3000/turmas")
-            .then(res => res.json())
-            .then(data => setTurmas(data))
-            .catch(err => console.error("Erro ao carregar turmas:", err));
+    async function carregarTurmas() {
+        try {
+            const res = await fetch("http://localhost:3000/turmas", {
+                headers: {
+                    Authorization: "Bearer " + token,
+                },
+            });
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                setTurmas(data);
+            } else {
+                console.error("Resposta inválida de turmas:", data);
+                setTurmas([]);
+            }
+        } catch (err) {
+            console.error("Erro ao carregar turmas:", err);
+            setTurmas([]);
+        }
+    }
 
-        fetch("http://localhost:3000/materias")
-            .then(res => res.json())
-            .then(data => setMaterias(data))
-            .catch(err => console.error("Erro ao carregar matérias:", err));
+    async function carregarMaterias() {
+        try {
+            const res = await fetch("http://localhost:3000/materias", {
+                headers: {
+                    Authorization: "Bearer " + token,
+                },
+            });
+            if (res.status === 401) {
+                console.error("Não autorizado! Verifique o token.");
+                setMaterias([]);
+                return;
+            }
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                setMaterias(data);
+            } else {
+                console.error("Resposta inválida de matérias:", data);
+                setMaterias([]);
+            }
+        } catch (err) {
+            console.error("Erro ao carregar matérias:", err);
+            setMaterias([]);
+        }
+    }
+
+    useEffect(() => {
+        carregarTurmas();
+        carregarMaterias();
     }, []);
+
+    // Fecha a mensagem após 5 segundos se for sucesso
+    useEffect(() => {
+        if (
+            mensagem.toLowerCase().includes("sucesso") &&
+            mensagem.trim() !== ""
+        ) {
+            const timer = setTimeout(() => setMensagem(""), 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [mensagem]);
+
+    // ... seu código antes do handleSubmit
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (!turma || !materia || !hora || !semana) {
-            alert("Preencha todos os campos!");
+        // Validação dos campos
+        const errosTemp = {
+            turma: turma.trim() === "",
+            materia: materia.trim() === "",
+            hora: hora.trim() === "",
+            semana: semana.trim() === "",
+        };
+        setErros(errosTemp);
+
+        if (Object.values(errosTemp).some(Boolean)) {
+            setMensagem("Preencha todos os campos corretamente.");
             return;
         }
 
+        // Verificar duplicidade como antes
         try {
-            const res = await fetch(`http://localhost:3000/horarios`);
+            const res = await fetch(`http://localhost:3000/horarios`, {
+                headers: {
+                    Authorization: "Bearer " + token,
+                },
+            });
+
+            if (res.status === 401) {
+                setMensagem("Não autorizado! Faça login novamente.");
+                return;
+            }
+
             const horariosExistentes = await res.json();
-    
-            const conflito = horariosExistentes.find(h =>
-                h.turma.id === parseInt(turma) &&
-                h.hora === hora &&
-                h.semana === semana &&
-                (!editando || h.id !== parseInt(id))
+
+            if (!Array.isArray(horariosExistentes)) {
+                setMensagem("Resposta inesperada do servidor.");
+                return;
+            }
+
+            const conflito = horariosExistentes.find(
+                (h) =>
+                    h.turma.id === parseInt(turma) &&
+                    h.hora === hora &&
+                    h.semana === semana &&
+                    (!editando || h.id !== parseInt(id))
             );
-    
+
             if (conflito) {
-                setMensagem("Já existe um horário cadastrado para esta turma, dia e horário.");
+                setMensagem(
+                    "Já existe um horário cadastrado para esta turma, dia e horário."
+                );
                 return;
             }
         } catch (error) {
@@ -75,15 +161,18 @@ export default function FormCadHorario() {
             return;
         }
 
-
+        // Monta objeto para enviar, agora com turmaId e materiaId (simples)
         const horario = {
-            id,
-            turma: turmaSelecionada,
-            materia: materiaSelecionada,
+            turma: { id: parseInt(turma) },
+            materia: { id: parseInt(materia) },
             hora,
-            semana
+            semana,
         };
-        
+        if (editando && id) {
+            horario.id = parseInt(id);
+        }
+
+
         const url = editando
             ? `http://localhost:3000/horarios/${id}`
             : "http://localhost:3000/horarios";
@@ -91,21 +180,45 @@ export default function FormCadHorario() {
 
         try {
             if (editando) {
-                const confirmar = window.confirm(`Deseja realmente atualizar o horário: ${horario.hora}?`);
+                const confirmar = window.confirm(
+                    `Deseja realmente atualizar o horário: ${hora}?`
+                );
                 if (!confirmar) return;
             }
 
             const response = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(horario)
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+                body: JSON.stringify(horario),
             });
-            if (response.ok) {
-                setMensagem(editando
+
+            if (!response.ok) {
+                const erroDetalhado = await response.json();
+                console.error("Erro do backend:", erroDetalhado);
+                setMensagem(erroDetalhado.mensagem || "Erro ao cadastrar o horário.");
+                return;
+            }
+
+            setMensagem(
+                editando
                     ? "Horário atualizado com sucesso!"
-                    : "Horário cadastrado com sucesso!");
-            } else {
-                setMensagem("Erro ao cadastrar o horário.");
+                    : "Horário cadastrado com sucesso!"
+            );
+
+            if (!editando) {
+                setTurma("");
+                setMateria("");
+                setHora("");
+                setSemana("");
+                setErros({
+                    turma: false,
+                    materia: false,
+                    hora: false,
+                    semana: false,
+                });
             }
         } catch (error) {
             console.error("Erro ao conectar com o backend:", error);
@@ -123,11 +236,17 @@ export default function FormCadHorario() {
                 </Alert>
 
                 {mensagem && (
-                    <Alert className="mt-2 mb-2 text-center" variant={
-                        mensagem.toLowerCase().includes("sucesso") ? "success" :
-                            mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha")
-                                ? "danger" : "warning"
-                    }>
+                    <Alert
+                        className="mt-2 mb-2 text-center"
+                        variant={
+                            mensagem.toLowerCase().includes("sucesso")
+                                ? "success"
+                                : mensagem.toLowerCase().includes("erro") ||
+                                    mensagem.toLowerCase().includes("preencha")
+                                    ? "danger"
+                                    : "warning"
+                        }
+                    >
                         {mensagem}
                     </Alert>
                 )}
@@ -138,11 +257,13 @@ export default function FormCadHorario() {
                         <Form.Select
                             value={turma}
                             onChange={(e) => setTurma(e.target.value)}
-                            isInvalid={mensagem && turma.trim().length === 0}
+                            isInvalid={erros.turma}
                         >
                             <option value="">Selecione a turma</option>
-                            {turmas.map(t => (
-                                <option key={t.id} value={t.id}>{t.cor}</option>
+                            {turmas.map((t) => (
+                                <option key={t.id} value={t.id}>
+                                    {t.cor}
+                                </option>
                             ))}
                         </Form.Select>
                         <Form.Control.Feedback type="invalid">
@@ -155,11 +276,13 @@ export default function FormCadHorario() {
                         <Form.Select
                             value={materia}
                             onChange={(e) => setMateria(e.target.value)}
-                            isInvalid={mensagem && materia.trim().length === 0}
+                            isInvalid={erros.materia}
                         >
                             <option value="">Selecione a matéria</option>
-                            {materias.map(m => (
-                                <option key={m.id} value={m.id}>{m.nome}</option>
+                            {materias.map((m) => (
+                                <option key={m.id} value={m.id}>
+                                    {m.nome}
+                                </option>
                             ))}
                         </Form.Select>
                         <Form.Control.Feedback type="invalid">
@@ -172,7 +295,7 @@ export default function FormCadHorario() {
                         <Form.Select
                             value={hora}
                             onChange={(e) => setHora(e.target.value)}
-                            isInvalid={mensagem && hora.trim().length === 0}
+                            isInvalid={erros.hora}
                         >
                             <option value="">Selecione o horário</option>
                             <option>07:00 às 08:00</option>
@@ -194,7 +317,7 @@ export default function FormCadHorario() {
                         <Form.Select
                             value={semana}
                             onChange={(e) => setSemana(e.target.value)}
-                            isInvalid={mensagem && semana.trim().length === 0}
+                            isInvalid={erros.semana}
                         >
                             <option value="">Selecione o dia</option>
                             <option>Segunda-feira</option>
@@ -207,7 +330,13 @@ export default function FormCadHorario() {
                             Por favor, selecione um dia da semana.
                         </Form.Control.Feedback>
                     </Form.Group>
-                    <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
+
+                    <Button
+                        as={Link}
+                        to={rotaVoltar}
+                        className="botaoPesquisa"
+                        variant="secondary"
+                    >
                         Voltar
                     </Button>
                     <Button className="botaoPesquisa" variant="primary" type="submit">
