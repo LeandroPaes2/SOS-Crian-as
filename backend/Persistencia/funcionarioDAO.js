@@ -174,11 +174,6 @@ export default class FuncionarioDAO {
         }
 
         const linha = resultado.rows[0];
-        const senhaCorreta = await bcrypt.compare(novaSenha, linha.func_senha);
-
-        if (senhaCorreta) {
-           throw new Error("Nova senha igual a senha atual "); // Senha atual incorreta
-        }
 
         const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
 

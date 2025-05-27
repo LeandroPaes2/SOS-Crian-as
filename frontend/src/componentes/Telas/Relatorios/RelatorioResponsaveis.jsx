@@ -7,10 +7,13 @@ import { useNavigate } from "react-router-dom";
 import "../../css/alerts.css";
 
 function dataNova(dataISO) {
-    const data = new Date(dataISO);
-    const dia = String(data.getDate()).padStart(2, '0');
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const ano = data.getFullYear();
+    if (!dataISO || typeof dataISO !== 'string') 
+        return '';
+    const data = dataISO.split('T')[0]; // ou dataISO.slice(0, 10);
+    const partes = data.split('-');
+    if (partes.length !== 3) 
+        return '';
+    const [ano, mes, dia] = partes;
     return `${dia}/${mes}/${ano}`;
 }
 
@@ -18,9 +21,6 @@ export default function RelatorioResponsaveis() {
 
     const [listaDeResponsaveis, setListaDeResponsaveis] = useState([]);
     const [mensagem, setMensagem] = useState("");
-    const [cpf, setCpf] = useState("");
-    const [nome, setNome] = useState("");
-    const [telefone, setTelefone] = useState("");
     const [pesquisaNome, setPesquisaNome] = useState("");
     const navigate = useNavigate();
     const [editando, setEditando] = useState(false);
@@ -39,6 +39,7 @@ export default function RelatorioResponsaveis() {
                 if (!response.ok) throw new Error("Erro ao buscar responsaveis");
 
                 const dados = await response.json();
+                console.log("Dados recebidos do backend:", dados);
                 setListaDeResponsaveis(dados); // Atualiza o estado com os dados do backend
             } catch (error) {
                 console.error("Erro ao buscar responsaveis:", error);
@@ -52,7 +53,7 @@ export default function RelatorioResponsaveis() {
     const excluirResponsavel = async (responsavel) => {
 
         if (window.confirm("Deseja realmente excluir o responsavel " + responsavel.nome + responsavel.cpf)) {
-            if (!responsavel || !responsavel.cpf || !responsavel.rg || !responsavel.nome || !responsavel.telefone) {
+            if (!responsavel || !responsavel.cpf || !responsavel.rg || !responsavel.nome || !responsavel.telefone || !responsavel.email || !responsavel.sexo || !responsavel.dtNascimento || !responsavel.estCivil || !responsavel.conjuge || !responsavel.situTrabalho || !responsavel.escolaridade || !responsavel.rendaFamiliar || !responsavel.qtdeTrabalhadores || !responsavel.pensaoAlimenticia || !responsavel.beneficioSocial) {
                 //console.log(responsavel.cpf, responsavel.nome, responsavel.telefone);
                 setMensagem("Erro: responsavel inválido!");
                 setTimeout(() => setMensagem(""), 5000);
@@ -61,7 +62,11 @@ export default function RelatorioResponsaveis() {
 
             try {
                 const response = await fetch("http://localhost:3000/responsaveis/" + responsavel.cpf, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json"
+                    }
                 });
 
                 if (response.ok) {
@@ -84,8 +89,26 @@ export default function RelatorioResponsaveis() {
         navigate("/cadastroResponsavel", {
             state: {
                 cpf: responsavel.cpf,
+                rg: responsavel.rg,
                 nome: responsavel.nome,
-                telefone: responsavel.telefone
+                telefone: responsavel.telefone,
+                email: responsavel.email,
+                sexo: responsavel.sexo,
+                dtNascimento: responsavel.dtNascimento.split("T")[0],
+                estCivil: responsavel.estCivil,
+                conjuge: responsavel.conjuge,
+                situTrabalho: responsavel.situTrabalho,
+                escolaridade: responsavel.escolaridade,
+                rendaFamiliar: responsavel.rendaFamiliar,
+                valorRenda: responsavel.valorRenda,
+                qtdeTrabalhadores: responsavel.qtdeTrabalhadores,
+                pensaoAlimenticia: responsavel.pensaoAlimenticia,
+                valorPensao: responsavel.valorPensao,
+                pagadorPensao: responsavel.pagadorPensao,
+                beneficioSocial: responsavel.beneficioSocial,
+                tipoBeneficio: responsavel.tipoBeneficio,
+                valorBeneficio: responsavel.valorBeneficio,
+                beneficiario: responsavel.beneficiario
             }
         });
     };
@@ -134,9 +157,11 @@ export default function RelatorioResponsaveis() {
                     <Table striped bordered hover>
                         <thead>
                             <tr>
-                                <th>CPF</th>
                                 <th>NOME</th>
                                 <th>TELEFONE</th>
+                                <th>EMAIL</th>
+                                <th>SEXO</th>
+                                <th>DATA NASCIMENTO</th>
                                 <th>AÇÕES</th>
                             </tr>
                         </thead>
@@ -146,9 +171,11 @@ export default function RelatorioResponsaveis() {
 
                                     return (
                                         <tr>
-                                            <td>{responsavel.cpf}</td>
                                             <td>{responsavel.nome}</td>
                                             <td>{responsavel.telefone}</td>
+                                            <td>{responsavel.email}</td>
+                                            <td>{responsavel.sexo}</td>
+                                            <td>{dataNova(responsavel.dtNascimento)}</td>
                                             <td>
                                                 <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                                                     <Button onClick={() => editarResponsaveis(responsavel)}

@@ -102,7 +102,6 @@ export default class Evento{
 
     async incluir(conexao){
         const eveDAO = new EventoDAO();
-        console.log(this.#nome);
         return await eveDAO.incluir(this, conexao);
     }
 

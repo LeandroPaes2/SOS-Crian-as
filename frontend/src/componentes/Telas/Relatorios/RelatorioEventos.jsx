@@ -59,7 +59,7 @@ export default function RelatorioEventos() {
 
     const excluirEvento = async (evento) => {
         if (window.confirm("Deseja realmente excluir o evento " + evento.nome)) {
-            if(evento.id<=0 || !evento.nome || !evento.data || !evento.periodo || !evento.horaInicio || !evento.horaFim){
+            if(evento.id<=0 || !evento.nome || !evento.dataInicio || !evento.dataFim || !evento.periodo || !evento.horaInicio || !evento.horaFim){
                 setMensagem("Erro: evento inválido!");
                 setTimeout(() => setMensagem(""), 5000);
                 return;

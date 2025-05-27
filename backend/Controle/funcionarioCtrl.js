@@ -224,7 +224,7 @@ export default class FuncionarioCtrl {
                         nivel: funcSenhaCorreta.nivel
                     },
                         process.env.JWT_SECRET,
-                        { expiresIn: "2h" } // você pode ajustar esse tempo
+                        { expiresIn: "8h" } // você pode ajustar esse tempo
                     );
                     res.status(200).json({
                         mensagem: `Login do funcionario ${funcSenhaCorreta.nome} realizado com sucesso`,
@@ -292,7 +292,7 @@ export default class FuncionarioCtrl {
             if (funcSenhaAlterada) {
                 this.removerCodigo(email);
                 return res.status(200).json({
-                    mensagem: `Senha do funcionário ${funcSenhaAlterada.nome} alterada com sucesso`,
+                    mensagem: `Senha alterada com sucesso`,
                     funcionario: funcSenhaAlterada
                 });
             } else {

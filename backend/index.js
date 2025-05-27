@@ -83,7 +83,7 @@ app.post('/verificarCodigo', (req, res) => {
 
 app.put('/alterarSenha', funcionarioCtrl.alterarSenhaFuncionario);
 
-app.put('/redefinirSenha', funcionarioCtrl.atualizarSenhaFuncionario);
+app.put("/redefinirSenha", (req, res) => funcionarioCtrl.atualizarSenhaFuncionario(req, res));
 
 // Rotas principais
 app.use("/turmas", rotaTurma);
