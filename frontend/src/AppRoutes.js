@@ -42,6 +42,7 @@ import PrivateRoute from './PrivateRoutes';
 import TelaCadastroPresenca from './componentes/Telas/TelaCadastroPresenca';
 import FormCadPresenca from './componentes/Telas/Formularios/FormCadPresenca';
 import RelatorioPresenca from './componentes/Telas/Relatorios/RelatorioPresencas';
+import TelaCadastroFamilia from './componentes/Telas/telaCadastroFamilia';
 
 function AppRoutes() {
     const { isLogado, loading } = useLogin();
@@ -92,6 +93,7 @@ function AppRoutes() {
                         <Route path="/telaEscola" element={< TelaCadastroEscola/>}/>
                         <Route path="/cadastroEscola" element={<FormCadEscola />} />
                         <Route path="/relatorioEscola" element={<RelatorioEscolas />} />
+                        <Route path="/telaFamilia" element={<TelaCadastroFamilia/>}/>
                     </Route>
                     <Route element={<PrivateRoute niveisPermitidos={[6, 5, 3, 4]}/>}>
                         <Route path="/telaFuncionario" element={<TelaCadastroFuncionario />} />
