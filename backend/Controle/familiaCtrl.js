@@ -20,7 +20,7 @@ export default class FamiliaCtrl {
 
             if (nome && sexo && dataNascimento && escolaridade && grauParentesco) {
 
-                if(irmaos.includes("pai") || irmaos.includes("mae")){
+                if(irmaos === "Mesmo pai e mãe" || irmaos === "Por parte de pai" || irmaos === "Por parte de mae"){
                     if(!temContato){
                         await conexao.query("ROLLBACK");
                         return resposta.status(400).json(
@@ -105,7 +105,7 @@ export default class FamiliaCtrl {
 
             if (id>0 && nome && sexo && dataNascimento && escolaridade && grauParentesco) {
 
-                if(irmaos.includes("pai") || irmaos.includes("mae")){
+                if(irmaos === "Mesmo pai e mãe" || irmaos === "Por parte de pai" || irmaos === "Por parte de mae"){
                     if(!temContato){
                         await conexao.query("ROLLBACK");
                         return resposta.status(400).json(

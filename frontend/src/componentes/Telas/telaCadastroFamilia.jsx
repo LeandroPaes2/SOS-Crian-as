@@ -5,7 +5,7 @@ import "../css/telaResponsavel.css";
 
 export default function TelaCadastroFamilia() {
     return (
-        <div>
+        <div className="topo">
             <PaginaGeral>
                 <Alert className="alert-custom text-center mt-4 mb-4">
                     <h2 className="titulo-alert">Familias</h2>
