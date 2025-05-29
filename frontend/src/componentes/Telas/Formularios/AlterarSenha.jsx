@@ -13,6 +13,8 @@ export default function AlterarSenha(){
     const [novaSenha, setNovaSenha] = useState("");
     const [confirmarSenha, setConfirmarSenha] = useState("");
     const [mostrarSenha, setMostrarSenha] = useState(false);
+    const [mostrarSenha2, setMostrarSenha2] = useState(false);
+    const [mostrarSenha3, setMostrarSenha3] = useState(false);
     const {funcionario, logout} = useLogin();
     const navigate = useNavigate();
     const token = localStorage.getItem("token") || sessionStorage.getItem("token"); 
@@ -97,21 +99,21 @@ export default function AlterarSenha(){
                     </Form.Group>
                     <Form.Group className="campoNovaSenha" controlId="novaSenha">
                         <Form.Label>Nova Senha</Form.Label>
-                        <Form.Control type={mostrarSenha ? "text" : "password"} placeholder="Digite a senha nova" 
+                        <Form.Control type={mostrarSenha2 ? "text" : "password"} placeholder="Digite a senha nova" 
                         required
                         value={novaSenha}
                         onChange={(e) => setNovaSenha(e.target.value)}/>
-                        <InputGroup.Text onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
+                        <InputGroup.Text onClick={() => setMostrarSenha2(!mostrarSenha2)} style={{ cursor: "pointer" }}>
                             {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
                         </InputGroup.Text>
                     </Form.Group>
                     <Form.Group className="campoConfirmarSenha" controlId="confirmarSenha">
                         <Form.Label>Confirme a senha nova</Form.Label>
-                        <Form.Control type="password" placeholder="Digite a senha nova" 
+                        <Form.Control type={mostrarSenha3 ? "text" : "password"} placeholder="Digite a senha nova" 
                         required
                         value={confirmarSenha}
                         onChange={(e) => setConfirmarSenha(e.target.value)}/>
-                        <InputGroup.Text onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
+                        <InputGroup.Text onClick={() => setMostrarSenha3(!mostrarSenha3)} style={{ cursor: "pointer" }}>
                             {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
                         </InputGroup.Text>
                     </Form.Group>

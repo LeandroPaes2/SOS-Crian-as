@@ -3,6 +3,8 @@
   justify-content: space-around;
   align-items: top;
   margin-top: 45px;
+  display: flex;
+  flex-direction: row;
 }
 
 .sidebar {

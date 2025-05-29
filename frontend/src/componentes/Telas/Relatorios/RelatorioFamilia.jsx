@@ -9,12 +9,18 @@ export default function RelatorioFamilia() {
     const [mensagem, setMensagem] = useState("");
     const [pesquisaNome, setPesquisaNome] = useState("");
     const navigate = useNavigate();
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     useEffect(() => {
 
         const buscarFamilias = async () => {
             try {
-                const response = await fetch("http://localhost:3000/familias");
+                const response = await fetch("http://localhost:3000/familias",{
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json"
+                    }
+                })
                 if (!response.ok) throw new Error("Erro ao buscar familias");
 
                 const dados = await response.json();

@@ -56,7 +56,8 @@ app.post('/recuperarSenha', async (req, res) => {
     try {
         const funcionario = await funcionarioCtrl.consultarPorEmail(email);
         if (!funcionario) {
-            return res.status(404).json({ mensagem: "Funcionário não encontrado." });
+            return res.status(404).json({ 
+            mensagem: "Funcionário não encontrado." });
         }
 
         const codigo = Math.floor(100000 + Math.random() * 900000).toString(); // Gera código de 6 dígitos
