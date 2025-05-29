@@ -18,11 +18,13 @@ export default function RelatorioAlunos() {
     const [mensagem, setMensagem] = useState("");
     const [ordenarPor, setOrdenarPor] = useState("id");
     const [filtroStatus, setFiltroStatus] = useState("todos");
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");  
     const navigate = useNavigate();
 
     // Opções para filtros e ordenação
     const statusOptions = [
-        { name: 'Todos', value: 'todos' },
+        { name: 'Excluídos', value: '0' },
+        { name: 'Todos', value: 'todos' }
         // Adicione novos status aqui no futuro
     ];
 
@@ -31,10 +33,21 @@ export default function RelatorioAlunos() {
         { name: 'Nome', value: 'nome' },
     ];
 
+        const getStatus = (status) => {
+        if (status === 0) return "EXCLUIDO";
+        return status;
+    };
+
     useEffect(() => {
         const buscarAlunos = async () => {
             try {
-                const res = await fetch("http://localhost:3000/alunos");
+                const res = await fetch("http://localhost:3000/alunos", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json"
+                    }
+                });
                 if (!res.ok) throw new Error("Erro ao buscar alunos");
                 const dados = await res.json();
                 setListaDeAlunos(dados);
@@ -49,7 +62,13 @@ export default function RelatorioAlunos() {
     const excluirAluno = async (aluno) => {
         if (window.confirm(`Deseja realmente excluir o aluno ${aluno.nome}?`)) {
             try {
-                const res = await fetch(`http://localhost:3000/alunos/${aluno.id}`, { method: "DELETE" });
+                const res = await fetch(`http://localhost:3000/alunos/${aluno.id}`, { 
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                 });
                 if (res.ok) {
                     setListaDeAlunos(listaDeAlunos.filter(a => a.id !== aluno.id));
                     setMensagem("Aluno excluído com sucesso!");
@@ -88,7 +107,7 @@ export default function RelatorioAlunos() {
             aluno.periodoEscola || "N/A",
             aluno.periodoProjeto || "N/A",
             `${aluno.rua}, ${aluno.numero}, ${aluno.bairro}, ${aluno.cidade}` || "N/A",
-            filtroStatus === "todos" ? (aluno.status === 1 ? "Ativo" : "Inativo") : null
+            getStatus(aluno.status)
         ].filter(val => val !== null));
 
         const headers = filtroStatus === "todos" 
@@ -122,6 +141,7 @@ export default function RelatorioAlunos() {
                         {statusOptions.map((option, idx) => (
                             <ToggleButton
                                 key={idx}
+                                id={`status-${idx}`}
                                 type="radio"
                                 variant="outline-primary"
                                 name="status"
@@ -141,6 +161,7 @@ export default function RelatorioAlunos() {
                         {ordenarOptions.map((option, idx) => (
                             <ToggleButton
                                 key={idx}
+                                id={`ordenar-${idx}`}
                                 type="radio"
                                 variant="outline-success"
                                 name="ordenar"
