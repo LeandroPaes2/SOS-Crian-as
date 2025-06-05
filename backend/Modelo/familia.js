@@ -1,7 +1,7 @@
 import FamiliaDAO from "../Persistencia/familiaDAO.js";
 
 export default class Familia {
-    
+
     #id
     #nome
     #sexo
@@ -20,28 +20,28 @@ export default class Familia {
         this.#id = novoId;
     }
 
-    get grauParentesco(){
+    get grauParentesco() {
         return this.#grauParentesco;
     }
 
-    set grauParentesco(novoGrau){
-        this.#grauParentesco=novoGrau;
+    set grauParentesco(novoGrau) {
+        this.#grauParentesco = novoGrau;
     }
 
-    get irmaos(){
+    get irmaos() {
         return this.#irmaos;
     }
 
-    set irmaos(novosIrmaos){
-        this.#irmaos=novosIrmaos;
+    set irmaos(novosIrmaos) {
+        this.#irmaos = novosIrmaos;
     }
 
-    get temContato(){
+    get temContato() {
         return this.#temContato;
     }
 
-    set temContato(novoTemContato){
-        this.#temContato=novoTemContato;
+    set temContato(novoTemContato) {
+        this.#temContato = novoTemContato;
     }
 
     get nome() {
@@ -53,7 +53,7 @@ export default class Familia {
     }
 
     get sexo() {
-        return this.#sexo;
+        return this.#sexo; 
     }
 
     set sexo(novoSexo) {
@@ -84,29 +84,29 @@ export default class Familia {
         this.#escolaridade = novoEscolaridade;
     }
 
-    constructor(id=0, nome="", sexo="", dataNascimento="", profissao="", escolaridade="", grauParentesco="", irmaos="", temContato="") {
+    constructor(id = 0, nome = "", sexo = "", dataNascimento = "", profissao = "", escolaridade = "", grauParentesco = "", irmaos = "", temContato = "") {
         this.#id = id;
         this.#nome = nome;
         this.sexo = sexo;
         this.#dataNascimento = dataNascimento;
         this.#profissao = profissao;
         this.#escolaridade = escolaridade;
-        this.#grauParentesco=grauParentesco;
-        this.#irmaos=irmaos;
-        this.#temContato=temContato;
+        this.#grauParentesco = grauParentesco;
+        this.#irmaos = irmaos;
+        this.#temContato = temContato;
     }
 
-    toJSON(){
-        return{
+    toJSON() {
+        return {
             "id": this.#id,
             "nome": this.#nome,
             "sexo": this.sexo,
             "dataNascimento": this.#dataNascimento,
             "profissao": this.#profissao,
             "escolaridade": this.#escolaridade,
-            "grauParentesco":this.#grauParentesco,
-            "irmaos":this.#irmaos,
-            "temContato":this.#temContato
+            "grauParentesco": this.#grauParentesco,
+            "irmaos": this.#irmaos,
+            "temContato": this.#temContato
         }
     }
 

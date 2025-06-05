@@ -45,6 +45,28 @@ function validarRG(rg) {
     return true;
 }
 
+function validarDataNascimento(dtNascimento) {
+    if (!dtNascimento) return false;
+
+    const hoje = new Date();
+    const nascimento = new Date(dtNascimento);
+
+    if (isNaN(nascimento.getTime())) return false; // data inválida
+
+    // Verifica se a data de nascimento é futura
+    if (nascimento > hoje) return false;
+
+    // Calcula a idade
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const mes = hoje.getMonth() - nascimento.getMonth();
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+        idade--;
+    }
+
+    // Verifica se tem 18 anos ou mais
+    return idade >= 18;
+}
+
 export default class ResponsavelCtrl {
 
     async gravar(requisicao, resposta){
@@ -74,6 +96,8 @@ export default class ResponsavelCtrl {
             const valorBeneficio = requisicao.body.valorBeneficio;
             const beneficiario = requisicao.body.beneficiario;
 
+            console.log("Controle responsavel:"+JSON.stringify(requisicao.body, null, 2));
+
             if (!validarCPF(cpf)) {
                 return resposta.status(400).json({
                     status: false,
@@ -87,46 +111,64 @@ export default class ResponsavelCtrl {
                     mensagem: "RG inválido."
                 });
             }
+            if (!validarDataNascimento(dtNascimento)) {
+                return resposta.status(400).json({
+                    status: false,
+                    mensagem: "Data de nascimento no futuro ou responsavel menor que 18 anos."
+                });
+            }
 
             if (cpf && rg && nome && telefone && email && sexo && dtNascimento && conjuge && estCivil && situTrabalho && escolaridade && rendaFamiliar && qtdeTrabalhadores>=0 && pensaoAlimenticia && beneficioSocial)
             {
-                if(pensaoAlimenticia=='Sim' ){
-                    if(valorPensao<=0 || !pagadorPensao){
-                        await conexao.query("ROLLBACK");
-                        return resposta.status(400).json(
-                        {
-                            "status":false,
-                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
-                        });
-                    }
-                }
-                if(beneficioSocial=='Sim'){
-                    if(!tipoBeneficio || valorBeneficio<=0 || !beneficiario){
-                        await conexao.query("ROLLBACK");
-                        return resposta.status(400).json(
-                        {
-                            "status":false,
-                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
-                        });
-                    }
-                }
-                if(!rendaFamiliar.includes("Não")){
-                    if(!valorRenda || valorPensao<=0){
-                        await conexao.query("ROLLBACK");
-                        return resposta.status(400).json(
-                        {
-                            "status":false,
-                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
-                        });
-                    }
-                }
                 
                 let conexao;
                 const responsavel = new Responsavel(cpf, rg, nome, telefone, email, sexo, dtNascimento, estCivil, conjuge, profissao, situTrabalho, escolaridade, rendaFamiliar, valorRenda, qtdeTrabalhadores, pensaoAlimenticia, valorPensao, pagadorPensao, beneficioSocial, tipoBeneficio, valorBeneficio, beneficiario);
-                console.log("Situacao Trabalho:", responsavel.situTrabalho);
+           
                 try{
                     conexao=await conectar();
                     await conexao.query("BEGIN");
+                    if(pensaoAlimenticia=='Sim' ){
+                        if(valorPensao<=0 || !pagadorPensao){
+                            await conexao.query("ROLLBACK");
+                            return resposta.status(400).json(
+                            {
+                                "status":false,
+                                "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                            });
+                        }
+                    }
+                    if(beneficioSocial==='Sim'){
+                        if(!tipoBeneficio || valorBeneficio<=0 || !beneficiario){
+                            await conexao.query("ROLLBACK");
+                            return resposta.status(400).json(
+                            {
+                                "status":false,
+                                "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                            });
+                        }
+                    }
+                    if(!rendaFamiliar.includes("Nao")){
+                        if(valorRenda==null || valorRenda<=0){
+                            if(conexao)
+                                await conexao.query("ROLLBACK");
+                            return resposta.status(400).json(
+                            {
+                                "status":false,
+                                "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                            });
+                        }
+                    }
+                    if(situTrabalho=="Empregado"){
+                        if(profissao==null){
+                            if(conexao)
+                                await conexao.query("ROLLBACK");
+                            return resposta.status(400).json(
+                            {
+                                "status":false,
+                                "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                            });
+                        }
+                    }
                     const resultado = await responsavel.incluir(conexao);
                     
                     if(resultado){
@@ -138,7 +180,8 @@ export default class ResponsavelCtrl {
                         });
                     }
                     else{
-                        await conexao.query("ROLLBACK");
+                        if(conexao)
+                            await conexao.query("ROLLBACK");
                         resposta.status(500).json({
                             "status":false,
                             "mensagem":"Não foi possível incluir o responsavel: " + erro.message
@@ -206,32 +249,44 @@ export default class ResponsavelCtrl {
         
             if (cpf && rg && nome && telefone && email && sexo && dtNascimento && conjuge && estCivil && situTrabalho && escolaridade && rendaFamiliar && valorRenda>0.00 && qtdeTrabalhadores>=0 && pensaoAlimenticia && beneficioSocial)
             {
-                if(pensaoAlimenticia=='Sim' ){
-                    if(valorPensao<=0 || !pagadorPensao){
-                        await conexao.query("ROLLBACK");
-                        return resposta.status(400).json(
-                        {
-                            "status":false,
-                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
-                        });
-                    }
-                }else if(beneficioSocial=='Sim'){
-                    if(!tipoBeneficio || valorBeneficio<=0 || !beneficiario){
-                        await conexao.query("ROLLBACK");
-                        return resposta.status(400).json(
-                        {
-                            "status":false,
-                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
-                        });
-                    }
-                }
 
                 let conexao;
-                const responsavel = new Responsavel(cpf, rg, nome, telefone, email, sexo, estCivil, conjuge, profissao, situTrabalho, escolaridade, rendaFamiliar, valorRenda, qtdeTrabalhadores, pensaoAlimenticia, valorPensao, pagadorPensao, beneficioSocial, tipoBeneficio, valorBeneficio, beneficiario);
+                const responsavel = new Responsavel(cpf, rg, nome, telefone, email, sexo, dtNascimento, estCivil, conjuge, profissao, situTrabalho, escolaridade, rendaFamiliar, valorRenda, qtdeTrabalhadores, pensaoAlimenticia, valorPensao, pagadorPensao, beneficioSocial, tipoBeneficio, valorBeneficio, beneficiario);
                 
                 try{
                     conexao = await conectar();
                     await conexao.query("BEGIN");
+                    if(pensaoAlimenticia=='Sim' ){
+                        if(valorPensao<=0 || !pagadorPensao){
+                            await conexao.query("ROLLBACK");
+                            return resposta.status(400).json(
+                            {
+                                "status":false,
+                                "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                            });
+                        }
+                    }
+                    if(beneficioSocial=='Sim'){
+                        if(!tipoBeneficio || valorBeneficio<=0 || !beneficiario){
+                            await conexao.query("ROLLBACK");
+                            return resposta.status(400).json(
+                            {
+                                "status":false,
+                                "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                            });
+                        }
+                    }
+                    if(!rendaFamiliar.includes("Nao")){
+                        if(valorRenda==null || valorRenda<=0){
+                            if(conexao)
+                                await conexao.query("ROLLBACK");
+                            return resposta.status(400).json(
+                            {
+                                "status":false,
+                                "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
+                            });
+                        }
+                    }
                     //const resultado = await responsavel.alterar(conexao);
                     if(responsavel.alterar(conexao)){
                         await conexao.query("COMMIT");

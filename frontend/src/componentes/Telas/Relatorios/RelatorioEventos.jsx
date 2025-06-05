@@ -15,7 +15,7 @@ function dataNova(dataISO) {
 
 export default function RelatorioEventos() {
 
-    const [listaDeEventos, setListaDeEventos ] = useState([]);
+    const [listaDeEventos, setListaDeEventos] = useState([]);
     const [mensagem, setMensagem] = useState("");
     const [pesquisaNome, setPesquisaNome] = useState("");
     const navigate = useNavigate();
@@ -23,11 +23,11 @@ export default function RelatorioEventos() {
     const [editando, setEditando] = useState(false);
     const [id, setId] = useState("");
     const [nome, setNome] = useState("");
-    const [data, setData]=useState("");
+    const [data, setData] = useState("");
     const [periodo, setPeriodo] = useState("");
     const [horaInicio, setHoraInicio] = useState("");
-    const [horaFim, setHoraFim]=useState("");
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token");  
+    const [horaFim, setHoraFim] = useState("");
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     useEffect(() => {  //é executado uma única vez quando o componente monta, ou seja, quando a página/carregamento do componente acontece pela primeira vez.
         //Ele serve pra carregar os elementos que você precisa assim que a página abrir, como buscar dados no backend
@@ -45,7 +45,7 @@ export default function RelatorioEventos() {
                     console.log("Status da resposta:", response.status);
                     throw new Error("Erro ao buscar eventos");
                 }
-                
+
                 const dados = await response.json();
                 setListaDeEventos(dados); // Atualiza o estado com os dados do backend
             } catch (error) {
@@ -59,12 +59,12 @@ export default function RelatorioEventos() {
 
     const excluirEvento = async (evento) => {
         if (window.confirm("Deseja realmente excluir o evento " + evento.nome)) {
-            if(evento.id<=0 || !evento.nome || !evento.data || !evento.periodo || !evento.horaInicio || !evento.horaFim){
+            if (evento.id <= 0 || !evento.nome || !evento.dataInicio || !evento.dataFim || !evento.periodo || !evento.horaInicio || !evento.horaFim) {
                 setMensagem("Erro: evento inválido!");
                 setTimeout(() => setMensagem(""), 5000);
                 return;
             }
-            try{
+            try {
                 const response = await fetch("http://localhost:3000/eventos/" + evento.id, {
                     method: "DELETE",
                     headers: {
@@ -77,11 +77,11 @@ export default function RelatorioEventos() {
                     setTimeout(() => setMensagem(""), 3000);
                     setListaDeEventos(listaDeEventos.filter((e) => e.id !== evento.id));
                 }
-                else{
+                else {
                     setMensagem("Erro ao excluir o evento.");
                     setTimeout(() => setMensagem(""), 3000);
                 }
-            }catch(e){
+            } catch (e) {
                 console.error("Erro ao conectar com o backend:", e);
                 setMensagem("Erro de conexão com o servidor.");
             }
@@ -91,7 +91,7 @@ export default function RelatorioEventos() {
 
     const editarEventos = async (evento) => {
         navigate("/cadastroEvento", {
-            state: { 
+            state: {
                 id: evento.id,
                 nome: evento.nome,
                 tipoEvento: evento.tipoEvento,
@@ -100,7 +100,7 @@ export default function RelatorioEventos() {
                 periodo: evento.periodo,
                 horaInicio: evento.horaInicio,
                 horaFim: evento.horaFim
-             }
+            }
         });
     };
 

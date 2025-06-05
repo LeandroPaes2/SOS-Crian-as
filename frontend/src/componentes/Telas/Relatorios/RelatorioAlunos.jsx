@@ -44,12 +44,13 @@ export default function RelatorioAlunos() {
                 const res = await fetch("http://localhost:3000/alunos", {
                     method: "GET",
                     headers: {
-                        "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     }
                 });
                 if (!res.ok) throw new Error("Erro ao buscar alunos");
                 const dados = await res.json();
+                console.log(dados);
                 setListaDeAlunos(dados);
             } catch (error) {
                 setMensagem("Erro ao carregar os alunos.");
@@ -96,7 +97,7 @@ export default function RelatorioAlunos() {
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
         const titulo = "Relatório de Alunos";
-        
+
         doc.text(titulo, (pageWidth - doc.getTextWidth(titulo)) / 2, 20);
 
         const data = alunosFiltrados.map(aluno => [
@@ -110,7 +111,7 @@ export default function RelatorioAlunos() {
             getStatus(aluno.status)
         ].filter(val => val !== null));
 
-        const headers = filtroStatus === "todos" 
+        const headers = filtroStatus === "todos"
             ? [["ID", "Nome", "Telefone", "Responsável", "Período Escola", "Período Projeto", "Endereço", "Status"]]
             : [["ID", "Nome", "Telefone", "Responsável", "Período Escola", "Período Projeto", "Endereço"]];
 

@@ -15,6 +15,7 @@ import rotaEvento from './Rotas/rotaEvento.js';
 import rotaFuncionario from './Rotas/rotaFuncionario.js';
 import rotaListaEspera from './Rotas/rotaListaEspera.js';
 import rotaFamilia from './Rotas/rotaFamilia.js';
+import rotaFormularioSaude from './Rotas/rotaFormularioSaude.js';
 
 import FuncionarioCtrl from './Controle/funcionarioCtrl.js';
 import supabase from './Persistencia/Conexao.js';
@@ -56,7 +57,8 @@ app.post('/recuperarSenha', async (req, res) => {
     try {
         const funcionario = await funcionarioCtrl.consultarPorEmail(email);
         if (!funcionario) {
-            return res.status(404).json({ mensagem: "Funcionário não encontrado." });
+            return res.status(404).json({ 
+            mensagem: "Funcionário não encontrado." });
         }
 
         const codigo = Math.floor(100000 + Math.random() * 900000).toString(); // Gera código de 6 dígitos
@@ -84,7 +86,7 @@ app.post('/verificarCodigo', (req, res) => {
 
 app.put('/alterarSenha', funcionarioCtrl.alterarSenhaFuncionario);
 
-app.put('/redefinirSenha', funcionarioCtrl.atualizarSenhaFuncionario);
+app.put("/redefinirSenha", (req, res) => funcionarioCtrl.atualizarSenhaFuncionario(req, res));
 
 // Rotas principais
 app.use("/turmas", rotaTurma);
@@ -97,6 +99,7 @@ app.use("/funcionarios", rotaFuncionario);
 app.use("/listasEspera", rotaListaEspera);
 app.use("/horarios", rotaHorario);
 app.use("/presencas", rotaPresenca);
+app.use("/formulariosSaude",rotaFormularioSaude);
 
 app.use("/familias", rotaFamilia);
 

@@ -97,12 +97,12 @@ export default class EventoDAO {
             const evento = new Evento(
                 linha['eve_id'],
                 linha['eve_nome'],
-                linha['eve_tipoEvento'],
-                linha['eve_dataInicio'],
-                linha['eve_dataFim'],
+                linha['eve_tipoevento'],
+                linha['eve_datainicio'],
+                linha['eve_datafim'],
                 linha['eve_periodo'],
-                linha['eve_horaInicio'],
-                linha['eve_horaFim']
+                linha['eve_horainicio'],
+                linha['eve_horafim']
             );
             listaEvento.push(evento);
         }

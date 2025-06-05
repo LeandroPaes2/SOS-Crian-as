@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import "../../css/alerts.css";
 import { useNavigate } from 'react-router-dom';
+import Cleave from 'cleave.js/react';
 
 
 export default function FormCadResponsavel(props) {
@@ -34,11 +35,8 @@ export default function FormCadResponsavel(props) {
     const [mensagem, setMensagem] = useState("");
     const location = useLocation();
     const [editando, setEditando] = useState(false);
-    const [responsavel, setResponsavel] = useState(cpf, nome, telefone);
     const navigate = useNavigate();
     const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-    const rotaVoltar = editando ? "/relatorioResponsavel" : "/telaResponsavel";
-
 
     useEffect(() => {
         if (location.state && location.state.cpf && location.state.rg && location.state.nome && location.state.telefone && location.state.email && location.state.sexo && location.state.dtNascimento && location.state.estCivil && location.state.conjuge && location.state.situTrabalho && location.state.escolaridade && location.state.rendaFamiliar && location.state.qtdeTrabalhadores && location.state.pensaoAlimenticia && location.state.beneficioSocial) {
@@ -68,50 +66,19 @@ export default function FormCadResponsavel(props) {
         }
     }, [location.state]);
 
-    function validarCPF(cpf) {
-        cpf = cpf.replace(/[^\d]+/g, '');
-        if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-
-        let soma = 0, resto;
-
-        for (let i = 1; i <= 9; i++) {
-            soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
-        }
-
-        resto = (soma * 10) % 11;
-        if (resto === 10 || resto === 11) resto = 0;
-        if (resto !== parseInt(cpf.charAt(9))) return false;
-
-        soma = 0;
-        for (let i = 1; i <= 10; i++) {
-            soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
-        }
-
-        resto = (soma * 10) % 11;
-        if (resto === 10 || resto === 11) resto = 0;
-        if (resto !== parseInt(cpf.charAt(10))) return false;
-
-        return true;
-    }
-
     const handleSubmit = async (event) => {
         event.preventDefault(); // Evita recarregar a página
 
         // Verifica se os campos estão preenchidos
-        if (!cpf || !rg || !nome || !telefone || !email || !sexo || !dtNascimento || !estCivil || !conjuge || !situTrabalho || !escolaridade || !rendaFamiliar || !qtdeTrabalhadores || !pensaoAlimenticia || !beneficioSocial) {
+        if (!cpf || !rg || !nome || !telefone || !email || !sexo || !dtNascimento || !estCivil || !conjuge || !situTrabalho || !escolaridade || !rendaFamiliar || !pensaoAlimenticia || !beneficioSocial) {
             setMensagem("Preencha todos os campos!");
-            return;
-        }
-
-        if(!validarCPF(cpf) || cpf[3]!="." || cpf[7]!="." || cpf[11]!="-" || cpf.length!=14){
-            setMensagem("CPF invalido");
-            setTimeout(() => setMensagem(""), 5000);
             return;
         }
 
         const responsavel = { cpf,rg, nome, telefone, email, sexo, dtNascimento, estCivil, conjuge, profissao, situTrabalho, escolaridade, rendaFamiliar, valorRenda, qtdeTrabalhadores, pensaoAlimenticia, valorPensao, pagadorPensao, beneficioSocial, tipoBeneficio, valorBeneficio, beneficiario}; 
         const url = editando ? `http://localhost:3000/responsaveis/${cpf}` : "http://localhost:3000/responsaveis";
         const method = editando ? "PUT" : "POST";
+        console.log(token);
 
         try {
             if(editando){
@@ -119,10 +86,34 @@ export default function FormCadResponsavel(props) {
                     return;
                 }
             }
+            console.log("Enviando dados:", {
+                nome,
+                cpf,
+                rg,
+                telefone,
+                email, 
+                sexo,
+                dtNascimento,
+                estCivil,
+                conjuge,
+                situTrabalho,
+                profissao,
+                escolaridade,
+                rendaFamiliar,
+                valorRenda,
+                qtdeTrabalhadores,
+                pensaoAlimenticia,
+                valorPensao,
+                pagadorPensao,
+                beneficioSocial,
+                tipoBeneficio,
+                valorBeneficio,
+                beneficiario
+                });
             const response = await fetch(url, {
                 method: method,
                 headers: { "Content-Type": "application/json",
-                    "Authorization":` Bearer ${token}`
+                    "Authorization":`Bearer ${token}`
                  },
                 body: JSON.stringify(responsavel),
             });
@@ -142,14 +133,14 @@ export default function FormCadResponsavel(props) {
                 setTimeout(() =>setSituTrabalho(""), 3000);
                 setTimeout(() =>setEscolaridade(""), 3000);
                 setTimeout(() =>setRendaFamiliar(""), 3000);
-                setTimeout(() =>setValorRenda(""), 3000);
-                setTimeout(() =>setQtdeTrabalhadores(""), 3000);
+                setTimeout(() =>setValorRenda(0), 3000);
+                setTimeout(() =>setQtdeTrabalhadores(0), 3000);
                 setTimeout(() =>setPensaoAlimenticia(""), 3000);
-                setTimeout(() =>setValorPensao(""), 3000);
+                setTimeout(() =>setValorPensao(0), 3000);
                 setTimeout(() =>setPagadorPensao(""), 3000);
                 setTimeout(() =>setBeneficioSocial(""), 3000);
                 setTimeout(() =>setTipoBeneficio(""), 3000);
-                setTimeout(() =>setValorBeneficio(""), 3000);
+                setTimeout(() =>setValorBeneficio(0), 3000);
                 setTimeout(() =>setBeneficiario(""), 3000);
                 setTimeout(() => setMensagem(""), 3000);
                 
@@ -188,15 +179,31 @@ export default function FormCadResponsavel(props) {
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" id="cpf">
                     <Form.Label>CPF</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Digite o CPF"
+                    <Cleave
+                        className="form-control"
+                        placeholder="000.000.000-00"
+                        options={{ delimiters: ['.', '.', '-'], blocks: [3, 3, 3, 2], numericOnly: true }}
                         value={cpf}
                         onChange={(e) => setCpf(e.target.value)}
                         disabled={editando}
                     />
                 </Form.Group>
-
+                <Form.Group className="mb-3" id="rg">
+                    <Form.Label>RG</Form.Label>
+                    <Cleave
+                        className="form-control"
+                        placeholder="00.000.000-0"
+                        options={{
+                        delimiters: ['.', '.', '-'],
+                        blocks: [2, 3,3, 1],
+                        uppercase: true,
+                        numericOnly: false, // permite letra no final, ex: "X"
+                        }}
+                        value={rg}
+                        onChange={(e) => setRg(e.target.value)}
+                        disabled={editando}
+                    />
+                </Form.Group>
                 <Form.Group className="mb-3" id="nome">
                     <Form.Label>Nome Completo</Form.Label>
                         <Form.Control
@@ -209,13 +216,219 @@ export default function FormCadResponsavel(props) {
 
                 <Form.Group className="mb-3" id="telefone">
                     <Form.Label>Telefone</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Digite o telefone"
+                    <Cleave
+                        className="form-control"
+                        placeholder="(00) 00000-0000"
+                        options={{
+                        delimiters: ['(', ') ', ' ', '-'],
+                        blocks: [0, 2, 5, 4],
+                        numericOnly: true,
+                        }}
                         value={telefone}
                         onChange={(e) => setTelefone(e.target.value)}
+                        disabled={editando}
                     />
                 </Form.Group>
+                <Form.Group className="mb-3" id="email">
+                    <Form.Label>E-Mail</Form.Label>
+                        <Form.Control
+                        type="email"
+                        placeholder="Digite o email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group className="mb-3" id="sexo">
+                    <Form.Label>Sexo</Form.Label>
+                        <Form.Select
+                            value={sexo}
+                            onChange={(e) => setSexo(e.target.value)}>
+                            <option value="">Selecione o sexo</option>
+                            <option value="Feminino">Feminino</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Outro">Outro</option>
+                        </Form.Select>
+                </Form.Group>
+
+                <Form.Group className="mb-3" id="dataNascimento">
+                        <Form.Label>Data de Nascimento</Form.Label>
+                        <Form.Control
+                            type="date"
+                            value={dtNascimento}
+                            onChange={(e) => setDtNascimento(e.target.value)}
+                        />
+                    </Form.Group>
+
+                <Form.Group className="mb-3" id="estCivil">
+                    <Form.Label>Estado Civil</Form.Label>
+                        <Form.Select
+                            value={estCivil}
+                            onChange={(e) => setEstCivil(e.target.value)}>
+                            <option value="">Selecione o estado civil</option>
+                            <option value="Solteiro">Solteiro</option>
+                            <option value="Casado">Casado</option>
+                            <option value="Separado">Separado</option>
+                            <option value="Divorciado">Divorciado</option>
+                            <option value="Viúvo">Viúvo</option>
+                        </Form.Select>
+                </Form.Group>
+                <Form.Group className="mb-3" id="conjuge">
+                    <Form.Label>Possui conjuge ou companheiro?</Form.Label>
+                        <Form.Select
+                            value={conjuge}
+                            onChange={(e) => setConjuge(e.target.value)}>
+                            <option value="">Selecione uma resposta</option>
+                            <option value="Sim">Sim</option>
+                            <option value="Nao">Não</option>
+                        </Form.Select>
+                </Form.Group>
+                <Form.Group className="mb-3" id="situTrabalho">
+                    <Form.Label>Situação de trabalho</Form.Label>
+                        <Form.Select
+                            value={situTrabalho}
+                            onChange={(e) => setSituTrabalho(e.target.value)}>
+                            <option value="">Selecione uma resposta</option>
+                            <option value="Empregado">Empregado</option>
+                            <option value="Desempregado">Desempregado</option>
+                            <option value="Bicos esporadicos">Bicos esporádicos</option>
+                        </Form.Select>
+                </Form.Group>
+                {situTrabalho === "Empregado" && (
+                <Form.Group className="mb-3" id="profissao">
+                    <Form.Label>Profissão</Form.Label>
+                        <Form.Control
+                        type="text"
+                        placeholder="Digite a profissão"
+                        value={profissao}
+                        onChange={(e) => setProfissao(e.target.value)}
+                    />
+                </Form.Group>
+                )}
+                <Form.Group className="mb-3" id="escolaridade">
+                    <Form.Label>Escolaridade</Form.Label>
+                        <Form.Select
+                            value={escolaridade}
+                            onChange={(e) => setEscolaridade(e.target.value)}>
+                            <option value="">Selecione uma escolaridade</option>
+                            <option value="Ensino fundamemntal incompleto">Ensino fundamemntal incompleto</option>
+                            <option value="Ensino fundamental completo">Ensino fundamental completo</option>
+                            <option value="Ensino medio incompleto">Ensino medio incompleto</option>
+                            <option value="Ensino medio completo">Ensino medio completo</option>
+                            <option value="Superior incompleto">Superior incompleto</option>
+                            <option value="Superior completo">Superior completo</option>
+                        </Form.Select>
+                </Form.Group>
+                <Form.Group className="mb-3" id="rendaFamiliar">
+                    <Form.Label>Renda familiar</Form.Label>
+                        <Form.Select
+                            value={rendaFamiliar}
+                            onChange={(e) => setRendaFamiliar(e.target.value)}>
+                            <option value="">Selecione uma opção</option>
+                            <option value="Nao possui renda">Nao possui renda</option>
+                            <option value="1/2 salario">1/2 salario</option>
+                            <option value="1 salario minimo">1 salario minimo</option>
+                            <option value="1 a 3 salarios minimos">1 a 3 salarios minimos</option>
+                            <option value="4 a 5 salarios minimos">4 a 5 salarios minimos</option>
+                            <option value="Acima de 6 salarios minimos">Acima de 6 salarios minimos</option>
+                        </Form.Select>
+                </Form.Group>
+                {rendaFamiliar !== "Nao possui renda" && (
+                    <Form.Group className="mb-3" id="valorRenda">
+                        <Form.Label>Valor da renda familiar</Form.Label>
+                            <Form.Control
+                            type="number"
+                            step="0.01"
+                            placeholder="Digite o valor da renda familiar"
+                            value={valorRenda}
+                            onChange={(e) => setValorRenda(e.target.value === "" ? null : parseFloat(e.target.value))}
+                        />
+                    </Form.Group>
+                )}
+                <Form.Group className="mb-3" id="qtdeTrabalhadores">
+                        <Form.Label>Quantos trabalham?</Form.Label>
+                            <Form.Control
+                            type="number"
+                            placeholder="Digite a quantidade"
+                            value={qtdeTrabalhadores}
+                            onChange={(e) => setQtdeTrabalhadores(e.target.value === "" ? null : parseInt(e.target.value))}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" id="pensaoAlimenticia">
+                    <Form.Label>Possui pensão alimentícia?</Form.Label>
+                        <Form.Select
+                            value={pensaoAlimenticia}
+                            onChange={(e) => setPensaoAlimenticia(e.target.value)}>
+                            <option value="">Selecione uma resposta</option>
+                            <option value="Sim">Sim</option>
+                            <option value="Nao">Não</option>
+                        </Form.Select>
+                </Form.Group>
+                {pensaoAlimenticia === "Sim" && (
+                    <>
+                    <Form.Group className="mb-3" id="valorPensao">
+                        <Form.Label>Valor da pensão alimentícia</Form.Label>
+                            <Form.Control
+                            type="number"
+                            step="0.01"
+                            placeholder="Digite o valor da pensão"
+                            value={valorPensao}
+                            onChange={(e) => setValorPensao(e.target.value === "" ? null : parseFloat(e.target.value))}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" id="pagadorPensao">
+                        <Form.Label>Quem fornece a pensão?</Form.Label>
+                            <Form.Control
+                            type="text"
+                            placeholder="Digite o nome"
+                            value={pagadorPensao}
+                            onChange={(e) => setPagadorPensao(e.target.value)}
+                        />
+                    </Form.Group>
+                    </>
+                )}
+
+                <Form.Group className="mb-3" id="beneficioSocial">
+                    <Form.Label>Possui algum benefício social?</Form.Label>
+                        <Form.Select
+                            value={beneficioSocial}
+                            onChange={(e) => setBeneficioSocial(e.target.value)}>
+                            <option value="">Selecione uma resposta</option>
+                            <option value="Sim">Sim</option>
+                            <option value="Nao">Não</option>
+                        </Form.Select>
+                </Form.Group>
+                {beneficioSocial === "Sim" && (
+                    <>
+                    <Form.Group className="mb-3" id="tipoBeneficio">
+                        <Form.Label>Qual o benefício social?</Form.Label>
+                            <Form.Control
+                            type="text"
+                            placeholder="Digite o benefício social recebido"
+                            value={tipoBeneficio}
+                            onChange={(e) => setTipoBeneficio(e.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" id="valorBeneficio">
+                        <Form.Label>Valor do benefício social</Form.Label>
+                            <Form.Control
+                            type="number"
+                            step="0.01"
+                            placeholder="Digite o valor do benefício"
+                            value={valorRenda === 0 ? "" : valorRenda}
+                            onChange={(e) => setValorBeneficio(e.target.value === "" ? null: parseFloat(e.target.value))}
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" id="beneficiario">
+                    <Form.Label>Beneficiário</Form.Label>
+                        <Form.Control
+                        type="text"
+                        placeholder="Digite o beneficiário"
+                        value={beneficiario}
+                        onChange={(e) => setBeneficiario(e.target.value)}
+                    />
+                </Form.Group>
+                </>
+                )}
 
                 <Button as={Link} to="/telaResponsavel" className="botaoPesquisa" variant="secondary">
                                 Pagina inicial responsavel

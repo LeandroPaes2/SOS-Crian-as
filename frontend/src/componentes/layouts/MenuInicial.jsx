@@ -10,7 +10,8 @@ import escolas from '../imagens/escolas.png';
 import eventos from '../imagens/eventos.png';
 import horarios from '../imagens/horario.png';
 import { useLogin } from "../../LoginContext.js";
-
+import familia from '../imagens/familia.png';
+import presenca from '../imagens/presenca.png';
 export default function MenuInicial() {
 
 const { funcionario }=useLogin();
@@ -34,6 +35,11 @@ const { funcionario }=useLogin();
                         <img src={escolas} style={{width: '130px'}} />
                         <br/>
                         Escolas
+                    </Button>
+                    <Button as={Link} to = "/telaFamilia" className='botaoMenu' variant="primary" size="lg">
+                        <img src={familia} style={{width: '100px'}} />
+                        <br/>
+                        Familias
                     </Button>
                     </>
             )}
@@ -70,13 +76,19 @@ const { funcionario }=useLogin();
                         Turmas
                     </Button>
                     <Button as={Link} to="/telaPresenca" className='botaoMenu' variant="primary" size="lg">
+                        <img src={presenca} style={{width: '140px'}} />
+                        <br/>
                         Presenças
+                    </Button>
+                    <Button as={Link} to="/relatorioFalta" className='botaoMenu' variant="primary" size="lg">
+                        <br/>
+                        Faltas
                     </Button>
                     </>
             )}
             {funcionario?.nivel !== 4 &&(
                  <Button as={Link} to="/telaEvento" className='botaoMenu' variant="primary" size="lg">
-                        <img src={responsavel} style={{width: '100px'}} />
+                        <img src={eventos} style={{width: '100px'}} />
                         <br/>
                         Eventos
                     </Button>

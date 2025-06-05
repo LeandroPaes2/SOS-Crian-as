@@ -20,7 +20,7 @@ export default class FamiliaCtrl {
 
             if (nome && sexo && dataNascimento && escolaridade && grauParentesco) {
 
-                if(irmaos.includes("pai") || irmaos.includes("mae")){
+                if(irmaos === "Mesmo pai e mãe" || irmaos === "Por parte de pai" || irmaos === "Por parte de mae" || irmaos === "Sim"){
                     if(!temContato){
                         await conexao.query("ROLLBACK");
                         return resposta.status(400).json(
@@ -30,7 +30,7 @@ export default class FamiliaCtrl {
                         });
                     }
                 }else{
-                    if(temContato=="Sim"){
+                    if(temContato==="Sim"){
                         await conexao.query("ROLLBACK");
                         return resposta.status(400).json(
                         {
@@ -70,7 +70,7 @@ export default class FamiliaCtrl {
                     });
                 } finally {
                     if (conexao)
-                        await conexao.end();
+                        await conexao.release();
                 }
             } else {
                 resposta.status(500).json({
@@ -105,7 +105,7 @@ export default class FamiliaCtrl {
 
             if (id>0 && nome && sexo && dataNascimento && escolaridade && grauParentesco) {
 
-                if(irmaos.includes("pai") || irmaos.includes("mae")){
+                if(irmaos === "Mesmo pai e mãe" || irmaos === "Por parte de pai" || irmaos === "Por parte de mae"){
                     if(!temContato){
                         await conexao.query("ROLLBACK");
                         return resposta.status(400).json(
@@ -155,7 +155,7 @@ export default class FamiliaCtrl {
                     });
                 } finally {
                     if (conexao)
-                        await conexao.end();
+                        await conexao.release();
                 }
             } else {
 
@@ -212,7 +212,7 @@ export default class FamiliaCtrl {
                     });
                 } finally {
                     if (conexao)
-                        await conexao.end();
+                        await conexao.release();
                 }
             } else {
                 resposta.status(500).json({

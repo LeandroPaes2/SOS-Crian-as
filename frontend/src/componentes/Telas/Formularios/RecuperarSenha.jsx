@@ -15,6 +15,7 @@ export default function RecuperarSenha(){
     const [novaSenha, setNovaSenha] = useState("");
     const [confirmarSenha, setConfirmarSenha] = useState("");
     const [mostrarSenha, setMostrarSenha] = useState(false);
+    const [mostrarSenha2, setMostrarSenha2] = useState(false);
     const {funcionario, logout} = useLogin();
     const [token, setToken] = useState('');
     const navigate = useNavigate();
@@ -39,12 +40,19 @@ export default function RecuperarSenha(){
             }
             const resposta = await fetch('http://localhost:3000/redefinirSenha', {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json'
+             },
             body: JSON.stringify({ email: email, novaSenha: novaSenha }),
             });
 
             const dados = await resposta.json();
+            
             setMensagem(dados.mensagem || 'Erro ao redefinir senha');
+             if (resposta.ok) {
+                setTimeout(() => {
+                    navigate('/'); // redireciona para a página de login
+                }, 3000); // espera 3 segundos antes de redirecionar
+            }
             } catch (erro) {
                 console.error(erro);
                 setMensagem('Erro ao conectar com o servidor');
@@ -79,11 +87,11 @@ export default function RecuperarSenha(){
                     </Form.Group>
                     <Form.Group className="campoConfirmarSenha" controlId="confirmarSenha">
                         <Form.Label>Confirme a senha nova</Form.Label>
-                        <Form.Control type={mostrarSenha ? "text" : "password"} placeholder="Digite a senha nova" 
+                        <Form.Control type={mostrarSenha2 ? "text" : "password"} placeholder="Digite a senha nova" 
                         required
                         value={confirmarSenha}
                         onChange={(e) => setConfirmarSenha(e.target.value)}/>
-                        <InputGroup.Text onClick={() => setMostrarSenha(!mostrarSenha)} style={{ cursor: "pointer" }}>
+                        <InputGroup.Text onClick={() => setMostrarSenha2(!mostrarSenha2)} style={{ cursor: "pointer" }}>
                             {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
                         </InputGroup.Text>
                     </Form.Group>

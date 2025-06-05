@@ -13,6 +13,7 @@ export default function DadosUsuario(){
     const [emailAlterado, setEmailAlterado] = useState(false);
     const [mensagem, setMensagem] = useState("");
     const navigate = useNavigate();
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     useEffect(() => {
         setEmailAlterado(email !== funcionario.email);
@@ -41,7 +42,9 @@ export default function DadosUsuario(){
 
             const response = await fetch(url, {
                 method: method,
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json",
+                    "Authorization":`Bearer ${token}`
+                 },
                 body: JSON.stringify(funcionarioAtualizado),
             });
 

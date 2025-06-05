@@ -32,7 +32,7 @@ export default class ResponsavelDAO {
                 resp_beneficiario VARCHAR(100) NULL,
                 CONSTRAINT pk_responsavel PRIMARY KEY(resp_cpf),
                 CONSTRAINT cpf_format CHECK (resp_cpf ~ '^\d{3}\.\d{3}\.\d{3}-\d{2}$'),
-                CONSTRAINT rg_format CHECK (resp_rg ~ '^\d{2}\.\d{3}\.\d{3}-\d{1}$'),
+                CONSTRAINT rg_format CHECK (resp_rg ~ '^\d{2}\.\d{3}\.\d{3}-[\dXx]$'),
                 CONSTRAINT telefone_format CHECK (resp_telefone ~ '^\(?\d{2}\)?[- ]?\d{4,5}-?\d{4}$'),
                 CONSTRAINT email_format CHECK (resp_email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
@@ -77,9 +77,12 @@ export default class ResponsavelDAO {
                     responsavel.valorBeneficio,
                     responsavel.beneficiario
                 ];
+                
                 await conexao.query(sql, parametros);
+                console.log(parametros);
+                return true; 
             } catch (e) {
-                throw new Error("Erro ao incluir funcionário: " + e.message);
+                throw new Error("Erro ao incluir responsavel: " + e.message);
             }
         }
     }
@@ -115,6 +118,7 @@ export default class ResponsavelDAO {
                     responsavel.cpf
                 ];
                 await conexao.query(sql, parametros);
+                return true;
             } catch (e) {
                 throw new Error("Erro ao alterar funcionário: " + e.message);
             }
@@ -140,26 +144,27 @@ export default class ResponsavelDAO {
             for (const linha of linhas) {
                 const responsavel = new Responsavel(
                     linha['resp_cpf'],
+                    linha['resp_rg'],
                     linha['resp_nome'],
                     linha['resp_telefone'],
-                    linha['email'],
-                    linha['sexo'],
-                    linha['dtNascimento'],
-                    linha['estCivil'],
-                    linha['conjuge'],
-                    linha['profissao'],
-                    linha['situTrabalho'],
-                    linha['escolaridade'],
-                    linha['rendaFamiliar'],
-                    linha['valorRenda'],
-                    linha['qtdeTrabalhadores'],
-                    linha['pensaoAlimenticia'],
-                    linha['valorPensao'],
-                    linha['pagadorPensao'],
-                    linha['beneficioSocial'],
-                    linha['tipoBeneficio'],
-                    linha['valorBeneficio'],
-                    linha['beneficiario']
+                    linha['resp_email'],
+                    linha['resp_sexo'],
+                    linha['resp_dtnascimento'] ? linha['resp_dtnascimento'].toISOString().split('T')[0] : "",
+                    linha['resp_estcivil'],
+                    linha['resp_conjuge'],
+                    linha['resp_profissao'],
+                    linha['resp_situtrabalho'],
+                    linha['resp_escolaridade'],
+                    linha['resp_rendafamiliar'],
+                    linha['resp_valorrenda'],
+                    linha['resp_qtdetrabalhadores'],
+                    linha['resp_pensaoalimenticia'],
+                    linha['resp_valorpensao'],
+                    linha['resp_pagadorpensao'],
+                    linha['resp_beneficiosocial'],
+                    linha['resp_tipobeneficio'],
+                    linha['resp_valorbeneficio'],
+                    linha['resp_beneficiario']
                 );
                 listaResponsavel.push(responsavel);
             }

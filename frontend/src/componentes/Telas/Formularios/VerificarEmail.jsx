@@ -15,14 +15,23 @@ export default function VerificarEmail(){
     const handleSubmit = async (event) => {
         event.preventDefault();
         console.log(email);
-        await fetch("http://localhost:3000/recuperarSenha", {
+        const resposta = await fetch("http://localhost:3000/recuperarSenha", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email })
         });
-        setTimeout(() =>
-        setMensagem("Você receberá um codigo."), 3000);
-        navigate("/verificarCodigo", {state:{email}});
+        const dados = await resposta.json();
+        if (resposta.ok) {
+            setTimeout(() =>
+                setMensagem("Você receberá um codigo."), 3000);
+            navigate("/verificarCodigo", {state:{email}});
+        }
+        else{
+            setMensagem(dados.mensagem || 'Email nao cadastrado');
+            setTimeout(()=>
+                setMensagem(""), 2000
+            );
+        }
     }
 
     return(
