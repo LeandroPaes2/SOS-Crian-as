@@ -1,11 +1,11 @@
 import { Alert, Form, Button, Col, Row, OverlayTrigger, Popover } from "react-bootstrap";
 import { useState, useEffect, use } from "react";
-import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
+import PaginaGeral from "../../../layouts/PaginaGeral";
 import { Link, useLocation } from "react-router-dom";
-import "../../css/alunoForm.css";
+import "./css/alunoForm.css";
 import { useNavigate } from 'react-router-dom';
 import { FaQuestionCircle } from "react-icons/fa"; // Ícone de interrogação
-
+import TabelaResponsavel from "./TabelaResponsavel";
 
 export default function FormCadAluno(props) {
     const location = useLocation();
@@ -620,91 +620,40 @@ export default function FormCadAluno(props) {
         }
     };
 
-    return (
+    // TABELA DINAMICA
+    const [objResp, setObjsResp] = useState([]);
 
+    /*
+     objResp[
+     
+     {
+        disable:false,
+        status: -1,  // -1 não informado 0 erro 1 sucesso
+        Responsavel: {
+            cpf: "",
+            nome: "",
+            telefone: ""
+        }
+    },
+    ...
+        
+    
+    ]
+    */
+
+    return (
         <PaginaGeral>
             {mensagem && <Alert variant="info">{mensagem}</Alert>}
 
             <Form onSubmit={handleSubmit} className="formularioD">
+
+
                 <div className="divResp">
-                    <div className="divTitulo">
-                        <strong> <h4>Responsavel</h4></strong>
-                    </div>
-                    <div className="divResp2">
-                        <Form.Group className="mb-3" id="responsavel.cpf">
-                            <Form.Label>CPF:</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Digite o CPF do responsável"
-                                name="responsavel.cpf"
-                                value={dados.responsavel.cpf || ""}
-                                onChange={handleChange}
-                                className={erros.responsavel ? 'input-error' : ''}
-                            />
-                            {cpfInvalido && (
-                                <Form.Text className="texto-aviso-cep">
-                                    CPF inválido
-                                </Form.Text>
-                            )}
-                        </Form.Group>
-                        <Form.Group className="mb-3" id="responsavel.nome">
-                            <Form.Label>Nome:</Form.Label>
-                            <Form.Control
-                                type="text"
-                                disabled
-                                placeholder=""
-                                name="responsavel.nome"
-                                value={dados.responsavel.nome || ""}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3" id="responsavel.email">
-                            <Form.Label>Email:</Form.Label>
-                            <Form.Control
-                                type="text"
-                                disabled
-                                placeholder=""
-                                name="responsavel.email"
-                                value={dados.responsavel.email || ""}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3" id="responsavel.telefone">
-                            <Form.Label>Telefone:</Form.Label>
-                            <Form.Control
-                                type="text"
-                                disabled
-                                placeholder=""
-                                name="responsavel.nome"
-                                value={dados.responsavel.telefone || ""}
-                            />
-                        </Form.Group>
-                        <Row className="mb-2 align-items-center">
-                            <Col xs="auto">
-                                <Button variant="info" onClick={buscarResp}>
-                                    Buscar Responsável
-                                </Button>
-                            </Col>
-                            <Col xs="auto">
-                                <OverlayTrigger
-                                    trigger="click"
-                                    placement="auto"
-                                    rootClose
-                                    overlay={
-                                        <Popover id="popover-info" className="popover-custom">
-                                            <Popover.Header as="h3">O que este botão faz?</Popover.Header>
-                                            <Popover.Body>
-                                                Ao clicar, o sistema busca os dados do responsável pelo CPF informado e preenche automaticamente os campos Nome, Email e Telefone.
-                                            </Popover.Body>
-                                        </Popover>
-                                    }
-                                >
-                                    <Button variant="link" className="help-button">
-                                        <FaQuestionCircle size={20} />
-                                    </Button>
-                                </OverlayTrigger>
-                            </Col>
-                        </Row>
-                    </div>
+                    <TabelaResponsavel objResp={objResp} setObjsResp={setObjsResp} />
                 </div>
+
+
+
 
                 <div className="divTitulo">
                     <strong> <h4>Aluno</h4>  </strong>
@@ -853,7 +802,7 @@ export default function FormCadAluno(props) {
                 </Form.Group>
                 <Row className="mb-2 align-items-center">
                     <Col xs="auto">
-                        <Button variant="info" onClick={buscarCep}>
+                        <Button className="botaoPesquisaForm" variant="info" onClick={buscarCep}>
                             Buscar CEP
                         </Button>
                     </Col>
@@ -985,7 +934,7 @@ export default function FormCadAluno(props) {
                 </Form.Group>
                 <Row className="mb-2 align-items-center">
                     <Col xs="auto">
-                        <Button variant="info" onClick={buscarEscola}>
+                        <Button className="botaoPesquisaForm" variant="info" onClick={buscarEscola}>
                             Buscar Escola
                         </Button>
                     </Col>

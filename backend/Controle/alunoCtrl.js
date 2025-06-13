@@ -1,6 +1,4 @@
 import Aluno from "../Modelo/aluno.js";
-import Responsavel from "../Modelo/responsavel.js";
-import Escola from "../Modelo/escola.js";
 import conectar from "../Persistencia/Conexao.js";
 
 export default class AlunoCtrl {
@@ -11,12 +9,10 @@ export default class AlunoCtrl {
             const {
                 nome,
                 dataNascimento,
-                responsavel,
                 cidade,
                 rua,
                 bairro,
                 numero,
-                escola,
                 telefone,
                 periodoEscola,
                 realizaAcompanhamento,
@@ -36,26 +32,19 @@ export default class AlunoCtrl {
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
                 descricao &&
-                rg && status && periodoProjeto && cep && bairro && escola && escola.id && responsavel && responsavel.cpf
+                rg && status && periodoProjeto && cep && bairro;
             if (dadosValidos) {
                 let conexao;
                 try {
                     conexao = await conectar();
-                    let aluno = new Aluno();
-
-                    let objResponsavel = await aluno.consultarResponsavel(responsavel.cpf, conexao);
-                    let objEscola = await aluno.consultarEscola(escola.id, conexao);
-
                     const alunoCompleto = new Aluno(
                         0,
                         nome,
                         dataNascimento,
-                        objResponsavel,
                         cidade,
                         rua,
                         bairro,
                         numero,
-                        objEscola,
                         telefone,
                         periodoEscola,
                         realizaAcompanhamento,
@@ -66,8 +55,6 @@ export default class AlunoCtrl {
                         periodoProjeto,
                         cep
                     );
-
-
                     await conexao.query("BEGIN");
                     try {
                         await alunoCompleto.incluir(conexao);
@@ -100,12 +87,10 @@ export default class AlunoCtrl {
                 id,
                 nome,
                 dataNascimento,
-                responsavel,
                 cidade,
                 rua,
                 bairro,
                 numero,
-                escola,
                 telefone,
                 periodoEscola,
                 realizaAcompanhamento,
@@ -118,12 +103,10 @@ export default class AlunoCtrl {
             } = req.body;
 
             const dadosValidos =
-                id !== undefined &&
+                id !== undefined && 
                 nome && dataNascimento &&
-                responsavel &&
                 cidade &&
                 rua && numero &&
-                escola &&
                 telefone && periodoEscola &&
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
@@ -132,40 +115,21 @@ export default class AlunoCtrl {
             if (dadosValidos) {
                 let conexao;
                 try {
-                    const objResponsavel = null;
-                    const objEscola = null;
-
-
-                    // const objFormularioSaude = null; //gambiarra pra rodar por enquanto
-                    // const objFicha = null;  //gambiarra pra rodar por enquanto
-
-                    /*
-                    const objFormularioSaude = new FormularioSaude(
-                        formularioSaude.id,
-                        // RESTO DOS ATRIBUTOS
-                    );
-                    */
-
-
-
+                    
                     const aluno = new Aluno(
                         id,
                         nome,
                         dataNascimento,
-                        objResponsavel,
                         cidade,
                         rua,
                         bairro,
                         numero,
-                        objEscola,
                         telefone,
                         periodoEscola,
                         realizaAcompanhamento,
                         possuiSindrome,
                         descricao,
                         rg,
-                        // objFormularioSaude,
-                        // objFicha,
                         status,
                         periodoProjeto,
                         cep

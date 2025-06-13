@@ -6,12 +6,10 @@ export default class Aluno {
     #id;
     #nome;
     #dataNascimento;
-    #responsavel;
     #cidade;
     #rua;
     #bairro;
     #numero;
-    #escola;
     #telefone;
     #periodoEscola;
     #realizaAcompanhamento;
@@ -22,16 +20,14 @@ export default class Aluno {
     #periodoProjeto;
     #cep;
 
-    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, cidade = "" ,rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", rg = "", status = 0, periodoProjeto = "",cep="") {
+    constructor(id = 0, nome = "", dataNascimento = "",  cidade = "" ,rua = "",bairro = "" ,numero = "", telefone = "", periodoEscola = "",  realizaAcompanhamento = "", possuiSindrome = "", descricao = "", rg = "", status = 0, periodoProjeto = "",cep="") {
         this.#id = id;
         this.#nome = nome;
         this.#dataNascimento = dataNascimento;
-        this.#responsavel = responsavel;
         this.#cidade = cidade;
         this.#rua = rua;
         this.#bairro = bairro
         this.#numero = numero;
-        this.#escola = escola;
         this.#telefone = telefone;
         this.#periodoEscola = periodoEscola;
         this.#realizaAcompanhamento = realizaAcompanhamento;
@@ -55,16 +51,7 @@ export default class Aluno {
     set dataNascimento(novoDataNascimento) { this.#dataNascimento = novoDataNascimento; }
 
 
-    get responsavel() { 
-
-        return this.#responsavel? this.#responsavel.toJSON(): null; 
-    
-    }
-    set responsavel(novoResponsavel) {
-        if (novoResponsavel instanceof Responsavel)
-            this.#responsavel = novoResponsavel;
-    }
-
+   
 
     get cidade() { return this.#cidade; }
     set cidade(novaCidade) { this.#cidade = novaCidade; }
@@ -81,21 +68,13 @@ export default class Aluno {
     set numero(novoNumero) { this.#numero = novoNumero; }
 
 
-    get escola() {
-          return this.#escola ?  this.#escola.toJSON() : null; 
-        }
-    set escola(novaEscola) {
-        if (novaEscola instanceof Escola)
-            this.#escola = novaEscola;
-    }
-
+   
     get telefone() { return this.#telefone; }
     set telefone(novoTelefone) { this.#telefone = novoTelefone; }
 
 
     get periodoEscola() { return this.#periodoEscola; }
     set periodoEscola(novoPeriodoEscola) { this.#periodoEscola = novoPeriodoEscola; }
-
 
     get realizaAcompanhamento() { return this.#realizaAcompanhamento; }
     set realizaAcompanhamento(novoRealizaAcompanhamento) { this.#realizaAcompanhamento = novoRealizaAcompanhamento; }
@@ -127,12 +106,10 @@ export default class Aluno {
             id: this.#id,
             nome: this.#nome,
             dataNascimento: this.#dataNascimento,
-            responsavel: this.#responsavel,
             cidade: this.#cidade,
             rua: this.#rua,
             bairro: this.#bairro,
             numero: this.#numero,
-            escola: this.#escola ,
             telefone: this.#telefone,
             periodoEscola: this.#periodoEscola,
             realizaAcompanhamento: this.#realizaAcompanhamento,
@@ -169,15 +146,5 @@ export default class Aluno {
         return alunoDAO.consultar(termo, tipo, conexao);
     }
 
-
-    async consultarResponsavel(cpf, conexao) {
-        const alunoDAO = new AlunoDAO();
-        return alunoDAO.consultarResponsavel(cpf, conexao);
-    }
-
-    async consultarEscola(id, conexao) {
-        const alunoDAO = new AlunoDAO();
-        return alunoDAO.consultarEscola(id, conexao);
-    }
 
 }

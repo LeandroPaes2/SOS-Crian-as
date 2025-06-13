@@ -11,7 +11,7 @@ import FormCadEscola from './componentes/Telas/Formularios/FormCadEscola';
 import RelatorioTurmas from './componentes/Telas/Relatorios/RelatorioTurmas';
 import RelatorioEscolas from './componentes/Telas/Relatorios/RelatorioEscolas';
 import TelaCadastroAluno from './componentes/Telas/TelaCadastroAluno';
-import FormCadAluno from './componentes/Telas/Formularios/FormCadAluno';
+import FormCadAluno from './componentes/Telas/Formularios/FormCadaluno/FormCadAluno';
 import TelaCadastroMateria from './componentes/Telas/TelaCadastroMateria';
 import FormCadmateria from './componentes/Telas/Formularios/FromCadMateria';
 import RelatorioMateria from './componentes/Telas/Relatorios/RelatorioMaterias';

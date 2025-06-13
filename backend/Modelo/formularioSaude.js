@@ -20,7 +20,7 @@ export default class ListaEspera {
     #status;
 
     constructor(num = 0, id = 0, aluno = {}, alergia_alimentar = "", crise_alergica_alimentar = "",
-        alergia_nao_alimentar = "", crise_alergica_nao_alimentar = "", crise_alergica_nao_alimentar = "",
+        alergia_nao_alimentar = "", crise_alergica_nao_alimentar = "",
         maior_atencao = "", crise_maior_atencao="", medicacao_continua="", quem_prescreveu = "",
         plano_saude="", tipo_sanguineo="", data_insercao="", assitatura_responsavel = "",status = 0) {
         this.#num = num;
