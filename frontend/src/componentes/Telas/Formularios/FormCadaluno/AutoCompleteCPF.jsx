@@ -1,27 +1,47 @@
 
-import { useState, useEffect} from "react";
-const todosOsResponsaveis = [
-  { cpf: "56912345678", nome: "João Silva", email: "joao@gmail.com" },
-  { cpf: "56998765432", nome: "Maria Lima", email: "maria@gmail.com" },
-  { cpf: "12345678900", nome: "Carlos Souza", email: "carlos@gmail.com" }
-];
+import { useState, useEffect } from "react";
 
-
-export default function AutoCompleteCPF({ onSelecionar, value , selecionado}) {
+export default function AutoCompleteCPF({ onSelecionar, value, selecionado, dadosResp }) {
   const [input, setInput] = useState(value || ""); // inicia com o valor vindo de fora
   const [sugestoes, setSugestoes] = useState([]);
-  
+
 
   useEffect(() => {
     setInput(value || ""); // atualiza input interno se o valor externo mudar
   }, [value]);
 
+
+
+
+
   const handleChange = (e) => {
-    const valor = e.target.value;
+    
+    let valor = e.target.value;
+
+    // Remove tudo que não for número
+    let cpfLimpo = valor.replace(/\D/g, "");
+
+    // Limita o tamanho: 11 dígitos
+    cpfLimpo = cpfLimpo.slice(0, 11);
+
+    // Aplica a formatação: 000.000.000-00
+    let cpfFormatado = cpfLimpo;
+    if (cpfLimpo.length > 3) {
+      cpfFormatado = cpfFormatado.replace(/^(\d{3})(\d)/, "$1.$2");
+    }
+    if (cpfLimpo.length > 6) {
+      cpfFormatado = cpfFormatado.replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3");
+    }
+    if (cpfLimpo.length > 9) {
+      cpfFormatado = cpfFormatado.replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d{1,2})$/, "$1.$2.$3-$4");
+    }
+
+    valor = cpfFormatado;
+
     setInput(valor);
 
     if (valor.length >= 1) {
-      const filtrados = todosOsResponsaveis.filter((r) =>
+      const filtrados = dadosResp.filter((r) =>
         r.cpf.startsWith(valor)
       );
       setSugestoes(filtrados);
@@ -40,6 +60,8 @@ export default function AutoCompleteCPF({ onSelecionar, value , selecionado}) {
     <div style={{ position: "relative", width: "100%" }}>
       <input
         type="text"
+         onFocus={() => setSugestoes(dadosResp)}
+                onBlur={() => setTimeout(() => setSugestoes([]), 150)} 
         placeholder="Buscar por CPF"
         value={input}
         onChange={handleChange}
@@ -61,7 +83,7 @@ export default function AutoCompleteCPF({ onSelecionar, value , selecionado}) {
           {sugestoes.map((s, i) => (
             <li key={i} onClick={() => handleSelecionar(s)}
               style={{ padding: "8px", cursor: "pointer", borderBottom: "1px solid #eee" }}>
-              {s.cpf} - {s.nome}
+              {s.cpf}
             </li>
           ))}
         </ul>

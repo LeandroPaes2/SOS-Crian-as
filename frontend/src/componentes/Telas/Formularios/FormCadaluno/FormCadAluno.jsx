@@ -6,6 +6,7 @@ import "./css/alunoForm.css";
 import { useNavigate } from 'react-router-dom';
 import { FaQuestionCircle } from "react-icons/fa"; // Ícone de interrogação
 import TabelaResponsavel from "./TabelaResponsavel";
+import AutoCompleteNome from "./AutoCompleteNome";
 
 export default function FormCadAluno(props) {
     const location = useLocation();
@@ -116,103 +117,14 @@ export default function FormCadAluno(props) {
     }
 
 
-
-    async function buscarResp() {
-        validarCPF(dados.responsavel.cpf);
-
-        if (!cpfInvalido) {
-            const url = `http://localhost:3000/responsaveis/${dados.responsavel.cpf}`;
-
-            try {
-                const token = localStorage.getItem("token");
-                const response = await fetch(url, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error("Responsável não encontrado.");
-                }
-
-                const data = await response.json();
-                setRespNaoEncontrado(false);
-
-                // Atualiza os dados 
-                console.log(data);
-                console.log("Rg " + data.nome);
-                setDados((prev) => ({
-                    ...prev,
-                    responsavel: {
-                        ...prev.responsavel,
-                        nome: data[0].nome,
-                        email: data[0].email,
-                        telefone: data[0].telefone,
-                    },
-                }));
-
-
-                console.log(dados.responsavel);
-            } catch (error) {
-                console.error("Erro ao buscar responsável:", error);
-                setRespNaoEncontrado(true);
-            }
-        }
-
-    }
-    async function buscarEscola() {
-        console.log("Escola.nome =  " + dados.escola.nome);
-        const url = `http://localhost:3000/escolas/${dados.escola.nome}`;
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(url, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-            });
-            if (!response.ok) {
-                throw new Error("Erro ao buscar escola.");
-            }
-            const data = await response.json();
-            console.log("DADOS DA ESCOLA ENCONTRADA");
-            console.log(data);
-
-            // Atualiza os dados 
-            setDados((prev) => ({
-                ...prev,
-                escola: {
-                    ...prev.escola,
-                    id: data[0].id,
-                    endereco: data[0].endereco,
-                    telefone: data[0].telefone,
-                    tipo: data[0].tipo
-                },
-            }));
-
-            console.log("DADOS DA ESCOLA ATUALIZADOS");
-            console.log(dados.escola);
-        } catch (error) {
-            console.error("Erro ao buscar responsável:", error);
-            setRespNaoEncontrado(true);
-        }
-
-
-    }
     async function handleSubmit(e) {
         e.preventDefault();
         console.log("entrei nessa poha");
-
         const novosErros = {};
         novosErros.qtdErros = 0;
-
         const {
             nome,
             dataNascimento,
-            responsavel,
             cidade,
             rua,
             bairro,
@@ -236,7 +148,16 @@ export default function FormCadAluno(props) {
             novosErros.qtdErros++;
         }
 
-        if (!responsavel) {
+        
+        let aux=false;
+        let i=0;
+        for(i=0;i<objResp.length;i++){
+            if(objResp[i].status===1){
+                aux=true;
+            }
+        }
+
+        if(!aux){
             novosErros.responsavel = true;
             novosErros.qtdErros++;
         }
@@ -470,8 +391,6 @@ export default function FormCadAluno(props) {
         }
     }
 
-
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         let value2 = value;
@@ -564,34 +483,6 @@ export default function FormCadAluno(props) {
                 }
         }
 
-        //mascara de cpf
-
-        if (name === "responsavel.cpf") {
-            // Remove tudo que não for número
-            let cpfLimpo = value.replace(/\D/g, "");
-
-            // Limita o tamanho: 11 dígitos
-            cpfLimpo = cpfLimpo.slice(0, 11);
-
-            // Aplica a formatação: 000.000.000-00
-            let cpfFormatado = cpfLimpo;
-
-            if (cpfLimpo.length > 3) {
-                cpfFormatado = cpfFormatado.replace(/^(\d{3})(\d)/, "$1.$2");
-            }
-            if (cpfLimpo.length > 6) {
-                cpfFormatado = cpfFormatado.replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3");
-            }
-            if (cpfLimpo.length > 9) {
-                cpfFormatado = cpfFormatado.replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d{1,2})$/, "$1.$2.$3-$4");
-            }
-
-            value2 = cpfFormatado;
-        }
-
-
-
-
         /* Verifica se é um campo de objeto dentro de outro objeto tipo:
          obj1{
             obj2{
@@ -621,7 +512,94 @@ export default function FormCadAluno(props) {
     };
 
     // TABELA DINAMICA
+
+    const [dadosResp, setDadosResp] = useState([]);
     const [objResp, setObjsResp] = useState([]);
+    const [dadosEscolas, setDadosEscolas] = useState([]);
+    const [objEscola, setObjsEscola] = useState({});
+
+
+
+
+    useEffect(() => {
+        async function carregarDadosResp() {
+            let token = sessionStorage.getItem("token");
+            if (!token) {
+                token = localStorage.getItem("token");
+            }
+
+            try {
+                const res = await fetch("http://localhost:3000/responsaveis", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (res.ok) {
+                    const vetorResponsaveis = await res.json();
+                    let lista2 = [];
+                    let i;
+                    for (i = 0; i < vetorResponsaveis.length; i++) {
+                        lista2.push(vetorResponsaveis[i]);
+
+                    }
+                    setDadosResp(lista2);
+                } else {
+                    throw new Error("Erro ao buscar responsáveis");
+                }
+            } catch (error) {
+                console.error("Erro ao carregar os Responsáveis:", error);
+                // Se tiver um setMensagem ou algo parecido, pode usar aqui:
+                // setMensagem("Erro ao carregar os Responsáveis.");
+            }
+        }
+
+        carregarDadosResp();
+    }, []);
+
+    useEffect(() => {
+        async function carregarDadosEscola() {
+            let token = sessionStorage.getItem("token");
+            if (!token) {
+                token = localStorage.getItem("token");
+            }
+
+            try {
+                const res = await fetch("http://localhost:3000/escolas", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (res.ok) {
+                    const vetorEscolas = await res.json();
+
+                    let lista2 = [];
+                    let i;
+                    for (i = 0; i < vetorEscolas.length; i++) {
+                        lista2.push(vetorEscolas[i]);
+
+                    }
+                    setDadosEscolas(lista2);
+                } else {
+                    throw new Error("Erro ao buscar escolas");
+                }
+            } catch (error) {
+                console.error("Erro ao carregar os escolas:", error);
+                // Se tiver um setMensagem ou algo parecido, pode usar aqui:
+                // setMensagem("Erro ao carregar os Responsáveis.");
+            }
+        }
+        carregarDadosEscola();
+    }, []);
+
+
+
+
 
     /*
      objResp[
@@ -641,6 +619,43 @@ export default function FormCadAluno(props) {
     ]
     */
 
+
+
+
+
+    const preencherEscola = (r) => {
+        let novasLinhas = objEscola;
+        novasLinhas = {
+            status: 1,
+            escola: r
+        };
+        setDados((prev) => ({
+            ...prev,
+            escola: r
+        }));
+
+    };
+/*
+    objEscola{
+        status: -1,  // -1 não informado 0 erro 1 sucesso
+        escola: {
+            id: "",
+            nome: "",
+            endereco: "",
+            telefone: "",
+            tipo: ""
+        }
+    }
+*/
+
+
+
+
+
+
+
+
+
     return (
         <PaginaGeral>
             {mensagem && <Alert variant="info">{mensagem}</Alert>}
@@ -649,7 +664,7 @@ export default function FormCadAluno(props) {
 
 
                 <div className="divResp">
-                    <TabelaResponsavel objResp={objResp} setObjsResp={setObjsResp} />
+                    <TabelaResponsavel dadosResp={dadosResp} objResp={objResp} setObjsResp={setObjsResp} />
                 </div>
 
 
@@ -890,14 +905,20 @@ export default function FormCadAluno(props) {
                 </div>
                 <Form.Group className="mb-3" id="escola.nome">
                     <Form.Label>Nome:</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Digite a escola"
-                        name="escola.nome"
-                        value={dados.escola.nome || ""}
-                        onChange={handleChange}
-                        className={erros.escola ? 'input-error' : ''}
+
+
+
+
+
+                    <AutoCompleteNome onSelecionar={(r) => preencherEscola(r)}
+                        dadosResp={dadosEscolas}
+                        value={dados.escola.nome}
                     />
+
+
+
+
+
                 </Form.Group>
                 <Form.Group className="mb-3" id="escola.endereco">
                     <Form.Label>Endereco:</Form.Label>
@@ -932,32 +953,7 @@ export default function FormCadAluno(props) {
                         onChange={handleChange}
                     />
                 </Form.Group>
-                <Row className="mb-2 align-items-center">
-                    <Col xs="auto">
-                        <Button className="botaoPesquisaForm" variant="info" onClick={buscarEscola}>
-                            Buscar Escola
-                        </Button>
-                    </Col>
-                    <Col xs="auto">
-                        <OverlayTrigger
-                            trigger="click"
-                            placement="auto"
-                            rootClose
-                            overlay={
-                                <Popover id="popover-info" className="popover-custom">
-                                    <Popover.Header as="h3">O que este botão faz?</Popover.Header>
-                                    <Popover.Body>
-                                        Ao clicar, o sistema busca os dados da Escola pelo Nome informado e preenche automaticamente os campos Endereço.
-                                    </Popover.Body>
-                                </Popover>
-                            }
-                        >
-                            <Button variant="link" className="help-button">
-                                <FaQuestionCircle size={20} />
-                            </Button>
-                        </OverlayTrigger>
-                    </Col>
-                </Row>
+                
                 <div className="d-flex justify-content-between">
                     <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
                         Voltar

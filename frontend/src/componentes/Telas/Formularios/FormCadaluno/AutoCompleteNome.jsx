@@ -1,43 +1,60 @@
 
 import { useState, useEffect } from "react";
-const todosOsResponsaveis = [
-    { cpf: "56912345678", nome: "João Silva", email: "joao@gmail.com" },
-    { cpf: "56998765432", nome: "Maria Lima", email: "maria@gmail.com" },
-    { cpf: "12345678900", nome: "Carlos Souza", email: "carlos@gmail.com" }
-];
 
 
-export default function AutoCompleteNome({ onSelecionar, value, selecionado }) {
+
+export default function AutoCompleteNome({ onSelecionar, value, selecionado, dadosResp }) {
+    // const todosOsResponsaveis = dadosResp;
+
     const [input, setInput] = useState(value || ""); // inicia com o valor vindo de fora
     const [sugestoes, setSugestoes] = useState([]);
-
+    let setMostrarSugestoes = false;
 
     useEffect(() => {
         setInput(value || ""); // atualiza input interno se o valor externo mudar
     }, [value]);
 
-
-
     const removerAcentos = (str) => {
-        return str
-            .toLowerCase()
-            .replace(/[áàãâä]/g, "a")
-            .replace(/[éèêë]/g, "e")
-            .replace(/[íìîï]/g, "i")
-            .replace(/[óòõôö]/g, "o")
-            .replace(/[úùûü]/g, "u")
-            .replace(/[ç]/g, "c");
+
+        if (str)
+            return str
+                .toLowerCase()
+                .replace(/[áàãâä]/g, "a")
+                .replace(/[éèêë]/g, "e")
+                .replace(/[íìîï]/g, "i")
+                .replace(/[óòõôö]/g, "o")
+                .replace(/[úùûü]/g, "u")
+                .replace(/[ç]/g, "c");
+        else
+            return "";
     };
 
     const handleChange = (e) => {
         const valor = e.target.value;
+        // console.log("valor = " + valor);
         setInput(valor);
-        let a, b;
-        if (valor.length >= 1) {
-            const filtrados = todosOsResponsaveis.filter((r) => {
+        let a = "", b = "";
+        if (valor.length >= 0) {
+            //console.log(dadosResp);
+
+            const filtrados = dadosResp.filter((r) => {
+
+
                 a = removerAcentos(r.nome);
                 b = removerAcentos(valor);
+
+
+                // console.log("r = " + r.Responsavel.nome);
+                // console.log("a = " + a);
+                // console.log("b = " + b);
+
                 return a.startsWith(b);
+
+
+
+                // console.log(r);
+                // console.log("NOME =" + r.Responsavel.nome);
+                // return true;
             }
             );
             setSugestoes(filtrados);
@@ -48,9 +65,15 @@ export default function AutoCompleteNome({ onSelecionar, value, selecionado }) {
 
     const handleSelecionar = (resp) => {
         onSelecionar(resp);
-        setInput(resp.cpf); // mostra o CPF no campo após seleção
+        setInput(resp.nome);
         setSugestoes([]);
     };
+
+
+
+    let clicandoNaLista = false;
+
+
 
     return (
         <div style={{ position: "relative", width: "100%" }}>
@@ -59,6 +82,8 @@ export default function AutoCompleteNome({ onSelecionar, value, selecionado }) {
                 placeholder="Buscar por Nome"
                 value={input}
                 onChange={handleChange}
+                onFocus={() => setSugestoes(dadosResp)}
+                onBlur={() => setTimeout(() => setSugestoes([]), 150)} 
                 disabled={selecionado}
                 style={{ width: "100%", padding: "8px" }}
             />

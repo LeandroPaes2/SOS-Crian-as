@@ -1,13 +1,9 @@
 
 import { useState, useEffect } from "react";
-const todosOsResponsaveis = [
-    { cpf: "56912345678", nome: "João Silva", email: "joao@gmail.com" },
-    { cpf: "56998765432", nome: "Maria Lima", email: "maria@gmail.com" },
-    { cpf: "12345678900", nome: "Carlos Souza", email: "carlos@gmail.com" }
-];
 
 
-export default function AutoCompleteEmail({ onSelecionar, value, selecionado }) {
+export default function AutoCompleteEmail({ onSelecionar, value, selecionado,dadosResp }) {
+
     const [input, setInput] = useState(value || ""); // inicia com o valor vindo de fora
     const [sugestoes, setSugestoes] = useState([]);
 
@@ -33,7 +29,7 @@ export default function AutoCompleteEmail({ onSelecionar, value, selecionado }) 
         setInput(valor);
         let a, b;
         if (valor.length >= 1) {
-            const filtrados = todosOsResponsaveis.filter((r) => {
+            const filtrados = dadosResp.filter((r) => {
                 a = removerAcentos(r.email);
                 b = removerAcentos(valor);
                 return a.startsWith(b);
@@ -54,6 +50,8 @@ export default function AutoCompleteEmail({ onSelecionar, value, selecionado }) 
     return (
         <div style={{ position: "relative", width: "100%" }}>
             <input
+                 onFocus={() => setSugestoes(dadosResp)}
+                onBlur={() => setTimeout(() => setSugestoes([]), 150)} 
                 type="text"
                 placeholder="Buscar por Email"
                 value={input}

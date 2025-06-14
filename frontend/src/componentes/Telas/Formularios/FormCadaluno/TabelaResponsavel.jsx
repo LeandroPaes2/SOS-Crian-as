@@ -1,14 +1,16 @@
+import { use } from "react";
 import AutoCompleteCPF from "./AutoCompleteCPF";
 import AutoCompleteNome from "./AutoCompleteNome";
 import AutoCompleteEmail from "./AutocompleteEmail";
 import "./css/tabelaResponsavel.css";
+import { useEffect } from "react";
 
 export default function TabelaResponsavel(props) {
 
-    const { objResp, setObjsResp } = props;
+    const { dadosResp,objResp, setObjsResp } = props;
 
     const adicionarLinha = () => {
-        setObjsResp([...objResp, { status: -1, Responsavel: { cpf: '', nome: '', email: '' } }]);
+        setObjsResp([...objResp, { disabled : false,status: -1, Responsavel: { cpf: '', nome: '', email: '' } }]);
     };
 
     const removerLinha = (index) => {
@@ -16,44 +18,32 @@ export default function TabelaResponsavel(props) {
         setObjsResp(novasLinhas);
     };
 
-    const atualizarCpf = (index, novoCpf) => {
+
+
+
+
+    const preencherResponsavel = (index, r) => {
         const novasLinhas = [...objResp];
-        novasLinhas[index].Responsavel.cpf = novoCpf;
-        novasLinhas[index].status = -1;
-        setObjsResp(novasLinhas);
-    };
-
-    const validarCpf = (cpf) => {
-        // Aqui você pode integrar com a API real depois
-        // Simulando: CPF válido se tiver 11 dígitos e começar com "1"
-        return /^\d{11}$/.test(cpf) && cpf.startsWith("1");
-    };
-
-
-    const verificarCpf = (index) => {
-        const cpf = objResp[index].Responsavel.cpf;
-        const valido = validarCpf(cpf);
-
-        if (valido)
-            objResp[index].status = 1;
-        else
-            objResp[index].status = 0;
-        setObjsResp([...objResp]);
-    };
-
-    const preencherResponsavel = (index, responsavel) => {
-        const novasLinhas = [...objResp];
-        novasLinhas[index] = {
-            ...novasLinhas[index],
-            status: 1,
-            disabled: true, // agora controlando o bloqueio pela tabela
-            Responsavel: {
-                cpf: responsavel.cpf,
-                nome: responsavel.nome,
-                email: responsavel.email
+        let flag = false;
+        let i;
+        for (i = 0; i < novasLinhas.length; i++) {
+            if (novasLinhas[i].Responsavel.cpf === r.cpf) {
+                flag = true;
             }
-        };
-        setObjsResp(novasLinhas);
+        }
+
+        if (!flag) {
+            novasLinhas[index] = {
+                ...novasLinhas[index],
+                status: 1,
+                disabled: true, // agora controlando o bloqueio pela tabela
+                Responsavel: r
+            };
+            setObjsResp(novasLinhas);
+        }
+        else {
+            removerLinha(index);
+        }
     };
 
 
@@ -95,20 +85,23 @@ export default function TabelaResponsavel(props) {
                                         onSelecionar={(r) => preencherResponsavel(index, r)}
                                         value={linha.Responsavel.nome}
                                         selecionado={linha.status == 1}
+                                        dadosResp={dadosResp}
                                     />
                                 </td>
-                                 <td >
+                                <td >
                                     <AutoCompleteCPF
                                         onSelecionar={(r) => preencherResponsavel(index, r)}
                                         value={linha.Responsavel.cpf}
                                         selecionado={linha.status == 1}
+                                        dadosResp={dadosResp}
                                     />
                                 </td>
                                 <td>
                                     <AutoCompleteEmail
-                                       onSelecionar={(r) => preencherResponsavel(index, r)}
+                                        onSelecionar={(r) => preencherResponsavel(index, r)}
                                         value={linha.Responsavel.email}
                                         selecionado={linha.status == 1}
+                                        dadosResp={dadosResp}
                                     />
                                 </td>
 
