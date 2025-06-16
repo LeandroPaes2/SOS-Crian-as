@@ -13,39 +13,13 @@ export default function FormCadAluno(props) {
     const [editando, setEditando] = useState(false);
     const [mensagem, setMensagem] = useState("");
     const [cepNaoEncontrado, setCepNaoEncontrado] = useState(false);
-    const [respNaoEncontrado, setRespNaoEncontrado] = useState(false);
-    const [cpfInvalido, setCpfInvalido] = useState(false);
-    const [erros, setErros] = useState({ qtdErros: 0 });
 
 
     const [dados, setDados] = useState({
         id: 0,
         nome: "",
         dataNascimento: "",
-        responsavel: {
-            cpf: "",
-            rg: "",
-            nome: "",
-            telefone: "",
-            email: "",
-            sexo: "",
-            dtNascimento: "",
-            estCivil: "",
-            conjuge: "",
-            profissao: "",
-            situTrabalho: "",
-            escolaridade: "",
-            rendaFamiliar: "",
-            valorRenda: "",
-            qtdeTrabalhadores: "",
-            pensaoAlimenticia: "",
-            valorPensao: "",
-            pagadorPensao: "",
-            beneficioSocial: "",
-            tipoBeneficio: "",
-            valorBeneficio: "",
-            beneficiario: "",
-        },
+        listaResponsaveis: [{}],
         cidade: "",
         rua: "",
         bairro: "",
@@ -65,11 +39,33 @@ export default function FormCadAluno(props) {
         rg: "",
         formularioSaude: {},
         ficha: {},
-        status: 1,
+        status: 2,
         periodoProjeto: "",
         cep: ""
     });
 
+
+    const [erros, setErros] = useState({
+        qtdErros: 0,
+        nome: -1,
+        dataNascimento: -1,
+        listaResponsaveis: -1,
+        cidade: -1,
+        rua: -1,
+        bairro: -1,
+        numero: -1,
+        escola: -1,
+        telefone: -1,
+        periodoEscola: -1,
+        realizaAcompanhamento: -1,
+        possuiSindrome: -1,
+        descricao: -1,
+        rg: -1,
+        formularioSaude: -1,
+        ficha: -1,
+        periodoProjeto: -1,
+        cep: -1
+    });
     const navigate = useNavigate();
     const rotaVoltar = editando ? "/relatorioAluno" : "/telaAluno";
 
@@ -117,10 +113,13 @@ export default function FormCadAluno(props) {
     }
 
 
+
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+
     async function handleSubmit(e) {
         e.preventDefault();
         console.log("entrei nessa poha");
-        const novosErros = {};
+        let novosErros = {};
         novosErros.qtdErros = 0;
         const {
             nome,
@@ -134,92 +133,102 @@ export default function FormCadAluno(props) {
             periodoEscola,
             realizaAcompanhamento,
             possuiSindrome,
-            descricao,
         } = dados;
 
 
         if (!nome) {
-            novosErros.nome = true;
+            novosErros.nome = 1;
             novosErros.qtdErros++;
         }
 
         if (!dataNascimento) {
-            novosErros.dataNascimento = true;
+            novosErros.dataNascimento = 1;
             novosErros.qtdErros++;
         }
 
-        
-        let aux=false;
-        let i=0;
-        for(i=0;i<objResp.length;i++){
-            if(objResp[i].status===1){
-                aux=true;
+
+        dados.listaResponsaveis = [];
+        let i = 0;
+        for (i = 0; i < objResp.length; i++) {
+            if (objResp[i].status === 1) {
+                dados.listaResponsaveis.push(objResp[i].Responsavel.cpf);
             }
         }
 
-        if(!aux){
-            novosErros.responsavel = true;
+
+
+        if (dados.listaResponsaveis.length === 0) {
+            novosErros.responsavel = 1;
             novosErros.qtdErros++;
         }
 
         if (!telefone) {
-            novosErros.telefone = true;
+            novosErros.telefone = 1;
             novosErros.qtdErros++;
         }
 
         if (!rua) {
-            novosErros.rua = true;
+            novosErros.rua = 1;
             novosErros.qtdErros++;
         }
 
         if (!numero) {
-            novosErros.numero = true;
+            novosErros.numero = 0;
             novosErros.qtdErros++;
         }
 
         if (!bairro) {
-            novosErros.bairro = true;
+            novosErros.bairro = 0;
             novosErros.qtdErros++;
         }
+
         if (!cidade) {
-            novosErros.cidade = true;
+            novosErros.cidade = 0;
             novosErros.qtdErros++;
         }
+
         if (!escola) {
-            novosErros.escola = true;
+            novosErros.escola = 0;
             novosErros.qtdErros++;
         }
+
         if (!periodoEscola) {
-            novosErros.periodoEscola = true;
+            novosErros.periodoEscola = 0;
             novosErros.qtdErros++;
         }
-        if (!descricao) {
-            novosErros.descricao = true;
-            novosErros.qtdErros++;
-        }
+
+
         if (!possuiSindrome) {
-            novosErros.possuiSindrome = true;
+            novosErros.possuiSindrome = 0;
             novosErros.qtdErros++;
         }
+
         if (!realizaAcompanhamento) {
-            novosErros.realizaAcompanhamento = true;
+            novosErros.realizaAcompanhamento = 0;
             novosErros.qtdErros++;
         }
 
 
         console.log("Quantidade de erros:" + novosErros.qtdErros);
         if (novosErros.qtdErros === 0) {
-            setErros({});
-            console.log("Editando: " + editando);
+            setErros({ qtdErros: 0 });
+            //console.log("Editando: " + editando);
+
+
+
+
+
             const aluno = { ...dados };
             const url = editando
                 ? `http://localhost:3000/alunos/${dados.id}`
                 : "http://localhost:3000/alunos";
             const method = editando ? "PUT" : "POST";
             try {
-                if (editando && window.confirm("Deseja realmente alterar o aluno: " + aluno.nome)) {
+                // console.log("ALUNO: ");
+                // console.log(aluno);
+                // console.log("Token: " + token);
 
-                    const token = localStorage.getItem("token");
+                if (editando && window.confirm("Deseja realmente alterar o aluno: " + aluno.nome)) {
                     const res = await fetch(url, {
                         method: method,
                         headers: {
@@ -235,7 +244,7 @@ export default function FormCadAluno(props) {
                                 id: 0,
                                 nome: "",
                                 dataNascimento: "",
-                                responsavel: {},
+                                listaResponsaveis: [{}],
                                 cidade: "",
                                 rua: "",
                                 bairro: "",
@@ -261,11 +270,17 @@ export default function FormCadAluno(props) {
                 }
                 else {
                     if (!editando && window.confirm("Deseja realmente cadastrar o aluno: " + aluno.nome)) {
+
+                       
                         const res = await fetch(url, {
                             method: method,
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(aluno)
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
+                            },
+                            body: JSON.stringify(aluno),
                         });
+
                         if (res.ok) {
                             setMensagem(editando ? "Aluno atualizado com sucesso!" : "Aluno cadastrado com sucesso!");
                             setTimeout(() => {
@@ -308,126 +323,8 @@ export default function FormCadAluno(props) {
         }
     };
 
-    function validarRGComDV(rg) {
-        if (!rg) return false;
-
-        // Remove tudo que não for número ou 'X'
-        const rgLimpo = rg.toUpperCase().replace(/[^0-9X]/g, "");
-
-        if (!/^\d{8}[0-9X]$/.test(rgLimpo)) {
-            return false; // formato inválido
-        }
-
-        const numeros = rgLimpo.slice(0, 8).split("").map(Number);
-        const dvInformado = rgLimpo[8];
-
-        // Calcula o DV
-        let soma = 0;
-        let peso = 2;
-
-        for (let i = 7; i >= 0; i--) {
-            soma += numeros[i] * peso;
-            peso++;
-        }
-
-        let resto = soma % 11;
-        let dvCalculado = 11 - resto;
-
-        if (dvCalculado === 10) {
-            dvCalculado = 'X';
-        } else if (dvCalculado === 11) {
-            dvCalculado = '0';
-        } else {
-            dvCalculado = dvCalculado.toString();
-        }
-
-        return dvInformado === dvCalculado;
-    }
-
-    function validarCPF(cpf) {
-        if (!cpf) {
-            setCpfInvalido(true);
-        } else {
-            // Remove pontos e traço
-            const cpfLimpo = cpf.replace(/\D/g, '');
-
-            if (!/^\d{11}$/.test(cpfLimpo)) {
-                setCpfInvalido(true);
-            }
-            else {
-                // Verifica se todos os dígitos são iguais (inválido)
-                if (/^(\d)\1+$/.test(cpfLimpo)) {
-                    setCpfInvalido(true);
-                }
-                else {
-                    const numeros = cpfLimpo.split('').map(Number);
-
-                    // Valida DV1
-                    let soma = 0;
-                    for (let i = 0; i < 9; i++) {
-                        soma += numeros[i] * (10 - i);
-                    }
-                    let resto = (soma * 10) % 11;
-                    let dv1 = resto === 10 ? 0 : resto;
-                    if (numeros[9] !== dv1) {
-                        setCpfInvalido(true);
-                    }
-                    else {
-                        // Valida DV2
-                        soma = 0;
-                        for (let i = 0; i < 10; i++) {
-                            soma += numeros[i] * (11 - i);
-                        }
-                        resto = (soma * 10) % 11;
-                        let dv2 = resto === 10 ? 0 : resto;
-                        if (numeros[10] !== dv2) {
-                            setCpfInvalido(true);
-                        }
-                        else
-                            setCpfInvalido(false);
-                    }
-                }
-            }
-        }
-    }
-
     const handleChange = (e) => {
         const { name, value } = e.target;
-        let value2 = value;
-
-        // Máscara para o CEP
-        if (name === "cep") {
-            let cepNumeros = value.replace(/\D/g, "");
-            cepNumeros = cepNumeros.slice(0, 8);
-            let cepFormatado = cepNumeros;
-            if (cepNumeros.length > 5) {
-                cepFormatado = cepNumeros.slice(0, 5) + "-" + cepNumeros.slice(5);
-            }
-            setDados((prev) => ({ ...prev, cep: cepFormatado }));
-            setCepNaoEncontrado(false);
-            return;
-        }
-
-        // Máscara para telefone
-        if (name === "telefone") {
-            let numeros = value.replace(/\D/g, ""); // Remove tudo que não é número
-            numeros = numeros.slice(0, 11); // Limita a 11 dígitos
-
-            let telefoneFormatado = "";
-
-            if (numeros.length >= 1 && numeros.length <= 2) {
-                telefoneFormatado = `(${numeros}`;
-            } else if (numeros.length > 2 && numeros.length <= 6) {
-                telefoneFormatado = `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`;
-            } else if (numeros.length > 6 && numeros.length <= 10) {
-                telefoneFormatado = `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(6)}`;
-            } else if (numeros.length === 11) {
-                telefoneFormatado = `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
-            }
-
-            setDados((prev) => ({ ...prev, telefone: telefoneFormatado }));
-            return;
-        }
 
         if (name === "rg") {
             // Remove tudo que não for número ou 'X' (maiúsculo)
@@ -455,33 +352,70 @@ export default function FormCadAluno(props) {
                 ...prev,
                 [name]: rgFormatado
             }));
-
-            return;
         }
-        if (name === "periodoEscola") {
-            if (value === "Tarde") {
-                setDados((prev) => ({
-                    ...prev,
-                    [name]: value,
-                    ["periodoProjeto"]: "Manhã"
-                }));
+        else {
+            // Máscara para o CEP
+            if (name === "cep") {
+                let cepNumeros = value.replace(/\D/g, "");
+                cepNumeros = cepNumeros.slice(0, 8);
+                let cepFormatado = cepNumeros;
+                if (cepNumeros.length > 5) {
+                    cepFormatado = cepNumeros.slice(0, 5) + "-" + cepNumeros.slice(5);
+                }
+                setDados((prev) => ({ ...prev, cep: cepFormatado }));
+                setCepNaoEncontrado(false);
             }
-            else
-                if (value === "Manhã") {
-                    setDados((prev) => ({
-                        ...prev,
-                        [name]: value,
-                        ["periodoProjeto"]: "Tarde"
-                    }));
+            else {
+                // Máscara para telefone
+                if (name === "telefone") {
+                    let numeros = value.replace(/\D/g, ""); // Remove tudo que não é número
+                    numeros = numeros.slice(0, 11); // Limita a 11 dígitos
+
+                    let telefoneFormatado = "";
+
+                    if (numeros.length >= 1 && numeros.length <= 2) {
+                        telefoneFormatado = `(${numeros}`;
+                    } else if (numeros.length > 2 && numeros.length <= 6) {
+                        telefoneFormatado = `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`;
+                    } else if (numeros.length > 6 && numeros.length <= 10) {
+                        telefoneFormatado = `(${numeros.slice(0, 2)}) ${numeros.slice(2, 6)}-${numeros.slice(6)}`;
+                    } else if (numeros.length === 11) {
+                        telefoneFormatado = `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+                    }
+
+                    setDados((prev) => ({ ...prev, telefone: telefoneFormatado }));
                 }
                 else {
-                    setDados((prev) => ({
-                        ...prev,
-                        [name]: value,
-                        ["periodoProjeto"]: ""
-                    }));
+                    if (name === "periodoEscola") {
+                        if (value === "Tarde") {
+                            setDados((prev) => ({
+                                ...prev,
+                                [name]: value,
+                                ["periodoProjeto"]: "Manhã"
+                            }));
+                        }
+                        else
+                            if (value === "Manhã") {
+                                setDados((prev) => ({
+                                    ...prev,
+                                    [name]: value,
+                                    ["periodoProjeto"]: "Tarde"
+                                }));
+                            }
+                            else {
+                                setDados((prev) => ({
+                                    ...prev,
+                                    [name]: value,
+                                    ["periodoProjeto"]: ""
+                                }));
+                            }
+                    }
+                    else
+                        setDados((prev) => ({ ...prev, [name]: value }));
                 }
+            }
         }
+
 
         /* Verifica se é um campo de objeto dentro de outro objeto tipo:
          obj1{
@@ -496,19 +430,21 @@ export default function FormCadAluno(props) {
             child == obj2 
 
         */
-        if (name.includes(".")) {
 
-            const [parent, child] = name.split(".");
-            setDados((prev) => ({
-                ...prev,
-                [parent]: {
-                    ...prev[parent],
-                    [child]: value2
-                }
-            }));
-        } else {
-            setDados((prev) => ({ ...prev, [name]: value }));
-        }
+        // if (name.includes(".")) {
+
+
+        //     const [parent, child] = name.split(".");
+        //     setDados((prev) => ({
+        //         ...prev,
+        //         [parent]: {
+        //             ...prev[parent],
+        //             [child]: value2
+        //         }
+        //     }));
+        // } else {
+        //     setDados((prev) => ({ ...prev, [name]: value }));
+        // }
     };
 
     // TABELA DINAMICA
@@ -635,24 +571,18 @@ export default function FormCadAluno(props) {
         }));
 
     };
-/*
-    objEscola{
-        status: -1,  // -1 não informado 0 erro 1 sucesso
-        escola: {
-            id: "",
-            nome: "",
-            endereco: "",
-            telefone: "",
-            tipo: ""
+    /*
+        objEscola{
+            status: -1,  // -1 não informado 0 erro 1 sucesso
+            escola: {
+                id: "",
+                nome: "",
+                endereco: "",
+                telefone: "",
+                tipo: ""
+            }
         }
-    }
-*/
-
-
-
-
-
-
+    */
 
 
 
@@ -664,10 +594,10 @@ export default function FormCadAluno(props) {
 
 
                 <div className="divResp">
-                    <TabelaResponsavel dadosResp={dadosResp} objResp={objResp} setObjsResp={setObjsResp} />
+                    <div>
+                        <TabelaResponsavel dadosResp={dadosResp} objResp={objResp} setObjsResp={setObjsResp} />
+                    </div>
                 </div>
-
-
 
 
                 <div className="divTitulo">
@@ -681,7 +611,7 @@ export default function FormCadAluno(props) {
                         name="nome"
                         value={dados.nome}
                         onChange={handleChange}
-                        className={erros.nome ? 'input-error' : ''}
+                        className={erros.nome === 1 ? 'input-error' : ''}
                     />
                 </Form.Group>
                 <Form.Group className="mb-3" id="dataNascimento">
@@ -691,7 +621,7 @@ export default function FormCadAluno(props) {
                         name="dataNascimento"
                         value={dados.dataNascimento}
                         onChange={handleChange}
-                        className={erros.dataNascimento ? 'input-error' : ''}
+                        className={erros.dataNascimento === 1 ? 'input-error' : ''}
                     />
                 </Form.Group>
                 <Form.Group className="mb-3" id="rg">
@@ -701,6 +631,7 @@ export default function FormCadAluno(props) {
                         placeholder="Digite o RG"
                         name="rg"
                         value={dados.rg}
+                        className={erros.rg === 1 ? 'input-error' : ''}
                         onChange={handleChange}
                     />
                 </Form.Group>
@@ -712,12 +643,12 @@ export default function FormCadAluno(props) {
                         name="telefone"
                         value={dados.telefone}
                         onChange={handleChange}
-                        className={erros.telefone ? 'input-error' : ''}
+                        className={erros.telefone === 1 ? 'input-error' : ''}
                     />
                 </Form.Group>
                 <Form.Group className="mb-3">
                     <Form.Label>Período Escolar:</Form.Label>
-                    <Form.Select name="periodoEscola" value={dados.periodoEscola} onChange={handleChange} className={erros.periodoEscola ? 'input-error' : ''}>
+                    <Form.Select name="periodoEscola" value={dados.periodoEscola} onChange={handleChange} className={erros.periodoEscola === 1 ? 'input-error' : ''}>
                         <option value="">Selecione o período escolar</option>
                         <option value="Manhã">Manhã</option>
                         <option value="Tarde">Tarde</option>
@@ -760,7 +691,7 @@ export default function FormCadAluno(props) {
                         name="realizaAcompanhamento"
                         value={dados.realizaAcompanhamento || ""}
                         onChange={handleChange}
-                        className={erros.realizaAcompanhamento ? 'input-error' : ''}
+                        className={erros.realizaAcompanhamento === 1 ? 'input-error' : ''}
                     />
                 </Form.Group>
                 <Form.Group className="mb-3" id="possuiSindrome">
@@ -771,7 +702,7 @@ export default function FormCadAluno(props) {
                         name="possuiSindrome"
                         value={dados.possuiSindrome || ""}
                         onChange={handleChange}
-                        className={erros.possuiSindrome ? 'input-error' : ''}
+                        className={erros.possuiSindrome === 1 ? 'input-error' : ''}
                     />
                 </Form.Group>
                 <Form.Group className="mb-3" id="descricao">
@@ -849,7 +780,7 @@ export default function FormCadAluno(props) {
                         placeholder="Digite o CEP e clique em buscar "
                         value={dados.cidade || ""}
                         onChange={handleChange}
-                        className={erros.cidade ? 'input-error' : ''}
+                        className={erros.cidade === 1 ? 'input-error' : ''}
                     />
                     {cepNaoEncontrado && (
                         <Form.Text className="texto-aviso-cep">
@@ -865,7 +796,7 @@ export default function FormCadAluno(props) {
                         placeholder="Digite o CEP e clique em buscar "
                         value={dados.bairro || ""}
                         onChange={handleChange}
-                        className={erros.bairro ? 'input-error' : ''}
+                        className={erros.bairro === 1 ? 'input-error' : ''}
                     />
                     {cepNaoEncontrado && (
                         <Form.Text className="texto-aviso-cep">
@@ -881,7 +812,7 @@ export default function FormCadAluno(props) {
                         placeholder="Digite o CEP e clique em buscar "
                         value={dados.rua || ""}
                         onChange={handleChange}
-                        className={erros.rua ? 'input-error' : ''}
+                        className={erros.rua === 1 ? 'input-error' : ''}
                     />
                     {cepNaoEncontrado && (
                         <Form.Text className="texto-aviso-cep">
@@ -897,7 +828,7 @@ export default function FormCadAluno(props) {
                         name="numero"
                         value={dados.numero}
                         onChange={handleChange}
-                        className={erros.numero ? 'input-error' : ''}
+                        className={erros.numero === 1 ? 'input-error' : ''}
                     />
                 </Form.Group>
                 <div className="divTitulo">
@@ -953,7 +884,7 @@ export default function FormCadAluno(props) {
                         onChange={handleChange}
                     />
                 </Form.Group>
-                
+
                 <div className="d-flex justify-content-between">
                     <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
                         Voltar

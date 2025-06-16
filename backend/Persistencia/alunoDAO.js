@@ -1,6 +1,6 @@
 import Aluno from "../Modelo/aluno.js";
 import Escola from "../Modelo/escola.js";
-import Responsavel from "../Modelo/responsavel.js";
+
 
 export default class AlunoDAO {
 
@@ -21,6 +21,7 @@ export default class AlunoDAO {
                     alu_bairro,
                     alu_numero,
                     alu_telefone,
+                    alu_escola_id,
                     alu_periodo_escola,
                     alu_realiza_acompanhamento,
                     alu_possui_sindrome,
@@ -32,9 +33,23 @@ export default class AlunoDAO {
                 )
                 VALUES (
                 $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-                $11, $12, $13, $14, $15
+                $11, $12, $13, $14, $15 ,$16
             );
             `;
+           // console.log("AAAAAAAAAAAAAAAAAAAAAAAA");
+
+            //console.log(aluno.escola[0].id);
+             aluno = aluno.toJSON();
+            // console.log(aluno);
+            // console.log("teste escola id : "+ aluno.escola.id );
+            // console.log("alu escola id : "+ aluno.escola[0].id );
+
+            
+
+
+
+
+
 
             const parametros = [
                 aluno.nome,
@@ -44,65 +59,73 @@ export default class AlunoDAO {
                 aluno.bairro,
                 aluno.numero,
                 aluno.telefone,
+                aluno.escola.id,
                 aluno.periodoEscola,
                 aluno.realizaAcompanhamento,
                 aluno.possuiSindrome,
                 aluno.descricao,
                 aluno.rg,
-                aluno.status,
+                2,
                 aluno.periodoProjeto,
                 aluno.cep
             ];
             const resp = await conexao.query(sql, parametros);
-            return resp.rows[0].id;
+            return resp;
         }
     }
 
     async consultar(termo, tipo, conexao) {
-        
-            let sql = '';
-            let parametros = [];
 
-            if (tipo === 0 || tipo === 1) {
-                sql = `SELECT * FROM aluno WHERE alu_nome ILIKE $1`;  // ILIKE para busca sem diferenciar maiúsculas/minúsculas
-                parametros = ['%' + termo + '%'];  // Use o % para buscar partes do nome, se necessário
-            } else if (tipo === 2) {
-                sql = `SELECT * FROM aluno WHERE alu_rg LIKE $1`;  // ILIKE para busca sem diferenciar maiúsculas/minúsculas
-                parametros = ['%' + termo + '%'];  // % para busca parcial
-            } else if (tipo === 3) {
-                sql = `SELECT * FROM aluno WHERE alu_id = $1`;
-                parametros = [termo];
+        let sql = '';
+        let parametros = [];
+
+        if (tipo === 0 || tipo === 1) {
+            sql = `SELECT * FROM aluno WHERE alu_nome ILIKE $1`;  // ILIKE para busca sem diferenciar maiúsculas/minúsculas
+            parametros = ['%' + termo + '%'];  // Use o % para buscar partes do nome, se necessário
+        } else if (tipo === 2) {
+            sql = `SELECT * FROM aluno WHERE alu_rg LIKE $1`;  // ILIKE para busca sem diferenciar maiúsculas/minúsculas
+            parametros = ['%' + termo + '%'];  // % para busca parcial
+        } else if (tipo === 3) {
+            sql = `SELECT * FROM aluno WHERE alu_id = $1`;
+            parametros = [termo];
+        }
+
+        const reg = await conexao.query(sql, parametros);
+        const registros = reg.rows;
+        const listaAluno = [];
+
+        for (const registro of registros) {
+            if (registro) {
+
+                let escola = new Escola();
+                escola = await escola.consultar(registro['alu_escola_id'], conexao);
+                //console.log(escola);
+
+
+                const aluno = new Aluno(
+                    registro['alu_id'],
+                    registro['alu_nome'],
+                    registro['alu_data_nascimento'],
+                    registro['alu_cidade'],
+                    registro['alu_rua'],
+                    registro['alu_bairro'],
+                    registro['alu_numero'],
+                    registro['alu_telefone'],
+                    escola[0],
+                    registro['alu_periodo_escola'],
+                    registro['alu_realiza_acompanhamento'],
+                    registro['alu_possui_sindrome'],
+                    null,
+                    registro['alu_descricao'],
+                    registro['alu_rg'],
+                    registro['alu_status'],
+                    registro['alu_periodo_projeto'],
+                    registro['alu_cep']
+                );
+                listaAluno.push(aluno);
             }
-
-            const reg = await conexao.query(sql, parametros);
-            const registros = reg.rows;
-            const listaAluno = [];
-
-            for (const registro of registros) {
-                if (registro) {
-                    
-                    const aluno = new Aluno(
-                        registro['alu_id'],
-                        registro['alu_nome'],
-                        registro['alu_data_nascimento'],
-                        registro['alu_cidade'],
-                        registro['alu_rua'],
-                        registro['alu_bairro'],
-                        registro['alu_numero'],
-                        registro['alu_telefone'],
-                        registro['alu_periodo_escola'],
-                        registro['alu_realiza_acompanhamento'],
-                        registro['alu_possui_sindrome'],
-                        registro['alu_descricao'],
-                        registro['alu_rg'],
-                        registro['alu_status'],
-                        registro['alu_periodo_projeto'],
-                        registro['alu_cep']
-                    );
-                    listaAluno.push(aluno);
-                }
-            }
-            return listaAluno;
+        }
+        return listaAluno;
     }
 
     // Excluir Não pode excluir fisicamente !!!!! ARRUMAR !!!!!
@@ -160,9 +183,7 @@ export default class AlunoDAO {
 
             const resp = await conexao.query(sql, parametros);
             return resp;
-
         }
         return false;
     }
-
 }

@@ -14,13 +14,15 @@ export default class AlunoCtrl {
                 bairro,
                 numero,
                 telefone,
+                escola,
                 periodoEscola,
+                listaResponsaveis,
                 realizaAcompanhamento,
                 possuiSindrome,
                 descricao,
                 rg,
-                status,
                 periodoProjeto,
+                status,
                 cep
             } = req.body;
 
@@ -28,11 +30,11 @@ export default class AlunoCtrl {
                 nome && dataNascimento &&
                 cidade &&
                 rua && numero &&
-                telefone && periodoEscola &&
+                telefone &&
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
-                descricao &&
-                rg && status && periodoProjeto && cep && bairro;
+                cep && bairro;
+
             if (dadosValidos) {
                 let conexao;
                 try {
@@ -46,9 +48,11 @@ export default class AlunoCtrl {
                         bairro,
                         numero,
                         telefone,
+                        escola,
                         periodoEscola,
                         realizaAcompanhamento,
                         possuiSindrome,
+                        [{}],
                         descricao,
                         rg,
                         status,

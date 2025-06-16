@@ -11,16 +11,18 @@ export default class Aluno {
     #bairro;
     #numero;
     #telefone;
+    #escola;
     #periodoEscola;
     #realizaAcompanhamento;
     #possuiSindrome;
+    #listaResponsaveis;
     #descricao;
     #rg;
     #status; // 0 para desligado 1 para ativo
     #periodoProjeto;
     #cep;
 
-    constructor(id = 0, nome = "", dataNascimento = "",  cidade = "" ,rua = "",bairro = "" ,numero = "", telefone = "", periodoEscola = "",  realizaAcompanhamento = "", possuiSindrome = "", descricao = "", rg = "", status = 0, periodoProjeto = "",cep="") {
+    constructor(id = 0, nome = "", dataNascimento = "",  cidade = "" ,rua = "",bairro = "" ,numero = "", telefone = "",escola={},periodoEscola = "",  realizaAcompanhamento = "", possuiSindrome = "",listaResponsaveis = [{}] ,descricao = "", rg = "", status = 0, periodoProjeto = "",cep="") {
         this.#id = id;
         this.#nome = nome;
         this.#dataNascimento = dataNascimento;
@@ -29,9 +31,11 @@ export default class Aluno {
         this.#bairro = bairro
         this.#numero = numero;
         this.#telefone = telefone;
+        this.#escola=escola;
         this.#periodoEscola = periodoEscola;
         this.#realizaAcompanhamento = realizaAcompanhamento;
         this.#possuiSindrome = possuiSindrome;
+        this.#listaResponsaveis = listaResponsaveis;
         this.#descricao = descricao;
         this.#rg = rg;
         this.#status = status;
@@ -51,7 +55,16 @@ export default class Aluno {
     set dataNascimento(novoDataNascimento) { this.#dataNascimento = novoDataNascimento; }
 
 
-   
+    get escola() { 
+        if(this.#escola instanceof Escola)
+            return this.#escola.toJSON();
+        else
+            return null;
+    }
+    set escola(novoEscola) { 
+        if(novoEscola instanceof Escola)
+        this.#escola = novoEscola; 
+    }
 
     get cidade() { return this.#cidade; }
     set cidade(novaCidade) { this.#cidade = novaCidade; }
@@ -84,6 +97,10 @@ export default class Aluno {
     set possuiSindrome(novoPossuiSindrome) { this.#possuiSindrome = novoPossuiSindrome; }
 
 
+    get listaResponsaveis() { return this.#listaResponsaveis.toJSON(); }
+    set listaResponsaveis(novoListaResponsaveis) { this.#listaResponsaveis = novoListaResponsaveis; }
+
+
     get descricao() { return this.#descricao; }
     set descricao(novaDescricao) { this.#descricao = novaDescricao; }
 
@@ -111,6 +128,7 @@ export default class Aluno {
             bairro: this.#bairro,
             numero: this.#numero,
             telefone: this.#telefone,
+            escola: this.#escola,
             periodoEscola: this.#periodoEscola,
             realizaAcompanhamento: this.#realizaAcompanhamento,
             possuiSindrome: this.#possuiSindrome,
