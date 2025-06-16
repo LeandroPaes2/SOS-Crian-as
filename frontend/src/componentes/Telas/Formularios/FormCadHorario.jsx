@@ -28,7 +28,7 @@ export default function FormCadHorario() {
 
     const rotaVoltar = editando ? "/relatorioHorario" : "/telaHorario";
 
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     useEffect(() => {
         if (location.state) {
@@ -44,6 +44,7 @@ export default function FormCadHorario() {
     async function carregarTurmas() {
         try {
             const res = await fetch("http://localhost:3000/turmas", {
+                method: "GET",
                 headers: {
                     Authorization: "Bearer " + token,
                 },
@@ -64,6 +65,7 @@ export default function FormCadHorario() {
     async function carregarMaterias() {
         try {
             const res = await fetch("http://localhost:3000/materias", {
+                method: "GET",
                 headers: {
                     Authorization: "Bearer " + token,
                 },
@@ -121,9 +123,12 @@ export default function FormCadHorario() {
             return;
         }
 
+        const method = editando ? "PUT" : "POST";
+
         // Verificar duplicidade como antes
         try {
             const res = await fetch(`http://localhost:3000/horarios`, {
+                method: "GET",
                 headers: {
                     Authorization: "Bearer " + token,
                 },
@@ -168,15 +173,12 @@ export default function FormCadHorario() {
             hora,
             semana,
         };
-        if (editando && id) {
-            horario.id = parseInt(id);
-        }
+
 
 
         const url = editando
             ? `http://localhost:3000/horarios/${id}`
             : "http://localhost:3000/horarios";
-        const method = editando ? "PUT" : "POST";
 
         try {
             if (editando) {
