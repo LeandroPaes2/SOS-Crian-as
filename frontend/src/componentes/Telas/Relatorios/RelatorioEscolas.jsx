@@ -9,11 +9,20 @@ export default function RelatorioEscolas() {
   const [mensagem, setMensagem] = useState("");
   const [pesquisaNome, setPesquisaNome] = useState("");
   const navigate = useNavigate();
+  const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+
 
   useEffect(() => {
     const buscarEscolas = async () => {
       try {
-        const response = await fetch("http://localhost:3000/escolas");
+        const response = await fetch("http://localhost:3000/escolas", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+
         if (!response.ok) throw new Error("Erro ao buscar escolas");
 
         const dados = await response.json();
@@ -36,7 +45,11 @@ export default function RelatorioEscolas() {
 
       try {
         const response = await fetch(`http://localhost:3000/escolas/${escola.id}`, {
-          method: "DELETE"
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
         });
 
         if (response.ok) {

@@ -6,36 +6,36 @@ export default class Aluno {
     #id;
     #nome;
     #dataNascimento;
-    #responsavel;
     #cidade;
     #rua;
     #bairro;
     #numero;
-    #escola;
     #telefone;
+    #escola;
     #periodoEscola;
     #realizaAcompanhamento;
     #possuiSindrome;
+    #listaResponsaveis;
     #descricao;
     #rg;
     #status; // 0 para desligado 1 para ativo
     #periodoProjeto;
     #cep;
 
-    constructor(id = 0, nome = "", dataNascimento = "", responsavel = {}, cidade = "" ,rua = "",bairro = "" ,numero = "", escola = {}, telefone = "", periodoEscola = "", realizaAcompanhamento = "", possuiSindrome = "", descricao = "", rg = "", status = 0, periodoProjeto = "",cep="") {
+    constructor(id = 0, nome = "", dataNascimento = "",  cidade = "" ,rua = "",bairro = "" ,numero = "", telefone = "",escola={},periodoEscola = "",  realizaAcompanhamento = "", possuiSindrome = "",listaResponsaveis = [{}] ,descricao = "", rg = "", status = 0, periodoProjeto = "",cep="") {
         this.#id = id;
         this.#nome = nome;
         this.#dataNascimento = dataNascimento;
-        this.#responsavel = responsavel;
         this.#cidade = cidade;
         this.#rua = rua;
         this.#bairro = bairro
         this.#numero = numero;
-        this.#escola = escola;
         this.#telefone = telefone;
+        this.#escola=escola;
         this.#periodoEscola = periodoEscola;
         this.#realizaAcompanhamento = realizaAcompanhamento;
         this.#possuiSindrome = possuiSindrome;
+        this.#listaResponsaveis = listaResponsaveis;
         this.#descricao = descricao;
         this.#rg = rg;
         this.#status = status;
@@ -55,16 +55,16 @@ export default class Aluno {
     set dataNascimento(novoDataNascimento) { this.#dataNascimento = novoDataNascimento; }
 
 
-    get responsavel() { 
-
-        return this.#responsavel? this.#responsavel.toJSON(): null; 
-    
+    get escola() { 
+        if(this.#escola instanceof Escola)
+            return this.#escola.toJSON();
+        else
+            return null;
     }
-    set responsavel(novoResponsavel) {
-        if (novoResponsavel instanceof Responsavel)
-            this.#responsavel = novoResponsavel;
+    set escola(novoEscola) { 
+        if(novoEscola instanceof Escola)
+        this.#escola = novoEscola; 
     }
-
 
     get cidade() { return this.#cidade; }
     set cidade(novaCidade) { this.#cidade = novaCidade; }
@@ -81,14 +81,7 @@ export default class Aluno {
     set numero(novoNumero) { this.#numero = novoNumero; }
 
 
-    get escola() {
-          return this.#escola ?  this.#escola.toJSON() : null; 
-        }
-    set escola(novaEscola) {
-        if (novaEscola instanceof Escola)
-            this.#escola = novaEscola;
-    }
-
+   
     get telefone() { return this.#telefone; }
     set telefone(novoTelefone) { this.#telefone = novoTelefone; }
 
@@ -96,13 +89,16 @@ export default class Aluno {
     get periodoEscola() { return this.#periodoEscola; }
     set periodoEscola(novoPeriodoEscola) { this.#periodoEscola = novoPeriodoEscola; }
 
-
     get realizaAcompanhamento() { return this.#realizaAcompanhamento; }
     set realizaAcompanhamento(novoRealizaAcompanhamento) { this.#realizaAcompanhamento = novoRealizaAcompanhamento; }
 
 
     get possuiSindrome() { return this.#possuiSindrome; }
     set possuiSindrome(novoPossuiSindrome) { this.#possuiSindrome = novoPossuiSindrome; }
+
+
+    get listaResponsaveis() { return this.#listaResponsaveis.toJSON(); }
+    set listaResponsaveis(novoListaResponsaveis) { this.#listaResponsaveis = novoListaResponsaveis; }
 
 
     get descricao() { return this.#descricao; }
@@ -127,13 +123,12 @@ export default class Aluno {
             id: this.#id,
             nome: this.#nome,
             dataNascimento: this.#dataNascimento,
-            responsavel: this.#responsavel,
             cidade: this.#cidade,
             rua: this.#rua,
             bairro: this.#bairro,
             numero: this.#numero,
-            escola: this.#escola ,
             telefone: this.#telefone,
+            escola: this.#escola,
             periodoEscola: this.#periodoEscola,
             realizaAcompanhamento: this.#realizaAcompanhamento,
             possuiSindrome: this.#possuiSindrome,
@@ -169,15 +164,5 @@ export default class Aluno {
         return alunoDAO.consultar(termo, tipo, conexao);
     }
 
-
-    async consultarResponsavel(cpf, conexao) {
-        const alunoDAO = new AlunoDAO();
-        return alunoDAO.consultarResponsavel(cpf, conexao);
-    }
-
-    async consultarEscola(id, conexao) {
-        const alunoDAO = new AlunoDAO();
-        return alunoDAO.consultarEscola(id, conexao);
-    }
 
 }

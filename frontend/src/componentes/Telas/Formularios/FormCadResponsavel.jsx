@@ -220,7 +220,7 @@ export default function FormCadResponsavel(props) {
                         className="form-control"
                         placeholder="(00) 00000-0000"
                         options={{
-                        delimiters: ['(', ') ', ' ', '-'],
+                        delimiters: ['(', ') ', '-'],
                         blocks: [0, 2, 5, 4],
                         numericOnly: true,
                         }}

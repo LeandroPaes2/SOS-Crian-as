@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Table, Alert, Container, Button, Form } from 'react-bootstrap';
+import { useState, useEffect, useMemo } from 'react';
+import { Table, Alert, Container, Button, Form, Row, Col, Badge } from 'react-bootstrap';
 import PaginaGeral from '../../layouts/PaginaGeral';
 import { Link } from 'react-router-dom';
 import jsPDF from "jspdf";
@@ -15,50 +15,6 @@ export default function RelatorioFaltas()
     const [filtroMateria, setFiltroMateria] = useState('');
     const token = localStorage.getItem("token") || sessionStorage.getItem("token"); 
     const [mensagem, setMensagem] = useState('');
-
-    useEffect(() => {
-        async function carregarDados() {
-            try{
-                const resAlunos = await fetch('http://localhost:3000/alunos', {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                });
-                const dadosAlunos = await resAlunos.json();
-                setAlunos(dadosAlunos);
-
-                const resMaterias = await fetch('http://localhost:3000/materias', {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                });
-                const dadosMaterias = await resMaterias.json();
-                setMaterias(dadosMaterias);
-
-                // Carregar presenças
-                const resPresencas = await fetch('http://localhost:3000/presencas', {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                });
-                const dadosPresencas = await resPresencas.json();
-                setPresencas(dadosPresencas);
-
-                // Processar faltas
-                processarFaltas(dadosAlunos, dadosPresencas);
-            }
-            catch (error) {
-                setMensagem('Erro ao carregar dados: ' + error.message);
-            }
-        }
-        carregarDados();
-    }, []);
 
     const processarFaltas = (alunosList, presencasList) => {
         const faltasMap = new Map();
@@ -117,7 +73,118 @@ export default function RelatorioFaltas()
             )
         })
     );
+
+    const contadorFaltas = useMemo(() => {
+        let totalFaltas = 0;
+        let faltasNaMateria = 0;
+        const detalhamento = [];
+        
+        // 1. Calcular totais baseado nos filtros
+        faltasFiltradas.forEach(item => {
+            totalFaltas += item.faltas.length;
+            
+            // Calcular por matéria específica se filtro de matéria estiver ativo
+            if (filtroMateria) {
+                const faltasMateria = item.faltas.filter(f => 
+                    f.materiaId.toString() === filtroMateria
+                );
+                faltasNaMateria += faltasMateria.length;
+            }
+        });
+
+        // 2. Preparar detalhamento por matéria para o aluno selecionado
+        if (filtroAluno) {
+            const alunoFaltas = faltasFiltradas.find(item => 
+                item.aluno.id.toString() === filtroAluno
+            );
+            
+            if (alunoFaltas) {
+                materias.forEach(materia => {
+                    const faltasNestaMateria = alunoFaltas.faltas.filter(f => 
+                        f.materiaId === materia.id
+                    ).length;
+                    
+                    if (faltasNestaMateria > 0) {
+                        detalhamento.push({
+                            materia: materia.nome,
+                            quantidade: faltasNestaMateria
+                        });
+                    }
+                });
+            }
+        } 
+        // Se nenhum aluno específico estiver selecionado, mostrar para todos
+        else {
+            materias.forEach(materia => {
+                const faltasNestaMateria = faltasFiltradas.reduce((acc, item) => {
+                    return acc + item.faltas.filter(f => 
+                        f.materiaId === materia.id
+                    ).length;
+                }, 0);
+                
+                if (faltasNestaMateria > 0) {
+                    detalhamento.push({
+                        materia: materia.nome,
+                        quantidade: faltasNestaMateria
+                    });
+                }
+            });
+        }
+
+        return {
+            total: totalFaltas,
+            porMateria: filtroMateria ? faltasNaMateria : 0,
+            detalhado: detalhamento.sort((a, b) => b.quantidade - a.quantidade)
+        };
+    }, [faltasFiltradas, filtroAluno, filtroMateria, materias]);
+
+
+    useEffect(() => {
+        async function carregarDados() {
+            try{
+                const resAlunos = await fetch('http://localhost:3000/alunos', {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+                const dadosAlunos = await resAlunos.json();
+                setAlunos(dadosAlunos);
+
+                const resMaterias = await fetch('http://localhost:3000/materias', {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+                const dadosMaterias = await resMaterias.json();
+                setMaterias(dadosMaterias);
+
+                // Carregar presenças
+                const resPresencas = await fetch('http://localhost:3000/presencas', {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+                const dadosPresencas = await resPresencas.json();
+                setPresencas(dadosPresencas);
+
+                // Processar faltas
+                processarFaltas(dadosAlunos, dadosPresencas);
+            }
+            catch (error) {
+                setMensagem('Erro ao carregar dados: ' + error.message);
+            }
+        }
+        carregarDados();
+    }, []);
+
     
+
     const gerarPdfEImprimir = () => {
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
@@ -163,6 +230,83 @@ export default function RelatorioFaltas()
                     <Alert className="alert-custom text-center" variant="dark">
                         <h2 className="titulo-alert">Faltas</h2>
                     </Alert>
+                    <div className="mb-4 p-3 border rounded bg-light">
+                        <Row>
+                            <Col md={4} className="text-center">
+                                <div className="p-2">
+                                    <h5>
+                                        {filtroAluno ? 
+                                            `Faltas do Aluno` : 
+                                            `Total de Faltas`
+                                        }
+                                    </h5>
+                                    <Badge pill bg="danger" className="fs-4">
+                                        {contadorFaltas.total}
+                                    </Badge>
+                                </div>
+                            </Col>
+                            
+                            {filtroMateria && (
+                                <Col md={4} className="text-center">
+                                    <div className="p-2">
+                                        <h5>
+                                            {filtroAluno ? 
+                                                `Faltas na Matéria` : 
+                                                `Faltas nesta Matéria`
+                                            }
+                                        </h5>
+                                        <Badge pill bg="warning" className="fs-4">
+                                            {contadorFaltas.porMateria}
+                                        </Badge>
+                                    </div>
+                                </Col>
+                            )}
+                            
+                            <Col md={filtroMateria ? 4 : 8} className="text-center">
+                                <div className="p-2">
+                                    <h5>
+                                        {filtroAluno ? 
+                                            `Matéria com Mais Faltas` : 
+                                            `Matéria com Mais Faltas`
+                                        }
+                                    </h5>
+                                    {contadorFaltas.detalhado.length > 0 ? (
+                                        <div>
+                                            <Badge pill bg="secondary" className="fs-6">
+                                                {contadorFaltas.detalhado[0].materia}: 
+                                                <span className="ms-2">{contadorFaltas.detalhado[0].quantidade}</span>
+                                            </Badge>
+                                        </div>
+                                    ) : (
+                                        <span className="text-muted">Nenhuma falta registrada</span>
+                                    )}
+                                </div>
+                            </Col>
+                        </Row>
+                        
+                        {/* Lista detalhada por matéria */}
+                        {contadorFaltas.detalhado.length > 0 && (
+                            <div className="mt-3">
+                                <h6>
+                                    {filtroAluno ? 
+                                        `Faltas por Matéria:` : 
+                                        `Faltas por Matéria:`
+                                    }
+                                </h6>
+                                <div className="d-flex flex-wrap gap-2 justify-content-center">
+                                    {contadorFaltas.detalhado.map((item, index) => (
+                                        <Badge 
+                                            key={index} 
+                                            bg={index === 0 ? "danger" : "secondary"}
+                                            className="px-3 py-2"
+                                        >
+                                            {item.materia}: {item.quantidade}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Filtros */}
                     <div className="mb-4">

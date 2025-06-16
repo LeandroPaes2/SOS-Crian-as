@@ -16,6 +16,7 @@ export default function FormCadFamilia() {
     const [temContato, setTemContato] = useState("");
     const [mensagem, setMensagem] = useState("");
     const [editando, setEditando] = useState(false);
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -72,7 +73,9 @@ export default function FormCadFamilia() {
 
             const response = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                 },
                 body: JSON.stringify(familia)
             });
 

@@ -23,6 +23,7 @@ export default function RelatorioAlunos() {
 
     // Opções para filtros e ordenação
     const statusOptions = [
+        { name: 'Ativos', value: '2' },
         { name: 'Excluídos', value: '0' },
         { name: 'Todos', value: 'todos' }
         // Adicione novos status aqui no futuro
@@ -35,6 +36,7 @@ export default function RelatorioAlunos() {
 
         const getStatus = (status) => {
         if (status === 0) return "EXCLUIDO";
+        if (status === 2) return "ATIVO";
         return status;
     };
 

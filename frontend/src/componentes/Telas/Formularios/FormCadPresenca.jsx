@@ -92,7 +92,7 @@ export default function FormCadPresenca() {
                 const data = await res.json();
 
                 // FILTRAR APENAS ALUNOS ATIVOS (status = 1)
-                const alunosAtivos = data.filter(aluno => aluno.status === 1);
+                const alunosAtivos = data.filter(aluno => aluno.status === 2);
 
                 // Mantém presenças existentes apenas para alunos ativos
                 setPresencas(prevPresencas => {

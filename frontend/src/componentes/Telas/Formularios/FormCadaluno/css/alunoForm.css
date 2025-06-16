@@ -1,0 +1,146 @@
+
+.divResp {
+    margin: 2%;
+    border-radius: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+
+}
+
+.divTitulo {
+    margin: 2%;
+    padding-top: 3%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    gap: 10px;
+}
+
+
+
+.input-sucesso {
+    border: 2px solid #28a745 !important;
+    background-color: #e6ffed;
+}
+
+.input-warning-grossa {
+    border: 2px solid #dc3545 !important;
+    background-color: #f8d7da;
+}
+
+
+
+.texto-aviso-cep {
+    color: #050400;
+    /* tom de amarelo escuro */
+    background-color: #fff3cd;
+    /* fundo amarelo claro */
+    border: 2px solid #ffeeba;
+    /* borda destacada */
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+
+
+
+
+.popover-custom {
+    max-width: 250px;
+    font-size: 0.95rem;
+    padding: 0.75rem;
+}
+
+.popover-custom .popover-header {
+    font-size: 1rem;
+    text-align: center;
+}
+
+.help-button {
+    text-decoration: none;
+    padding: 0;
+    color: #0d6efd;
+    /* Azul padrão Bootstrap */
+}
+
+.help-button:hover {
+    color: #0a58ca;
+    /* Azul mais escuro no hover */
+}
+
+.input-error {
+    border: 1px solid red;
+}
+
+.formularioD {
+    background-color: white;
+    max-width: 80%;
+    /* Largura máxima do formulário */
+    width: 100%;
+    /* Largura total em telas menores */
+    padding: 30px;
+    /* Padding interno */
+    border-radius: 10px;
+    /* Bordas arredondadas */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    /* Sombra suave */
+    margin: 0 auto;
+    /* Centraliza o formulário */
+}
+
+/* Estilo dos botões */
+.botaoPesquisaForm {
+    width: 100%;
+    /* Botões ocupam toda a largura */
+    background-color: #1b74da;
+    /* Cor de fundo do botão */
+    border-color: #023999;
+    /* Cor da borda do botão */
+    color: white;
+    /* Cor do texto */
+    margin-top: 10px;
+    /* Espaço acima do botão */
+    transition: background-color 0.3s;
+    /* Transição suave */
+}
+
+
+
+/* estilo ao passar o mouse */
+.botaoPesquisaForm:hover {
+  /* Cor do botão ao passar o mouse */
+    background-color: #4c9ddb;
+    /* Cor da borda ao passar o mouse */
+    border-color: #023999;
+    /* Cor do texto ao passar o mouse */
+    color: white;
+    /* Sombra suave ao passar o mouse */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    /* Escala ao passar o mouse */
+    transform: scale(1.05);
+}
+
+/* Estilo dos campos de entrada */
+.input-error {
+    border: 2px solid #dc3545;
+    /* Borda vermelha para erro */
+}
+
+.texto-aviso-cep {
+    color: #dc3545;
+    /* Cor do texto de aviso */
+    background-color: #f8d7da;
+    /* Fundo claro para aviso */
+    border: 1px solid #f5c6cb;
+    /* Borda do aviso */
+    padding: 5px;
+    /* Padding do aviso */
+    border-radius: 5px;
+    /* Bordas arredondadas do aviso */
+}

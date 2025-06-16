@@ -1,11 +1,10 @@
 import Turma from "../Modelo/turma.js";
-import criarConexao from "../Persistencia/Conexao.js";
-import TurmaDAO from "../Persistencia/turmaDAO.js";
+import conectar from "../Persistencia/Conexao.js";
 export default class TurmaCtrl {
 
     async gravar(req, res) {
         res.type("application/json");
-        const conexao = await criarConexao();
+        const conexao = await conectar();
 
         if (req.method === 'POST' && req.is("application/json")) {
             const cor = req.body.cor;
@@ -47,7 +46,7 @@ export default class TurmaCtrl {
 
     async editar(req, res) {
         res.type("application/json");
-        const conexao = await criarConexao();
+        const conexao = await conectar();
 
         if ((req.method === 'PUT' || req.method === 'PATCH') && req.is("application/json")) {
             const id = req.params.id;
@@ -97,7 +96,7 @@ export default class TurmaCtrl {
 
     async excluir(req, res) {
         res.type("application/json");
-        const conexao = await criarConexao();
+        const conexao = await conectar();
 
         if (req.method === 'DELETE') {
             const id = req.params.id;
@@ -143,40 +142,40 @@ export default class TurmaCtrl {
     }
 
     async consultar(req, res) {
-    const conexao = await criarConexao();
-    res.type("application/json");
+        const conexao = await conectar();
+        res.type("application/json");
 
-    if (req.method === "GET") {
-        const id = req.params.id;
-        const dao = new TurmaDAO();
+        if (req.method === "GET") {
+            let id = req.params.id;
+            const turma = new Turma();
 
-        try {
-            const listaTurma = await dao.consultar(id, conexao);
+            try {
 
-            if (Array.isArray(listaTurma) && listaTurma.length > 0) {
-                res.status(200).json(listaTurma);
-            } else {
-                res.status(404).json({
+                const listaTurma = await turma.consultar(id, conexao);
+                if (Array.isArray(listaTurma) && listaTurma.length > 0) {
+                    res.status(200).json(listaTurma);
+                } else {
+                    res.status(404).json({
+                        status: false,
+                        mensagem: "Nenhuma turma encontrada"
+                    });
+                }
+            } catch (erro) {
+                console.error("Erro ao consultar turma:", erro); // log para depurar
+                res.status(500).json({
                     status: false,
-                    mensagem: "Nenhuma turma encontrada"
+                    mensagem: "Erro ao consultar turma: " + erro.message
                 });
+            } finally {
+                conexao.release();
             }
-        } catch (erro) {
-            console.error("Erro ao consultar turma:", erro); // log para depurar
-            res.status(500).json({
+        } else {
+            res.status(400).json({
                 status: false,
-                mensagem: "Erro ao consultar turma: " + erro.message
+                mensagem: "Requisição inválida! Consulte a documentação da API."
             });
-        } finally {
-            conexao.release();
         }
-    } else {
-        res.status(400).json({
-            status: false,
-            mensagem: "Requisição inválida! Consulte a documentação da API."
-        });
     }
-}
 
 
 }

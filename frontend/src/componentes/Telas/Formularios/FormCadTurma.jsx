@@ -14,6 +14,8 @@ export default function FormCadTurma() {
     const [turma, setTurma] = useState(cor, periodo);
     const [id, setId] = useState(null);
     const navigate = useNavigate();
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+
     useEffect(() => {
         if (location.state?.id) {
             setId(location.state.id);
@@ -49,7 +51,9 @@ export default function FormCadTurma() {
 
             const response = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                 },
                 body: JSON.stringify(turma)
             });
 

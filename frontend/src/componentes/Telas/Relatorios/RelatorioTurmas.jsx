@@ -11,16 +11,16 @@ export default function RelatorioTurmas() {
     const [periodo, setPeriodo] = useState("");
     const [pesquisaCor, setPesquisaCor] = useState("");
     const navigate = useNavigate();
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     useEffect(() => {
     const buscarTurmas = async () => {
         try {
-            const token = localStorage.getItem("token");
-            if (!token) throw new Error("Token não encontrado. Faça login novamente.");
-
             const response = await fetch("http://localhost:3000/turmas", {
+                method: "GET",
                 headers: {
-                    "Authorization": "Bearer " + token
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
                 }
             });
 
@@ -47,7 +47,11 @@ export default function RelatorioTurmas() {
     
             try {
                 const response = await fetch(`http://localhost:3000/turmas/${turma.id}`, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
                 });
     
                 if (response.ok) {

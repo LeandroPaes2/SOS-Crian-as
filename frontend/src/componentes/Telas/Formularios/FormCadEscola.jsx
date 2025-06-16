@@ -14,6 +14,7 @@ export default function FormCadEscola() {
     const [editando, setEditando] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     const rotaVoltar = editando ? "/relatorioEscola" : "/telaEscola";
 
@@ -57,7 +58,9 @@ export default function FormCadEscola() {
 
             const response = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                 },
                 body: JSON.stringify(escola),
             });
 
