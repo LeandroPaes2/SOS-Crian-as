@@ -204,7 +204,7 @@ export default function RelatorioResponsaveis() {
                     <p>Quatidade de responsaveis cadastrados: {listaDeResponsaveis.length}</p>
                 </Container>
                 <div>
-                <Button as={Link} to="/telaResponsavel" className="botaoPesquisa" variant="secondary">
+                <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                         Voltar
                     </Button>
                 </div>

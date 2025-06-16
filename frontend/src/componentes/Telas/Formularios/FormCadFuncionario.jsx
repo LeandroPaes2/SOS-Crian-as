@@ -224,7 +224,7 @@ export default function FormCadFuncionario() {
                     </Form.Group>}
 
                     <div className="d-flex justify-content-between">
-                        <Button as={Link} to="/telaFuncionario" className="botaoPesquisa" variant="secondary">
+                        <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                             Voltar
                         </Button>
                         <Button className="botaoPesquisa" variant="primary" type="submit">

@@ -16,7 +16,7 @@ export default function FormCadEscola() {
     const navigate = useNavigate();
     const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
-    const rotaVoltar = editando ? "/relatorioEscola" : "/telaEscola";
+    const rotaVoltar = editando ? "/relatorioEscola" : "/telaMenu";
 
     useEffect(() => {
         if (location.state?.id) {

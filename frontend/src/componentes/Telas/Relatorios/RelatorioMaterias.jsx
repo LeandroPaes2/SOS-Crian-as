@@ -164,7 +164,7 @@ export default function RelatorioMateria() {
                             </Table>
                         </Container>
                         <div>
-                            <Button as={Link} to="/telaMateria" className="botaoPesquisa" variant="secondary">
+                            <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                                 Voltar
                             </Button>
                         </div>

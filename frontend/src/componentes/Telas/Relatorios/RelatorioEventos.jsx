@@ -200,7 +200,7 @@ export default function RelatorioEventos() {
                     <p>Quatidade de eventos cadastrados: {listaDeEventos.length}</p>
                 </Container>
                 <div>
-                    <Button as={Link} to="/telaEvento" className="botaoPesquisa" variant="secondary">
+                    <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                         Voltar
                     </Button>
                     <Button as={Link} to="/cadastroEvento" className="botaoPesquisa" variant="secondary">

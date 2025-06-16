@@ -234,7 +234,7 @@ export default function RelatorioHorario() {
 
 
                         <div>
-                            <Button as={Link} to="/telaHorario" className="botaoPesquisa" variant="secondary">Voltar</Button>
+                            <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">Voltar</Button>
                         </div>
                     </Container>
                 </PaginaGeral>

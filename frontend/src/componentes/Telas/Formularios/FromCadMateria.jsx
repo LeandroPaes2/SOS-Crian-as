@@ -86,7 +86,7 @@ export default function FormCadmateria() {
                         />
                     </Form.Group>
 
-                    <Button as={Link} to="/telaMateria" className="botaoPesquisa" variant="secondary">
+                    <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                         Voltar
                     </Button>
                     <Button className="botaoPesquisa" variant="primary" type="submit">

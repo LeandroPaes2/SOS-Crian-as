@@ -249,7 +249,7 @@ export default function RelatorioPresenca() {
                     )}
                     
                     <div>
-                        <Button as={Link} to="/telaPresenca" className="botaoPesquisa" variant="secondary">
+                        <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                             Voltar
                         </Button>
                     </div>
