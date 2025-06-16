@@ -1,12 +1,10 @@
 import Escola from "../Modelo/escola.js";
 import conectar from "../Persistencia/Conexao.js";
-import EscolaDAO from "../Persistencia/escolaDAO.js";
 
 export default class EscolaCtrl {
 
     async gravar(requisicao, resposta) {
         const conexao = await conectar();
-
         resposta.type("application/json");
 
         if (requisicao.method == 'POST' && requisicao.is("application/json")) {
@@ -18,17 +16,26 @@ export default class EscolaCtrl {
             if (nome && endereco && telefone && tipo) {
                 try {
                     const escola = new Escola(0, nome, endereco, telefone, tipo);
-                    const dao = new EscolaDAO();
 
                     await conexao.query("BEGIN");
-                    const resultado = await dao.incluir(escola, conexao);
-
-                    await conexao.query("COMMIT");
-                    resposta.status(200).json({
+                    try{
+                        await escola.incluir(conexao);
+                        await conexao.query("COMMIT");
+                        resposta.status(200).json({
                         "status": true,
                         "mensagem": "Escola adicionada com sucesso!",
                         "nome": escola.nome
                     });
+                    }
+                    catch(erro){
+                        await conexao.query("ROLLBACK");
+                        resposta.status(500).json({
+                            "status": false,
+                            "mensagem": "Erro ao incluir escola: " + erro.message
+                        });
+                    }
+                    
+                    
                 } catch (erro) {
                     if (conexao)
                         await conexao.query("ROLLBACK");
@@ -126,10 +133,9 @@ export default class EscolaCtrl {
             if (id) {
                 try {
                     const escola = new Escola(id, null, null, null, null);
-                    const dao = new EscolaDAO();
 
                     await conexao.query("BEGIN");
-                    const resultado = await dao.excluir(escola, conexao);
+                    const resultado = await escola.excluir(conexao);
 
                     if (resultado === true) {
                         await conexao.query("COMMIT");

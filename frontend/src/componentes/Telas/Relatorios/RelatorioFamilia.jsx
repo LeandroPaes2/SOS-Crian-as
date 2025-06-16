@@ -16,6 +16,7 @@ export default function RelatorioFamilia() {
         const buscarFamilias = async () => {
             try {
                 const response = await fetch("http://localhost:3000/familias",{
+                    method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
                         "Content-Type": "application/json"
@@ -42,7 +43,11 @@ export default function RelatorioFamilia() {
 
             try {
                 const response = await fetch(`http://localhost:3000/familias/${familia.id}`, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
                 });
                 if (response.ok) {
                     setMensagem("Familia excluida com sucesso!");

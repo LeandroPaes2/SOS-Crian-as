@@ -1,10 +1,10 @@
 import Materia from "../Modelo/materia.js";
-import criarConexao from "../Persistencia/Conexao.js";
+import conectar from "../Persistencia/Conexao.js";
 
 export default class MateriaCtrl {
 
     async gravar(requisicao, resposta){
-        const conexao = await criarConexao();
+        const conexao = await conectar();
 
         resposta.type("application/json");
         if (requisicao.method == 'POST' && requisicao.is("application/json")){
@@ -65,7 +65,7 @@ export default class MateriaCtrl {
     }
 
     async editar(requisicao, resposta){
-        const conexao = await criarConexao();
+        const conexao = await conectar();
 
         resposta.type("application/json");
         if ((requisicao.method == 'PUT' || requisicao.method == 'PATCH') && requisicao.is("application/json")){
@@ -126,7 +126,7 @@ export default class MateriaCtrl {
     }
 
     async excluir(requisicao, resposta) {
-        const conexao = await criarConexao();
+        const conexao = await conectar();
 
         resposta.type("application/json");
         if (requisicao.method == 'DELETE') {
@@ -181,7 +181,7 @@ export default class MateriaCtrl {
     }
 
     async consultar(requisicao, resposta) {
-        const conexao = await criarConexao();
+        const conexao = await conectar();
 
         resposta.type("application/json");
         if (requisicao.method == "GET") {
