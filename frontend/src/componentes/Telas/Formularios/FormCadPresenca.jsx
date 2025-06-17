@@ -42,13 +42,13 @@ export default function FormCadPresenca() {
             setPresencas(presencasIniciais);
         }
     }, [location.state]);
-    
+
     useEffect(() => {
         async function carregarMaterias() {
             try {
-                const res = await fetch('http://localhost:3000/materias',{
+                const res = await fetch('http://localhost:3000/materias', {
                     method: "GET",
-                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`}
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
                 });
                 const data = await res.json();
                 setMaterias(data);
@@ -62,19 +62,25 @@ export default function FormCadPresenca() {
     // Carrega turmas quando matéria é selecionada
     useEffect(() => {
         async function carregarTurmas() {
-            if (selectedMateria) {
-                try {
-                    const res = await fetch(`http://localhost:3000/presencas/materia/${selectedMateria}/turmas`,{
-                        method: "GET",
-                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`}
-                    });
-                    const data = await res.json();
-                    setTurmas(data);
-                } catch (error) {
-                    setMensagem('Erro ao carregar turmas: ' + error.message);
-                }
+        try {
+            const res = await fetch("http://localhost:3000/turmas", {
+                method: "GET",
+                headers: {
+                    Authorization: "Bearer " + token,
+                },
+            });
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                setTurmas(data);
+            } else {
+                console.error("Resposta inválida de turmas:", data);
+                setTurmas([]);
             }
+        } catch (err) {
+            console.error("Erro ao carregar turmas:", err);
+            setTurmas([]);
         }
+    }
         carregarTurmas();
     }, [selectedMateria]);
 
@@ -127,7 +133,7 @@ export default function FormCadPresenca() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!selectedMateria || !selectedTurma) {
             setMensagem('Selecione uma matéria e uma turma');
             return;
@@ -139,15 +145,15 @@ export default function FormCadPresenca() {
                 presente: presencas[aluno.id] || false
             }));
 
-            const url = editando 
+            const url = editando
                 ? `http://localhost:3000/presencas/${location.state.id}`
                 : 'http://localhost:3000/presencas';
-            
+
             const method = editando ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
                 method: method,
-                headers: { 'Content-Type': 'application/json' , "Authorization": `Bearer ${token}`},
+                headers: { 'Content-Type': 'application/json', "Authorization": `Bearer ${token}` },
                 body: JSON.stringify({
                     materiaId: selectedMateria,
                     turmaId: selectedTurma,
@@ -156,17 +162,17 @@ export default function FormCadPresenca() {
             });
 
             if (!response.ok) {
-                throw new Error(editando 
-                    ? 'Erro ao atualizar presenças' 
+                throw new Error(editando
+                    ? 'Erro ao atualizar presenças'
                     : 'Erro ao registrar presenças');
             }
 
-            setMensagem(editando 
-                ? 'Presenças atualizadas com sucesso!' 
+            setMensagem(editando
+                ? 'Presenças atualizadas com sucesso!'
                 : 'Presenças registradas com sucesso!');
-            
+
             setTimeout(() => navigate('/relatorioPresenca'), 2000);
-            
+
         } catch (error) {
             setMensagem(error.message);
         }
@@ -175,29 +181,39 @@ export default function FormCadPresenca() {
     return (
         <div className="cadastroTurma">
             <PaginaGeral>
-                <h2 className="text-center mb-4">
+
+                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
+                    <h2 className="titulo-alert">Presenças</h2>
+                </Alert>
+                <h2 className=" mb-3" style={{ position: 'absolute',marginLeft: '220px', marginTop: '50px' }}>
                     {editando ? 'Editar' : 'Cadastrar'}
                 </h2>
-                
+
                 {mensagem && (
-                    <Alert variant={mensagem.includes('sucesso') ? 'success' : 'danger'}>
-                        {mensagem}
-                    </Alert>
-                )}
+                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                        <Alert className="alert-animado mt-2 mb-2"  variant={
+                            mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                        }>
+                            {mensagem}
+                        </Alert>
+                        </div>
+                    )}
 
                 <Form onSubmit={handleSubmit}>
-                    <div className="row mb-3">
-                        <div className="col-md-6">
-                            <Form.Group controlId="formMateria">
-                                <Form.Label>Oficina</Form.Label>
+                    <div className="row mb-4" style={{ marginTop: '190px', marginRight: '170px', gap: '45px'}}>
+                        <div className="col-md-4" style={{}}>
+                            <Form.Group controlId="formMateria" >
+                                <Form.Label style={{ fontWeight: '500' }}>Oficina</Form.Label>
                                 <Form.Select
                                     value={selectedMateria}
                                     onChange={(e) => !editando && setSelectedMateria(e.target.value)}
                                     disabled={editando}
                                     required
+                                    className="inputPresenca"
                                 >
                                     <option value="">Selecione uma oficina</option>
-                                    {materias.map(materia => (
+                                    {materias.map((materia) => (
                                         <option key={materia.id} value={materia.id}>
                                             {materia.nome}
                                         </option>
@@ -205,18 +221,19 @@ export default function FormCadPresenca() {
                                 </Form.Select>
                             </Form.Group>
                         </div>
-                        
-                        <div className="col-md-6">
+
+                        <div className="col-md-4">
                             <Form.Group controlId="formTurma">
-                                <Form.Label>Turma</Form.Label>
+                                <Form.Label style={{ fontWeight: '500' }}>Turma</Form.Label>
                                 <Form.Select
                                     value={selectedTurma}
                                     onChange={(e) => !editando && setSelectedTurma(e.target.value)}
                                     disabled={editando}
                                     required
+                                    className="inputPresenca"
                                 >
                                     <option value="">Selecione uma turma</option>
-                                    {turmas.map(turma => (
+                                    {turmas.map((turma) => (
                                         <option key={turma.id} value={turma.id}>
                                             {turma.cor} - {turma.periodo}
                                         </option>
@@ -232,7 +249,7 @@ export default function FormCadPresenca() {
                     {alunos.length > 0 && (
                         <>
                             <h4 className="mt-4 mb-3">Registro de Presenças</h4>
-                            <Table striped bordered hover responsive>
+                            <Table striped bordered hover responsive style={{ width: '70%' }}>
                                 <thead>
                                     <tr>
                                         <th>Aluno</th>
@@ -242,15 +259,17 @@ export default function FormCadPresenca() {
                                 <tbody>
                                     {alunos.map((aluno) => (
                                         <tr key={aluno.id}>
-                                            <td>{aluno.nome}</td>
-                                            <td>
+                                            <td style={{ width: '25%' }}>{aluno.nome}</td>
+                                            <td style={{ width: '1%' }}>
                                                 <Form.Check
                                                     type="checkbox"
                                                     checked={presencas[aluno.id] || false}
-                                                    onChange={(e) => setPresencas({
-                                                        ...presencas,
-                                                        [aluno.id]: e.target.checked
-                                                    })}
+                                                    onChange={(e) =>
+                                                        setPresencas({
+                                                            ...presencas,
+                                                            [aluno.id]: e.target.checked,
+                                                        })
+                                                    }
                                                 />
                                             </td>
                                         </tr>
@@ -260,14 +279,27 @@ export default function FormCadPresenca() {
                         </>
                     )}
 
-                    <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
-                        Voltar
-                    </Button>
+                    <div className="d-flex mt-3" style={{ gap: '85px' }}>
+                        <Button
+                            as={Link}
+                            to="/telaMenu"
+                            className="botaoPesquisa"
+                            variant="danger"
+                        >
+                            Voltar
+                        </Button>
 
-                    <Button type="submit" className="botaoPesquisa" variant="primary" disabled={alunos.length === 0}>
-                        {editando ? 'Atualizar' : 'Salvar'}
-                    </Button>
+                        <Button
+                            type="submit"
+                            className="botaoPesquisa"
+                            variant="primary"
+                            disabled={alunos.length === 0}
+                        >
+                            {editando ? 'Atualizar' : 'Salvar'}
+                        </Button>
+                    </div>
                 </Form>
+
             </PaginaGeral>
         </div>
     );

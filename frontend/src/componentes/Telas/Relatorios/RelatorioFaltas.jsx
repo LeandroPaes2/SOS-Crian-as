@@ -224,12 +224,14 @@ export default function RelatorioFaltas()
     };
 
     return (
-        <div className="topo">
             <PaginaGeral>
-                <Container className="form-container mt-4">
-                    <Alert className="alert-custom text-center" variant="dark">
-                        <h2 className="titulo-alert">Faltas</h2>
-                    </Alert>
+                <div className="TelaD">
+                <Container fluid className="py-4">
+                    {/* Título */}
+                    <div className="bg-light p-4 rounded shadow-sm mb-4">
+                        <h2 className="text-center mb-0">📄 Relatório de Atendidos</h2>
+                    </div>
+
                     <div className="mb-4 p-3 border rounded bg-light">
                         <Row>
                             <Col md={4} className="text-center">
@@ -396,16 +398,16 @@ export default function RelatorioFaltas()
                         </Table>
                     )}
                     
-                    <div>
-                        <Button as={Link} to="/telaMenu" variant="secondary" className="me-2">
-                            Voltar
+                    <div className="d-flex justify-content-between mt-4">
+                        <Button as={Link} to="/telaAluno" variant="secondary">
+                            ⬅️ Voltar
                         </Button>
-                        <Button variant="primary" onClick={gerarPdfEImprimir}>
-                            Imprimir
+                        <Button variant="info">
+                            🖨️ Imprimir
                         </Button>
                     </div>
                 </Container>
+                </div>
             </PaginaGeral>
-        </div>
     );
 }

@@ -91,13 +91,13 @@ export default function RelatorioTurmas() {
         : listaDeTurmas;
 
     return (
-        <div className="topo">
-            <>
                 <PaginaGeral>
-                    <Container className="form-container mt-4">
-                        <Alert className="alert-custom text-center" variant="dark">
-                            <h2 className="titulo-alert">Turmas</h2>
-                        </Alert>
+                    <div className="TelaD">
+                        <Container fluid className="py-4">
+                            {/* Título */}
+                            <div className="bg-light p-4 rounded shadow-sm mb-4">
+                                <h2 className="text-center mb-0">📄 Relatório de Turmas</h2>
+                            </div>
 
                         <Form className="mb-4">
                             <Form.Group controlId="formPesquisaNome">
@@ -180,8 +180,7 @@ export default function RelatorioTurmas() {
                             </Button>
                         </div>
                     </Container>
+                    </div>
                 </PaginaGeral>
-            </>
-        </div>
     );
 }

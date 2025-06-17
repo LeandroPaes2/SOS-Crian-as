@@ -19,7 +19,7 @@ export default class ListaEsperaCtrl {
                 });
             }
 
-            if (!isNaN(cor) && !isNaN(status)) {
+            if (isNaN(cor) && !isNaN(status)) {
                 let conexao;
                 try {
                     const objAluno = new Aluno(
@@ -115,7 +115,7 @@ export default class ListaEsperaCtrl {
                 aluno.cep
             );
 
-            if (num >=0 && id > 0 && dataInsercao && cor >= 0 && status > -1 && status < 2) {
+            if (num >=0 && id > 0 && dataInsercao && cor && status > -1 && status < 2) {
                 let conexao;
                 try {
                     const listaEspera = new ListaEspera(

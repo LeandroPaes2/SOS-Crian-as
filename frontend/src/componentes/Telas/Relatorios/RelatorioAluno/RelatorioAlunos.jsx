@@ -167,7 +167,7 @@ export default function RelatorioAlunos() {
                 <Container fluid className="py-4">
                     {/* Título */}
                     <div className="bg-light p-4 rounded shadow-sm mb-4">
-                        <h2 className="text-center mb-0">📄 Relatório de Alunos</h2>
+                        <h2 className="text-center mb-0">📄 Relatório de Atendidos</h2>
                     </div>
 
                     {/* Filtros e Pesquisa */}

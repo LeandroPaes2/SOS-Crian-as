@@ -129,12 +129,13 @@ export default function RelatorioPresenca() {
     };
 
     return (
-        <div className="topo">
+      
             <PaginaGeral>
-                <Container className="form-container mt-4">
-                    <Alert className="alert-custom text-center" variant="dark">
-                        <h2 className="titulo-alert">Presenças</h2>
-                    </Alert>
+                <div className="TelaD">
+                <Container fluid className="py-4">
+                  <div className="bg-light p-4 rounded shadow-sm mb-4">
+                        <h2 className="text-center mb-0">📄 Relatório de Presenças</h2>
+                    </div>
 
                     {/* Filtros */}
                     <div className="mb-4">
@@ -254,7 +255,8 @@ export default function RelatorioPresenca() {
                         </Button>
                     </div>
                 </Container>
+                </div>
             </PaginaGeral>
-        </div>
+        
     );
 }

@@ -102,7 +102,7 @@ export default class AlunoResponsavelCtrl {
         resposta.type("application/json");
         if (requisicao.method == 'GET') {
             const termo = parseInt(requisicao.params.id) ;
-            console.log("Termo:", termo);
+           
             let conexao;
             try {
                 const alunoResponsavel = new AlunoResponsavel();
@@ -135,7 +135,7 @@ export default class AlunoResponsavelCtrl {
             const termo = requisicao.params.cpf;
             let conexao;
             try {
-                console.log("Termo:", termo);
+                
                 const alunoResponsavel = new AlunoResponsavel();
                 conexao = await conectar();
                 const resultado = await alunoResponsavel.consultar(termo, 2, conexao);

@@ -16,6 +16,10 @@ export default function FormCadFamilia() {
     const [temContato, setTemContato] = useState("");
     const [mensagem, setMensagem] = useState("");
     const [editando, setEditando] = useState(false);
+    const [isMaior, setIsMaior] = useState(true);
+    const [ehMaiorDeIdade, setEhMaiorDeIdade] = useState(true);
+
+
     const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     const navigate = useNavigate();
@@ -73,9 +77,10 @@ export default function FormCadFamilia() {
 
             const response = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                 },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify(familia)
             });
 
@@ -107,27 +112,31 @@ export default function FormCadFamilia() {
         setTimeout(() => setMensagem(""), 5000);
     }
 
+
+
     return (
         <div className="cadastroFamilia">
             <PaginaGeral>
-                <Alert className="mt-2 mb-2 alert-custom text-center">
-                    <h2 className="titulo-alert">
-                        {editando ? "Editar familia" : "Cadastrar familia"}
-                    </h2>
+                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
+                    <h2 className="titulo-alert">Familias</h2>
                 </Alert>
-                <div style={{ justifyContent: 'center', display: 'flex' }}>
-                    {mensagem && (
-                        <Alert className="alert-animado mt-2 mb-2 text-center" style={{ position: 'absolute' }} variant={
+                <h2 className=" mb-3" style={{ position: 'absolute', marginLeft: '220px', marginTop: '50px' }}>
+                    {editando ? 'Editar' : 'Cadastrar'}
+                </h2>
+
+                {mensagem && (
+                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                        <Alert className="alert-animado mt-2 mb-2" variant={
                             mensagem.toLowerCase().includes("sucesso") ? "success" :
                                 mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
                         }>
                             {mensagem}
                         </Alert>
-                    )}
-                </div>
-                <Form onSubmit={handleSubmit} style={{ paddingTop: '70px' }}>
+                    </div>
+                )}
+                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '100px' }}>
                     <Row className="mb-3">
-                        <Col md={6}>
+                        <Col md={4}>
                             <Form.Group>
                                 <Form.Label>Nome</Form.Label>
                                 <Form.Control
@@ -136,8 +145,7 @@ export default function FormCadFamilia() {
                                     value={nome}
                                     onChange={(e) => setNome(e.target.value)}
                                     isInvalid={mensagem && nome.trim() === ""}
-                                    className="input"
-                                    style={{ maxWidth: '65%' }}
+                                    className="inputFamilia"
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     O nome é obrigatório.
@@ -145,14 +153,14 @@ export default function FormCadFamilia() {
                             </Form.Group>
                         </Col>
 
-                        <Col md={3}>
+                        <Col md={4}>
                             <Form.Group>
                                 <Form.Label>Sexo</Form.Label>
                                 <Form.Select
                                     value={sexo}
                                     onChange={(e) => setSexo(e.target.value)}
                                     isInvalid={mensagem && sexo.trim() === ""}
-                                    className="input"
+                                    className="inputFamilia"
                                 >
                                     <option value="">Selecione</option>
                                     <option value="Masculino">Masculino</option>
@@ -164,19 +172,38 @@ export default function FormCadFamilia() {
                             </Form.Group>
                         </Col>
 
-                        <Col md={3}>
+                        <Col md={4}>
                             <Form.Group>
                                 <Form.Label>Data de nascimento</Form.Label>
                                 <Form.Control
-                                    type="date"
-                                    value={dataNascimento}
-                                    onChange={(e) => setDataNascimento(e.target.value)}
-                                    isInvalid={mensagem && dataNascimento.trim() === ""}
-                                    className="input"
-                                />
-                                <Form.Control.Feedback type="invalid">
-                                    A data de nascimento é obrigatória.
-                                </Form.Control.Feedback>
+    type="date"
+    value={dataNascimento}
+    onChange={(e) => {
+        const data = e.target.value;
+        setDataNascimento(data);
+
+        const nascimento = new Date(data);
+        const hoje = new Date();
+        const idade = hoje.getFullYear() - nascimento.getFullYear();
+        const mes = hoje.getMonth() - nascimento.getMonth();
+        const dia = hoje.getDate() - nascimento.getDate();
+
+        const ehMaior =
+            idade > 18 || (idade === 18 && (mes > 0 || (mes === 0 && dia >= 0)));
+
+        setEhMaiorDeIdade(ehMaior);
+    }}
+    max={new Date().toISOString().split("T")[0]}
+    isInvalid={mensagem && (!ehMaiorDeIdade || dataNascimento.trim() === "")}
+    className="inputFamilia"
+/>
+<Form.Control.Feedback type="invalid">
+    {dataNascimento.trim() === ""
+        ? "A data de nascimento é obrigatória."
+        : "A pessoa precisa ter 18 anos ou mais."}
+</Form.Control.Feedback>
+
+
                             </Form.Group>
                         </Col>
                     </Row>
@@ -191,8 +218,7 @@ export default function FormCadFamilia() {
                                     value={grauParentesco}
                                     onChange={(e) => setGrauParentesco(e.target.value)}
                                     isInvalid={mensagem && grauParentesco.trim() === ""}
-                                    className="input"
-                                    style={{ maxWidth: '40%' }}
+                                    className="inputFamilia"
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     O grau de parentesco é obrigatório.
@@ -209,7 +235,7 @@ export default function FormCadFamilia() {
                                     value={profissao}
                                     onChange={(e) => setProfissao(e.target.value)}
                                     isInvalid={mensagem && profissao.trim() === ""}
-                                    className="input"
+                                    className="inputFamilia"
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     A profissão é obrigatória.
@@ -226,7 +252,7 @@ export default function FormCadFamilia() {
                                     value={escolaridade}
                                     onChange={(e) => setEscolaridade(e.target.value)}
                                     isInvalid={mensagem && escolaridade.trim() === ""}
-                                    className="input"
+                                    className="inputFamilia"
                                 >
                                     <option value="">Selecione a escolaridade</option>
                                     <option value="Ensino fundamental Incompleto">Fundamental Incompleto</option>
@@ -249,12 +275,11 @@ export default function FormCadFamilia() {
                                     value={temContato}
                                     onChange={(e) => setTemContato(e.target.value)}
                                     isInvalid={mensagem && temContato.trim() === ""}
-                                    className="input"
-                                    style={{ maxWidth: '50%' }}
+                                    className="inputFamilia"
                                 >
                                     <option value="">Selecione</option>
                                     <option value="Sim">Sim</option>
-                                    <option value="Nao">Nao</option>
+                                    <option value="Nao">Não</option>
                                 </Form.Select>
                                 <Form.Control.Feedback type="invalid">
                                     O contato é obrigatório.
@@ -271,15 +296,14 @@ export default function FormCadFamilia() {
                                     value={irmaos}
                                     onChange={(e) => setIrmaos(e.target.value)}
                                     isInvalid={mensagem && irmaos.trim() === ""}
-                                    className="input"
-                                    style={{ maxWidth: '40%' }}
+                                    className="inputFamilia"
                                 >
                                     <option value="">Selecione</option>
                                     <option value="Mesmo pai e mãe">Mesmo pai e mãe</option>
                                     <option value="Por parte de pai">Por parte de pai</option>
-                                    <option value="Por parte de mae">Por parte de mae</option>
+                                    <option value="Por parte de mae">Por parte de mãe</option>
                                     <option value="Sim">Sim</option>
-                                    <option value="Nao">Nao</option>
+                                    <option value="Nao">Não</option>
                                 </Form.Select>
                                 <Form.Control.Feedback type="invalid">
                                     Se tem irmãos é obrigatório.
@@ -288,7 +312,7 @@ export default function FormCadFamilia() {
                         </Col>
                     </Row>
 
-                    <div className="d-flex justify-content-between">
+                    <div className="d-flex justify-content-between mt-4">
                         <Button as={Link} to={rotaVoltar} variant="secondary" className="botaoPesquisaFamilia">
                             Voltar
                         </Button>
@@ -297,6 +321,7 @@ export default function FormCadFamilia() {
                         </Button>
                     </div>
                 </Form>
+
 
 
             </PaginaGeral>

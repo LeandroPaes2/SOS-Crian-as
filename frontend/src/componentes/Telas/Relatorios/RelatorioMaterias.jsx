@@ -72,16 +72,15 @@ export default function RelatorioMateria() {
     };
 
     return (
-        <div className="topo">
-            <>
+        
                 <PaginaGeral>
-                    <Container className="form-container mt-4">
-                        <Alert className="alert-custom text-center" variant="dark">
-                            <h2 className="titulo-alert">Ofifina</h2>
-                        </Alert>
+                    <div className="TelaD">
+                    <Container fluid className="py-4">
+                        <div className="bg-light p-4 rounded shadow-sm mb-4">
+                        <h2 className="text-center mb-0">📄 Relatório das Oficinas</h2>
+                        </div>
                         <Form className="mb-4">
                             <Form.Group controlId="formPesquisaNome">
-                                <Form.Label className="fw-semibold">Pesquise a oficina pelo nome</Form.Label>
                                 <Form.Label className="fw-semibold">Pesquise a oficina pelo nome</Form.Label>
                                 <InputGroup>
                                     <Form.Control
@@ -170,8 +169,7 @@ export default function RelatorioMateria() {
                             </Button>
                         </div>
                     </Container>
-                </PaginaGeral>
-            </>
-        </div>
+                </div>
+            </PaginaGeral>
     );
 }

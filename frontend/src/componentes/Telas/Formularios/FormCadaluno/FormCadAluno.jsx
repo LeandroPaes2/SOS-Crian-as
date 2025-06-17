@@ -265,31 +265,31 @@ export default function FormCadAluno(props) {
 
                     if (res.ok) {
                         setMensagem(editando ? "Aluno atualizado com sucesso!" : "Aluno cadastrado com sucesso!");
-                        // setTimeout(() => {
-                        //     setDados({
-                        //         id: 0,
-                        //         nome: "",
-                        //         dataNascimento: "",
-                        //         listaResponsaveis: [{}],
-                        //         cidade: "",
-                        //         rua: "",
-                        //         bairro: "",
-                        //         numero: "",
-                        //         escola: {},
-                        //         telefone: "",
-                        //         periodoEscola: "",
-                        //         realizaAcompanhamento: "",
-                        //         possuiSindrome: "",
-                        //         descricao: "",
-                        //         rg: "",
-                        //         formularioSaude: {},
-                        //         ficha: {},
-                        //         status: "",
-                        //         periodoProjeto: "",
-                        //         cep: ""
-                        //     });
-                        //     navigate("/relatorioAluno");
-                        // }, 3000);
+                        setTimeout(() => {
+                            setDados({
+                                id: 0,
+                                nome: "",
+                                dataNascimento: "",
+                                listaResponsaveis: [{}],
+                                cidade: "",
+                                rua: "",
+                                bairro: "",
+                                numero: "",
+                                escola: {},
+                                telefone: "",
+                                periodoEscola: "",
+                                realizaAcompanhamento: "",
+                                possuiSindrome: "",
+                                descricao: "",
+                                rg: "",
+                                formularioSaude: {},
+                                ficha: {},
+                                status: "",
+                                periodoProjeto: "",
+                                cep: ""
+                            });
+                            navigate("/relatorioAluno");
+                        }, 3000);
                     } else {
                         setMensagem(editando ? "Erro ao atualizar aluno!" : "Erro ao cadastrar o aluno.");
                     }
@@ -313,31 +313,31 @@ export default function FormCadAluno(props) {
 
                         if (res.ok) {
                             setMensagem(editando ? "Aluno atualizado com sucesso!" : "Aluno cadastrado com sucesso!");
-                            // setTimeout(() => {
-                            //     setDados({
-                            //         id: 0,
-                            //         nome: "",
-                            //         dataNascimento: "",
-                            //         responsavel: {},
-                            //         cidade: "",
-                            //         rua: "",
-                            //         bairro: "",
-                            //         numero: "",
-                            //         escola: {},
-                            //         telefone: "",
-                            //         periodoEscola: "",
-                            //         realizaAcompanhamento: "",
-                            //         possuiSindrome: "",
-                            //         descricao: "",
-                            //         rg: "",
-                            //         formularioSaude: {},
-                            //         ficha: {},
-                            //         status: "",
-                            //         periodoProjeto: "",
-                            //         cep: ""
-                            //     });
-                            //     navigate("/relatorioAluno");
-                            // }, 3000);
+                            setTimeout(() => {
+                                setDados({
+                                    id: 0,
+                                    nome: "",
+                                    dataNascimento: "",
+                                    responsavel: {},
+                                    cidade: "",
+                                    rua: "",
+                                    bairro: "",
+                                    numero: "",
+                                    escola: {},
+                                    telefone: "",
+                                    periodoEscola: "",
+                                    realizaAcompanhamento: "",
+                                    possuiSindrome: "",
+                                    descricao: "",
+                                    rg: "",
+                                    formularioSaude: {},
+                                    ficha: {},
+                                    status: "",
+                                    periodoProjeto: "",
+                                    cep: ""
+                                });
+                                navigate("/relatorioAluno");
+                            }, 3000);
                         } else {
                             setMensagem(editando ? "Erro ao atualizar aluno!" : "Erro ao cadastrar o aluno.");
                         }
@@ -617,7 +617,7 @@ export default function FormCadAluno(props) {
                     <TabelaResponsavel dadosResp={dadosResp} objResp={objResp} setObjsResp={setObjsResp} />
                 </div>
                 <div className="divTitulo">
-                    <h2>Aluno</h2>
+                    <strong> <h4>Atendido</h4>  </strong>
                 </div>
 
                 <Form.Group className="mb-3" id="nome">
@@ -632,23 +632,23 @@ export default function FormCadAluno(props) {
                     />
                 </Form.Group>
                 <Form.Group className="mb-3" id="dataNascimento">
-                    <Form.Label>Data de Nascimento:</Form.Label>
+                    <Form.Label style={{ fontWeight: '500' }}>Data de Nascimento:</Form.Label>
                     <Form.Control
                         type="date"
                         name="dataNascimento"
                         value={formatarDataParaInput(dados.dataNascimento)}
                         onChange={handleChange}
-                        className={erros.dataNascimento === 1 ? 'input-error' : ''}
+                        className={`inputAluno ${erros.dataNascimento === 1 ? 'input-error' : ''}`}
                     />
                 </Form.Group>
                 <Form.Group className="mb-3" id="rg">
-                    <Form.Label>RG:</Form.Label>
+                    <Form.Label style={{ fontWeight: '500' }}>RG:</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="Digite o RG"
                         name="rg"
                         value={dados.rg}
-                        className={erros.rg === 1 ? 'input-error' : ''}
+                        className={`inputAluno ${erros.rg === 1 ? 'input-error' : ''}`}
                         onChange={handleChange}
                     />
                 </Form.Group>
@@ -893,7 +893,7 @@ export default function FormCadAluno(props) {
                     />
                 </Form.Group>
                 <Form.Group className="mb-3" id="escola.endereco">
-                    <Form.Label>Endereco:</Form.Label>
+                    <Form.Label style={{ fontWeight: '500' }}>Endereco:</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder=""
@@ -901,10 +901,11 @@ export default function FormCadAluno(props) {
                         disabled
                         value={dados.escola.endereco || ""}
                         onChange={handleChange}
+                        className="inputAluno"
                     />
                 </Form.Group>
                 <Form.Group className="mb-3" id="escola.telefone">
-                    <Form.Label>Telefone:</Form.Label>
+                    <Form.Label style={{ fontWeight: '500' }}>Telefone:</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder=""
@@ -912,10 +913,11 @@ export default function FormCadAluno(props) {
                         disabled
                         value={dados.escola.telefone || ""}
                         onChange={handleChange}
+                        className="inputAluno"
                     />
                 </Form.Group>
                 <Form.Group className="mb-3" id="escola.tipo">
-                    <Form.Label>Tipo:</Form.Label>
+                    <Form.Label style={{ fontWeight: '500' }}>Tipo:</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder=""
@@ -923,6 +925,7 @@ export default function FormCadAluno(props) {
                         disabled
                         value={dados.escola.tipo || ""}
                         onChange={handleChange}
+                        className="inputAluno"
                     />
                 </Form.Group>
                 <div className="d-flex justify-content-between mt-4 margintop">

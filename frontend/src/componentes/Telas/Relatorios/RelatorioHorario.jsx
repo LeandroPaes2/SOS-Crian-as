@@ -130,13 +130,13 @@ export default function RelatorioHorario() {
     };
 
     return (
-        <div className="topo">
-            <>
                 <PaginaGeral>
-                    <Container className="form-container mt-4">
-                        <Alert className="alert-custom text-center" variant="dark">
-                            <h2 className="titulo-alert">Horários</h2>
-                        </Alert>
+                    <div className="TelaD">
+                    <Container fluid className="py-4">
+                    {/* Título */}
+                    <div className="bg-light p-4 rounded shadow-sm mb-4">
+                        <h2 className="text-center mb-0">📄 Relatório de Horários</h2>
+                    </div>
 
                         {/*<Form className="mt-4">
                             <Form.Group controlId="formPesquisaNome">
@@ -237,8 +237,8 @@ export default function RelatorioHorario() {
                             <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">Voltar</Button>
                         </div>
                     </Container>
+                    </div>
                 </PaginaGeral>
-            </>
-        </div>
+           
     );
 }

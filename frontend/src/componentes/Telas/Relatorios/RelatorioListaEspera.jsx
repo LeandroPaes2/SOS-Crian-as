@@ -26,6 +26,7 @@ export default function RelatorioListaEspera() {
     const [filtroStatus, setFiltroStatus] = useState("1");
     const [ordenarPor, setOrdenarPor] = useState("dataInsercao");
     const [mostrarFiltros, setMostrarFiltros] = useState(true);
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     const statusOptions = [
         { name: 'Ativos', value: '1' },
@@ -76,7 +77,8 @@ export default function RelatorioListaEspera() {
             listaEspera.status = 0;
             const response = await fetch("http://localhost:3000/listasEspera/" + listaEspera.num, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json" },
                 body: JSON.stringify(listaEspera)
             });
 
@@ -121,38 +123,44 @@ export default function RelatorioListaEspera() {
     };
 
     const listaFiltrada = listaDeListaEspera
-        .filter(item => {
-            if (filtroStatus === "todos") return true;
-            return item.status.toString() === filtroStatus;
-        })
-        .filter(item => item.aluno?.nome?.toLowerCase().includes(pesquisaNome.toLowerCase()))
-        .sort((a, b) => {
-            if (ordenarPor === "nome") {
-                const compNome = a.aluno.nome.localeCompare(b.aluno.nome);
-                if (compNome !== 0) return compNome;
-                const compCor = a.cor.localeCompare(b.cor);
-                if (compCor !== 0) return compCor;
-                return new Date(a.dataInsercao) - new Date(b.dataInsercao);
-            }
+    .filter(item => {
+        if (filtroStatus === "todos") return true;
+        return item.status.toString() === filtroStatus;
+    })
+    .filter(item => {
+        const nome = item.aluno?.nome?.toLowerCase() || "";
+        const cor = item.cor?.toLowerCase() || "";
+        const termo = pesquisaNome.toLowerCase();
+        return nome.includes(termo) || cor.includes(termo);
+    })
+    .sort((a, b) => {
+        if (ordenarPor === "nome") {
+            const compNome = a.aluno.nome.localeCompare(b.aluno.nome);
+            if (compNome !== 0) return compNome;
+            const compCor = a.cor.localeCompare(b.cor);
+            if (compCor !== 0) return compCor;
+            return new Date(a.dataInsercao) - new Date(b.dataInsercao);
+        }
 
-            if (ordenarPor === "id") return a.id - b.id;
+        if (ordenarPor === "id") return a.id - b.id;
 
-            if (ordenarPor === "cor") {
-                const compCor = a.cor.localeCompare(b.cor);
-                if (compCor !== 0) return compCor;
-                const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
-                return compData !== 0 ? compData : a.aluno.nome.localeCompare(b.aluno.nome);
-            }
+        if (ordenarPor === "cor") {
+            const compCor = a.cor.localeCompare(b.cor);
+            if (compCor !== 0) return compCor;
+            const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
+            return compData !== 0 ? compData : a.aluno.nome.localeCompare(b.aluno.nome);
+        }
 
-            if (ordenarPor === "dataInsercao") {
-                const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
-                if (compData !== 0) return compData;
-                const compCor = a.cor.localeCompare(b.cor);
-                return compCor !== 0 ? compCor : a.aluno.nome.localeCompare(b.aluno.nome);
-            }
+        if (ordenarPor === "dataInsercao") {
+            const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
+            if (compData !== 0) return compData;
+            const compCor = a.cor.localeCompare(b.cor);
+            return compCor !== 0 ? compCor : a.aluno.nome.localeCompare(b.aluno.nome);
+        }
 
-            return 0;
-        });
+        return 0;
+    });
+
 
     const gerarPdfEImprimir = () => {
         const doc = new jsPDF();
@@ -215,9 +223,12 @@ export default function RelatorioListaEspera() {
 
     return (
         <PaginaGeral>
-            <Alert className="mt-02 mb-02 dark text-center" variant="dark">
-                <h2>Lista de Espera</h2>
-            </Alert>
+            <div className="TelaD">
+                <Container fluid className="py-4">
+                    {/* Título */}
+                    <div className="bg-light p-4 rounded shadow-sm mb-4">
+                        <h2 className="text-center mb-0">📄 Relatório da Lista de Espera</h2>
+                    </div>
 
 
             {mostrarFiltros ? (
@@ -291,11 +302,11 @@ export default function RelatorioListaEspera() {
 
             <Form className="mt-3">
                 <Form.Group controlId="formPesquisaNome">
-                    <Form.Label>Pesquise a criança pelo nome</Form.Label>
+                    <Form.Label>Pesquisa</Form.Label>
                     <InputGroup>
                         <Form.Control
                             type="text"
-                            placeholder="Nome da Criança"
+                            placeholder="Pesquisar por nome ou cor"
                             value={pesquisaNome}
                             onChange={(e) => setPesquisaNome(e.target.value)}
                         />
@@ -309,7 +320,8 @@ export default function RelatorioListaEspera() {
                 <Button variant="info" onClick={gerarPdfEImprimir}>Imprimir</Button>
             </div>
             <p>Quantidade de crianças cadastradas na lista de espera: {listaFiltrada.length}</p>
-            <Container className="mt-4">
+            <div className="bg-white p-3 rounded shadow-sm">
+                <div className="table-responsive">
                 <Table striped bordered hover>
                     <thead>
                         <tr>
@@ -362,8 +374,10 @@ export default function RelatorioListaEspera() {
                         ))}
                     </tbody>
                 </Table>
-
-            </Container>
+                </div>
+                </div>
+                </Container>
+            </div>
         </PaginaGeral >
     );
 }
