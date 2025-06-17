@@ -251,8 +251,8 @@ export default function RelatorioFaltas()
                                     <div className="p-2">
                                         <h5>
                                             {filtroAluno ? 
-                                                `Faltas na Matéria` : 
-                                                `Faltas nesta Matéria`
+                                                `Faltas na Oficina` : 
+                                                `Faltas nesta Oficina`
                                             }
                                         </h5>
                                         <Badge pill bg="warning" className="fs-4">
@@ -266,8 +266,8 @@ export default function RelatorioFaltas()
                                 <div className="p-2">
                                     <h5>
                                         {filtroAluno ? 
-                                            `Matéria com Mais Faltas` : 
-                                            `Matéria com Mais Faltas`
+                                            `Oficina com Mais Faltas` : 
+                                            `Oficina com Mais Faltas`
                                         }
                                     </h5>
                                     {contadorFaltas.detalhado.length > 0 ? (
@@ -289,8 +289,8 @@ export default function RelatorioFaltas()
                             <div className="mt-3">
                                 <h6>
                                     {filtroAluno ? 
-                                        `Faltas por Matéria:` : 
-                                        `Faltas por Matéria:`
+                                        `Faltas por Oficina:` : 
+                                        `Faltas por Oficina:`
                                     }
                                 </h6>
                                 <div className="d-flex flex-wrap gap-2 justify-content-center">
@@ -331,12 +331,12 @@ export default function RelatorioFaltas()
 
                                 <div className="col-md-6">
                                     <Form.Group controlId="filtroMateria">
-                                        <Form.Label>Matéria</Form.Label>
+                                        <Form.Label>Oficinas</Form.Label>
                                         <Form.Select
                                             value={filtroMateria}
                                             onChange={(e) => setFiltroMateria(e.target.value)}
                                         >
-                                            <option value="">Todas matérias</option>
+                                            <option value="">Todas Oficinas</option>
                                             {materias.map(materia => (
                                                 <option key={materia.id} value={materia.id}>
                                                     {materia.nome}
@@ -374,7 +374,7 @@ export default function RelatorioFaltas()
                                             <Table size="sm" className="mb-0">
                                                 <thead>
                                                     <tr>
-                                                        <th>Matéria</th>
+                                                        <th>Oficina</th>
                                                         <th>Data</th>
                                                         <th>Turma</th>
                                                     </tr>
@@ -397,7 +397,7 @@ export default function RelatorioFaltas()
                     )}
                     
                     <div>
-                        <Button as={Link} to="/" variant="secondary" className="me-2">
+                        <Button as={Link} to="/telaMenu" variant="secondary" className="me-2">
                             Voltar
                         </Button>
                         <Button variant="primary" onClick={gerarPdfEImprimir}>

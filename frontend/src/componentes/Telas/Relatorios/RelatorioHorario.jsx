@@ -12,13 +12,14 @@ export default function RelatorioHorario() {
     const [pesquisaTurma, setPesquisaTurma] = useState("");
     const [mensagem, setMensagem] = useState("");
     const navigate = useNavigate();
-
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     useEffect(() => {
         const buscarHorarios = async () => {
-            const token = localStorage.getItem("token");
+            
             try {
                 const response = await fetch("http://localhost:3000/horarios", {
+                    method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
@@ -38,11 +39,11 @@ export default function RelatorioHorario() {
 
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
 
         const buscarTurmas = async () => {
             try {
                 const res = await fetch("http://localhost:3000/turmas", {
+                    method: "GET",
                     headers: {
                         "Authorization": "Bearer " + token
                     }
@@ -59,6 +60,7 @@ export default function RelatorioHorario() {
         const buscarMaterias = async () => {
             try {
                 const res = await fetch("http://localhost:3000/materias", {
+                    method: "GET",
                     headers: {
                         "Authorization": "Bearer " + token
                     }
@@ -87,7 +89,10 @@ export default function RelatorioHorario() {
             }
             try {
                 const res = await fetch(`http://localhost:3000/horarios/${horario.id}`, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": "Bearer " + localStorage.getItem("token")
+                    }
                 });
                 if (res.ok) {
                     setListadeHorarios(listadeHorarios.filter(h => h.id !== horario.id));
@@ -229,7 +234,7 @@ export default function RelatorioHorario() {
 
 
                         <div>
-                            <Button as={Link} to="/telaHorario" className="botaoPesquisa" variant="secondary">Voltar</Button>
+                            <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">Voltar</Button>
                         </div>
                     </Container>
                 </PaginaGeral>

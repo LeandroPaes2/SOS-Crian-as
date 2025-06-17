@@ -4,6 +4,8 @@ import { Container } from "react-bootstrap";
 import Menu from './Menu';
 import MenuInicial from './MenuInicial';
 import { useState, useEffect } from "react";
+import MenuCadastro from './MenuCadastro';
+import MenuRelatorio from './MenuRelatorio';
 import "../css/aviso.css"
 
 
@@ -18,7 +20,8 @@ function dataNova(dataISO) {
 export default function Pagina(props) {
 
     const [listaDeEventos, setListaDeEventos] = useState([]);
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token");  
+    const [opcaoSelecionada, setOpcaoSelecionada] = useState('inicial');
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     useEffect(() => {  //é executado uma única vez quando o componente monta, ou seja, quando a página/carregamento do componente acontece pela primeira vez.
         //Ele serve pra carregar os elementos que você precisa assim que a página abrir, como buscar dados no backend
@@ -55,28 +58,57 @@ export default function Pagina(props) {
         .filter(e => new Date(e.data).getTime() >= new Date().getTime()) // Pega só os eventos futuros (ou de hoje)
         .sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime())[0]; // Ordena e pega o mais próximo
 
+        const handleChange = (e) => {
+        setOpcaoSelecionada(e.target.value);
+    };
+
     return (
         <>
             <Container fluid>
                 <div className='top'>
-                <Menu titulo="Sistema SOS Crianças" />
-                <br />
-                {eventoProximo ? (
-                    <div className='aviso-custom'>
-                        <h5>Próximo Evento: {eventoProximo.nome}</h5>
-                        <p><strong>Período:</strong> {eventoProximo.periodo}</p>
-                        <p><strong>Data:</strong> {dataNova(eventoProximo.data)}</p>
-                        <p><strong>Início:</strong> {eventoProximo.horaInicio}</p>
-                        <p><strong>Fim:</strong> {eventoProximo.horaFim}</p>
-                    </div>
-                ) : (
-                    <h5 className='aviso-custom'>Nenhum evento futuro disponível.</h5>
-                )}
+                    <Menu titulo="Sistema SOS Crianças" />
+                    <br />
+                    {eventoProximo ? (
+                        <div className='aviso-custom'>
+                            <h5>Próximo Evento: {eventoProximo.nome}</h5>
+                            <p><strong>Período:</strong> {eventoProximo.periodo}</p>
+                            <p><strong>Data:</strong> {dataNova(eventoProximo.data)}</p>
+                            <p><strong>Início:</strong> {eventoProximo.horaInicio}</p>
+                            <p><strong>Fim:</strong> {eventoProximo.horaFim}</p>
+                        </div>
+                    ) : (
+                        <h5 className='aviso-custom'>Nenhum evento futuro disponível.</h5>
+                    )}
 
-                <MenuInicial />
-                {
-                    props.children
-                }
+                    <div className="radio-input">
+                        <label>
+                            <input
+                                type="radio"
+                                name="value-radio"
+                                value="cadastro"
+                                onChange={handleChange}
+                            />
+                            <span>Cadastrar</span>
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="value-radio"
+                                value="relatorio"
+                                onChange={handleChange}
+                            />
+                            <span>Relatório</span>
+                        </label>
+                        <span className="selection"></span>
+                    </div>
+
+                    {opcaoSelecionada === "inicial" && <MenuCadastro />}
+                    {opcaoSelecionada === 'cadastro' && <MenuCadastro />}
+                    {opcaoSelecionada === 'relatorio' && <MenuRelatorio />}
+
+                    {
+                        props.children
+                    }
                 </div>
             </Container>
         </>

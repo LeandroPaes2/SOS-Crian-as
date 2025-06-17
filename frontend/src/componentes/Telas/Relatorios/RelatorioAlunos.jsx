@@ -228,7 +228,7 @@ export default function RelatorioAlunos() {
 
             {/* Botões */}
             <div className="mt-3">
-                <Button as={Link} to="/telaAluno" variant="secondary" className="me-2">Voltar</Button>
+                <Button as={Link} to="/telaMenu" variant="secondary" className="me-2">Voltar</Button>
                 <Button variant="info" onClick={gerarPdfEImprimir}>Imprimir</Button>
             </div>
         </PaginaGeral>

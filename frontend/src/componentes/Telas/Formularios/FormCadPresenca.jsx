@@ -189,14 +189,14 @@ export default function FormCadPresenca() {
                     <div className="row mb-3">
                         <div className="col-md-6">
                             <Form.Group controlId="formMateria">
-                                <Form.Label>Matéria</Form.Label>
+                                <Form.Label>Oficina</Form.Label>
                                 <Form.Select
                                     value={selectedMateria}
                                     onChange={(e) => !editando && setSelectedMateria(e.target.value)}
                                     disabled={editando}
                                     required
                                 >
-                                    <option value="">Selecione uma matéria</option>
+                                    <option value="">Selecione uma oficina</option>
                                     {materias.map(materia => (
                                         <option key={materia.id} value={materia.id}>
                                             {materia.nome}
@@ -260,7 +260,7 @@ export default function FormCadPresenca() {
                         </>
                     )}
 
-                    <Button as={Link} to="/telaPresenca" className="botaoPesquisa" variant="secondary">
+                    <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                         Voltar
                     </Button>
 
