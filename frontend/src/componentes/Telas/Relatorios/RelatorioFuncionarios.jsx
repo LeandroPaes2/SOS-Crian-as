@@ -73,12 +73,14 @@ export default function RelatorioFuncionarios() {
             const response = funcionario.cpf
                 ? await fetch("http://localhost:3000/funcionarios/" + funcionario.cpf, {
                     method: "PUT",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json" },
                     body: JSON.stringify(funcionario),
                 })
                 : await fetch("http://localhost:3000/funcionarios", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json" },
                     body: JSON.stringify(funcionario),
                 });
 

@@ -76,7 +76,8 @@ export default function RelatorioListaEspera() {
             listaEspera.status = 0;
             const response = await fetch("http://localhost:3000/listasEspera/" + listaEspera.num, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json" },
                 body: JSON.stringify(listaEspera)
             });
 
@@ -121,38 +122,44 @@ export default function RelatorioListaEspera() {
     };
 
     const listaFiltrada = listaDeListaEspera
-        .filter(item => {
-            if (filtroStatus === "todos") return true;
-            return item.status.toString() === filtroStatus;
-        })
-        .filter(item => item.aluno?.nome?.toLowerCase().includes(pesquisaNome.toLowerCase()))
-        .sort((a, b) => {
-            if (ordenarPor === "nome") {
-                const compNome = a.aluno.nome.localeCompare(b.aluno.nome);
-                if (compNome !== 0) return compNome;
-                const compCor = a.cor.localeCompare(b.cor);
-                if (compCor !== 0) return compCor;
-                return new Date(a.dataInsercao) - new Date(b.dataInsercao);
-            }
+    .filter(item => {
+        if (filtroStatus === "todos") return true;
+        return item.status.toString() === filtroStatus;
+    })
+    .filter(item => {
+        const nome = item.aluno?.nome?.toLowerCase() || "";
+        const cor = item.cor?.toLowerCase() || "";
+        const termo = pesquisaNome.toLowerCase();
+        return nome.includes(termo) || cor.includes(termo);
+    })
+    .sort((a, b) => {
+        if (ordenarPor === "nome") {
+            const compNome = a.aluno.nome.localeCompare(b.aluno.nome);
+            if (compNome !== 0) return compNome;
+            const compCor = a.cor.localeCompare(b.cor);
+            if (compCor !== 0) return compCor;
+            return new Date(a.dataInsercao) - new Date(b.dataInsercao);
+        }
 
-            if (ordenarPor === "id") return a.id - b.id;
+        if (ordenarPor === "id") return a.id - b.id;
 
-            if (ordenarPor === "cor") {
-                const compCor = a.cor.localeCompare(b.cor);
-                if (compCor !== 0) return compCor;
-                const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
-                return compData !== 0 ? compData : a.aluno.nome.localeCompare(b.aluno.nome);
-            }
+        if (ordenarPor === "cor") {
+            const compCor = a.cor.localeCompare(b.cor);
+            if (compCor !== 0) return compCor;
+            const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
+            return compData !== 0 ? compData : a.aluno.nome.localeCompare(b.aluno.nome);
+        }
 
-            if (ordenarPor === "dataInsercao") {
-                const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
-                if (compData !== 0) return compData;
-                const compCor = a.cor.localeCompare(b.cor);
-                return compCor !== 0 ? compCor : a.aluno.nome.localeCompare(b.aluno.nome);
-            }
+        if (ordenarPor === "dataInsercao") {
+            const compData = new Date(a.dataInsercao) - new Date(b.dataInsercao);
+            if (compData !== 0) return compData;
+            const compCor = a.cor.localeCompare(b.cor);
+            return compCor !== 0 ? compCor : a.aluno.nome.localeCompare(b.aluno.nome);
+        }
 
-            return 0;
-        });
+        return 0;
+    });
+
 
     const gerarPdfEImprimir = () => {
         const doc = new jsPDF();
@@ -294,11 +301,11 @@ export default function RelatorioListaEspera() {
 
             <Form className="mt-3">
                 <Form.Group controlId="formPesquisaNome">
-                    <Form.Label>Pesquise a criança pelo nome</Form.Label>
+                    <Form.Label>Pesquisa</Form.Label>
                     <InputGroup>
                         <Form.Control
                             type="text"
-                            placeholder="Nome da Criança"
+                            placeholder="Pesquisar por nome ou cor"
                             value={pesquisaNome}
                             onChange={(e) => setPesquisaNome(e.target.value)}
                         />
