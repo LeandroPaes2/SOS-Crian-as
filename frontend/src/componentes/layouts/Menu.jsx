@@ -48,7 +48,7 @@ export default function Menu(props) {
                             onMouseEnter={() => handleMouseEnter("cadastros")}
                             onMouseLeave={handleMouseLeave}
                         >
-                            {(funcionario?.nivel === 1 || funcionario?.nivel === 3 || funcionario?.nivel === 4) && (
+                            {(funcionario?.nivel === 1 || funcionario?.nivel === 2 || funcionario?.nivel === 4) && (
                                 <NavDropdown.Item as={Link} to="/cadastroAluno">Atendidos</NavDropdown.Item>
                             )}
 
@@ -56,38 +56,29 @@ export default function Menu(props) {
                                 <NavDropdown.Item as={Link} to="/cadastroPresenca">Presença</NavDropdown.Item>
                             )}
 
-                            {[3, 4, 5, 6].includes(funcionario?.nivel) && (
+                            {[3, 1, 5, 2].includes(funcionario?.nivel) && (
                                 <>
                                     <NavDropdown.Item as={Link} to="/cadastroListaEspera">Lista de Espera</NavDropdown.Item>
                                     <NavDropdown.Item as={Link} to="/cadastroFuncionario">Funcionários</NavDropdown.Item>
                                 </>
                             )}
 
-                            {[3, 4].includes(funcionario?.nivel) && (
+                            {[1,2].includes(funcionario?.nivel) && (
                                 <>
                                     <NavDropdown.Item as={Link} to="/cadastroResponsavel">Responsáveis</NavDropdown.Item>
                                     <NavDropdown.Item as={Link} to="/cadastroEscola">Escolas</NavDropdown.Item>
                                 </>
                             )}
 
-                            {[3, 4, 6].includes(funcionario?.nivel) && (
+                            {[3, 1,2].includes(funcionario?.nivel) && (
                                 <NavDropdown.Item as={Link} to="/cadastroFamilia">Famílias</NavDropdown.Item>
                             )}
 
-                            {[3, 4].includes(funcionario?.nivel) && (
-                                <>
-                                    <NavDropdown.Item as={Link} to="/cadastroMateria">Oficinas</NavDropdown.Item>
-                                    <NavDropdown.Item as={Link} to="/cadastroHorario">Horários</NavDropdown.Item>
-                                </>
-                            )}
+                            <NavDropdown.Item as={Link} to="/cadastroMateria">Oficinas</NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/cadastroHorario">Horários</NavDropdown.Item>
 
-                            {funcionario?.nivel !== 4 && (
-                                <NavDropdown.Item as={Link} to="/cadastroEvento">Eventos</NavDropdown.Item>
-                            )}
-
-                            {[1, 2].includes(funcionario?.nivel) && (
-                                <NavDropdown.Item as={Link} to="/cadastroTurma">Turmas</NavDropdown.Item>
-                            )}
+                            <NavDropdown.Item as={Link} to="/cadastroEvento">Eventos</NavDropdown.Item>
+                            <NavDropdown.Item as={Link} to="/cadastroTurma">Turmas</NavDropdown.Item>
                         </NavDropdown>
 
                         {/* RELATÓRIOS */}
@@ -98,29 +89,29 @@ export default function Menu(props) {
                             onMouseEnter={() => handleMouseEnter("relatorios")}
                             onMouseLeave={handleMouseLeave}
                         >
-                            {[1, 3, 4].includes(funcionario?.nivel) && (
+                            {[1, 2, 4].includes(funcionario?.nivel) && (
                                 <NavDropdown.Item as={Link} to="/relatorioAluno">Atendidos</NavDropdown.Item>
                             )}
 
-                            {[1, 2, 3, 4, 6].includes(funcionario?.nivel) && (
+                            {[1, 2, 3,4, 6].includes(funcionario?.nivel) && (
                                 <NavDropdown.Item as={Link} to="/relatorioPresenca">Presença</NavDropdown.Item>
                             )}
 
-                            {[3, 4, 5, 6].includes(funcionario?.nivel) && (
+                            {[3, 1, 5, 2].includes(funcionario?.nivel) && (
                                 <>
                                     <NavDropdown.Item as={Link} to="/relatorioListaEspera">Lista de Espera</NavDropdown.Item>
                                     <NavDropdown.Item as={Link} to="/relatorioFuncionario">Funcionários</NavDropdown.Item>
                                 </>
                             )}
 
-                            {[3, 4].includes(funcionario?.nivel) && (
+                            {[1,2].includes(funcionario?.nivel) && (
                                 <>
                                     <NavDropdown.Item as={Link} to="/relatorioResponsavel">Responsáveis</NavDropdown.Item>
                                     <NavDropdown.Item as={Link} to="/relatorioEscola">Escolas</NavDropdown.Item>
                                 </>
                             )}
 
-                            {[3, 4, 6].includes(funcionario?.nivel) && (
+                            {[3, 1,2].includes(funcionario?.nivel) && (
                                 <NavDropdown.Item as={Link} to="/relatorioFamilia">Famílias</NavDropdown.Item>
                             )}
 

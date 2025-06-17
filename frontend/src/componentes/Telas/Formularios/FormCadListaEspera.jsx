@@ -8,6 +8,7 @@ export default function FormCadListaEspera() {
     const navigate = useNavigate();
     const location = useLocation();
     const [editando, setEditando] = useState(location.state?.editando || false);
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     const [listaEspera, setListaEspera] = useState({
         num: 0,

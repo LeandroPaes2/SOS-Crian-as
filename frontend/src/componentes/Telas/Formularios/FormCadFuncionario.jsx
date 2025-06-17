@@ -19,6 +19,7 @@ export default function FormCadFuncionario() {
     const [mensagem, setMensagem] = useState("");
     const location = useLocation();
     const [editando, setEditando] = useState(location.state?.editando || false);
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     useEffect(() => {
         if (editando && location.state) {

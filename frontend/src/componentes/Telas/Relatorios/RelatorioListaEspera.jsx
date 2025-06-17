@@ -26,6 +26,7 @@ export default function RelatorioListaEspera() {
     const [filtroStatus, setFiltroStatus] = useState("1");
     const [ordenarPor, setOrdenarPor] = useState("dataInsercao");
     const [mostrarFiltros, setMostrarFiltros] = useState(true);
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     const statusOptions = [
         { name: 'Ativos', value: '1' },

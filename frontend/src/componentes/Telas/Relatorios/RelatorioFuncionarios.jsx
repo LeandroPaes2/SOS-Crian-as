@@ -14,11 +14,18 @@ export default function RelatorioFuncionarios() {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [pesquisaNome, setPesquisaNome] = useState("");
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     useEffect(() => {
         const buscarFuncionarios = async () => {
             try {
-                const response = await fetch("http://localhost:3000/funcionarios");
+                const response = await fetch("http://localhost:3000/funcionarios",{
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                 },
+                    
+            });
                 if (!response.ok) throw new Error("Erro ao buscar funcionarios");
 
                 const dados = await response.json();

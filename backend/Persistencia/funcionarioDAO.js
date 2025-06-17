@@ -244,15 +244,16 @@ export default class FuncionarioDAO {
                 }
 
                 const nivel = nivelQuery.rows[0].func_nivel;
+                let countQuery;
                 if (niveisProtegidos.includes(nivel)) {
-                    const countQuery = await conexao.query(
+                    countQuery = await conexao.query(
                         `SELECT COUNT(*) FROM funcionario WHERE func_nivel = ANY($1::int[])`,
                         [niveisProtegidos]
                     );
-                }
-                const total = parseInt(countQuery.rows[0].count);
-                if (total <= 1) {
-                    throw new Error(`Não é possível excluir. Este é o último funcionário com acesso a funcionários`);
+                    const total = parseInt(countQuery.rows[0].count);
+                    if (total <= 1) {
+                        throw new Error(`Não é possível excluir. Este é o último funcionário com acesso a funcionários`);
+                    }
                 }
                 const sql = `DELETE FROM funcionario WHERE func_cpf = $1`;
                 await conexao.query(sql, [funcionario.cpf]);
