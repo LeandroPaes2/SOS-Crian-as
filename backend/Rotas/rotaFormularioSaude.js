@@ -3,6 +3,8 @@
 
 import { Router } from "express"; //micro-aplicação HTTP
 import FormularioSaudeCtrl from "../Controle/formularioSaudeCtrl.js";
+import autenticarToken from "../middleware/autenticarToken.js";
+import autorizarNivel from "../middleware/autorizarNivel.js";
 
 const FormSaudeCtrl = new FormularioSaudeCtrl();
 const rotaFormularioSaude = Router();

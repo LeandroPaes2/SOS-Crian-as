@@ -133,7 +133,7 @@ export default function RelatorioAlunos() {
     return (
         <PaginaGeral>
             <Alert variant="dark" className="text-center mt-2 mb-4">
-                <h2>Relatório de Alunos</h2>
+                <h2>Relatório de Atendidos</h2>
             </Alert>
 
             {/* Filtros */}
@@ -223,7 +223,7 @@ export default function RelatorioAlunos() {
                         ))}
                     </tbody>
                 </Table>
-                <p>Quantidade de alunos: {alunosFiltrados.length}</p>
+                <p>Quantidade de atendidos: {alunosFiltrados.length}</p>
             </Container>
 
             {/* Botões */}

@@ -20,7 +20,7 @@ function dataNova(dataISO) {
 export default function Pagina(props) {
 
     const [listaDeEventos, setListaDeEventos] = useState([]);
-    const [opcaoSelecionada, setOpcaoSelecionada] = useState('inicial');
+   const [opcaoSelecionada, setOpcaoSelecionada] = useState('cadastro'); // valor inicial 'cadastro'
     const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     useEffect(() => {  //é executado uma única vez quando o componente monta, ou seja, quando a página/carregamento do componente acontece pela primeira vez.
@@ -87,6 +87,7 @@ export default function Pagina(props) {
                                 name="value-radio"
                                 value="cadastro"
                                 onChange={handleChange}
+                                checked={opcaoSelecionada === "cadastro"}
                             />
                             <span style={{fontSize: '16px'}}>Cadastrar</span>
                         </label>
@@ -96,6 +97,7 @@ export default function Pagina(props) {
                                 name="value-radio"
                                 value="relatorio"
                                 onChange={handleChange}
+                                checked={opcaoSelecionada === "relatorio"}
                             />
                             <span style={{fontSize: '16px'}}>Relatório</span>
                         </label>

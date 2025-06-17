@@ -92,7 +92,7 @@ export default function RecuperarSenha(){
                         value={confirmarSenha}
                         onChange={(e) => setConfirmarSenha(e.target.value)}/>
                         <InputGroup.Text onClick={() => setMostrarSenha2(!mostrarSenha2)} style={{ cursor: "pointer" }}>
-                            {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
+                            {mostrarSenha2 ? <FaEyeSlash /> : <FaEye />}
                         </InputGroup.Text>
                     </Form.Group>
                     <br />
