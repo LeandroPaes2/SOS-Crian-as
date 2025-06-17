@@ -16,18 +16,14 @@ export default class HorarioCtrl {
             const hora = requisicao.body.hora;
             const semana = requisicao.body.semana;
 
-            if (turma && materia && turma.cor && materia.nome && hora && semana) {
+            if (turma && materia && turma.id && materia.id && hora && semana) {
                 try {
                     const objTurma = new Turma(
-                        turma.id,
-                        turma.cor,
-                        turma.periodo
+                        turma.id
                     );
 
                     const objMateria = new Materia(
-                        materia.id,
-                        materia.nome,
-                        materia.descricao
+                        materia.id
                     );
 
                     const horario = new Horario(
@@ -76,6 +72,8 @@ export default class HorarioCtrl {
                 }
             } else {
                 resposta.status(400).json({ status: false, mensagem: "Dados incompletos ou inválidos. Verifique a requisição." });
+    
+
             }
         } else {
             resposta.status(400).json({ status: false, mensagem: "Requisição inválida!" });

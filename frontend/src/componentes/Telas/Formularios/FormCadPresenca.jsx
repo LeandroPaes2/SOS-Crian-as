@@ -82,24 +82,30 @@ export default function FormCadPresenca() {
     const carregarAlunos = useCallback(async () => {
         if (selectedTurma || editando) {
             try {
-                const res = await fetch('http://localhost:3000/alunos',{
+                const res = await fetch('http://localhost:3000/alunos', {
                     method: "GET",
-                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`}
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
                 });
                 const data = await res.json();
 
-                // Mantém presenças existentes
+                // FILTRAR APENAS ALUNOS ATIVOS (status = 1)
+                const alunosAtivos = data.filter(aluno => aluno.status === 2);
+
+                // Mantém presenças existentes apenas para alunos ativos
                 setPresencas(prevPresencas => {
                     const novasPresencas = { ...prevPresencas };
 
                     if (!editando) {
-                        data.forEach(aluno => {
+                        alunosAtivos.forEach(aluno => {
                             if (!(aluno.id in novasPresencas)) {
                                 novasPresencas[aluno.id] = true;
                             }
                         });
                     } else {
-                        data.forEach(aluno => {
+                        alunosAtivos.forEach(aluno => {
                             if (!(aluno.id in novasPresencas)) {
                                 novasPresencas[aluno.id] = false;
                             }
@@ -108,7 +114,7 @@ export default function FormCadPresenca() {
                     return novasPresencas;
                 });
 
-                setAlunos(data);
+                setAlunos(alunosAtivos); // Seta apenas alunos ativos
             } catch (error) {
                 setMensagem('Erro ao carregar alunos: ' + error.message);
             }
@@ -183,14 +189,14 @@ export default function FormCadPresenca() {
                     <div className="row mb-3">
                         <div className="col-md-6">
                             <Form.Group controlId="formMateria">
-                                <Form.Label>Matéria</Form.Label>
+                                <Form.Label>Oficina</Form.Label>
                                 <Form.Select
                                     value={selectedMateria}
                                     onChange={(e) => !editando && setSelectedMateria(e.target.value)}
                                     disabled={editando}
                                     required
                                 >
-                                    <option value="">Selecione uma matéria</option>
+                                    <option value="">Selecione uma oficina</option>
                                     {materias.map(materia => (
                                         <option key={materia.id} value={materia.id}>
                                             {materia.nome}
@@ -254,7 +260,7 @@ export default function FormCadPresenca() {
                         </>
                     )}
 
-                    <Button as={Link} to="/telaPresenca" className="botaoPesquisa" variant="secondary">
+                    <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                         Voltar
                     </Button>
 

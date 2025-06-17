@@ -60,6 +60,7 @@ export default function AutoCompleteCPF({ onSelecionar, value, selecionado, dado
     <div style={{ position: "relative", width: "100%" }}>
       <input
         type="text"
+        className="inputAluno"
          onFocus={() => setSugestoes(dadosResp)}
                 onBlur={() => setTimeout(() => setSugestoes([]), 150)} 
         placeholder="Buscar por CPF"

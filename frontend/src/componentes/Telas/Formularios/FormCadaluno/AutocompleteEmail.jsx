@@ -53,6 +53,7 @@ export default function AutoCompleteEmail({ onSelecionar, value, selecionado,dad
                  onFocus={() => setSugestoes(dadosResp)}
                 onBlur={() => setTimeout(() => setSugestoes([]), 150)} 
                 type="text"
+                className="inputAluno"
                 placeholder="Buscar por Email"
                 value={input}
                 onChange={handleChange}

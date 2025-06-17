@@ -11,12 +11,12 @@ const rotaFuncionario = Router();
 
 
 
-rotaFuncionario.post("/",  funcCtrl.gravar);
-rotaFuncionario.put("/:cpf", autenticarToken,  funcCtrl.editar);
-rotaFuncionario.patch("/:cpf", autenticarToken, funcCtrl.editar);
+rotaFuncionario.post("/",  autenticarToken, /*autorizarNivel("6", "5", "3", "4"),*/ funcCtrl.gravar);
+rotaFuncionario.put("/:cpf", autenticarToken, autorizarNivel("6", "5", "3", "4"), funcCtrl.editar);
+rotaFuncionario.patch("/:cpf", autenticarToken,autorizarNivel("6", "5", "3", "4"), funcCtrl.editar);
 rotaFuncionario.delete("/:cpf", autenticarToken, autorizarNivel("6", "5", "3", "4"), funcCtrl.excluir);
 rotaFuncionario.post("/login", funcCtrl.autenticar);
-rotaFuncionario.get("/:cpf", autenticarToken, funcCtrl.consultar);
+rotaFuncionario.get("/:cpf", autenticarToken, autorizarNivel("6", "5", "3", "4"), funcCtrl.consultar);
 rotaFuncionario.get("/email/:email", funcCtrl.consultarEmail);
 rotaFuncionario.get("/", autenticarToken, autorizarNivel("6", "5", "3", "4"), funcCtrl.consultar);
 

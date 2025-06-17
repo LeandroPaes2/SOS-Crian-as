@@ -115,7 +115,7 @@ export default function FormCadTurma() {
                 </Form.Group>
 
                 <div className="d-flex justify-content-between">
-                <Button as={Link} to="/telaTurma" className="botaoPesquisa" variant="secondary">
+                <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                                 Voltar
                         </Button>
                 <Button className="botaoPesquisa" variant="primary" type="submit">

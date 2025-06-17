@@ -164,7 +164,7 @@ export default function RelatorioEscolas() {
             </Table>
 
             <div>
-              <Button as={Link} to="/telaEscola" className="botaoPesquisa" variant="secondary">
+              <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                 Voltar
               </Button>
             </div>

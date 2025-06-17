@@ -163,7 +163,7 @@ export default function RelatorioFamilia() {
 
                         <div className="text-center">
                             <Button onClick={() => navigate("/cadastroFamilia")} variant="success">Cadastrar Familia</Button>
-                            <Button onClick={() => navigate("/")} variant="secondary">Voltar</Button>
+                            <Button onClick={() => navigate("/telaMenu")} variant="secondary">Voltar</Button>
                         </div>
 
                     </Container>

@@ -9,15 +9,15 @@ export default function TelaCadastroMateria(){
             <PaginaGeral>
                 <br />
                 <Alert className="alert-custom text-center mt-4 mb-4">
-                    <h2 className="titulo-alert">Matérias</h2>
+                    <h2 className="titulo-alert">Oficinas</h2>
                 </Alert>
 
                 <div className="botoes-container">
                     <Button as={Link} to="/cadastroMateria" className="botaoPesquisa" variant="secondary">
-                        Cadastrar Matéria
+                        Cadastrar Oficina
                     </Button>
                     <Button as={Link} to="/relatorioMateria" className="botaoPesquisa" variant="secondary">
-                        Relatório das Matérias
+                        Relatório das Oficinas
                     </Button>
                 </div>
             </PaginaGeral>
