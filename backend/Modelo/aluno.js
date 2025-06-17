@@ -22,7 +22,7 @@ export default class Aluno {
     #periodoProjeto;
     #cep;
 
-    constructor(id = 0, nome = "", dataNascimento = "",  cidade = "" ,rua = "",bairro = "" ,numero = "", telefone = "",escola={},periodoEscola = "",  realizaAcompanhamento = "", possuiSindrome = "",listaResponsaveis = [{}] ,descricao = "", rg = "", status = 0, periodoProjeto = "",cep="") {
+    constructor(id = 0, nome = "", dataNascimento = "",  cidade = "" ,rua = "",bairro = "" ,numero = "", telefone = "",escola={},periodoEscola = "",  realizaAcompanhamento = "", possuiSindrome = "",listaResponsaveis = [] ,descricao = "", rg = "", status = 0, periodoProjeto = "",cep="") {
         this.#id = id;
         this.#nome = nome;
         this.#dataNascimento = dataNascimento;
@@ -97,7 +97,7 @@ export default class Aluno {
     set possuiSindrome(novoPossuiSindrome) { this.#possuiSindrome = novoPossuiSindrome; }
 
 
-    get listaResponsaveis() { return this.#listaResponsaveis.toJSON(); }
+    get listaResponsaveis() { return this.#listaResponsaveis }
     set listaResponsaveis(novoListaResponsaveis) { this.#listaResponsaveis = novoListaResponsaveis; }
 
 
@@ -130,6 +130,7 @@ export default class Aluno {
             telefone: this.#telefone,
             escola: this.#escola,
             periodoEscola: this.#periodoEscola,
+            listaResponsaveis: this.#listaResponsaveis,
             realizaAcompanhamento: this.#realizaAcompanhamento,
             possuiSindrome: this.#possuiSindrome,
             descricao: this.#descricao,

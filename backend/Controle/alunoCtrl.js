@@ -2,84 +2,144 @@ import Aluno from "../Modelo/aluno.js";
 import conectar from "../Persistencia/Conexao.js";
 
 export default class AlunoCtrl {
+    /* async gravar(req, res) {
+         res.type("application/json");
+ 
+         if (req.method === "POST" && req.is("application/json")) {
+             const {
+                 nome,
+                 dataNascimento,
+                 cidade,
+                 rua,
+                 bairro,
+                 numero,
+                 telefone,
+                 escola,
+                 periodoEscola,
+                 listaResponsaveis,
+                 realizaAcompanhamento,
+                 possuiSindrome,
+                 descricao,
+                 rg,
+                 periodoProjeto,
+                 status,
+                 cep
+             } = req.body;
+ 
+             const dadosValidos =
+                 nome && dataNascimento &&
+                 cidade &&
+                 rua && numero &&
+                 telefone &&
+                 realizaAcompanhamento !== undefined &&
+                 possuiSindrome !== undefined &&
+                 cep && bairro && listaResponsaveis.length > 0;
+ 
+             if (dadosValidos) {
+                 let conexao;
+                 try {
+                     conexao = await conectar();
+                     const alunoCompleto = new Aluno(
+                         0,
+                         nome,
+                         dataNascimento,
+                         cidade,
+                         rua,
+                         bairro,
+                         numero,
+                         telefone,
+                         escola,
+                         periodoEscola,
+                         realizaAcompanhamento,
+                         possuiSindrome,
+                         listaResponsaveis,
+                         descricao,
+                         rg,
+                         status,
+                         periodoProjeto,
+                         cep
+                     );
+                     await conexao.query("BEGIN");
+                     try {
+                         await alunoCompleto.incluir(conexao);
+                         await conexao.query("COMMIT");
+                         res.status(200).json({ status: true, mensagem: "Aluno cadastrado com sucesso!" });
+                     } catch (erro) {
+                         await conexao.query("ROLLBACK");
+                         res.status(500).json({ status: false, mensagem: "Erro ao cadastrar aluno. Verifique os dados informados." + erro.message });
+                     }
+ 
+                 } catch (erro) {
+                     if (conexao) await conexao.query("ROLLBACK");
+                     res.status(500).json({ status: false, mensagem: "Erro interno ao cadastrar aluno: " + erro.message });
+                 } finally {
+                     if (conexao) conexao.release();
+                 }
+             } else {
+                 res.status(400).json({ status: false, mensagem: "Dados incompletos ou inválidos. Verifique a requisição." });
+             }
+         } else {
+             res.status(400).json({ status: false, mensagem: "Requisição inválida!" });
+         }
+     }*/
+
     async gravar(req, res) {
         res.type("application/json");
 
         if (req.method === "POST" && req.is("application/json")) {
             const {
-                nome,
-                dataNascimento,
-                cidade,
-                rua,
-                bairro,
-                numero,
-                telefone,
-                escola,
-                periodoEscola,
-                listaResponsaveis,
-                realizaAcompanhamento,
-                possuiSindrome,
-                descricao,
-                rg,
-                periodoProjeto,
-                status,
-                cep
+                nome, dataNascimento, cidade, rua, bairro, numero, telefone, escola,
+                periodoEscola, listaResponsaveis, realizaAcompanhamento, possuiSindrome,
+                descricao, rg, periodoProjeto, status, cep
             } = req.body;
 
             const dadosValidos =
                 nome && dataNascimento &&
-                cidade &&
-                rua && numero &&
-                telefone &&
+                cidade && rua && numero && telefone &&
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
-                cep && bairro;
+                cep && bairro && listaResponsaveis.length > 0;
 
-            if (dadosValidos) {
-                let conexao;
-                try {
-                    conexao = await conectar();
-                    const alunoCompleto = new Aluno(
-                        0,
-                        nome,
-                        dataNascimento,
-                        cidade,
-                        rua,
-                        bairro,
-                        numero,
-                        telefone,
-                        escola,
-                        periodoEscola,
-                        realizaAcompanhamento,
-                        possuiSindrome,
-                        [{}],
-                        descricao,
-                        rg,
-                        status,
-                        periodoProjeto,
-                        cep
-                    );
-                    await conexao.query("BEGIN");
-                    try {
-                        await alunoCompleto.incluir(conexao);
-                        await conexao.query("COMMIT");
-                        res.status(200).json({ status: true, mensagem: "Aluno cadastrado com sucesso!" });
-                    } catch (erro) {
-                        await conexao.query("ROLLBACK");
-                        res.status(500).json({ status: false, mensagem: "Erro ao cadastrar aluno. Verifique os dados informados." + erro.message });
-                    }
+            if (!dadosValidos) {
+                return res.status(400).json({
+                    status: false,
+                    mensagem: "Dados incompletos ou inválidos. Verifique a requisição."
+                });
+            }
 
-                } catch (erro) {
-                    if (conexao) await conexao.query("ROLLBACK");
-                    res.status(500).json({ status: false, mensagem: "Erro interno ao cadastrar aluno: " + erro.message });
-                } finally {
-                    if (conexao) conexao.release();
-                }
-            } else {
-                res.status(400).json({ status: false, mensagem: "Dados incompletos ou inválidos. Verifique a requisição." });
+            const conexao = await conectar(); // Agora pega o client
+
+            try {
+                await conexao.query("BEGIN");
+
+                const alunoCompleto = new Aluno(
+                    0, nome, dataNascimento, cidade, rua, bairro, numero, telefone,
+                    escola, periodoEscola, realizaAcompanhamento, possuiSindrome,
+                    listaResponsaveis, descricao, rg, status, periodoProjeto, cep
+                );
+
+                await alunoCompleto.incluir(conexao);
+
+                await conexao.query("COMMIT");
+
+                res.status(200).json({
+                    status: true,
+                    mensagem: "Aluno cadastrado com sucesso!"
+                });
+            } catch (erro) {
+                await conexao.query("ROLLBACK");
+                res.status(500).json({
+                    status: false,
+                    mensagem: "Erro ao cadastrar aluno: " + erro.message
+                });
+            } finally {
+                conexao.release(); // Sempre libera a conexão
             }
         } else {
-            res.status(400).json({ status: false, mensagem: "Requisição inválida!" });
+            res.status(400).json({
+                status: false,
+                mensagem: "Requisição inválida! Utilize POST com JSON válido."
+            });
         }
     }
 
@@ -107,7 +167,7 @@ export default class AlunoCtrl {
             } = req.body;
 
             const dadosValidos =
-                id !== undefined && 
+                id !== undefined &&
                 nome && dataNascimento &&
                 cidade &&
                 rua && numero &&
@@ -119,7 +179,7 @@ export default class AlunoCtrl {
             if (dadosValidos) {
                 let conexao;
                 try {
-                    
+
                     const aluno = new Aluno(
                         id,
                         nome,
@@ -165,6 +225,7 @@ export default class AlunoCtrl {
             res.status(400).json({ status: false, mensagem: "Requisição inválida!" });
         }
     }
+
 
 
     async desligar(req, res) {

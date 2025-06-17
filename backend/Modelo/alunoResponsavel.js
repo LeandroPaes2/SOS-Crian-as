@@ -1,4 +1,7 @@
 
+import AlunoResponsavelDAO from "../Persistencia/alunoResponsavelDAO.js";
+import Aluno from "./aluno.js";
+import Responsavel from "./responsavel.js";
 
 export default class AlunoResponsavel{
 
@@ -6,7 +9,7 @@ export default class AlunoResponsavel{
     #responsavel
 
     get aluno(){
-        return this.#aluno? this.#aluno.toJSON(): null;
+        return this.#aluno?  this.#aluno: null;
     }
 
     set aluno(novoAluno){
@@ -16,7 +19,7 @@ export default class AlunoResponsavel{
     }
 
     get responsavel(){
-        return this.#responsavel? this.#responsavel.toJSON(): null
+        return this.#responsavel? this.#responsavel: null
     }
 
     set responsavel(novoResp){
@@ -55,9 +58,9 @@ export default class AlunoResponsavel{
         }
     
     
-        /*async consultar(termo, tipo, conexao) {
+        async consultar(termo, conexao) {
             const alunoResponsavelDAO = new AlunoResponsavelDAO();
-            return alunoResponsavelDAO.consultar(termo, tipo, conexao);
-        }*/
+            return alunoResponsavelDAO.consultar(termo, conexao);
+        }
 
 }
