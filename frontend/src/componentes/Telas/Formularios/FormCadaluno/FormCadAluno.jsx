@@ -605,7 +605,8 @@ export default function FormCadAluno(props) {
                     <TabelaResponsavel dadosResp={dadosResp} objResp={objResp} setObjsResp={setObjsResp} />
                 </div>
                 <div className="divTitulo">
-                    <h2>Aluno</h2>
+                    <h4><strong>Aluno</strong></h4>
+                    <strong> <h4>Atendido</h4>  </strong>
                 </div>
 
                 <Form.Group className="mb-3" id="nome">
