@@ -48,8 +48,7 @@ export default class AlunoResponsavelDAO {
                 alunoResponsavel.responsavel.cpf
             ];
 
-            console.log("Parametros: ");
-            console.log(parametros);
+        
 
             try {
                 await conexao.query(sql, parametros);

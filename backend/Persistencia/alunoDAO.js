@@ -66,8 +66,7 @@ export default class AlunoDAO {
                 const alu_id = resp.rows[0].alu_id;
                 aluno.id = alu_id;  // salva o id no objeto para uso posterior
 
-                console.log("Aluno cadastrado com id: ");
-                console.log(aluno);
+                
 
 
 
