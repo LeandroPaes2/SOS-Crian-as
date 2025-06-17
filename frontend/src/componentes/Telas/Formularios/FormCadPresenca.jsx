@@ -62,19 +62,25 @@ export default function FormCadPresenca() {
     // Carrega turmas quando matéria é selecionada
     useEffect(() => {
         async function carregarTurmas() {
-            if (selectedMateria) {
-                try {
-                    const res = await fetch(`http://localhost:3000/presencas/materia/${selectedMateria}/turmas`, {
-                        method: "GET",
-                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
-                    });
-                    const data = await res.json();
-                    setTurmas(data);
-                } catch (error) {
-                    setMensagem('Erro ao carregar turmas: ' + error.message);
-                }
+        try {
+            const res = await fetch("http://localhost:3000/turmas", {
+                method: "GET",
+                headers: {
+                    Authorization: "Bearer " + token,
+                },
+            });
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                setTurmas(data);
+            } else {
+                console.error("Resposta inválida de turmas:", data);
+                setTurmas([]);
             }
+        } catch (err) {
+            console.error("Erro ao carregar turmas:", err);
+            setTurmas([]);
         }
+    }
         carregarTurmas();
     }, [selectedMateria]);
 
@@ -176,23 +182,29 @@ export default function FormCadPresenca() {
         <div className="cadastroTurma">
             <PaginaGeral>
 
-                <Alert className="alert-custom text-center" variant="dark">
+                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
                     <h2 className="titulo-alert">Presenças</h2>
                 </Alert>
-                <h2 className="text-center mb-3">
+                <h2 className=" mb-3" style={{ position: 'absolute',marginLeft: '220px', marginTop: '50px' }}>
                     {editando ? 'Editar' : 'Cadastrar'}
                 </h2>
-                {mensagem && (
-                    <Alert variant={mensagem.includes('sucesso') ? 'success' : 'danger'}>
-                        {mensagem}
-                    </Alert>
-                )}
 
-                <Form onSubmit={handleSubmit} className="text-center">
-                    <div className="row justify-content-center mb-4">
-                        <div className="col-md-4">
-                            <Form.Group controlId="formMateria">
-                                <Form.Label>Oficina</Form.Label>
+                {mensagem && (
+                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                        <Alert className="alert-animado mt-2 mb-2"  variant={
+                            mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                        }>
+                            {mensagem}
+                        </Alert>
+                        </div>
+                    )}
+
+                <Form onSubmit={handleSubmit}>
+                    <div className="row mb-4" style={{ marginTop: '190px', marginRight: '170px', gap: '45px'}}>
+                        <div className="col-md-4" style={{}}>
+                            <Form.Group controlId="formMateria" >
+                                <Form.Label style={{ fontWeight: '500' }}>Oficina</Form.Label>
                                 <Form.Select
                                     value={selectedMateria}
                                     onChange={(e) => !editando && setSelectedMateria(e.target.value)}
@@ -212,7 +224,7 @@ export default function FormCadPresenca() {
 
                         <div className="col-md-4">
                             <Form.Group controlId="formTurma">
-                                <Form.Label>Turma</Form.Label>
+                                <Form.Label style={{ fontWeight: '500' }}>Turma</Form.Label>
                                 <Form.Select
                                     value={selectedTurma}
                                     onChange={(e) => !editando && setSelectedTurma(e.target.value)}
@@ -237,7 +249,7 @@ export default function FormCadPresenca() {
                     {alunos.length > 0 && (
                         <>
                             <h4 className="mt-4 mb-3">Registro de Presenças</h4>
-                            <Table striped bordered hover responsive>
+                            <Table striped bordered hover responsive style={{ width: '70%' }}>
                                 <thead>
                                     <tr>
                                         <th>Aluno</th>
@@ -247,8 +259,8 @@ export default function FormCadPresenca() {
                                 <tbody>
                                     {alunos.map((aluno) => (
                                         <tr key={aluno.id}>
-                                            <td>{aluno.nome}</td>
-                                            <td>
+                                            <td style={{ width: '25%' }}>{aluno.nome}</td>
+                                            <td style={{ width: '1%' }}>
                                                 <Form.Check
                                                     type="checkbox"
                                                     checked={presencas[aluno.id] || false}
@@ -267,7 +279,7 @@ export default function FormCadPresenca() {
                         </>
                     )}
 
-                    <div className="d-flex justify-content-center mt-3">
+                    <div className="d-flex mt-3" style={{ gap: '85px' }}>
                         <Button
                             as={Link}
                             to="/telaMenu"

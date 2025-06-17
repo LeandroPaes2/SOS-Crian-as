@@ -52,5 +52,7 @@
     box-shadow: 2.5px 3px 0 #000;
     outline: none;
     transition: ease 0.25s;
+    width: 195px;
+
 }
 
