@@ -85,7 +85,6 @@ export default class AlunoCtrl {
 
     async gravar(req, res) {
         res.type("application/json");
-
         if (req.method === "POST" && req.is("application/json")) {
             const {
                 nome, dataNascimento, cidade, rua, bairro, numero, telefone, escola,
@@ -106,9 +105,7 @@ export default class AlunoCtrl {
                     mensagem: "Dados incompletos ou inválidos. Verifique a requisição."
                 });
             }
-
             const conexao = await conectar(); // Agora pega o client
-
             try {
                 await conexao.query("BEGIN");
 
@@ -117,11 +114,8 @@ export default class AlunoCtrl {
                     escola, periodoEscola, realizaAcompanhamento, possuiSindrome,
                     listaResponsaveis, descricao, rg, status, periodoProjeto, cep
                 );
-
                 await alunoCompleto.incluir(conexao);
-
                 await conexao.query("COMMIT");
-
                 res.status(200).json({
                     status: true,
                     mensagem: "Aluno cadastrado com sucesso!"
@@ -148,56 +142,27 @@ export default class AlunoCtrl {
 
         if ((req.method === "PUT" || req.method === "PATCH") && req.is("application/json")) {
             const {
-                id,
-                nome,
-                dataNascimento,
-                cidade,
-                rua,
-                bairro,
-                numero,
-                telefone,
-                periodoEscola,
-                realizaAcompanhamento,
-                possuiSindrome,
-                descricao,
-                rg,
-                status,
-                periodoProjeto,
-                cep
+                id,nome, dataNascimento, cidade, rua, bairro, numero, telefone, escola,
+                periodoEscola, listaResponsaveis, realizaAcompanhamento, possuiSindrome,
+                descricao, rg, periodoProjeto, status, cep
             } = req.body;
 
             const dadosValidos =
-                id !== undefined &&
-                nome && dataNascimento &&
-                cidade &&
-                rua && numero &&
-                telefone && periodoEscola &&
+                id && nome && dataNascimento &&
+                cidade && rua && numero && telefone &&
                 realizaAcompanhamento !== undefined &&
                 possuiSindrome !== undefined &&
-                descricao &&
-                rg && status && periodoProjeto && cep && bairro;
+                cep && bairro && listaResponsaveis.length > 0;
+
             if (dadosValidos) {
                 let conexao;
                 try {
 
                     const aluno = new Aluno(
-                        id,
-                        nome,
-                        dataNascimento,
-                        cidade,
-                        rua,
-                        bairro,
-                        numero,
-                        telefone,
-                        periodoEscola,
-                        realizaAcompanhamento,
-                        possuiSindrome,
-                        descricao,
-                        rg,
-                        status,
-                        periodoProjeto,
-                        cep
-                    );
+                    id, nome, dataNascimento, cidade, rua, bairro, numero, telefone,
+                    escola, periodoEscola, realizaAcompanhamento, possuiSindrome,
+                    listaResponsaveis, descricao, rg, status, periodoProjeto, cep
+                );
 
                     conexao = await conectar();
                     await conexao.query("BEGIN");

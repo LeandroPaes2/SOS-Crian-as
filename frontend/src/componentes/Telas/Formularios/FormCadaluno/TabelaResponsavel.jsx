@@ -4,13 +4,15 @@ import AutoCompleteNome from "./AutoCompleteNome";
 import AutoCompleteEmail from "./AutocompleteEmail";
 import "./css/tabelaResponsavel.css";
 import { useEffect } from "react";
+import Swal from 'sweetalert2';
+
 
 export default function TabelaResponsavel(props) {
 
-    const { dadosResp,objResp, setObjsResp } = props;
+    const { dadosResp, objResp, setObjsResp } = props;
 
     const adicionarLinha = () => {
-        setObjsResp([...objResp, { disabled : false,status: -1, Responsavel: { cpf: '', nome: '', email: '' } }]);
+        setObjsResp([...objResp, { disabled: false, status: -1, Responsavel: { cpf: '', nome: '', email: '' } }]);
     };
 
     const removerLinha = (index) => {
@@ -18,6 +20,28 @@ export default function TabelaResponsavel(props) {
         setObjsResp(novasLinhas);
     };
 
+    const excluirLinha = (id) => {
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: "Você não poderá reverter isso!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sim, excluir!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Aqui vocé chama sua API ou função que exclui o item
+                removerLinha(id);
+                Swal.fire(
+                    'Excluído!',
+                    'O registro foi excluído.',
+                    'success'
+                );
+            }
+        });
+    };
 
 
 
@@ -109,7 +133,7 @@ export default function TabelaResponsavel(props) {
                                     <button style={{ float: "right" }}
                                         type="button"
                                         className="botao-remover"
-                                        onClick={() => removerLinha(index)}
+                                        onClick={() => excluirLinha(index)}
                                     >
                                         x
                                     </button>

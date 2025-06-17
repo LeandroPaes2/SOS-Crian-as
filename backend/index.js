@@ -16,7 +16,7 @@ import rotaFuncionario from './Rotas/rotaFuncionario.js';
 import rotaListaEspera from './Rotas/rotaListaEspera.js';
 import rotaFamilia from './Rotas/rotaFamilia.js';
 import rotaFormularioSaude from './Rotas/rotaFormularioSaude.js';
-
+import rotaAlunoResponsavel from './Rotas/rotaAlunoResponsavel.js';
 import FuncionarioCtrl from './Controle/funcionarioCtrl.js';
 import supabase from './Persistencia/Conexao.js';
 
@@ -100,6 +100,8 @@ app.use("/listasEspera", rotaListaEspera);
 app.use("/horarios", rotaHorario);
 app.use("/presencas", rotaPresenca);
 app.use("/formulariosSaude",rotaFormularioSaude);
+app.use("/alunoResponsavel", rotaAlunoResponsavel);
+
 
 app.use("/familias", rotaFamilia);
 

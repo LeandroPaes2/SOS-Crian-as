@@ -8,13 +8,9 @@ import "./css/relatorioAluno.css";
 
 
 export default function RelatorioAlunos() {
-    const [id, setId] = useState(0);
-    const [nome, setNome] = useState("");
-    const [responsavel, setResponsavel] = useState("");
-    const [endereco, setEndereco] = useState("");
-    const [telefone, setTelefone] = useState("");
-    const [periodoEscola, setPeriodoEscola] = useState("");
-    const [periodoProjeto, setPeriodoProjeto] = useState("");
+
+
+    const [listaResponsaveis, setListaResponsaveis] = useState([]);
     const [listaDeAlunos, setListaDeAlunos] = useState([]);
     const [pesquisaNome, setPesquisaNome] = useState("");
     const [mensagem, setMensagem] = useState("");
@@ -37,7 +33,7 @@ export default function RelatorioAlunos() {
     useEffect(() => {
         const buscarAlunos = async () => {
             try {
-                
+
                 const res = await fetch("http://localhost:3000/alunos", {
                     method: "GET",
                     headers: {
@@ -47,7 +43,6 @@ export default function RelatorioAlunos() {
                 });
                 if (!res.ok) throw new Error("Erro ao buscar alunos");
                 const dados = await res.json();
-                console.log(dados);
                 setListaDeAlunos(dados);
             } catch (error) {
                 setMensagem("Erro ao carregar os alunos.");
@@ -118,6 +113,53 @@ export default function RelatorioAlunos() {
         const printWindow = window.open(pdfUrl);
         printWindow.onload = () => printWindow.print();
     };
+
+
+    async function alterarAluno(aluno) {
+        let listaaux = [];
+        try {
+
+            const res = await fetch("http://localhost:3000/alunoResponsavel/" + aluno.id, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            if (!res.ok) throw new Error("Erro ao buscar responsavel do atendido");
+            const dados = await res.json();
+            console.log("dados");
+
+            console.log(dados);
+            listaaux = dados;
+
+            setListaResponsaveis(dados);
+        } catch (error) {
+            setMensagem("Erro ao carregar os Responsaveis do atendido.");
+            console.error(error);
+        }
+
+
+
+        console.log("listaaux");
+
+        console.log(listaaux);
+
+        aluno.listaResponsaveis = listaaux;
+
+        console.log("aluno.id");
+        console.log(aluno.id);
+
+        console.log("listaResponsaveis");
+        console.log(listaResponsaveis);
+
+
+        console.log("aluno");
+        console.log(aluno);
+        navigate("/cadastroAluno", { state: aluno });
+    }
+
+
 
     return (
         <PaginaGeral>
@@ -206,7 +248,8 @@ export default function RelatorioAlunos() {
                                             <td>
                                                 <div className="d-flex justify-content-center gap-2">
                                                     <Button
-                                                        onClick={() => navigate("/cadastroAluno", { state: aluno })}
+                                                        //onClick={() => navigate("/cadastroAluno", { state: aluno })}
+                                                        onClick={() => alterarAluno(aluno)}
                                                         variant="warning"
                                                     >
                                                         ✏️

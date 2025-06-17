@@ -1,5 +1,6 @@
 import AlunoResponsavel from "../Modelo/alunoResponsavel.js";
-
+import Aluno from "../Modelo/aluno.js";
+import Responsavel from "../Modelo/responsavel.js";
 
 export default class AlunoResponsavelDAO {
 
@@ -19,26 +20,10 @@ export default class AlunoResponsavelDAO {
     )
     */
 
-    /*async incluir(alunoResponsavel, conexao) {
-        if (alunoResponsavel instanceof AlunoResponsavel) {
-            const sql = `INSERT INTO alunoResponsavel
-                (alu_id, resp_cpf) VALUES ($1, $2);`;
-            const parametros = [
-                alunoResponsavel.aluno.id,
-                alunoResponsavel.responsavel.cpf
-            ];
-            const resposta = await conexao.query(sql, parametros);
-            return true;
-        }
-        else {
-            throw new Error("Objeto passado não é uma instância de AlunoResposavel");
-        }
-        return false;
-    }*/
     async incluir(alunoResponsavel, conexao) {
         if (alunoResponsavel instanceof AlunoResponsavel) {
             const sql = `
-            INSERT INTO alunoResponsavel
+            INSERT INTO alunoresponsavel
             (alu_id, resp_cpf)
             VALUES ($1, $2);
         `;
@@ -48,7 +33,7 @@ export default class AlunoResponsavelDAO {
                 alunoResponsavel.responsavel.cpf
             ];
 
-        
+
 
             try {
                 await conexao.query(sql, parametros);
@@ -70,28 +55,78 @@ export default class AlunoResponsavelDAO {
         }
     }
 
-    async consultar(termo, conexao) {
+    async excluirPorCpf(alunoResponsavel, conexao) {
+        if (alunoResponsavel instanceof AlunoResponsavel) {
+            const sql = `DELETE FROM alunoResponsavel WHERE resp_cpf = $1`;
+            const parametros = [alunoResponsavel.responsavel.cpf];
+            await conexao.query(sql, parametros);
+        }
+    }
+
+    async consultar(termo, tipo, conexao) {
         if (termo) {
             let sql;
             let parametros;
 
-            if (termo.id) {
-                sql = `SELECT * FROM alunoResponsavel WHERE alu_id = $1`;
-                parametros = termo.id;
+            if (tipo === 2) {
+
+                sql = `SELECT alu_id FROM alunoresponsavel WHERE resp_cpf = $1`;
+                
+                parametros = [termo];
+
+                //console.log("TERMO: ", termo);
+                
+                const resposta = await conexao.query(sql, parametros);
+                const listaId = resposta.rows;
+                
+                
+                //console.log( listaId);
+
+
+                let respostaFinal = [];
+                let i;
+                for (i = 0; i < listaId.length; i++) {
+                    const aluno = new Aluno(listaId[i].alu_id);
+                    const listaAlunos = await aluno.consultar(listaId[i].alu_id, 3, conexao);
+                    respostaFinal.push(listaAlunos[0]);
+                }
+                return respostaFinal;
             }
-            else if (termo.cpf) {
-                sql = `SELECT * FROM alunoResponsavel WHERE resp_cpf = $1`;
-                parametros = termo.cpf;
+            else {
+                if (tipo === 1) {
+                    sql = `SELECT resp_cpf FROM alunoresponsavel WHERE alu_id = $1`;
+
+
+                    parametros = [termo];                    
+                    const resposta = await conexao.query(sql, parametros);
+                    const listaCPF = resposta.rows;
+
+                    //  console.log("TERMO: ", termo);
+                    //  console.log( listaCPF);
+
+
+                    //     console.log("aaaaaaaaaaaaaaaaa ");
+                    //     console.log( listaCPF[0].resp_cpf);
+
+                    let respostaFinal = [];
+                    let i;
+                    for (i = 0; i < listaCPF.length; i++) {
+                        const responsavel = new Responsavel(listaCPF[i].resp_cpf);
+                        const listaResponsaveis = await responsavel.consultar(listaCPF[i].resp_cpf, conexao);
+                        respostaFinal.push(listaResponsaveis[0]);
+                    }
+                    return respostaFinal;
+                }
             }
-            console.log("termo :");
-            console.log(termo);
-            console.log("sql :");
-            console.log(sql);
-            console.log("parametros :");
-            console.log(parametros);
-            const resposta = await conexao.query(sql, parametros);
-            return resposta.rows;
-        };
+            return false;
+        }
         return false;
     }
 }
+
+
+
+
+
+
+

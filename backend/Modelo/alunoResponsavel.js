@@ -56,11 +56,16 @@ export default class AlunoResponsavel{
             const alunoResponsavelDAO = new AlunoResponsavelDAO();
            return alunoResponsavelDAO.excluir(this, conexao);
         }
-    
-    
-        async consultar(termo, conexao) {
+
+        async excluirPorCPF(conexao) {
             const alunoResponsavelDAO = new AlunoResponsavelDAO();
-            return alunoResponsavelDAO.consultar(termo, conexao);
+            return alunoResponsavelDAO.excluirPorCpf(this, conexao);
+        }
+    
+    
+        async consultar(termo,tipo ,conexao) {
+            const alunoResponsavelDAO = new AlunoResponsavelDAO();
+            return alunoResponsavelDAO.consultar(termo,tipo ,conexao);
         }
 
 }

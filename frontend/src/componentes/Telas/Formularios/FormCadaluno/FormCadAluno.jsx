@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { Alert, Form, Button, Col, Row, OverlayTrigger, Popover } from "react-bootstrap";
 import { useState, useEffect, use } from "react";
 import PaginaGeral from "../../../layouts/PaginaGeral";
@@ -70,15 +71,26 @@ export default function FormCadAluno(props) {
     const rotaVoltar = editando ? "/relatorioAluno" : "/telaMenu";
 
     useEffect(() => {
+        console.log(location.state);
         if (location.state && location.state.id) {
             setDados((prev) => ({
                 ...prev,
                 ...location.state
             }));
+            let i;
+            let novosObjResp = [];
+            for (i = 0; i < location.state.listaResponsaveis.length; i++) {
+                const aux = {
+                    status: 1,
+                    disabled: true,
+                    Responsavel: location.state.listaResponsaveis[i]
+                }
+                novosObjResp.push(aux);
+            }
+            setObjsResp(novosObjResp);
             setEditando(true);
         }
     }, [location.state]);
-
 
     async function buscarCep() {
         const cep = dados.cep.replace(/\D/g, "");
@@ -116,7 +128,6 @@ export default function FormCadAluno(props) {
         if (!data) return '';
         return new Date(data).toISOString().split('T')[0];
     }
-
 
     const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
@@ -241,33 +252,44 @@ export default function FormCadAluno(props) {
                         },
                         body: JSON.stringify(aluno)
                     });
+                    console.log("EDITANDO ALUNO: ");
+                    console.log(aluno);
+                    console.log("alunoJson" + JSON.stringify(aluno));
+
+
+
+
+                    
+
+
+
                     if (res.ok) {
                         setMensagem(editando ? "Aluno atualizado com sucesso!" : "Aluno cadastrado com sucesso!");
-                        setTimeout(() => {
-                            setDados({
-                                id: 0,
-                                nome: "",
-                                dataNascimento: "",
-                                listaResponsaveis: [{}],
-                                cidade: "",
-                                rua: "",
-                                bairro: "",
-                                numero: "",
-                                escola: {},
-                                telefone: "",
-                                periodoEscola: "",
-                                realizaAcompanhamento: "",
-                                possuiSindrome: "",
-                                descricao: "",
-                                rg: "",
-                                formularioSaude: {},
-                                ficha: {},
-                                status: "",
-                                periodoProjeto: "",
-                                cep: ""
-                            });
-                            navigate("/relatorioAluno");
-                        }, 3000);
+                        // setTimeout(() => {
+                        //     setDados({
+                        //         id: 0,
+                        //         nome: "",
+                        //         dataNascimento: "",
+                        //         listaResponsaveis: [{}],
+                        //         cidade: "",
+                        //         rua: "",
+                        //         bairro: "",
+                        //         numero: "",
+                        //         escola: {},
+                        //         telefone: "",
+                        //         periodoEscola: "",
+                        //         realizaAcompanhamento: "",
+                        //         possuiSindrome: "",
+                        //         descricao: "",
+                        //         rg: "",
+                        //         formularioSaude: {},
+                        //         ficha: {},
+                        //         status: "",
+                        //         periodoProjeto: "",
+                        //         cep: ""
+                        //     });
+                        //     navigate("/relatorioAluno");
+                        // }, 3000);
                     } else {
                         setMensagem(editando ? "Erro ao atualizar aluno!" : "Erro ao cadastrar o aluno.");
                     }
@@ -287,9 +309,6 @@ export default function FormCadAluno(props) {
                         });
                         console.log("ALUNO: ");
                         console.log(aluno);
-
-
-
                         console.log("alunoJson" + JSON.stringify(aluno));
 
                         if (res.ok) {
@@ -571,11 +590,6 @@ export default function FormCadAluno(props) {
 
 
     const preencherEscola = (r) => {
-        let novasLinhas = objEscola;
-        novasLinhas = {
-            status: 1,
-            escola: r
-        };
         setDados((prev) => ({
             ...prev,
             escola: r
@@ -594,8 +608,6 @@ export default function FormCadAluno(props) {
             }
         }
     */
-
-
 
     return (
         <PaginaGeral>
@@ -739,9 +751,9 @@ export default function FormCadAluno(props) {
                         className="inputAluno"
                     />
                 </Form.Group>
-                
+
                 {/* Ficha e Saúde */}
-                <Row>
+                {/* <Row>
                     <Col md={6}>
                         <Form.Group className="mb-3" id="formularioSaude">
                             <Form.Label style={{ fontWeight: '500' }}>Formulário de Saúde:</Form.Label>
@@ -766,7 +778,7 @@ export default function FormCadAluno(props) {
                             />
                         </Form.Group>
                     </Col>
-                </Row>
+                </Row> */}
 
 
                 {/* Endereço */}
