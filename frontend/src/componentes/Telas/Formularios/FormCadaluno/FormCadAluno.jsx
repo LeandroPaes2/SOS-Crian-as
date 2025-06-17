@@ -599,11 +599,8 @@ export default function FormCadAluno(props) {
 
                 {/* Dados do Aluno */}
                 <div className="divTitulo">
-<<<<<<< HEAD
                     <h4><strong>Aluno</strong></h4>
-=======
                     <strong> <h4>Atendido</h4>  </strong>
->>>>>>> a9cb9618c1b0c3fc843f831d089e3da332a6ba54
                 </div>
 
                 <Form.Group className="mb-3" id="nome">

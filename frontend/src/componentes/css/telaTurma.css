@@ -1,4 +1,4 @@
-.botaoPesquisa{
+.botaoPesquisa {
     width: 400px;
     background-color: #e3436b;
     border-color: #81233b;
@@ -6,7 +6,7 @@
     width: 150px;
 }
 
-.divInput{
+.divInput {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -15,22 +15,22 @@
     gap: 10px;
 }
 
-.formInput{
+.formInput {
     width: 400px;
 }
 
-.form{
+.form {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-.topot{
+.topot {
     padding-top: 100px;
 }
 
-.cadastroTurma{
+.cadastroTurma {
     background-color: rgba(255, 255, 255, 0.9);
     height: 100vh;
     width: 60%;
@@ -42,4 +42,15 @@
 
 }
 
+
+.inputPresenca {
+    max-width: 1000px;
+    padding: 0.875rem;
+    font-size: 1rem;
+    border: 1.5px solid #000;
+    border-radius: 0.5rem;
+    box-shadow: 2.5px 3px 0 #000;
+    outline: none;
+    transition: ease 0.25s;
+}
 
