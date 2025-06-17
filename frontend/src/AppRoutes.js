@@ -71,8 +71,7 @@ function AppRoutes() {
                     <Route path="/dadosUsuario" element={<TelaDadosUsuario/>}/>
                     <Route path="/telaEmailSenha" element={<TelaEmailSenha/>}/>
                     <Route path="/alterarSenha" element={<TelaAlterarSenha/>}/>
-                    <Route element={<PrivateRoute niveisPermitidos={[1, 2]}/>}>
-                        <Route path="/telaTurma" element={<TelaCadastroTurma />} />
+                    <Route path="/telaTurma" element={<TelaCadastroTurma />} />
                         <Route path="/cadastroTurma" element={<FormCadTurma />} />
                         <Route path="/relatorioTurma" element={<RelatorioTurmas />} />
                         <Route path="/telaMateria" element={<TelaCadastroMateria />} />
@@ -81,39 +80,44 @@ function AppRoutes() {
                         <Route path="/telaHorario" element={<TelaCadastroHorario/>}/>
                         <Route path="/cadastroHorario" element={<FormCadHorario/>}/>
                         <Route path="/relatorioHorario" element={<RelatorioHorario/>}/>
+                        <Route path="/relatorioEvento" element={<RelatorioEventos />}/>
+                        <Route path="/telaEvento" element={<TelaEvento/>}/>
+                        <Route path="/cadastroEvento" element={<FormCadEvento />}/>
+                    <Route element={<PrivateRoute niveisPermitidos={[1, 2, 3, 6]}/>}>
+                        
                         <Route path="/telaPresenca" element={<TelaCadastroPresenca/>}/>
                         <Route path="/cadastroPresenca" element={<FormCadPresenca/>}/>
                         <Route path="/relatorioPresenca" element={<RelatorioPresenca/>}/>
                         <Route path="/relatorioFalta" element={<RelatorioFaltas />} />
                     </Route>
-                    <Route element={<PrivateRoute niveisPermitidos={[1, 4, 3]}/>}>
+                    <Route element={<PrivateRoute niveisPermitidos={[1, 4, 2]}/>}>
                         <Route path="/telaAluno" element={<TelaCadastroAluno />} />
                         <Route path="/cadastroAluno" element={<FormCadAluno />} />
                         <Route path="/relatorioAluno" element={<RelatorioAlunos />} />
+                    </Route>
+
+                    <Route element={<PrivateRoute niveisPermitidos={[1, 3, 2]}/>}>
+                        <Route path="/telaFamilia" element={<TelaCadastroFamilia/>}/>
+                        <Route path="/cadastroFamilia" element={<FormCadFamilia/>}/>
+                        <Route path="/relatorioFamilia" element={<RelatorioFamilia/>}/>
+                    </Route>
+
+                    <Route element={<PrivateRoute niveisPermitidos={[2, 5, 3, 1]}/>}>
+                        <Route path="/telaFuncionario" element={<TelaCadastroFuncionario />} />
+                        <Route path="/cadastroFuncionario" element={<FormCadFuncionario />} />
+                        <Route path="/relatorioFuncionario" element={<RelatorioFuncionarios />} />
+                        <Route path="/relatorioListaEspera" element={<RelatorioListaEspera />} />
+                        <Route path='/telaListaEspera' element={<TelaCadastroListaEspera />} />
+                        <Route path="/cadastroListaEspera" element={<FormCadListaEspera />} />
+                    </Route>
+               
+                    <Route element={<PrivateRoute niveisPermitidos={[1, 2]}/>}>
                         <Route path="/telaResponsavel" element={<TelaCadastroResponsavel />} />
                         <Route path="/cadastroResponsavel" element={<FormCadResponsavel />} />
                         <Route path="/relatorioResponsavel" element={<RelatorioResponsaveis/>}/>   
                         <Route path="/telaEscola" element={< TelaCadastroEscola/>}/>
                         <Route path="/cadastroEscola" element={<FormCadEscola />} />
                         <Route path="/relatorioEscola" element={<RelatorioEscolas />} />
-                        <Route path="/telaFamilia" element={<TelaCadastroFamilia/>}/>
-                        <Route path="/cadastroFamilia" element={<FormCadFamilia/>}/>
-                        <Route path="/relatorioFamilia" element={<RelatorioFamilia/>}/>
-                    </Route>
-                    <Route element={<PrivateRoute niveisPermitidos={[6, 5, 3, 4]}/>}>
-                        <Route path="/telaFuncionario" element={<TelaCadastroFuncionario />} />
-                        <Route path="/cadastroFuncionario" element={<FormCadFuncionario />} />
-                        <Route path="/relatorioFuncionario" element={<RelatorioFuncionarios />} />
-                    </Route>
-                    <Route element={<PrivateRoute niveisPermitidos={[1, 2, 3, 5, 6]}/>}>
-                        <Route path="/relatorioEvento" element={<RelatorioEventos />}/>
-                        <Route path="/telaEvento" element={<TelaEvento/>}/>
-                        <Route path="/cadastroEvento" element={<FormCadEvento />}/>
-                    </Route>
-                    <Route element={<PrivateRoute niveisPermitidos={[4]}/>}>
-                        <Route path="/relatorioListaEspera" element={<RelatorioListaEspera />} />
-                        <Route path='/telaListaEspera' element={<TelaCadastroListaEspera />} />
-                        <Route path="/cadastroListaEspera" element={<FormCadListaEspera />} />
                     </Route>
                 </>
             )}

@@ -44,23 +44,23 @@ export default function FormCadFuncionario() {
         if (elemento === "cargo") {
             switch (valor) {
                 case "ASSITENTE SOCIAL":
-                    novoFuncionario.nivel = 4;
+                    novoFuncionario.nivel = 1;
                     break;
                 case "AUXILIAR ADMINISTRATIVO":
-                    novoFuncionario.nivel = 3;
+                    novoFuncionario.nivel = 2;
                     break;
                 case "EDUCADOR SOCIAL I":
-                    novoFuncionario.nivel = 1;
+                    novoFuncionario.nivel = 4;
                     break;
                 case "PSICOLOGO":
                 case "RH":
                     novoFuncionario.nivel = 5;
                     break;
                 case "EDUCADOR":
-                    novoFuncionario.nivel = 2;
+                    novoFuncionario.nivel = 6;
                     break;
                 case "COORDENADOR":
-                    novoFuncionario.nivel = 6;
+                    novoFuncionario.nivel = 3;
                     break;
                 default:
                     novoFuncionario.nivel = "";

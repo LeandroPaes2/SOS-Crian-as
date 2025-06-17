@@ -73,7 +73,7 @@ export default function Login(props) {
                     <div className="texto">
                         <Form.Group className="mb-4" controlId="email">
                             <Form.Label>E-Mail</Form.Label>
-                            <Form.Control type="email" placeholder="Enter your email"
+                            <Form.Control type="email" placeholder="Digite o email"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)} />

@@ -19,7 +19,7 @@ export default function MenuCadastro() {
     return (
         <div>
             <div className="divBotao">
-                {(funcionario?.nivel === 1 || funcionario?.nivel === 3 || funcionario?.nivel === 4) && (
+                {(funcionario?.nivel === 1 || funcionario?.nivel === 2 || funcionario?.nivel === 4) && (
                 
                         <Link to="/cadastroAluno" style={{ textDecoration: 'none' }}>
                             <button className="button1">
@@ -39,7 +39,7 @@ export default function MenuCadastro() {
                         </Link>
                 )}
 
-                {(funcionario?.nivel === 3 || funcionario?.nivel === 4 || funcionario?.nivel === 5 || funcionario?.nivel === 6) && (
+                {(funcionario?.nivel === 1 || funcionario?.nivel === 5 || funcionario?.nivel === 3 || funcionario?.nivel === 2) && (
                     <>
                         <Link to="/cadastroFuncionario" style={{ textDecoration: 'none' }}>
                             <button className="button1">
@@ -60,7 +60,7 @@ export default function MenuCadastro() {
                     </>
                 )}
 
-                {(funcionario?.nivel === 3 || funcionario?.nivel === 4) && (
+                {(funcionario?.nivel === 1 || funcionario?.nivel === 2) && (
                     <>
                     <Link to="/cadastroResponsavel" style={{ textDecoration: 'none' }}>
                             <button className="button1">
@@ -80,7 +80,7 @@ export default function MenuCadastro() {
                     </>
                 )}
 
-                {(funcionario?.nivel === 3 || funcionario?.nivel === 4 || funcionario?.nivel === 6) && (
+                {(funcionario?.nivel === 3 || funcionario?.nivel === 1 || funcionario?.nivel === 2) && (
                     <Link to="/cadastroFamilia" style={{ textDecoration: 'none' }}>
                             <button className="button1">
                                 <img src={familia} style={{ width: '100px' }} />

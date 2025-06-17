@@ -84,13 +84,13 @@ export default function RelatorioFamilia() {
         : listaDeFamilias;
 
     return (
-        <div className="topo">
-            <>
                 <PaginaGeral>
-                    <Container className="form-container mt-4">
-                        <Alert className="alert-custom text-center" variant="dark">
-                            <h2 className="titulo-alert">Familias</h2>
-                        </Alert>
+                    <div className="TelaD">
+                    <Container fluid className="py-4">
+                    {/* Título */}
+                    <div className="bg-light p-4 rounded shadow-sm mb-4">
+                        <h2 className="text-center mb-0">📄 Relatório de Familiares</h2>
+                    </div>
 
                         <Form className="mb-4">
                             <Form.Group>
@@ -120,7 +120,8 @@ export default function RelatorioFamilia() {
                                 {mensagem}
                             </Alert>
                         )}
-
+                        <div className="bg-white p-3 rounded shadow-sm">
+                        <div className="table-responsive">
                         <Table responsive striped bordered hover className="mt-3">
                             <thead>
                                 <tr>
@@ -150,10 +151,24 @@ export default function RelatorioFamilia() {
                                             <td>{familia.irmaos}</td>
                                             <td>{familia.temContato}</td>
                                             <td>
-                                                <Button onClick={() => editarFamilia(familia)} variant="warning">Editar</Button>
+                                                <div className="d-flex justify-content-center gap-2">
+                                                    <Button
+                                                        onClick={() => editarFamilia(familia)}
+                                                        variant="warning"
+                                                    >
+                                                        ✏️
+                                                    </Button>
+                                                </div>
                                             </td>
                                             <td>
-                                                <Button onClick={() => excluirFamilia(familia)} variant="danger">Excluir</Button>
+                                                <div className="d-flex justify-content-center gap-2">
+                                                    <Button
+                                                        variant="danger"
+                                                        onClick={() => excluirFamilia(familia)}
+                                                    >
+                                                        🗑️
+                                                    </Button>
+                                                </div>
                                             </td>
                                         </tr>
                                     )
@@ -161,14 +176,18 @@ export default function RelatorioFamilia() {
                             </tbody>
                         </Table>
 
-                        <div className="text-center">
-                            <Button onClick={() => navigate("/cadastroFamilia")} variant="success">Cadastrar Familia</Button>
-                            <Button onClick={() => navigate("/telaMenu")} variant="secondary">Voltar</Button>
-                        </div>
-
-                    </Container>
-                </PaginaGeral>
-            </>
-        </div>
+                    </div>
+                    </div>
+                    <div className="d-flex justify-content-between mt-4">
+                        <Button as={Link} to="/telaAluno" variant="secondary">
+                            ⬅️ Voltar
+                        </Button>
+                        <Button variant="info">
+                            🖨️ Imprimir
+                        </Button>
+                    </div>
+                </Container>
+            </div>
+        </PaginaGeral>
     );
 }

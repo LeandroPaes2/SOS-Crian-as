@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Table, Button, Form, InputGroup, Alert } from "react-bootstrap";
+import { Container, Table, Button, Form, InputGroup, Alert , Row, Col} from "react-bootstrap";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import { Link } from 'react-router-dom';
 
@@ -104,33 +104,29 @@ export default function RelatorioFuncionarios() {
         : listaDeFuncionarios;
 
     return (
-        <>
             <PaginaGeral>
-                <br />
-                <Alert className="mt-02 mb-02 dark text-center" variant="dark">
-                    <h2>
-                        Funcionarios
-                    </h2>
-                </Alert>
-                <Form>
-                    <Form.Group className="form" controlId="exampleForm.ControlInput1">
-                        <Form.Label>PESQUISE O FUNCIONARIO PELO NOME</Form.Label>
-                        <InputGroup className="divInput">
-                            <div>
-                                <Form.Control className="formInput" type="text" placeholder="Nome do Funcionario"
-                                    value={pesquisaNome}
-                                    onChange={(e) => setPesquisaNome(e.target.value)} />
-                            </div>
-                            <div>
-                                <Button className="botaoPesquisa" variant="secondary">
-                                    Pesquisar
-                                </Button>
-                            </div>
-                        </InputGroup>
-                    </Form.Group>
-                </Form>
-                <br />
-                <div>
+                <div className="TelaD">
+                <Container fluid className="py-4">
+                    {/* Título */}
+                    <div className="bg-light p-4 rounded shadow-sm mb-4">
+                        <h2 className="text-center mb-0">📄 Relatório de Funcionarios</h2>
+                    </div>
+                    <div className="bg-white p-3 rounded shadow-sm mb-4">
+                            <Row className="gy-3">
+                                
+                                <Col md={4} sm={12}>
+                                    <Form.Label><strong>Pesquisar por nome:</strong></Form.Label>
+                                    <InputGroup>
+                                        <Form.Control
+                                            placeholder="Digite o nome do funcionario"
+                                            value={pesquisaNome}
+                                            onChange={(e) => setPesquisaNome(e.target.value)}
+                                        />
+                                    </InputGroup>
+                                </Col>
+                            </Row>
+                        </div>
+                    <div>
                     <Button as={Link} to="/telaFuncionario" className="botaoPesquisa" variant="secondary">
                         Voltar
                     </Button>
@@ -138,8 +134,8 @@ export default function RelatorioFuncionarios() {
                         Cadastrar
                     </Button>
                 </div>
-                <br />
-                <Container>
+                <div className="bg-white p-3 rounded shadow-sm">
+                    <div className="table-responsive">
                     <Table striped bordered hover>
                         <thead>
                             <tr>
@@ -195,10 +191,12 @@ export default function RelatorioFuncionarios() {
                                 })
                             }
                         </tbody>
-                    </Table>
-                    <p>Quatidade de funcionarios cadastradas: {listaDeFuncionarios.length}</p>
-                </Container>
-            </PaginaGeral>
-        </>
+                        </Table>
+                        <p>Quatidade de funcionarios cadastradas: {listaDeFuncionarios.length}</p>
+                    </div>
+                </div>
+            </Container>
+            </div>
+        </PaginaGeral>
     );
 }

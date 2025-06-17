@@ -215,9 +215,12 @@ export default function RelatorioListaEspera() {
 
     return (
         <PaginaGeral>
-            <Alert className="mt-02 mb-02 dark text-center" variant="dark">
-                <h2>Lista de Espera</h2>
-            </Alert>
+            <div className="TelaD">
+                <Container fluid className="py-4">
+                    {/* Título */}
+                    <div className="bg-light p-4 rounded shadow-sm mb-4">
+                        <h2 className="text-center mb-0">📄 Relatório da Lista de Espera</h2>
+                    </div>
 
 
             {mostrarFiltros ? (
@@ -309,7 +312,8 @@ export default function RelatorioListaEspera() {
                 <Button variant="info" onClick={gerarPdfEImprimir}>Imprimir</Button>
             </div>
             <p>Quantidade de crianças cadastradas na lista de espera: {listaFiltrada.length}</p>
-            <Container className="mt-4">
+            <div className="bg-white p-3 rounded shadow-sm">
+                <div className="table-responsive">
                 <Table striped bordered hover>
                     <thead>
                         <tr>
@@ -362,8 +366,10 @@ export default function RelatorioListaEspera() {
                         ))}
                     </tbody>
                 </Table>
-
-            </Container>
+                </div>
+                </div>
+                </Container>
+            </div>
         </PaginaGeral >
     );
 }
