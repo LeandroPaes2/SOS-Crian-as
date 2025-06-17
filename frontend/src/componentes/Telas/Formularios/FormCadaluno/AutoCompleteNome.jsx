@@ -81,6 +81,7 @@ export default function AutoCompleteNome({ onSelecionar, value, selecionado, dad
                 type="text"
                 placeholder="Buscar por Nome"
                 value={input}
+                className= "inputAluno"
                 onChange={handleChange}
                 onFocus={() => setSugestoes(dadosResp)}
                 onBlur={() => setTimeout(() => setSugestoes([]), 150)} 

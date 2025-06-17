@@ -88,7 +88,7 @@ export default function Pagina(props) {
                                 value="cadastro"
                                 onChange={handleChange}
                             />
-                            <span>Cadastrar</span>
+                            <span style={{fontSize: '16px'}}>Cadastrar</span>
                         </label>
                         <label>
                             <input
@@ -97,7 +97,7 @@ export default function Pagina(props) {
                                 value="relatorio"
                                 onChange={handleChange}
                             />
-                            <span>Relatório</span>
+                            <span style={{fontSize: '16px'}}>Relatório</span>
                         </label>
                         <span className="selection"></span>
                     </div>

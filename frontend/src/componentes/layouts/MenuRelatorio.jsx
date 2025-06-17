@@ -11,7 +11,7 @@ import horarios from '../imagens/horario.png';
 import { useLogin } from "../../LoginContext.js";
 import familia from '../imagens/familia.png';
 import presenca from '../imagens/presenca.png';
-
+import faltas from '../imagens/faltas.png';
 export default function MenuRelatorio() {
     const { funcionario } = useLogin();
 
@@ -74,7 +74,7 @@ export default function MenuRelatorio() {
                     <>
                         <Link to="/relatorioMateria" style={{ textDecoration: 'none' }}>
                             <button className="button1">
-                                <img src={materias} style={{ width: '100px' }} />
+                                <img src={faltas} style={{ width: '100px' }} />
                                 <span style={{ color: 'white' }}>Oficinas</span>
                             </button>
                         </Link>
@@ -102,6 +102,7 @@ export default function MenuRelatorio() {
 
                         <Link to="/relatorioFalta" style={{ textDecoration: 'none' }}>
                             <button className="button1">
+                                <img src={materias} style={{ width: '100px' }} />
                                 <span style={{ color: 'white' }}>Faltas</span>
                             </button>
                         </Link>

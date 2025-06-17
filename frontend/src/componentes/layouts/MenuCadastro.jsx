@@ -11,6 +11,7 @@ import horarios from '../imagens/horario.png';
 import { useLogin } from "../../LoginContext.js";
 import familia from '../imagens/familia.png';
 import presenca from '../imagens/presenca.png';
+import faltas from '../imagens/faltas.png';
 
 export default function MenuCadastro() {
     const { funcionario } = useLogin();
@@ -77,7 +78,7 @@ export default function MenuCadastro() {
                     <>
                         <Link to="/cadastroMateria" style={{ textDecoration: 'none' }}>
                             <button className="button1">
-                                <img src={materias} style={{ width: '100px' }} />
+                                <img src={faltas} style={{ width: '100px' }} />
 
                                 <span style={{ color: 'white' }}>Oficinas</span>
                             </button>

@@ -1,4 +1,3 @@
-
 .divResp {
     margin: 2%;
     border-radius: 5%;
@@ -79,7 +78,7 @@
 }
 
 .formularioD {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.9);
     max-width: 80%;
     /* Largura máxima do formulário */
     width: 100%;
@@ -114,7 +113,7 @@
 
 /* estilo ao passar o mouse */
 .botaoPesquisaForm:hover {
-  /* Cor do botão ao passar o mouse */
+    /* Cor do botão ao passar o mouse */
     background-color: #4c9ddb;
     /* Cor da borda ao passar o mouse */
     border-color: #023999;
@@ -143,4 +142,15 @@
     /* Padding do aviso */
     border-radius: 5px;
     /* Bordas arredondadas do aviso */
+}
+
+.inputAluno {
+    max-width: 1000px;
+    padding: 0.875rem;
+    font-size: 1rem;
+    border: 1.5px solid #000;
+    border-radius: 0.5rem;
+    box-shadow: 2.5px 3px 0 #000;
+    outline: none;
+    transition: ease 0.25s;
 }
