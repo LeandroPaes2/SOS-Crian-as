@@ -77,15 +77,15 @@ export default function RelatorioMateria() {
                 <PaginaGeral>
                     <Container className="form-container mt-4">
                         <Alert className="alert-custom text-center" variant="dark">
-                            <h2 className="titulo-alert">Matéria</h2>
+                            <h2 className="titulo-alert">Ofifina</h2>
                         </Alert>
                         <Form className="mb-4">
                             <Form.Group controlId="formPesquisaNome">
-                                <Form.Label className="fw-semibold">Pesquise a matéria pelo nome</Form.Label>
+                                <Form.Label className="fw-semibold">Pesquise a oficina pelo nome</Form.Label>
                                 <InputGroup>
                                     <Form.Control
                                         type="text"
-                                        placeholder="Digite o nome da matéria..."
+                                        placeholder="Digite o nome da oficina..."
                                         value={pesquisaNome}
                                         onChange={(e) => setPesquisaNome(e.target.value)}
                                     />

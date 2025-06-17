@@ -7,12 +7,12 @@ import ListaEsperaCtrl from "../Controle/listaEsperaCtrl.js";
 const listaEspCtrl = new ListaEsperaCtrl();
 const rotaListaEspera = Router();
 
-rotaListaEspera.post("/", listaEspCtrl.gravar);
-rotaListaEspera.put("/:num", listaEspCtrl.alterar);
-rotaListaEspera.patch("/:num", listaEspCtrl.alterar);
-rotaListaEspera.delete("/:num", listaEspCtrl.excluir);
-rotaListaEspera.get("/:id?", listaEspCtrl.consultar);
-rotaListaEspera.get("/",listaEspCtrl.consultar);
+rotaListaEspera.post("/", autenticarToken, autorizarNivel("4","5", "3", "6"),listaEspCtrl.gravar);
+rotaListaEspera.put("/:num", autenticarToken, autorizarNivel("4","5", "3", "6"),listaEspCtrl.alterar);
+rotaListaEspera.patch("/:num",autenticarToken, autorizarNivel("4","5", "3", "6"),listaEspCtrl.alterar);
+rotaListaEspera.delete("/:num", autenticarToken, autorizarNivel("4","5", "3", "6"),listaEspCtrl.excluir);
+rotaListaEspera.get("/:id?",autenticarToken, autorizarNivel("4","5", "3", "6"), listaEspCtrl.consultar);
+rotaListaEspera.get("/",autenticarToken, autorizarNivel("4","5", "3", "6"),listaEspCtrl.consultar);
 
 
 export default rotaListaEspera;

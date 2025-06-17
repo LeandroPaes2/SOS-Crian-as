@@ -12,16 +12,16 @@ export default function TelaCadastroAluno() {
                 <PaginaGeral>
                     <br />
                     <Alert className="alert-custom text-center mt-4 mb-4" >
-                        <h2 className="titulo-alert">Alunos</h2>
+                        <h2 className="titulo-alert">Atendidos</h2>
                     </Alert>
 
                     <div className="botoes-container">
                         <Button as={Link} to="/cadastroAluno" variant="secondary" className="botaoMenu">
-                            Cadastrar Aluno
+                            Cadastrar Atendido
                         </Button>
 
                         <Button as={Link} to="/relatorioAluno" variant="secondary" className="botaoMenu">
-                            Relatório dos Alunos
+                            Relatório dos Atendidos
                         </Button>
                     </div>
                 </PaginaGeral>

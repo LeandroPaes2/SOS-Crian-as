@@ -601,7 +601,7 @@ export default function FormCadAluno(props) {
 
 
                 <div className="divTitulo">
-                    <strong> <h4>Aluno</h4>  </strong>
+                    <strong> <h4>Atendido</h4>  </strong>
                 </div>
                 <Form.Group className="mb-3" id="nome">
                     <Form.Label>Nome:</Form.Label>
