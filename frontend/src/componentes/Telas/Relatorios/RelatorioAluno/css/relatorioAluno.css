@@ -1,0 +1,44 @@
+body {
+  background-color: #f8f9fa;
+}
+
+h2 {
+  font-weight: 600;
+}
+
+.table th,
+.table td {
+  vertical-align: middle !important;
+}
+
+button {
+  border-radius: 8px !important;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.shadow-sm {
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+}
+
+.bg-light {
+  background-color: #f1f1f1 !important;
+}
+
+.TelaD {
+    background-color: white;
+    max-width: 80%;
+    /* Largura máxima do formulário */
+    width: 100%;
+    /* Largura total em telas menores */
+    padding: 30px;
+    /* Padding interno */
+    border-radius: 10px;
+    /* Bordas arredondadas */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    /* Sombra suave */
+    margin: 0 auto;
+    /* Centraliza o formulário */
+}

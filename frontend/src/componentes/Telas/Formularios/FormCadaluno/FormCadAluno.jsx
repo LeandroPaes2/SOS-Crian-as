@@ -112,6 +112,10 @@ export default function FormCadAluno(props) {
         }
     }
 
+    function formatarDataParaInput(data) {
+        if (!data) return '';
+        return new Date(data).toISOString().split('T')[0];
+    }
 
 
     const token = localStorage.getItem("token") || sessionStorage.getItem("token");
@@ -271,7 +275,7 @@ export default function FormCadAluno(props) {
                 else {
                     if (!editando && window.confirm("Deseja realmente cadastrar o aluno: " + aluno.nome)) {
 
-                       
+
                         const res = await fetch(url, {
                             method: method,
                             headers: {
@@ -280,34 +284,40 @@ export default function FormCadAluno(props) {
                             },
                             body: JSON.stringify(aluno),
                         });
+                        console.log("ALUNO: ");
+                        console.log(aluno);
+
+
+
+                        console.log("alunoJson" + JSON.stringify(aluno));
 
                         if (res.ok) {
                             setMensagem(editando ? "Aluno atualizado com sucesso!" : "Aluno cadastrado com sucesso!");
-                            setTimeout(() => {
-                                setDados({
-                                    id: 0,
-                                    nome: "",
-                                    dataNascimento: "",
-                                    responsavel: {},
-                                    cidade: "",
-                                    rua: "",
-                                    bairro: "",
-                                    numero: "",
-                                    escola: {},
-                                    telefone: "",
-                                    periodoEscola: "",
-                                    realizaAcompanhamento: "",
-                                    possuiSindrome: "",
-                                    descricao: "",
-                                    rg: "",
-                                    formularioSaude: {},
-                                    ficha: {},
-                                    status: "",
-                                    periodoProjeto: "",
-                                    cep: ""
-                                });
-                                navigate("/relatorioAluno");
-                            }, 3000);
+                            // setTimeout(() => {
+                            //     setDados({
+                            //         id: 0,
+                            //         nome: "",
+                            //         dataNascimento: "",
+                            //         responsavel: {},
+                            //         cidade: "",
+                            //         rua: "",
+                            //         bairro: "",
+                            //         numero: "",
+                            //         escola: {},
+                            //         telefone: "",
+                            //         periodoEscola: "",
+                            //         realizaAcompanhamento: "",
+                            //         possuiSindrome: "",
+                            //         descricao: "",
+                            //         rg: "",
+                            //         formularioSaude: {},
+                            //         ficha: {},
+                            //         status: "",
+                            //         periodoProjeto: "",
+                            //         cep: ""
+                            //     });
+                            //     navigate("/relatorioAluno");
+                            // }, 3000);
                         } else {
                             setMensagem(editando ? "Erro ao atualizar aluno!" : "Erro ao cadastrar o aluno.");
                         }
@@ -588,18 +598,13 @@ export default function FormCadAluno(props) {
 
     return (
         <PaginaGeral>
-            {mensagem && <Alert variant="info">{mensagem}</Alert>}
-
             <Form onSubmit={handleSubmit} className="formularioD">
-
-
+                {mensagem && <Alert variant="info">{mensagem}</Alert>}
                 <div className="divResp">
                     <div>
                         <TabelaResponsavel dadosResp={dadosResp} objResp={objResp} setObjsResp={setObjsResp} />
                     </div>
                 </div>
-
-
                 <div className="divTitulo">
                     <strong> <h4>Aluno</h4>  </strong>
                 </div>
@@ -619,7 +624,7 @@ export default function FormCadAluno(props) {
                     <Form.Control
                         type="date"
                         name="dataNascimento"
-                        value={dados.dataNascimento}
+                        value={formatarDataParaInput(dados.dataNascimento)}
                         onChange={handleChange}
                         className={erros.dataNascimento === 1 ? 'input-error' : ''}
                     />
@@ -884,12 +889,11 @@ export default function FormCadAluno(props) {
                         onChange={handleChange}
                     />
                 </Form.Group>
-
-                <div className="d-flex justify-content-between">
-                    <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
-                        Voltar
+                <div className="d-flex justify-content-between mt-4 margintop">
+                    <Button as={Link} to={rotaVoltar} variant="secondary">
+                        ⬅️  Voltar
                     </Button>
-                    <Button className="botaoPesquisa" variant="primary" type="submit">
+                    <Button variant="secondary" type="submit" >
                         {editando ? "Atualizar" : "Cadastrar"}
                     </Button>
                 </div>
