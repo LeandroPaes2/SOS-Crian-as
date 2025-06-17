@@ -22,29 +22,21 @@ export default function MenuInicial() {
             <div className="divBotao">
 
                 {(funcionario?.nivel == 1 || funcionario?.nivel === 4 || funcionario?.nivel === 3) && (
-                    <>
                         <Button as={Link} to="/telaAluno" className='botaoMenu' variant="primary" size="lg">
                             <img src={alunos} style={{ width: '100px' }} />
                             <br />
-                            Alunos
+                            Atendidos
                         </Button>
-                        <Button as={Link} to="/telaResponsavel" className='botaoMenu' variant="primary" size="lg">
-                            <img src={responsavel} style={{ width: '100px' }} />
-                            <br />
-                            Responsáveis
-                        </Button>
-                        <Button as={Link} to="/telaEscola" className='botaoMenu' variant="primary" size="lg">
-                            <img src={escolas} style={{ width: '130px' }} />
-                            <br />
-                            Escolas
-                        </Button>
-                        <Button as={Link} to="/telaFamilia" className='botaoMenu' variant="primary" size="lg">
-                            <img src={familia} style={{ width: '100px' }} />
-                            <br />
-                            Familias
-                        </Button>
-                    </>
                 )}
+
+                {(funcionario?.nivel === 1 || funcionario?.nivel === 2 || funcionario?.nivel === 3 || funcionario?.nivel === 6 || funcionario?.nivel === 4) && (
+                    <Button as={Link} to="/telaPresenca" className='botaoMenu' variant="primary" size="lg">
+                            <img src={presenca} style={{ width: '140px' }} />
+                            <br />
+                            Presenças
+                        </Button>
+                )}
+                    
                 {(funcionario?.nivel === 6 || funcionario?.nivel === 5 || funcionario?.nivel === 3 || funcionario?.nivel === 4) && (
                     <>
                         <Button as={Link} to="/telaFuncionario" className='botaoMenu' variant="primary" size="lg">
@@ -60,37 +52,49 @@ export default function MenuInicial() {
                             </Button>)}
                     </>
                 )}
-                {(funcionario?.nivel === 1 || funcionario?.nivel === 2) && (
+                 {(funcionario?.nivel === 3 || funcionario?.nivel === 4) && (
                     <>
-                        <Button as={Link} to="/telaMateria" className='botaoMenu' variant="primary" size="lg">
+                        <Button as={Link} to="/telaResponsavel" className='botaoMenu' variant="primary" size="lg">
+                            <img src={responsavel} style={{ width: '100px' }} />
+                            <br />
+                            Responsáveis
+                        </Button>
+                        <Button as={Link} to="/telaEscola" className='botaoMenu' variant="primary" size="lg">
+                            <img src={escolas} style={{ width: '130px' }} />
+                            <br />
+                            Escolas
+                        </Button>
+                    </>
+                 )}
+                {(funcionario?.nivel === 3 || funcionario?.nivel === 4 || funcionario?.nivel === 6) && (
+                        
+                        <Button as={Link} to="/telaFamilia" className='botaoMenu' variant="primary" size="lg">
+                            <img src={familia} style={{ width: '100px' }} />
+                            <br />
+                            Familias
+                        </Button>
+                        
+                )}
+                <Button as={Link} to="/telaMateria" className='botaoMenu' variant="primary" size="lg">
                             <img src={materias} style={{ width: '100px' }} />
                             <br />
                             Oficinas
                         </Button>
-                        <Button as={Link} to="/telaHorario" className='botaoMenu' variant="primary" size="lg">
+                <Button as={Link} to="/telaHorario" className='botaoMenu' variant="primary" size="lg">
                             <img src={horarios} style={{ width: '100px' }} />
                             <br />
                             Horários
                         </Button>
-                        <Button as={Link} to="/telaTurma" className='botaoMenu' variant="primary" size="lg">
+                <Button as={Link} to="/telaTurma" className='botaoMenu' variant="primary" size="lg">
                             <img src={turmas} style={{ width: '100px' }} />
                             <br />
                             Turmas
                         </Button>
-                        <Button as={Link} to="/telaPresenca" className='botaoMenu' variant="primary" size="lg">
-                            <img src={presenca} style={{ width: '140px' }} />
-                            <br />
-                            Presenças
-                        </Button>
-                    </>
-                )}
-                {funcionario?.nivel !== 4 && (
-                    <Button as={Link} to="/telaEvento" className='botaoMenu' variant="primary" size="lg">
+                <Button as={Link} to="/telaEvento" className='botaoMenu' variant="primary" size="lg">
                         <img src={eventos} style={{ width: '100px' }} />
                         <br />
                         Eventos
                     </Button>
-                )}
 
             </div>
         </div>

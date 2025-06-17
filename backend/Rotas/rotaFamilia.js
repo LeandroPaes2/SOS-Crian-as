@@ -1,5 +1,7 @@
 import { Router } from "express";
 import FamiliaCtrl from "../Controle/familiaCtrl.js";
+import autenticarToken from "../middleware/autenticarToken.js";
+import autorizarNivel from "../middleware/autorizarNivel.js";
 
 const familiaCtrl = new FamiliaCtrl();
 const rotaFamilia = Router();

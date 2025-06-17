@@ -19,15 +19,49 @@ export default function MenuCadastro() {
         <div>
             <div className="divBotao">
                 {(funcionario?.nivel === 1 || funcionario?.nivel === 3 || funcionario?.nivel === 4) && (
-                    <>
+                
                         <Link to="/cadastroAluno" style={{ textDecoration: 'none' }}>
                             <button className="button1">
                                 <img src={alunos} style={{ width: '100px' }} />
-                                <span style={{ color: 'white' }}>Alunos</span>
+                                <span style={{ color: 'white' }}>Atendidos</span>
+                            </button>
+                        </Link>
+                )}
+
+                {(funcionario?.nivel === 1 || funcionario?.nivel === 2 || funcionario?.nivel === 3 || funcionario?.nivel === 6 || funcionario?.nivel === 4) && (
+                    <Link to="/cadastroPresenca" style={{ textDecoration: 'none' }}>
+                            <button className="button1">
+                                <img src={presenca} style={{ width: '140px' }} />
+
+                                <span style={{ color: 'white' }}>Presenças</span>
+                            </button>
+                        </Link>
+                )}
+
+                {(funcionario?.nivel === 3 || funcionario?.nivel === 4 || funcionario?.nivel === 5 || funcionario?.nivel === 6) && (
+                    <>
+                        <Link to="/cadastroFuncionario" style={{ textDecoration: 'none' }}>
+                            <button className="button1">
+                                <img src={funcionarios} style={{ width: '100px' }} />
+
+                                <span style={{ color: 'white' }}>Funcionários</span>
                             </button>
                         </Link>
 
-                        <Link to="/cadastroResponsavel" style={{ textDecoration: 'none' }}>
+                            <Link to="/cadastroListaEspera" style={{ textDecoration: 'none' }}>
+                                <button className="button1">
+                                    <img src={funcionarios} style={{ width: '100px' }} />
+    
+                                    <span style={{ color: 'white' }}>Lista Espera</span>
+                                </button>
+                            </Link>
+                        
+                    </>
+                )}
+
+                {(funcionario?.nivel === 3 || funcionario?.nivel === 4) && (
+                    <>
+                    <Link to="/cadastroResponsavel" style={{ textDecoration: 'none' }}>
                             <button className="button1">
                                 <img src={responsavel} style={{ width: '100px' }} />
                                 <span style={{ color: 'white' }}>Responsáveis</span>
@@ -41,41 +75,21 @@ export default function MenuCadastro() {
                             </button>
                         </Link>
 
-                        <Link to="/cadastroFamilia" style={{ textDecoration: 'none' }}>
+                        
+                    </>
+                )}
+
+                {(funcionario?.nivel === 3 || funcionario?.nivel === 4 || funcionario?.nivel === 6) && (
+                    <Link to="/cadastroFamilia" style={{ textDecoration: 'none' }}>
                             <button className="button1">
                                 <img src={familia} style={{ width: '100px' }} />
 
                                 <span style={{ color: 'white' }}>Famílias</span>
                             </button>
                         </Link>
-                    </>
                 )}
 
-                {(funcionario?.nivel === 3 || funcionario?.nivel === 4 || funcionario?.nivel === 5 || funcionario?.nivel === 6) && (
-                    <>
-                        <Link to="/cadastroFuncionario" style={{ textDecoration: 'none' }}>
-                            <button className="button1">
-                                <img src={funcionarios} style={{ width: '100px' }} />
-
-                                <span style={{ color: 'white' }}>Funcionários</span>
-                            </button>
-                        </Link>
-
-                        {funcionario?.nivel === 4 && (
-                            <Link to="/cadastroListaEspera" style={{ textDecoration: 'none' }}>
-                                <button className="button1">
-                                    <img src={funcionarios} style={{ width: '100px' }} />
-    
-                                    <span style={{ color: 'white' }}>Lista Espera</span>
-                                </button>
-                            </Link>
-                        )}
-                    </>
-                )}
-
-                {(funcionario?.nivel === 1 || funcionario?.nivel === 2) && (
-                    <>
-                        <Link to="/cadastroMateria" style={{ textDecoration: 'none' }}>
+                <Link to="/cadastroMateria" style={{ textDecoration: 'none' }}>
                             <button className="button1">
                                 <img src={materias} style={{ width: '100px' }} />
 
@@ -98,25 +112,12 @@ export default function MenuCadastro() {
                                 <span style={{ color: 'white' }}>Turmas</span>
                             </button>
                         </Link>
-
-                        <Link to="/cadastroPresenca" style={{ textDecoration: 'none' }}>
-                            <button className="button1">
-                                <img src={presenca} style={{ width: '140px' }} />
-
-                                <span style={{ color: 'white' }}>Presenças</span>
-                            </button>
-                        </Link>
-                    </>
-                )}
-
-                {funcionario?.nivel !== 4 && (
-                    <Link to="/cadastroEvento" style={{ textDecoration: 'none' }}>
+                        <Link to="/cadastroEvento" style={{ textDecoration: 'none' }}>
                         <button className="button1">
                             <img src={eventos} style={{ width: '100px' }} />
                             <span style={{ color: 'white' }}>Eventos</span>
                         </button>
                     </Link>
-                )}
             </div>
         </div>
     );

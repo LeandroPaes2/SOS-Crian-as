@@ -40,59 +40,70 @@ export default function Menu(props) {
                         <NavDropdown title="Cadastros" id="basic-nav-dropdown" show={dropdownAberto === "cadastros"} onMouseEnter={() => handleMouseEnter("cadastros")} onMouseLeave={handleMouseLeave}>
                             {(funcionario?.nivel === 1 || funcionario?.nivel === 4 || funcionario?.nivel == 3) && (
 
-                                <NavDropdown.Item href="#" as={Link} to="/telaAluno" >Alunos</NavDropdown.Item>
+                                <NavDropdown.Item href="#" as={Link} to="/cadastroAluno" >Atendidos</NavDropdown.Item>
 
                             )}
 
-                            {(funcionario?.nivel === 4) && (<NavDropdown.Item href="#" as={Link} to="/telaListaEspera" >Lista de Espera</NavDropdown.Item>)}
-
-                            {(funcionario?.nivel === 6 || funcionario?.nivel === 5 || funcionario?.nivel === 3 || funcionario?.nivel === 4) && (
-                                <NavDropdown.Item href="#" >Funcionarios</NavDropdown.Item>
+                            {(funcionario?.nivel === 1 || funcionario?.nivel === 2 || funcionario?.nivel === 3 || funcionario?.nivel === 6 || funcionario?.nivel === 4) && (
+                                <NavDropdown.Item href="#" as={Link} to="/cadastroPresenca" >Presença</NavDropdown.Item>
                             )}
-                            {(funcionario?.nivel === 1 || funcionario?.nivel === 2) && (
+
+                            {(funcionario?.nivel === 4 || funcionario?.nivel === 5 || funcionario?.nivel === 3 || funcionario?.nivel === 6) && (
                                 <>
-                                    <NavDropdown.Item href="#" as={Link} to="/telaMateria">Oficinas</NavDropdown.Item>
-                                    <NavDropdown.Item href="#" as={Link} to="/telaHorario">Horários</NavDropdown.Item>
+                                <NavDropdown.Item href="#" as={Link} to="/cadastroListaEspera" >Lista de Espera</NavDropdown.Item>
+                                <NavDropdown.Item href="#" as={Link} to="/cadastroFuncionario">Funcionarios</NavDropdown.Item>
+                            </>)}
+
+                            {(funcionario?.nivel === 3 || funcionario?.nivel === 4) && (
+                                <>
+                                    <NavDropdown.Item href="#" as={Link} to="/cadastroResponsavel" >Responsaveis</NavDropdown.Item>
+                                    <NavDropdown.Item href="#" as={Link} to="/cadastroEscola">Escolas</NavDropdown.Item>
                                 </>
                             )}
-                            {funcionario?.nivel !== 4 && (
-                                <NavDropdown.Item as={Link} to="/telaEvento">Eventos</NavDropdown.Item>
-                            )}
-                            {(funcionario?.nivel === 1 || funcionario?.nivel === 2) && (
-                                <NavDropdown.Item href="#" as={Link} to="/telaTurma">Turmas</NavDropdown.Item>
-                            )}
-                            <NavDropdown.Item href="#" as={Link} to="/telaResponsavel" >Responsaveis</NavDropdown.Item>
 
-                            <NavDropdown.Item href="#" as={Link} to="/telaEscola">Escolas</NavDropdown.Item>
-
-                            <NavDropdown.Item href="#" as={Link} to="/telaFamilia">Familias</NavDropdown.Item>
+                            {(funcionario?.nivel === 3 || funcionario?.nivel === 4 || funcionario?.nivel === 6) && (
+                                    <NavDropdown.Item href="#" as={Link} to="/cadastroFamilia">Familias</NavDropdown.Item>
+                            )}
+                        
+                            <NavDropdown.Item href="#" as={Link} to="/cadastroMateria">Oficinas</NavDropdown.Item>
+                            <NavDropdown.Item href="#" as={Link} to="/cadastroHorario">Horários</NavDropdown.Item>
+                            <NavDropdown.Item href="#" as={Link} to="/cadastroEvento">Eventos</NavDropdown.Item>
+                            <NavDropdown.Item href="#" as={Link} to="/cadastroTurma">Turmas</NavDropdown.Item>
                         </NavDropdown>
+
 
                         <NavDropdown title="Relatórios" id="basic-nav-dropdown" show={dropdownAberto === "relatorios"} onMouseEnter={() => handleMouseEnter("relatorios")}
                             onMouseLeave={handleMouseLeave}>
                             {(funcionario?.nivel === 1 || funcionario?.nivel === 4 || funcionario?.nivel == 3) && (
-                                <NavDropdown.Item href="#action/3.1">Alunos</NavDropdown.Item>
+                                <NavDropdown.Item href="#action/3.1" as={Link} to="/relatorioAluno">Atendidos</NavDropdown.Item>
                             )}
+
+                            {(funcionario?.nivel === 1 || funcionario?.nivel === 2 || funcionario?.nivel === 3 || funcionario?.nivel === 6 || funcionario?.nivel === 4) && (
+                                <NavDropdown.Item href="#" as={Link} to="/relatorioPresenca" >Presença</NavDropdown.Item>
+                            )}
+
                             {(funcionario?.nivel === 6 || funcionario?.nivel === 5 || funcionario?.nivel === 3 || funcionario?.nivel === 4) && (
-                                <NavDropdown.Item href="#action/3.1" >Funcionarios</NavDropdown.Item>
-                            )}
-                            {(funcionario?.nivel === 1 || funcionario?.nivel === 2) && (
                                 <>
-                                    <NavDropdown.Item href="#action/3.1">Oficinas</NavDropdown.Item>
-                                    <NavDropdown.Item href="#action/3.1">Horários</NavDropdown.Item>
+                                <NavDropdown.Item href="#" as={Link} to="/relatorioListaEspera" >Lista de Espera</NavDropdown.Item>
+                                <NavDropdown.Item href="#action/3.1" as={Link} to="/relatorioFuncionario">Funcionários</NavDropdown.Item>
+                                </>
+                                
+                            )}
+                            {(funcionario?.nivel === 3 || funcionario?.nivel === 4) && (
+                                <>
+                                    <NavDropdown.Item href="#" as={Link} to="/relatorioResponsavel" >Responsaveis</NavDropdown.Item>
+                                    <NavDropdown.Item href="#action/3.1" as={Link} to="/relatorioEscola">Escolas</NavDropdown.Item>
                                 </>
                             )}
-                            {funcionario?.nivel !== 4 && (
-                                <NavDropdown.Item href="#action/3.1">Eventos</NavDropdown.Item>
+                            
+                            {(funcionario?.nivel === 3 || funcionario?.nivel === 4 || funcionario?.nivel === 6) && (
+                                <NavDropdown.Item href="#action/3.1" as={Link} to="/relatorioFamilia">Familias</NavDropdown.Item>
                             )}
-                            {(funcionario?.nivel === 1 || funcionario?.nivel === 2) && (
-                                <NavDropdown.Item href="#action/3.1">Turmas</NavDropdown.Item>
-                            )}
-                            <NavDropdown.Item href="#" as={Link} to="/relatorioResponsavel" >Responsaveis</NavDropdown.Item>
 
-                            <NavDropdown.Item href="#action/3.1">Escolas</NavDropdown.Item>
-
-                            <NavDropdown.Item href="#action/3.1">Familias</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.1">Oficinas</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.1">Horários</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.1">Eventos</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.1">Turmas</NavDropdown.Item>
                         </NavDropdown>
                         {/* <Nav.Link href="#home">Sobre</Nav.Link> */}
                     </Nav>

@@ -3,6 +3,8 @@
 
 import { Router } from "express"; //micro-aplicação HTTP
 import ListaEsperaCtrl from "../Controle/listaEsperaCtrl.js";
+import autenticarToken from "../middleware/autenticarToken.js";
+import autorizarNivel from "../middleware/autorizarNivel.js";
 
 const listaEspCtrl = new ListaEsperaCtrl();
 const rotaListaEspera = Router();

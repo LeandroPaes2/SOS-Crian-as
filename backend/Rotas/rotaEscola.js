@@ -1,5 +1,7 @@
 import { Router } from "express"; 
 import EscolaCtrl from "../Controle/escolaCtrl.js";
+import autenticarToken from "../middleware/autenticarToken.js";
+import autorizarNivel from "../middleware/autorizarNivel.js";
 
 const escolaCtrl = new EscolaCtrl();
 const rotaEscola = Router();
