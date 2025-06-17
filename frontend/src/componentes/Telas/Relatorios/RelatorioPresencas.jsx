@@ -142,13 +142,13 @@ export default function RelatorioPresenca() {
                             <div className="row g-3">
                                 <div className="col-md-4">
                                     <Form.Group controlId="filtroMateria">
-                                        <Form.Label>Matéria</Form.Label>
+                                        <Form.Label>Oficina</Form.Label>
                                         <Form.Select
                                             name="materia"
                                             value={filtros.materia}
                                             onChange={handleFiltroChange}
                                         >
-                                            <option value="">Todas matérias</option>
+                                            <option value="">Todas oficina</option>
                                             {materias.map(materia => (
                                                 <option key={materia.id} value={materia.id}>
                                                     {materia.nome}
@@ -207,7 +207,7 @@ export default function RelatorioPresenca() {
                             <thead>
                                 <tr>
                                     <th>Data/Hora</th>
-                                    <th>Matéria</th>
+                                    <th>Oficina</th>
                                     <th>Turma</th>
                                     <th>Ações</th>
                                 </tr>
@@ -249,7 +249,7 @@ export default function RelatorioPresenca() {
                     )}
                     
                     <div>
-                        <Button as={Link} to="/telaPresenca" className="botaoPesquisa" variant="secondary">
+                        <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                             Voltar
                         </Button>
                     </div>

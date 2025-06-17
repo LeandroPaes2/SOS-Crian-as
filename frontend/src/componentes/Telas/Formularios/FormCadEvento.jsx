@@ -195,8 +195,8 @@ export default function FormCadEvento(props) {
                         />
                     </Form.Group>
 
-                    <Button as={Link} to="/telaEvento" className="botaoPesquisa" variant="secondary">
-                        Pagina inicial eventos
+                    <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
+                        Voltar
                     </Button>
                     <Button as={Link} to="/relatorioEvento" className="botaoPesquisa" variant="secondary">
                         Eventos Agendados

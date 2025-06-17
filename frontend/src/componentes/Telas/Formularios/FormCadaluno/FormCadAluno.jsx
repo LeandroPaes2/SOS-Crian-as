@@ -67,7 +67,7 @@ export default function FormCadAluno(props) {
         cep: -1
     });
     const navigate = useNavigate();
-    const rotaVoltar = editando ? "/relatorioAluno" : "/telaAluno";
+    const rotaVoltar = editando ? "/relatorioAluno" : "/telaMenu";
 
     useEffect(() => {
         if (location.state && location.state.id) {

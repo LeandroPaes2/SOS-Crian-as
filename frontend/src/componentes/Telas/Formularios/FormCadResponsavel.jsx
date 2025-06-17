@@ -430,8 +430,8 @@ export default function FormCadResponsavel(props) {
                 </>
                 )}
 
-                <Button as={Link} to="/telaResponsavel" className="botaoPesquisa" variant="secondary">
-                                Pagina inicial responsavel
+                <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
+                                Voltar
                         </Button>
                     <Button as={Link} to="/relatorioResponsavel" className="botaoPesquisa" variant="secondary">
                             Relatorio 

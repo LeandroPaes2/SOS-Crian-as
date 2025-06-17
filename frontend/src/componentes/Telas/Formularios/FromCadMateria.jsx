@@ -60,7 +60,7 @@ export default function FormCadmateria() {
         <div className="cadastroTurma">
             <PaginaGeral>
                 <Alert className="mt-2 mb-2 text-center" variant="dark">
-                    <h2>Matérias</h2>
+                    <h2>Oficinas</h2>
                 </Alert>
 
                 {mensagem && <Alert variant="info">{mensagem}</Alert>}
@@ -86,7 +86,7 @@ export default function FormCadmateria() {
                         />
                     </Form.Group>
 
-                    <Button as={Link} to="/telaMateria" className="botaoPesquisa" variant="secondary">
+                    <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                         Voltar
                     </Button>
                     <Button className="botaoPesquisa" variant="primary" type="submit">

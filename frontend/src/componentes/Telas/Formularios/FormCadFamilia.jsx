@@ -21,7 +21,7 @@ export default function FormCadFamilia() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const rotaVoltar = editando ? "/relatorioFamilia" : "/telaFamilia";
+    const rotaVoltar = editando ? "/relatorioFamilia" : "/telaMenu";
 
     useEffect(() => {
         if (location.state) {
