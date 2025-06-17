@@ -34,6 +34,7 @@ export default function FormCadEscola() {
 
         if (!nome.trim() || !endereco.trim() || !telefone.trim() || !tipo.trim()) {
             setMensagem("Preencha todos os campos obrigatórios!");
+            setTimeout(() => setMensagem(""), 3000);
             return;
         }
 
@@ -58,9 +59,10 @@ export default function FormCadEscola() {
 
             const response = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json",
+                headers: {
+                    "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
-                 },
+                },
                 body: JSON.stringify(escola),
             });
 
@@ -78,7 +80,7 @@ export default function FormCadEscola() {
                     setMensagem("");
                     setEditando(false);
                     navigate("/relatorioEscola");
-                }, 2000);
+                }, 3000);
             } else {
                 setMensagem(editando
                     ? "Erro ao atualizar a escola."
@@ -115,70 +117,80 @@ export default function FormCadEscola() {
     return (
         <div className="cadastroEscola" >
             <PaginaGeral>
-                <Alert className="mt-2 mb-2 text-center" variant="dark">
-                    <h2 className="titulo-alert">{editando ? "Editar Escola" : "Cadastro de Escola"}</h2>
+                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
+                    <h2 className="titulo-alert">Escolas</h2>
                 </Alert>
+                <h2 className=" mb-3" style={{ position: 'absolute', marginLeft: '220px', marginTop: '50px' }}>
+                    {editando ? 'Editar' : 'Cadastrar'}
+                </h2>
 
                 {mensagem && (
-                    <Alert className="mt-2 mb-2 text-center" variant={
-                        mensagem.toLowerCase().includes("sucesso") ? "success" :
-                            mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha")
-                                ? "danger" : "warning"
-                    }>
-                        {mensagem}
-                    </Alert>
+                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                        <Alert className="alert-animado mt-2 mb-2" variant={
+                            mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                        }>
+                            {mensagem}
+                        </Alert>
+                    </div>
                 )}
-
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '270px' }}>
+                    {/* Nome */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Nome</Form.Label>
+                        <Form.Label style={{ fontWeight: '500' }}>Nome</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite o nome"
                             value={nome}
                             onChange={(e) => setNome(e.target.value)}
                             isInvalid={mensagem && nome.trim() === ""}
+                            className="inputEscola"
                         />
                         <Form.Control.Feedback type="invalid">
                             O nome é obrigatório.
                         </Form.Control.Feedback>
                     </Form.Group>
 
+                    {/* Endereço */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Endereço</Form.Label>
+                        <Form.Label style={{ fontWeight: '500' }}>Endereço</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite o endereço"
                             value={endereco}
                             onChange={(e) => setEndereco(e.target.value)}
                             isInvalid={mensagem && endereco.trim() === ""}
+                            className="inputEscola"
                         />
                         <Form.Control.Feedback type="invalid">
                             O endereço é obrigatório.
                         </Form.Control.Feedback>
                     </Form.Group>
 
+                    {/* Telefone */}
                     <Form.Group className="mb-3">
-                        <Form.Label>Telefone</Form.Label>
+                        <Form.Label style={{ fontWeight: '500' }}>Telefone</Form.Label>
                         <Form.Control
                             type="tel"
                             placeholder="(99) 99999-9999"
                             value={telefone}
                             onChange={handleTelefoneChange}
                             isInvalid={mensagem && telefone.trim() === ""}
+                            className="inputEscola"
                         />
                         <Form.Control.Feedback type="invalid">
                             O telefone é obrigatório.
                         </Form.Control.Feedback>
                     </Form.Group>
 
-
-                    <Form.Group className="mb-3">
-                        <Form.Label>Tipo</Form.Label>
+                    {/* Tipo */}
+                    <Form.Group className="mb-4">
+                        <Form.Label style={{ fontWeight: '500' }}>Tipo</Form.Label>
                         <Form.Select
                             value={tipo}
                             onChange={(e) => setTipo(e.target.value)}
                             isInvalid={mensagem && tipo.trim() === ""}
+                            className="inputEscola"
                         >
                             <option value="">Selecione o tipo</option>
                             <option value="Pública">Pública</option>
@@ -190,15 +202,17 @@ export default function FormCadEscola() {
                         </Form.Control.Feedback>
                     </Form.Group>
 
+                    {/* Botões */}
                     <div className="d-flex justify-content-between">
                         <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
                             Voltar
                         </Button>
-                        <Button className="botaoPesquisa" variant="primary" type="submit">
+                        <Button type="submit" className="botaoPesquisa" variant="primary">
                             {editando ? "Atualizar" : "Cadastrar"}
                         </Button>
                     </div>
                 </Form>
+
             </PaginaGeral>
         </div>
     );
