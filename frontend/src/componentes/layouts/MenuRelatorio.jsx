@@ -96,6 +96,14 @@ export default function MenuRelatorio() {
                                                 <span style={{ color: 'white' }}>Oficinas</span>
                                             </button>
                                         </Link>
+
+                                        <Link to="/relatorioFalta" style={{ textDecoration: 'none' }}>
+                                            <button className="button1">
+                                                <img src={faltas} style={{ width: '100px' }} />
+                
+                                                <span style={{ color: 'white' }}>Faltas</span>
+                                            </button>
+                                        </Link>
                 
                                         <Link to="/relatorioHorario" style={{ textDecoration: 'none' }}>
                                             <button className="button1">

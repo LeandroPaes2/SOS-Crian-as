@@ -92,7 +92,7 @@ export default function MenuCadastro() {
 
                 <Link to="/cadastroMateria" style={{ textDecoration: 'none' }}>
                             <button className="button1">
-                                <img src={faltas} style={{ width: '100px' }} />
+                                <img src={materias} style={{ width: '100px' }} />
 
                                 <span style={{ color: 'white' }}>Oficinas</span>
                             </button>

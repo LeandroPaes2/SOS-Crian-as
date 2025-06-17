@@ -21,6 +21,8 @@ export default function RelatorioAlunos() {
 
     // Opções para filtros e ordenação
     const statusOptions = [
+        { name: 'Ativos', value: '2' },
+        { name: 'Excluídos', value: '0' },
         { name: 'Todos', value: 'todos' },
         // Adicione novos status aqui no futuro
     ];
@@ -29,6 +31,12 @@ export default function RelatorioAlunos() {
         { name: 'ID', value: 'id' },
         { name: 'Nome', value: 'nome' },
     ];
+
+    const getStatus = (status) => {
+        if (status === 0) return "EXCLUIDO";
+        if (status === 2) return "ATIVO";
+        return status;
+    };
 
     useEffect(() => {
         const buscarAlunos = async () => {
@@ -94,7 +102,7 @@ export default function RelatorioAlunos() {
             aluno.periodoEscola || "N/A",
             aluno.periodoProjeto || "N/A",
             `${aluno.rua}, ${aluno.numero}, ${aluno.bairro}, ${aluno.cidade}` || "N/A",
-            filtroStatus === "todos" ? (aluno.status === 1 ? "Ativo" : "Inativo") : null
+            getStatus(aluno.status)
         ].filter(val => val !== null));
 
         const headers = filtroStatus === "todos"
@@ -179,6 +187,7 @@ export default function RelatorioAlunos() {
                                     {statusOptions.map((option, idx) => (
                                         <ToggleButton
                                             key={idx}
+                                            id={`status-${idx}`}
                                             type="radio"
                                             variant="outline-primary"
                                             name="status"
@@ -198,6 +207,7 @@ export default function RelatorioAlunos() {
                                     {ordenarOptions.map((option, idx) => (
                                         <ToggleButton
                                             key={idx}
+                                            id={`ordenar-${idx}`}
                                             type="radio"
                                             variant="outline-success"
                                             name="ordenar"
