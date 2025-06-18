@@ -120,6 +120,7 @@ app.get('/', (req, res) => {
     res.send('🚀 API rodando com Express e CORS!');
 });
 
-app.listen(porta, () => {
-    console.log(`🚀 Servidor rodando na porta ${porta}`);
-});
+// app.listen(porta, () => {
+//     console.log(`🚀 Servidor rodando na porta ${porta}`);
+// });
+export const handler = serverless(app);
