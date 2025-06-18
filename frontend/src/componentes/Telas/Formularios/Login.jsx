@@ -31,7 +31,7 @@ export default function Login(props) {
             const resultado = await response.json();
 
             if (!response.ok) {
-            setMensagem(resultado.erro || resultado.mensagem || "Erro no login.");
+            setMensagem(resultado.erro || "Erro no login.");
             return;
             }
 

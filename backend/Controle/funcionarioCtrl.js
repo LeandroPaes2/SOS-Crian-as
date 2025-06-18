@@ -217,7 +217,11 @@ export default class FuncionarioCtrl {
                 const funcionario = new Funcionario();
                 const funcSenhaCorreta = await funcionario.autenticar(email, senha, conexao);
 
-                if (funcSenhaCorreta) {
+                if (!funcSenhaCorreta || funcSenhaCorreta.error) {
+                    return res.status(401).json({ erro: funcSenhaCorreta.error || "Email incorreto" });
+                }
+
+               
                     const token = jwt.sign(
                     {
                         email: funcSenhaCorreta.email,
@@ -231,9 +235,7 @@ export default class FuncionarioCtrl {
                         funcionario: funcSenhaCorreta,
                         token: token
                     });
-                } else {
-                    res.status(401).json({ erro: "Senha incorreta" });
-                }
+                
             } catch (e) {
                 res.status(500).json({ status: false, mensagem: e.message });
             } finally {

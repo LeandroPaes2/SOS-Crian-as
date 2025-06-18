@@ -139,7 +139,7 @@ export default class FuncionarioDAO {
             const resultado = await conexao.query(sql, [email]);
 
             if (resultado.rows.length === 0) {
-                return null; // Funcionário não encontrado
+                throw new Error("Email incorreto"); // Funcionário não encontrado
             }
 
             const linha = resultado.rows[0];
@@ -158,10 +158,10 @@ export default class FuncionarioDAO {
                     linha.func_senha
                 );
             } else {
-                return null; // Senha incorreta
+                throw new Error("Senha incorreta"); // Senha incorreta
             }
         } catch (e) {
-            throw new Error("Erro ao verificar senha: " + e.message);
+            return { error: e.message };
         }
     }
 
