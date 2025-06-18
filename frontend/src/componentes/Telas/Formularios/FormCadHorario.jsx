@@ -2,7 +2,7 @@ import { Alert, Form, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-
+import "../../css/horario.css"
 export default function FormCadHorario() {
     const [id, setId] = useState("");
     const [turma, setTurma] = useState("");
@@ -120,6 +120,7 @@ export default function FormCadHorario() {
 
         if (Object.values(errosTemp).some(Boolean)) {
             setMensagem("Preencha todos os campos corretamente.");
+            setTimeout(() => setMensagem(""), 3000);
             return;
         }
 
@@ -231,35 +232,32 @@ export default function FormCadHorario() {
     return (
         <div className="cadastroEscola">
             <PaginaGeral>
-                <Alert className="mt-2 mb-2 text-center" variant="dark">
-                    <h2 className="titulo-alert">
-                        {editando ? "Editar Horário" : "Cadastrar Horário"}
-                    </h2>
+                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
+                    <h2 className="titulo-alert">Horarios</h2>
                 </Alert>
+                <h2 className=" mb-3" style={{ position: 'absolute',marginLeft: '220px', marginTop: '50px' }}>
+                    {editando ? 'Editar' : 'Cadastrar'}
+                </h2>
 
                 {mensagem && (
-                    <Alert
-                        className="mt-2 mb-2 text-center"
-                        variant={
-                            mensagem.toLowerCase().includes("sucesso")
-                                ? "success"
-                                : mensagem.toLowerCase().includes("erro") ||
-                                    mensagem.toLowerCase().includes("preencha")
-                                    ? "danger"
-                                    : "warning"
-                        }
-                    >
-                        {mensagem}
-                    </Alert>
-                )}
+                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                        <Alert className="alert-animado mt-2 mb-2"  variant={
+                            mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                        }>
+                            {mensagem}
+                        </Alert>
+                        </div>
+                    )}
 
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '170px', gap: '45px'}}>
                     <Form.Group className="mb-3" controlId="formTurma">
-                        <Form.Label>Turma</Form.Label>
+                        <Form.Label style={{ fontWeight: '500' }}>Turma</Form.Label>
                         <Form.Select
                             value={turma}
                             onChange={(e) => setTurma(e.target.value)}
                             isInvalid={erros.turma}
+                            className="inputHorario"
                         >
                             <option value="">Selecione a turma</option>
                             {turmas.map((t) => (
@@ -274,11 +272,12 @@ export default function FormCadHorario() {
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formMateria">
-                        <Form.Label>Matéria</Form.Label>
+                        <Form.Label style={{ fontWeight: '500' }}>Matéria</Form.Label>
                         <Form.Select
                             value={materia}
                             onChange={(e) => setMateria(e.target.value)}
                             isInvalid={erros.materia}
+                            className="inputHorario"
                         >
                             <option value="">Selecione a matéria</option>
                             {materias.map((m) => (
@@ -293,11 +292,12 @@ export default function FormCadHorario() {
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formHora">
-                        <Form.Label>Hora</Form.Label>
+                        <Form.Label style={{ fontWeight: '500' }}>Hora</Form.Label>
                         <Form.Select
                             value={hora}
                             onChange={(e) => setHora(e.target.value)}
                             isInvalid={erros.hora}
+                            className="inputHorario"
                         >
                             <option value="">Selecione o horário</option>
                             <option>07:00 às 08:00</option>
@@ -315,11 +315,12 @@ export default function FormCadHorario() {
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formSemana">
-                        <Form.Label>Dia da Semana</Form.Label>
+                        <Form.Label style={{ fontWeight: '500' }}>Dia da Semana</Form.Label>
                         <Form.Select
                             value={semana}
                             onChange={(e) => setSemana(e.target.value)}
                             isInvalid={erros.semana}
+                            className="inputHorario"
                         >
                             <option value="">Selecione o dia</option>
                             <option>Segunda-feira</option>

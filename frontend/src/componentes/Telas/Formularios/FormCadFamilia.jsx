@@ -90,7 +90,7 @@ export default function FormCadFamilia() {
             escolaridade,
             irmaos,
             temContato,
-            
+
         };
 
 
@@ -321,6 +321,7 @@ export default function FormCadFamilia() {
                     </Row>
 
                     <Row className="mb-3">
+
                         <Col md={6}>
                             <Form.Group>
                                 <Form.Label>Irmãos</Form.Label>
@@ -342,9 +343,9 @@ export default function FormCadFamilia() {
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
-                    </Row>
 
-                    <Row className="mb-3">
+
+
                         <Col md={6}>
                             <Form.Group>
                                 <Form.Label>Aluno vinculado</Form.Label>
@@ -366,8 +367,8 @@ export default function FormCadFamilia() {
                                 </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
-                    </Row>
 
+                    </Row>
 
 
                     <div className="d-flex justify-content-between mt-4">

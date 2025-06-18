@@ -28,6 +28,7 @@ export default function FormCadmateria() {
 
         if (!nome || !descricao) {
             setMensagem("Preencha todos os campos!");
+            setTimeout(() => setMensagem(""), 3000);
             return;
         }
 
@@ -59,30 +60,44 @@ export default function FormCadmateria() {
     return (
         <div className="cadastroTurma">
             <PaginaGeral>
-                <Alert className="mt-2 mb-2 text-center" variant="dark">
-                    <h2>Oficinas</h2>
+                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
+                    <h2 className="titulo-alert">Oficinas</h2>
                 </Alert>
+                <h2 className=" mb-3" style={{ position: 'absolute',marginLeft: '220px', marginTop: '50px' }}>
+                    {editando ? 'Editar' : 'Cadastrar'}
+                </h2>
 
-                {mensagem && <Alert variant="info">{mensagem}</Alert>}
+                {mensagem && (
+                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                        <Alert className="alert-animado mt-2 mb-2"  variant={
+                            mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                        }>
+                            {mensagem}
+                        </Alert>
+                        </div>
+                    )}
 
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '170px', gap: '45px'}}>
                     <Form.Group className="mb-3">
-                        <Form.Label>Nome</Form.Label>
+                        <Form.Label style={{ fontWeight: '500' }}>Nome</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite o nome"
                             value={nome}
                             onChange={(e) => setNome(e.target.value)}
+                            className="inputOficina"
                         />
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Descrição</Form.Label>
+                        <Form.Label style={{ fontWeight: '500' }}>Descrição</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="Digite a descrição"
                             value={descricao}
                             onChange={(e) => setDescricao(e.target.value)}
+                            className="inputOficina"
                         />
                     </Form.Group>
 

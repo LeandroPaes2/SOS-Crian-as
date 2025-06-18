@@ -1,4 +1,4 @@
-import { Alert, Form, Button } from "react-bootstrap";
+import { Alert, Form, Button, Row, Col, Container } from "react-bootstrap";
 import "../../css/telaFuncionario.css";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../layouts/PaginaGeral";
@@ -104,12 +104,14 @@ export default function FormCadFuncionario() {
         // Verifique se todos os campos necessários estão preenchidos
         if (!funcionario.nome || !funcionario.cpf || !funcionario.cargo || !funcionario.email || !funcionario.senha) {
             setMensagem("Preencha todos os campos!");
+            setTimeout(() => setMensagem(""), 3000);
             return;
         }
 
         // Verifique se o CPF é válido
         if (!validarCPF(funcionario.cpf)) {
             setMensagem("CPF inválido");
+            setTimeout(() => setMensagem(""), 3000);
             return;
         }
 
@@ -119,8 +121,10 @@ export default function FormCadFuncionario() {
         try {
             const response = await fetch(url, {
                 method: method,
-                headers: { "Content-Type": "application/json", 
-                "Authorization": `Bearer ${token}` },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify(funcionario)
             });
 
@@ -141,98 +145,137 @@ export default function FormCadFuncionario() {
     return (
         <div className="cadastroFuncionario">
             <PaginaGeral>
-                <Alert className="mt-2 mb-2 text-center" variant="dark">
-                    <h2>{editando ? "Editar Funcionário" : "Cadastro de Funcionário"}</h2>
+                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
+                    <h2 className="titulo-alert">Funcionarios</h2>
                 </Alert>
+                <h2 className=" mb-3" style={{ position: 'absolute', marginLeft: '220px', marginTop: '50px' }}>
+                    {editando ? 'Editar' : 'Cadastrar'}
+                </h2>
 
-                {mensagem && <Alert variant="info">{mensagem}</Alert>}
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Nome</Form.Label>
-                        <Form.Control
-                            type="text"
-                            id="nome"
-                            placeholder="Digite o nome"
-                            value={funcionario.nome}
-                            name="nome"
-                            onChange={manipularMudanca}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                        <Form.Label>CPF</Form.Label>
-                        <Form.Control
-                            type="text"
-                            id="cpf"
-                            placeholder="Digite o CPF"
-                            value={funcionario.cpf}
-                            name="cpf"
-                            onChange={manipularMudanca}
-                            disabled={editando}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                        <Form.Label>Cargo</Form.Label>
-                        <Form.Select
-                            value={funcionario.cargo}
-                            id="cargo"
-                            name="cargo"
-                            onChange={manipularMudanca}
-                        >
-                            <option value="">Selecione um cargo</option>
-                            <option value="ASSITENTE SOCIAL">ASSITENTE SOCIAL</option>
-                            <option value="AUXILIAR ADMINISTRATIVO">AUXILIAR ADMINISTRATIVO</option>
-                            <option value="COORDENADOR">COORDENADOR</option>
-                            <option value="EDUCADOR">EDUCADOR</option>
-                            <option value="EDUCADOR SOCIAL I">EDUCADOR SOCIAL I</option>
-                            <option value="PSICOLOGO">PSICÓLOGO</option>
-                            <option value="RH">RH</option>
-                        </Form.Select>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                        <Form.Label>Nível</Form.Label>
-                        <Form.Control
-                            type="text"
-                            id="nivel"
-                            value={funcionario.nivel}
-                            readOnly
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                        <Form.Label>Email</Form.Label>
-                        <Form.Control
-                            type="email"
-                            id="email"
-                            placeholder="xxxx@gmail.com"
-                            value={funcionario.email}
-                            name="email"
-                            onChange={manipularMudanca}
-                        />
-                    </Form.Group>
-
-                    {!editando && <Form.Group className="mb-3">
-                        <Form.Label>Senha</Form.Label>
-                        <Form.Control
-                            type="password"
-                            id="senha"
-                            placeholder="Digite a senha"
-                            value={funcionario.senha}
-                            name="senha"
-                            onChange={manipularMudanca}
-                        />
-                    </Form.Group>}
-
-                    <div className="d-flex justify-content-between">
-                        <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
-                            Voltar
-                        </Button>
-                        <Button className="botaoPesquisa" variant="primary" type="submit">
-                            {editando ? "Atualizar" : "Cadastrar"}
-                        </Button>
+                {mensagem && (
+                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                        <Alert className="alert-animado mt-2 mb-2" variant={
+                            mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                        }>
+                            {mensagem}
+                        </Alert>
                     </div>
+                )}
+                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '80px', gap: '45px'}}>
+
+                        <Row className="mb-3">
+                            <Col md={6}>
+                                <Form.Group>
+                                    <Form.Label>Nome</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        id="nome"
+                                        placeholder="Digite o nome"
+                                        value={funcionario.nome}
+                                        name="nome"
+                                        onChange={manipularMudanca}
+                                        className="inputFuncionario"
+                                    />
+                                </Form.Group>
+                            </Col>
+
+                            <Col md={6}>
+                                <Form.Group>
+                                    <Form.Label>CPF</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        id="cpf"
+                                        placeholder="Digite o CPF"
+                                        value={funcionario.cpf}
+                                        name="cpf"
+                                        onChange={manipularMudanca}
+                                        disabled={editando}
+                                        className="inputFuncionario"
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+
+                        <Row className="mb-3">
+                            <Col md={6}>
+                                <Form.Group>
+                                    <Form.Label>Cargo</Form.Label>
+                                    <Form.Select
+                                        value={funcionario.cargo}
+                                        id="cargo"
+                                        name="cargo"
+                                        onChange={manipularMudanca}
+                                        className="inputFuncionario"
+                                    >
+                                        <option value="">Selecione um cargo</option>
+                                        <option value="ASSITENTE SOCIAL">ASSISTENTE SOCIAL</option>
+                                        <option value="AUXILIAR ADMINISTRATIVO">AUXILIAR ADMINISTRATIVO</option>
+                                        <option value="COORDENADOR">COORDENADOR</option>
+                                        <option value="EDUCADOR">EDUCADOR</option>
+                                        <option value="EDUCADOR SOCIAL I">EDUCADOR SOCIAL I</option>
+                                        <option value="PSICOLOGO">PSICÓLOGO</option>
+                                        <option value="RH">RH</option>
+                                    </Form.Select>
+                                </Form.Group>
+                            </Col>
+
+                            <Col md={6}>
+                                <Form.Group>
+                                    <Form.Label>Nível</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        id="nivel"
+                                        value={funcionario.nivel}
+                                        readOnly
+                                        className="inputFuncionario"
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+
+                        <Row className="mb-3">
+                            <Col md={6}>
+                                <Form.Group>
+                                    <Form.Label>Email</Form.Label>
+                                    <Form.Control
+                                        type="email"
+                                        id="email"
+                                        placeholder="xxxx@gmail.com"
+                                        value={funcionario.email}
+                                        name="email"
+                                        onChange={manipularMudanca}
+                                        className="inputFuncionario"
+                                    />
+                                </Form.Group>
+                            </Col>
+
+                            {!editando && (
+                                <Col md={6}>
+                                    <Form.Group>
+                                        <Form.Label>Senha</Form.Label>
+                                        <Form.Control
+                                            type="password"
+                                            id="senha"
+                                            placeholder="Digite a senha"
+                                            value={funcionario.senha}
+                                            name="senha"
+                                            onChange={manipularMudanca}
+                                            className="inputFuncionario"
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            )}
+                        </Row>
+
+                        <div className="d-flex justify-content-between mt-4">
+                            <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
+                                Voltar
+                            </Button>
+                            <Button className="botaoPesquisa" variant="primary" type="submit">
+                                {editando ? "Atualizar" : "Cadastrar"}
+                            </Button>
+                        </div>
                 </Form>
             </PaginaGeral>
         </div>

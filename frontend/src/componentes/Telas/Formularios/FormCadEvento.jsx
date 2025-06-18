@@ -1,4 +1,4 @@
-import { Alert, Form, Button } from "react-bootstrap";
+import { Alert, Form, Button, Row, Col } from "react-bootstrap";
 import "../../css/telaTurma.css";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
@@ -25,7 +25,7 @@ export default function FormCadEvento(props) {
 
     useEffect(() => {
         if (location.state && location.state.id && location.state.nome && location.state.tipoEvento && location.state.dataInicio && location.state.dataFim && location.state.periodo && location.state.horaFim && location.state.horaInicio) {
-            
+
             setId(location.state.id);
             setNome(location.state.nome);
             setTipoEvento(location.state.tipoEvento);
@@ -40,172 +40,211 @@ export default function FormCadEvento(props) {
     }, [location.state]);
 
     const handleSubmit = async (event) => {
-    event.preventDefault();
+        event.preventDefault();
 
-    // Validação básica
-    if (!dataInicio || !dataFim || !nome || !tipoEvento || !periodo || !horaFim || !horaInicio) {
-        setMensagem("Preencha todos os campos!");
-        return;
-    }
-
-    const evento = { id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim };
-    const url = editando ? `http://localhost:3000/eventos/${id}` : "http://localhost:3000/eventos";
-    const method = editando ? "PUT" : "POST";
-
-    try {
-        if (editando) {
-            if (!window.confirm("Deseja realmente alterar o evento: " + evento.nome)) {
-                return;
-            }
+        // Validação básica
+        if (!dataInicio || !dataFim || !nome || !tipoEvento || !periodo || !horaFim || !horaInicio) {
+            setMensagem("Preencha todos os campos!");
+            setTimeout(() => setMensagem(""), 3000);
+            return;
         }
 
-        const response = await fetch(url, {
-            method: method,
-            headers: { "Content-Type": "application/json", 
-                "Authorization": `Bearer ${token}`
-             },
-            body: JSON.stringify(evento),
-        });
+        const evento = { id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim };
+        const url = editando ? `http://localhost:3000/eventos/${id}` : "http://localhost:3000/eventos";
+        const method = editando ? "PUT" : "POST";
 
-        const resultado = await response.json();
-
-        if (response.ok && resultado.status) {
-            setMensagem(editando ? "Evento atualizado com sucesso!" : "Evento cadastrado com sucesso!");
-
-            setTimeout(() => {
-                setNome("");
-                setTipoEvento("");
-                setDataInicio("");
-                setDataFim("");
-                setPeriodo("");
-                setHoraInicio("");
-                setHoraFim("");
-                setMensagem("");
-            }, 1000);
-
+        try {
             if (editando) {
-                setTimeout(() => {
-                    navigate("/relatorioEvento");
-                }, 3000);
+                if (!window.confirm("Deseja realmente alterar o evento: " + evento.nome)) {
+                    return;
+                }
             }
 
-            setEditando(false);
-        } else {
-            setMensagem(resultado.mensagem || "Erro ao salvar evento.");
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(evento),
+            });
+
+            const resultado = await response.json();
+
+            if (response.ok && resultado.status) {
+                setMensagem(editando ? "Evento atualizado com sucesso!" : "Evento cadastrado com sucesso!");
+
+                setTimeout(() => {
+                    setNome("");
+                    setTipoEvento("");
+                    setDataInicio("");
+                    setDataFim("");
+                    setPeriodo("");
+                    setHoraInicio("");
+                    setHoraFim("");
+                    setMensagem("");
+                }, 1000);
+
+                if (editando) {
+                    setTimeout(() => {
+                        navigate("/relatorioEvento");
+                    }, 3000);
+                }
+
+                setEditando(false);
+            } else {
+                setMensagem(resultado.mensagem || "Erro ao salvar evento.");
+            }
+        } catch (error) {
+            console.error("Erro ao conectar com o backend:", error);
+            setMensagem("Erro de conexão com o servidor.");
         }
-    } catch (error) {
-        console.error("Erro ao conectar com o backend:", error);
-        setMensagem("Erro de conexão com o servidor.");
-    }
-};
-    
+    };
+
     return (
-        <div>
+        <div className="cadastroTurma">
             <PaginaGeral>
-                <Alert className="alert-custom text-center mt-4 mb-4">
-                    <h2 className="titulo-alert">CADASTRO DE EVENTOS</h2>
+                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
+                    <h2 className="titulo-alert">Eventos</h2>
                 </Alert>
 
+                <h2 className="mb-3" style={{ position: 'absolute', marginLeft: '220px', marginTop: '50px' }}>
+                    {editando ? 'Editar' : 'Cadastrar'}
+                </h2>
+
                 {mensagem && (
-                    <Alert
-                        className="mt-2 mb-2 success text-center"
-                        variant={
-                            mensagem.includes("sucesso")
-                                ? "success"
-                                : mensagem.includes("Erro") || mensagem.includes("erro") || mensagem.includes("Preencha") ||
-                                  mensagem.includes("invalido")
-                                ? "danger"
-                                : "warning"
-                        }
-                    >
-                        {mensagem}
-                    </Alert>
+                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                        <Alert
+                            className="alert-animado mt-2 mb-2"
+                            variant={
+                                mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                    mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                            }
+                        >
+                            {mensagem}
+                        </Alert>
+                    </div>
                 )}
 
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '100px', gap: '45px' }}>
+                    {/* Identificação */}
                     <Form.Group className="mb-3" id="id">
                         <Form.Label>ID</Form.Label>
-                        <Form.Control type="text" value={id} readOnly />
+                        <Form.Control type="text" value={id} readOnly className="inputEvento" />
                     </Form.Group>
+                    <Row className="mb-3">
+                        <Col md={6}>
+                            <Form.Group className="mb-3" id="nome">
+                                <Form.Label>Nome/Descrição do Evento</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Digite o nome"
+                                    value={nome}
+                                    onChange={(e) => setNome(e.target.value)}
+                                    className="inputEvento"
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3" id="tipoEvento">
+                                <Form.Label>Tipo do Evento</Form.Label>
+                                <Form.Select
+                                    value={tipoEvento}
+                                    onChange={(e) => setTipoEvento(e.target.value)}
+                                    className="inputEvento"
+                                >
+                                    <option value="">Selecione o tipo</option>
+                                    <option value="Festa">Festa</option>
+                                    <option value="Passeio">Passeio</option>
+                                    <option value="Outro">Outro</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    {/* Datas */}
+                    <Row>
+                        <Col md={6}>
+                            <Form.Group className="mb-3" id="dataInicio">
+                                <Form.Label>Data Início</Form.Label>
+                                <Form.Control
+                                    type="date"
+                                    value={dataInicio}
+                                    onChange={(e) => setDataInicio(e.target.value)}
+                                    className="inputEvento"
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                            <Form.Group className="mb-3" id="dataFim">
+                                <Form.Label>Data Fim</Form.Label>
+                                <Form.Control
+                                    type="date"
+                                    value={dataFim}
+                                    onChange={(e) => setDataFim(e.target.value)}
+                                    className="inputEvento"
+                                />
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                    <Form.Group className="mb-3" id="nome">
-                        <Form.Label>Nome/Descrição do Evento</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite o nome"
-                            value={nome}
-                            onChange={(e) => setNome(e.target.value)}
-                        />
-                    </Form.Group>
+                    {/* Período e Horários */}
+                    <Row>
+                        <Col md={4}>
+                            <Form.Group className="mb-3" id="periodo">
+                                <Form.Label>Período</Form.Label>
+                                <Form.Select
+                                    value={periodo}
+                                    onChange={(e) => setPeriodo(e.target.value)}
+                                    className="inputEvento"
+                                    style={{ width: '100%' }}
+                                >
+                                    <option value="">Selecione o período</option>
+                                    <option value="manha">Manhã</option>
+                                    <option value="tarde">Tarde</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                        <Col md={4}>
+                            <Form.Group className="mb-3" id="horaInicio">
+                                <Form.Label>Hora Início</Form.Label>
+                                <Form.Control
+                                    type="time"
+                                    value={horaInicio}
+                                    onChange={(e) => setHoraInicio(e.target.value)}
+                                    className="inputEvento"
+                                    style={{ width: '50%' }}
+                                />
+                            </Form.Group>
+                        </Col>
+                        <Col md={4} >
+                            <Form.Group className="mb-3" id="horaFim" style={{marginLeft: '-100px', position: 'absolute' }}>
+                                <Form.Label >Hora Fim</Form.Label>
+                                <Form.Control
+                                    type="time"
+                                    value={horaFim}
+                                    onChange={(e) => setHoraFim(e.target.value)}
+                                    className="inputEvento"
+                                    style={{ width: '100%'}}
+                                />
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                    <Form.Group className="mb-3" id="tipoEvento">
-                        <Form.Label>Tipo do Evento</Form.Label>
-                        <Form.Select
-                            value={tipoEvento}
-                            onChange={(e) => setTipoEvento(e.target.value)}
-                        >
-                            <option value="">Selecione o tipo</option>
-                            <option value="Festa">Festa</option>
-                            <option value="Passeio">Passeio</option>
-                            <option value="Outro">Outro</option>
-                        </Form.Select>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="dataInicio">
-                        <Form.Label>Data Inicio</Form.Label>
-                        <Form.Control
-                            type="date"
-                            value={dataInicio}
-                            onChange={(e) => setDataInicio(e.target.value)}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3" id="dataFim">
-                        <Form.Label>Data Fim</Form.Label>
-                        <Form.Control
-                            type="date"
-                            value={dataFim}
-                            onChange={(e) => setDataFim(e.target.value)}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="periodo">
-                        <Form.Label>Período</Form.Label>
-                        <Form.Select value={periodo} onChange={(e) => setPeriodo(e.target.value)}>
-                            <option value="">Selecione o período</option>
-                            <option value="manha">Manhã</option>
-                            <option value="tarde">Tarde</option>
-                        </Form.Select>
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="horaInicio">
-                        <Form.Label>Hora Início</Form.Label>
-                        <Form.Control
-                            type="time"
-                            value={horaInicio}
-                            onChange={(e) => setHoraInicio(e.target.value)}
-                        />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3" id="horaFim">
-                        <Form.Label>Hora Fim</Form.Label>
-                        <Form.Control
-                            type="time"
-                            value={horaFim}
-                            onChange={(e) => setHoraFim(e.target.value)}
-                        />
-                    </Form.Group>
-
-                    <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
-                        Voltar
-                    </Button>
-                    <Button as={Link} to="/relatorioEvento" className="botaoPesquisa" variant="secondary">
-                        Eventos Agendados
-                    </Button>
-                    <Button className="botaoPesquisa" variant="primary" type="submit">
-                        {editando ? "Atualizar" : "Cadastrar"}
-                    </Button>
+                    {/* Botões */}
+                    <div className="d-flex gap-3 mt-4">
+                        <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
+                            Voltar
+                        </Button>
+                        <Button as={Link} to="/relatorioEvento" className="botaoPesquisa" variant="secondary">
+                            Eventos Agendados
+                        </Button>
+                        <Button className="botaoPesquisa" variant="primary" type="submit">
+                            {editando ? "Atualizar" : "Cadastrar"}
+                        </Button>
+                    </div>
                 </Form>
             </PaginaGeral>
         </div>
     );
+
 }

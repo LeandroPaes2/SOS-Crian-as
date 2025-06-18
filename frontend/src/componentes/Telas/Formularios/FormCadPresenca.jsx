@@ -136,6 +136,7 @@ export default function FormCadPresenca() {
 
         if (!selectedMateria || !selectedTurma) {
             setMensagem('Selecione uma matéria e uma turma');
+            setTimeout(() => setMensagem(""), 3000);
             return;
         }
 
@@ -165,6 +166,7 @@ export default function FormCadPresenca() {
                 throw new Error(editando
                     ? 'Erro ao atualizar presenças'
                     : 'Erro ao registrar presenças');
+                    setTimeout(() => setMensagem(""), 3000);
             }
 
             setMensagem(editando
@@ -175,6 +177,7 @@ export default function FormCadPresenca() {
 
         } catch (error) {
             setMensagem(error.message);
+            setTimeout(() => setMensagem(""), 3000);
         }
     };
 

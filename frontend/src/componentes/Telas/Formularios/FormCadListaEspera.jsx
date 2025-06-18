@@ -196,20 +196,35 @@ export default function FormCadListaEspera() {
 
         <div className="cadastroListaEspera">
             <PaginaGeral>
-                <Alert className="mt-2 mb-2 text-center" variant="dark">
-                    <h2>{editando ? "Editar Criança na Lista de Espera" : "Cadastrar Criança na Lista de Espera"}</h2>
+                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
+                    <h2 className="titulo-alert">Lista de Espera</h2>
                 </Alert>
+                <h2 className=" mb-3" style={{ position: 'absolute',marginLeft: '220px', marginTop: '50px' }}>
+                    {editando ? 'Editar' : 'Cadastrar'}
+                </h2>
 
-                {mensagem && <Alert variant="info">{mensagem}</Alert>}
-                <Form onSubmit={handleSubmit}>
+                {mensagem && (
+                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                        <Alert className="alert-animado mt-2 mb-2"  variant={
+                            mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                        }>
+                            {mensagem}
+                        </Alert>
+                        </div>
+                    )}
 
-                    <div className="cadastroListaEspera" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '170px', gap: '45px'}}>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         <Form.Group>
                             <Form.Label>Numero do Protocolo</Form.Label>
                             <Form.Control
                                 type="number"
                                 value={listaEspera.aluno.id}
                                 readOnly
+                                className="inputListadeEspera"
                             />
                         </Form.Group>
 
@@ -220,6 +235,7 @@ export default function FormCadListaEspera() {
                                 name="nome"
                                 value={listaEspera.aluno.nome}
                                 onChange={manipularMudancaAluno}
+                                className="inputListadeEspera"
                             />
                         </Form.Group>
 
@@ -230,6 +246,7 @@ export default function FormCadListaEspera() {
                                 name="rg"
                                 value={listaEspera.aluno.rg}
                                 onChange={manipularMudancaAluno}
+                                className="inputListadeEspera"
                             />
                         </Form.Group>
 
@@ -239,6 +256,7 @@ export default function FormCadListaEspera() {
                                 value={listaEspera.cor}
                                 name="cor"
                                 onChange={manipularMudanca}
+                                className="inputListadeEspera"
                             >
                                 <option value="">Selecione uma cor</option>
                                 <option value="AMARELO">AMARELO</option>
