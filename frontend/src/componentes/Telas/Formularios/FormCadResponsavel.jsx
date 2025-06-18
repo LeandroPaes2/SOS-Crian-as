@@ -162,27 +162,28 @@ export default function FormCadResponsavel(props) {
     };
 
     return (
-        <div className="cadastroResponsavel">
-            <PaginaGeral >
-                <Alert className="alert-custom" style={{ marginTop: '200px', marginLeft: '100px' }} variant="dark">
+        <PaginaGeral >
+            <div className="TelaD">
+
+
+
+
+                <div className="divTitulo">
                     <h2 className="titulo-alert">Responsavel</h2>
-                </Alert>
-                <h2 className=" mb-3" style={{marginLeft: '100px', marginTop: '50px', justifyItems: 'center' }}>
+                </div>
+
+
+                <h2 className=" mb-3" style={{ marginLeft: '100px', marginTop: '50px', justifyItems: 'center' }}>
                     {editando ? 'Editar' : 'Cadastrar'}
                 </h2>
 
-                {mensagem && (
-                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
-                        <Alert className="alert-animado mt-2 mb-2" variant={
-                            mensagem.toLowerCase().includes("sucesso") ? "success" :
-                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
-                        }>
-                            {mensagem}
-                        </Alert>
-                    </div>
-                )}
 
-                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginLeft: '400px', position: 'absolute' }}>
+                <Form onSubmit={handleSubmit}  >
+
+
+
+
+
                     <Row className="mb-3">
                         <Col md={6}>
                             <Form.Group id="cpf">
@@ -496,6 +497,16 @@ export default function FormCadResponsavel(props) {
                             </Col>
                         </Row>
                     )}
+                    {mensagem && (
+                        <div style={{ }}>
+                            <Alert className="alert-animado mt-2 mb-2" variant={
+                                mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                    mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                            }>
+                                {mensagem}
+                            </Alert>
+                        </div>
+                    )}
 
                     {/* Botões */}
                     <Row className="mt-4">
@@ -517,8 +528,9 @@ export default function FormCadResponsavel(props) {
                     </Row>
 
                 </Form>
+            </div>
 
-            </PaginaGeral>
-        </div>
+
+        </PaginaGeral>
     );
 }
