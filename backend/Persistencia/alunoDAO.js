@@ -14,30 +14,30 @@ export default class AlunoDAO {
     async incluir(aluno, conexao) {
         if (aluno instanceof Aluno) {
             const sql = `
-            INSERT INTO aluno (
-                alu_nome,
-                alu_data_nascimento,
-                alu_cidade,
-                alu_rua,
-                alu_bairro,
-                alu_numero,
-                alu_telefone,
-                alu_escola_id,
-                alu_periodo_escola,
-                alu_realiza_acompanhamento,
-                alu_possui_sindrome,
-                alu_descricao,
-                alu_rg,
-                alu_status,
-                alu_periodo_projeto,
-                alu_cep
-            )
-            VALUES (
-                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-                $11, $12, $13, $14, $15, $16
-            )
-            RETURNING alu_id;
-        `;
+                INSERT INTO aluno (
+                    alu_nome,
+                    alu_data_nascimento,
+                    alu_cidade,
+                    alu_rua,
+                    alu_bairro,
+                    alu_numero,
+                    alu_telefone,
+                    alu_escola_id,
+                    alu_periodo_escola,
+                    alu_realiza_acompanhamento,
+                    alu_possui_sindrome,
+                    alu_descricao,
+                    alu_rg,
+                    alu_status,
+                    alu_periodo_projeto,
+                    alu_cep
+                )
+                VALUES (
+                    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+                    $11, $12, $13, $14, $15, $16
+                )
+                RETURNING alu_id;
+            `;
 
             aluno = aluno.toJSON();
 
@@ -197,9 +197,9 @@ export default class AlunoDAO {
 
 
 
-                
+
                 let aluresp = new AlunoResponsavel();
-                let listaRespSql = await aluresp.consultar(aluno.id,1 ,conexao);  //constem um array de Responsaveis() bunitinho [{cpf: '123', nome: 'João'}, {cpf: '456', nome: 'Maria'}];
+                let listaRespSql = await aluresp.consultar(aluno.id, 1, conexao);  //constem um array de Responsaveis() bunitinho [{cpf: '123', nome: 'João'}, {cpf: '456', nome: 'Maria'}];
 
 
                 // console.log("LISTARESPSQL:");
@@ -212,7 +212,7 @@ export default class AlunoDAO {
                 // console.log(listaResponsaveisAluno);
 
 
-                
+
                 // console.log("LISTARESPSQL:");
                 // console.log(listaRespSql);
 
@@ -231,10 +231,10 @@ export default class AlunoDAO {
                             flag = true
                         }
                     }
-                   // console.log("fora do if " );
+                    // console.log("fora do if " );
                     if (flag === false) {
                         //console.log("Excluindo: " );
-                        let excluir= new AlunoResponsavel(undefined,listaRespSql[i]);  //exclui um responsavel
+                        let excluir = new AlunoResponsavel(undefined, listaRespSql[i]);  //exclui um responsavel
                         await excluir.excluirPorCPF(conexao);
                         listaRespSql.splice(i, 1);
                         i--;
@@ -247,13 +247,13 @@ export default class AlunoDAO {
                 if (Array.isArray(listaResponsaveisAluno)) {
                     for (let i = 0; i < listaResponsaveisAluno.length; i++) {
                         const objRespAux = new Responsavel(listaResponsaveisAluno[i]);
-                       // console.log("respcpf: ", objRespAux.cpf);
+                        // console.log("respcpf: ", objRespAux.cpf);
                         const alunoResponsavel = new AlunoResponsavel(aluno, objRespAux);
                         await alunoResponsavel.incluir(conexao);
                     }
                 }
                 //console.log("NAOOOOOOO:");
-                
+
 
 
 
