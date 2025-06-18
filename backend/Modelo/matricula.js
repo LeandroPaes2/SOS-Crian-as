@@ -1,3 +1,4 @@
+import MatriculaDAO from "../Persistencia/matriculaDAO";
 export default class Matricula {
     #id;
     #aluno;
@@ -5,6 +6,7 @@ export default class Matricula {
     #dataInclusaoProjeto;
     #dataMAtricula;
     #dataVencimento;
+    #dataDesligamento;
     #motivoDesligamento
     #status;
 
@@ -16,6 +18,7 @@ export default class Matricula {
         this.#dataInclusaoProjeto = dataInclusaoProjeto;
         this.#dataMAtricula = dataMatricula;
         this.#dataVencimento = dataVencimento;
+        this.#dataDesligamento = dataDesligamento;
         this.#motivoDesligamento = motivoDesligamento;
         this.#status = status;
     }
@@ -37,6 +40,9 @@ export default class Matricula {
 
     get dataVencimento() { return this.#dataVencimento; }
     set dataVencimento(novaDataVencimento) { this.#dataVencimento = novaDataVencimento; }
+
+    get dataDesligamento() { return this.#dataDesligamento; }
+    set dataDesligamento(novaDataDesligamento) { this.#dataDesligamento = novaDataDesligamento; }
 
     get motivoDesligamento() { return this.#motivoDesligamento; }
     set motivoDesligamento(novoMotivoDesligamento) { this.#motivoDesligamento = novoMotivoDesligamento; }
@@ -61,22 +67,22 @@ export default class Matricula {
 
 
     async incluir(conexao) {
-        matriculaDAO = new MatriculaDAO(conexao);
+       const matriculaDAO = new MatriculaDAO(conexao);
         return matriculaDAO.incluir(this,conexao);
     }
 
     async excluir(conexao) {
-        matriculaDAO = new MatriculaDAO(conexao);
+        const matriculaDAO = new MatriculaDAO(conexao);
         return matriculaDAO.excluir(this,conexao);
     }
 
     async alterar(conexao) {
-        matriculaDAO = new MatriculaDAO(conexao);
+        const matriculaDAO = new MatriculaDAO(conexao);
         return matriculaDAO.alterar(this,conexao);
     }
 
     async consultar(termo,conexao) {
-        matriculaDAO = new MatriculaDAO(conexao);
+        const matriculaDAO = new MatriculaDAO(conexao);
         return matriculaDAO.consultar(termo,conexao);
     }
 

@@ -2,86 +2,6 @@ import Aluno from "../Modelo/aluno.js";
 import conectar from "../Persistencia/Conexao.js";
 
 export default class AlunoCtrl {
-    /* async gravar(req, res) {
-         res.type("application/json");
- 
-         if (req.method === "POST" && req.is("application/json")) {
-             const {
-                 nome,
-                 dataNascimento,
-                 cidade,
-                 rua,
-                 bairro,
-                 numero,
-                 telefone,
-                 escola,
-                 periodoEscola,
-                 listaResponsaveis,
-                 realizaAcompanhamento,
-                 possuiSindrome,
-                 descricao,
-                 rg,
-                 periodoProjeto,
-                 status,
-                 cep
-             } = req.body;
- 
-             const dadosValidos =
-                 nome && dataNascimento &&
-                 cidade &&
-                 rua && numero &&
-                 telefone &&
-                 realizaAcompanhamento !== undefined &&
-                 possuiSindrome !== undefined &&
-                 cep && bairro && listaResponsaveis.length > 0;
- 
-             if (dadosValidos) {
-                 let conexao;
-                 try {
-                     conexao = await conectar();
-                     const alunoCompleto = new Aluno(
-                         0,
-                         nome,
-                         dataNascimento,
-                         cidade,
-                         rua,
-                         bairro,
-                         numero,
-                         telefone,
-                         escola,
-                         periodoEscola,
-                         realizaAcompanhamento,
-                         possuiSindrome,
-                         listaResponsaveis,
-                         descricao,
-                         rg,
-                         status,
-                         periodoProjeto,
-                         cep
-                     );
-                     await conexao.query("BEGIN");
-                     try {
-                         await alunoCompleto.incluir(conexao);
-                         await conexao.query("COMMIT");
-                         res.status(200).json({ status: true, mensagem: "Aluno cadastrado com sucesso!" });
-                     } catch (erro) {
-                         await conexao.query("ROLLBACK");
-                         res.status(500).json({ status: false, mensagem: "Erro ao cadastrar aluno. Verifique os dados informados." + erro.message });
-                     }
- 
-                 } catch (erro) {
-                     if (conexao) await conexao.query("ROLLBACK");
-                     res.status(500).json({ status: false, mensagem: "Erro interno ao cadastrar aluno: " + erro.message });
-                 } finally {
-                     if (conexao) conexao.release();
-                 }
-             } else {
-                 res.status(400).json({ status: false, mensagem: "Dados incompletos ou inválidos. Verifique a requisição." });
-             }
-         } else {
-             res.status(400).json({ status: false, mensagem: "Requisição inválida!" });
-         }
-     }*/
 
     async gravar(req, res) {
         res.type("application/json");
@@ -142,7 +62,7 @@ export default class AlunoCtrl {
 
         if ((req.method === "PUT" || req.method === "PATCH") && req.is("application/json")) {
             const {
-                id,nome, dataNascimento, cidade, rua, bairro, numero, telefone, escola,
+                id, nome, dataNascimento, cidade, rua, bairro, numero, telefone, escola,
                 periodoEscola, listaResponsaveis, realizaAcompanhamento, possuiSindrome,
                 descricao, rg, periodoProjeto, status, cep
             } = req.body;
@@ -159,10 +79,10 @@ export default class AlunoCtrl {
                 try {
 
                     const aluno = new Aluno(
-                    id, nome, dataNascimento, cidade, rua, bairro, numero, telefone,
-                    escola, periodoEscola, realizaAcompanhamento, possuiSindrome,
-                    listaResponsaveis, descricao, rg, status, periodoProjeto, cep
-                );
+                        id, nome, dataNascimento, cidade, rua, bairro, numero, telefone,
+                        escola, periodoEscola, realizaAcompanhamento, possuiSindrome,
+                        listaResponsaveis, descricao, rg, status, periodoProjeto, cep
+                    );
 
                     conexao = await conectar();
                     await conexao.query("BEGIN");

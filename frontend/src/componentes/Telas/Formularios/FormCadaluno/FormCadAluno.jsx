@@ -891,6 +891,7 @@ export default function FormCadAluno(props) {
                         value={dados.escola.nome}
                         className="inputAluno"
                     />
+                
                 </Form.Group>
                 <Form.Group className="mb-3" id="escola.endereco">
                     <Form.Label style={{ fontWeight: '500' }}>Endereco:</Form.Label>
