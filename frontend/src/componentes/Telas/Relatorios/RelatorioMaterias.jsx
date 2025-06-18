@@ -112,7 +112,8 @@ export default function RelatorioMateria() {
                             </Alert>
                         )}
 
-                        <Container>
+                        <div className="bg-white p-3 rounded shadow-sm">
+                        <div className="table-responsive">
                             <Table striped bordered hover>
                                 <thead>
                                     <tr>
@@ -162,12 +163,13 @@ export default function RelatorioMateria() {
                                     }
                                 </tbody>
                             </Table>
-                        </Container>
-                        <div>
-                            <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
-                                Voltar
-                            </Button>
                         </div>
+                        <div className="d-flex justify-content-between mt-4">
+                        <Button as={Link} to="/telaMenu" variant="secondary">
+                            ⬅️ Voltar
+                        </Button>
+                        </div>
+                    </div>
                     </Container>
                 </div>
             </PaginaGeral>

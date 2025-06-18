@@ -233,9 +233,11 @@ export default function RelatorioHorario() {
                         ))}
 
 
-                        <div>
-                            <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">Voltar</Button>
-                        </div>
+                        <div className="d-flex justify-content-between mt-4">
+                        <Button as={Link} to="/telaMenu" variant="secondary">
+                            ⬅️ Voltar
+                        </Button>
+                    </div>
                     </Container>
                     </div>
                 </PaginaGeral>

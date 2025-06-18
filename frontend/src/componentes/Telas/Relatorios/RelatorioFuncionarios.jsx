@@ -203,6 +203,11 @@ export default function RelatorioFuncionarios() {
                         </Table>
                         <p>Quatidade de funcionarios cadastradas: {listaDeFuncionarios.length}</p>
                     </div>
+                    <div className="d-flex justify-content-between mt-4">
+                        <Button as={Link} to="/telaMenu" variant="secondary">
+                            ⬅️ Voltar
+                        </Button>
+                    </div>
                 </div>
             </Container>
             </div>

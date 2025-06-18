@@ -375,6 +375,14 @@ export default function RelatorioListaEspera() {
                     </tbody>
                 </Table>
                 </div>
+                        <div className="d-flex justify-content-between mt-4">
+                        <Button as={Link} to="/telaMenu" variant="secondary">
+                            ⬅️ Voltar
+                        </Button>
+                        <Button variant="info" onClick={gerarPdfEImprimir}>
+                            🖨️ Imprimir
+                        </Button>
+                    </div>
                 </div>
                 </Container>
             </div>

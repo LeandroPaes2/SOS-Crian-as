@@ -249,11 +249,11 @@ export default function RelatorioPresenca() {
                         </Table>
                     )}
                     
-                    <div>
-                        <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
-                            Voltar
+                    <div className="d-flex justify-content-between mt-4">
+                        <Button as={Link} to="/telaMenu" variant="secondary">
+                            ⬅️ Voltar
                         </Button>
-                    </div>
+                        </div>
                 </Container>
                 </div>
             </PaginaGeral>

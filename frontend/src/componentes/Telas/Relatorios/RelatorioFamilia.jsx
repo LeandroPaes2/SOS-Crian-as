@@ -206,11 +206,8 @@ export default function RelatorioFamilia() {
                         </div>
                     </div>
                     <div className="d-flex justify-content-between mt-4">
-                        <Button as={Link} to="/telaAluno" variant="secondary">
+                        <Button as={Link} to="/telaMenu" variant="secondary">
                             ⬅️ Voltar
-                        </Button>
-                        <Button variant="info">
-                            🖨️ Imprimir
                         </Button>
                     </div>
                 </Container>

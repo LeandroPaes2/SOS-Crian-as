@@ -399,10 +399,10 @@ export default function RelatorioFaltas()
                     )}
                     
                     <div className="d-flex justify-content-between mt-4">
-                        <Button as={Link} to="/telaAluno" variant="secondary">
+                        <Button as={Link} to="/telaMenu" variant="secondary">
                             ⬅️ Voltar
                         </Button>
-                        <Button variant="info">
+                        <Button variant="info" onClick={gerarPdfEImprimir}>
                             🖨️ Imprimir
                         </Button>
                     </div>

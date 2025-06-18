@@ -131,7 +131,8 @@ export default function RelatorioTurmas() {
                             </Alert>
                         )}
 
-                        <Container>
+                        <div className="bg-white p-3 rounded shadow-sm">
+                            <div className="table-responsive">
                             <Table responsive striped hover borderless className="mt-3">
                                 <thead>
                                     <tr>
@@ -173,11 +174,12 @@ export default function RelatorioTurmas() {
                                     }
                                 </tbody>
                             </Table>
-                        </Container>
-                        <div>
-                            <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
-                                Voltar
+                        </div>
+                        <div className="d-flex justify-content-between mt-4">
+                            <Button as={Link} to="/telaMenu" variant="secondary">
+                                ⬅️ Voltar
                             </Button>
+                        </div>
                         </div>
                     </Container>
                     </div>

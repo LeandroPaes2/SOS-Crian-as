@@ -211,9 +211,6 @@ export default function RelatorioResponsaveis() {
                         <Button as={Link} to="/telaMenu" variant="secondary">
                             ⬅️ Voltar
                         </Button>
-                        <Button variant="info" >
-                            🖨️ Imprimir
-                        </Button>
                     </div>
                 </Container>
                 </div>

@@ -284,7 +284,7 @@ export default function RelatorioAlunos() {
 
                     {/* Botões */}
                     <div className="d-flex justify-content-between mt-4">
-                        <Button as={Link} to="/telaAluno" variant="secondary">
+                        <Button as={Link} to="/telaMenu" variant="secondary">
                             ⬅️ Voltar
                         </Button>
                         <Button variant="info" onClick={gerarPdfEImprimir}>
