@@ -62,25 +62,19 @@ export default function FormCadPresenca() {
     // Carrega turmas quando matéria é selecionada
     useEffect(() => {
         async function carregarTurmas() {
-        try {
-            const res = await fetch("http://localhost:3000/turmas", {
-                method: "GET",
-                headers: {
-                    Authorization: "Bearer " + token,
-                },
-            });
-            const data = await res.json();
-            if (Array.isArray(data)) {
-                setTurmas(data);
-            } else {
-                console.error("Resposta inválida de turmas:", data);
-                setTurmas([]);
+            if (selectedMateria) {
+                try {
+                    const res = await fetch(`http://localhost:3000/presencas/materia/${selectedMateria}/turmas`,{
+                        method: "GET",
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`}
+                    });
+                    const data = await res.json();
+                    setTurmas(data);
+                } catch (error) {
+                    setMensagem('Erro ao carregar turmas: ' + error.message);
+                }
             }
-        } catch (err) {
-            console.error("Erro ao carregar turmas:", err);
-            setTurmas([]);
         }
-    }
         carregarTurmas();
     }, [selectedMateria]);
 
@@ -98,7 +92,7 @@ export default function FormCadPresenca() {
                 const data = await res.json();
 
                 // FILTRAR APENAS ALUNOS ATIVOS (status = 1)
-                const alunosAtivos = data.filter(aluno => aluno.status === 2);
+                const alunosAtivos = data.filter(aluno => aluno.status === 2 || aluno.status === 1);
 
                 // Mantém presenças existentes apenas para alunos ativos
                 setPresencas(prevPresencas => {
