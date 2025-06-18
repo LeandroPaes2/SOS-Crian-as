@@ -1,5 +1,5 @@
 import FamiliaDAO from "../Persistencia/familiaDAO.js";
-
+import Aluno from "./aluno.js";
 export default class Familia {
 
     #id
@@ -11,7 +11,7 @@ export default class Familia {
     #escolaridade
     #irmaos
     #temContato
-
+    #aluno
     get id() {
         return this.#id;
     }
@@ -84,8 +84,18 @@ export default class Familia {
         this.#escolaridade = novoEscolaridade;
     }
 
-    constructor(id = 0, nome = "", sexo = "", dataNascimento = "", profissao = "", escolaridade = "", grauParentesco = "", irmaos = "", temContato = "") {
+    get aluno() {
+        return this.#aluno;
+    }
+
+    set aluno(novoAluno) {
+        if(novoAluno instanceof Aluno)
+            this.#aluno = novoAluno;
+    }
+
+    constructor(id = 0, aluno = {}, nome = "", sexo = "", dataNascimento = "", profissao = "", escolaridade = "", grauParentesco = "", irmaos = "", temContato = "") {
         this.#id = id;
+        this.#aluno = aluno;
         this.#nome = nome;
         this.sexo = sexo;
         this.#dataNascimento = dataNascimento;
@@ -94,11 +104,15 @@ export default class Familia {
         this.#grauParentesco = grauParentesco;
         this.#irmaos = irmaos;
         this.#temContato = temContato;
+        
     }
 
     toJSON() {
         return {
             "id": this.#id,
+            "alunoId": (this.#aluno && typeof this.#aluno.toJSON === "function")
+            ? this.#aluno.toJSON()
+            : this.#aluno,
             "nome": this.#nome,
             "sexo": this.sexo,
             "dataNascimento": this.#dataNascimento,

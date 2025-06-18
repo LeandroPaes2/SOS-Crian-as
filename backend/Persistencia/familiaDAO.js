@@ -17,15 +17,17 @@ export default class FamiliaDAO {
 
     async incluir(familia, supabase) {
         if (familia instanceof Familia) {
-
-            const sql = `INSERT INTO familia(
-            fam_nome, fam_sexo, fam_dataNascimento, fam_profissao, fam_escolaridade, fam_grauParentesco, fam_irmaos, fam_temContato
-        ) VALUES (
-            $1, $2, $3, $4, $5,
-            $6, $7, $8
-        )`;
+            const sql = `
+                INSERT INTO familia (
+                    alu_id, fam_nome, fam_sexo, fam_dataNascimento, fam_profissao, 
+                    fam_escolaridade, fam_grauParentesco, fam_irmaos, fam_temContato
+                ) VALUES (
+                    $1, $2, $3, $4, $5,
+                    $6, $7, $8, $9
+                )`;
 
             const parametros = [
+                familia.aluno.id,     // ID do aluno (UUID)
                 familia.nome,
                 familia.sexo,
                 familia.dataNascimento,
@@ -42,23 +44,24 @@ export default class FamiliaDAO {
         return false;
     }
 
-
     async alterar(familia, supabase) {
         if (familia instanceof Familia) {
             const sql = `
-            UPDATE familia
-            SET 
-                fam_nome = $1, 
-                fam_sexo = $2, 
-                fam_dataNascimento = $3, 
-                fam_profissao = $4, 
-                fam_escolaridade = $5,
-                fam_grauParentesco = $6,
-                fam_irmaos = $7, 
-                fam_temContato = $8
-            WHERE fam_id = $9
-        `;
+                UPDATE familia
+                SET 
+                    alu_id = $1,
+                    fam_nome = $2, 
+                    fam_sexo = $3, 
+                    fam_dataNascimento = $4, 
+                    fam_profissao = $5, 
+                    fam_escolaridade = $6,
+                    fam_grauParentesco = $7,
+                    fam_irmaos = $8, 
+                    fam_temContato = $9
+                WHERE fam_id = $10
+            `;
             const parametros = [
+                familia.aluno.id,
                 familia.nome,
                 familia.sexo,
                 familia.dataNascimento,
@@ -75,7 +78,6 @@ export default class FamiliaDAO {
         }
         return false;
     }
-
 
     async consultar(termo, supabase) {
         let sql = "";
@@ -95,8 +97,10 @@ export default class FamiliaDAO {
         const linhas = resultado.rows;
         let listaFamilia = [];
         for (const linha of linhas) {
+            const aluno = { id: linha['alu_id'] }; // apenas ID do aluno
             const familia = new Familia(
                 linha['fam_id'],
+                aluno,
                 linha['fam_nome'],
                 linha['fam_sexo'],
                 linha['fam_datanascimento'], 

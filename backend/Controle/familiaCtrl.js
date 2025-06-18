@@ -1,90 +1,84 @@
 import Familia from "../Modelo/familia.js";
+import Aluno from "../Modelo/aluno.js";
 import conectar from "../Persistencia/Conexao.js";
 
 export default class FamiliaCtrl {
 
     async gravar(requisicao, resposta) {
         const conexao = await conectar();
-
         resposta.type("application/json");
 
-        if (requisicao.method == 'POST' && requisicao.is("application/json")) {
-            const nome = requisicao.body.nome;
-            const sexo = requisicao.body.sexo;
-            const dataNascimento = requisicao.body.dataNascimento;
-            const profissao = requisicao.body.profissao
-            const escolaridade = requisicao.body.escolaridade;
-            const grauParentesco = requisicao.body.grauParentesco;
-            const irmaos = requisicao.body.irmaos;
-            const temContato = requisicao.body.temContato;
+        if (requisicao.method === 'POST' && requisicao.is("application/json")) {
+            const {
+                alunoId, nome, sexo, dataNascimento,
+                profissao, escolaridade, grauParentesco,
+                irmaos, temContato
+            } = requisicao.body;
 
             if (nome && sexo && dataNascimento && escolaridade && grauParentesco) {
 
-                if(irmaos === "Mesmo pai e mãe" || irmaos === "Por parte de pai" || irmaos === "Por parte de mae" || irmaos === "Sim"){
-                    if(!temContato){
-                        await conexao.query("ROLLBACK");
-                        return resposta.status(400).json(
-                        {
-                            "status":false,
-                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
-                        });
-                    }
-                }else{
-                    if(temContato==="Sim"){
-                        await conexao.query("ROLLBACK");
-                        return resposta.status(400).json(
-                        {
-                            "status":false,
-                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
-                        });
-                    }
+                const objAluno = new Aluno(
+                    alunoId
+                );
+
+                const precisaContato = ["Mesmo pai e mãe", "Por parte de pai", "Por parte de mae", "Sim"];
+                if ((precisaContato.includes(irmaos) && !temContato) ||
+                    (!precisaContato.includes(irmaos) && temContato === "Sim")) {
+                    await conexao.query("ROLLBACK");
+                    return resposta.status(400).json({
+                        status: false,
+                        mensagem: "Informe corretamente todos os dados da família conforme documentação da API."
+                    });
                 }
 
                 try {
-                    const familia = new Familia(0, nome, sexo, dataNascimento, profissao, escolaridade, grauParentesco, irmaos, temContato);
                     await conexao.query("BEGIN");
+
+                    const familia = new Familia(
+                        0, objAluno, nome, sexo, dataNascimento,
+                        profissao, escolaridade, grauParentesco,
+                        irmaos, temContato
+                    );
 
                     const resultado = await familia.incluir(conexao);
 
                     if (resultado) {
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
-                            "status": true,
-                            "mensagem": "Familia adicionada com sucesso!",
-                            "nome": familia.nome
+                            status: true,
+                            mensagem: "Família adicionada com sucesso!",
+                            nome: familia.nome
                         });
                     } else {
                         await conexao.query("ROLLBACK");
                         resposta.status(500).json({
-                            "status": false,
-                            "mensagem": "Nao foi possivel incluir a familia"
+                            status: false,
+                            mensagem: "Não foi possível incluir a família"
                         });
                     }
                 } catch (erro) {
-                    if (conexao)
-                        await conexao.query("ROLLBACK");
-                    console.log(erro);
+                    await conexao.query("ROLLBACK");
                     resposta.status(500).json({
-                        "status": false,
-                        "mensagem": "Nao foi possivel incluir a familia: " + erro.message
+                        status: false,
+                        mensagem: "Erro ao incluir a família: " + erro.message
                     });
                 } finally {
-                    if (conexao)
-                        await conexao.release();
+                    conexao.release();
                 }
             } else {
-                resposta.status(500).json({
-                    "status": false,
-                    "mensagem": "Nao foi possivel incluir a familia"
+                resposta.status(400).json({
+                    status: false,
+                    mensagem: "Campos obrigatórios ausentes"
                 });
             }
         } else {
-            resposta.status(500).json({
-                "status": false,
-                "mensagem": "Nao foi possivel incluir a familia"
+            resposta.status(415).json({
+                status: false,
+                mensagem: "Formato de requisição inválido"
             });
         }
     }
+
 
     async alterar(requisicao, resposta) {
         const conexao = await conectar();
@@ -93,6 +87,7 @@ export default class FamiliaCtrl {
 
         if ((requisicao.method == 'PUT' || requisicao.method == 'PATCH') && requisicao.is("application/json")) {
             const id = requisicao.params.id;
+            const aluno = requisicao.body.aluno;
             const nome = requisicao.body.nome;
             const sexo = requisicao.body.sexo;
             const dataNascimento = requisicao.body.dataNascimento;
@@ -101,32 +96,36 @@ export default class FamiliaCtrl {
             const grauParentesco = requisicao.body.grauParentesco;
             const irmaos = requisicao.body.irmaos;
             const temContato = requisicao.body.temContato;
-            
 
-            if (id>0 && nome && sexo && dataNascimento && escolaridade && grauParentesco) {
 
-                if(irmaos === "Mesmo pai e mãe" || irmaos === "Por parte de pai" || irmaos === "Por parte de mae"){
-                    if(!temContato){
+            if (id > 0 && nome && sexo && dataNascimento && escolaridade && grauParentesco) {
+
+                if (irmaos === "Mesmo pai e mãe" || irmaos === "Por parte de pai" || irmaos === "Por parte de mae") {
+                    if (!temContato) {
                         await conexao.query("ROLLBACK");
                         return resposta.status(400).json(
-                        {
-                            "status":false,
-                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
-                        });
+                            {
+                                "status": false,
+                                "mensagem": "Informe corretamente todos os dados de uma turma conforme documentação da API."
+                            });
                     }
-                }else{
-                    if(temContato=="Sim"){
+                } else {
+                    if (temContato == "Sim") {
                         await conexao.query("ROLLBACK");
                         return resposta.status(400).json(
-                        {
-                            "status":false,
-                            "mensagem":"Informe corretamente todos os dados de uma turma conforme documentação da API."
-                        });
+                            {
+                                "status": false,
+                                "mensagem": "Informe corretamente todos os dados de uma turma conforme documentação da API."
+                            });
                     }
                 }
 
                 try {
-                    const familia = new Familia(id, nome, sexo, dataNascimento, profissao, escolaridade, grauParentesco, irmaos, temContato);
+                    const familia = new Familia(
+                        id, aluno, nome, sexo, dataNascimento,
+                        profissao, escolaridade, grauParentesco,
+                        irmaos, temContato
+                    );
                     await conexao.query("BEGIN");
 
                     const resultado = await familia.alterar(conexao);
@@ -162,7 +161,7 @@ export default class FamiliaCtrl {
                 resposta.status(500).json({
                     "status": false,
                     "mensagem": "Nao foi possivel alterar."
-                    
+
                 });
             }
         } else {

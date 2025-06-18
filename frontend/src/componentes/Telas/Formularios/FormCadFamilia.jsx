@@ -1,5 +1,5 @@
 import { Alert, Form, Button, Row, Col } from "react-bootstrap";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../../css/telaFamilia.css";
@@ -16,9 +16,9 @@ export default function FormCadFamilia() {
     const [temContato, setTemContato] = useState("");
     const [mensagem, setMensagem] = useState("");
     const [editando, setEditando] = useState(false);
-    const [isMaior, setIsMaior] = useState(true);
     const [ehMaiorDeIdade, setEhMaiorDeIdade] = useState(true);
-
+    const [alunos, setAlunos] = useState([]);
+    const [alunoSelecionado, setAlunoSelecionado] = useState("");
 
     const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
@@ -30,6 +30,7 @@ export default function FormCadFamilia() {
     useEffect(() => {
         if (location.state) {
             setId(location.state.id || "");
+            setAlunoSelecionado(location.state.alunos?.id?.toString() || "");
             setNome(location.state.nome || "");
             setSexo(location.state.sexo || "");
             setDataNascimento(location.state.dataNascimento || "");
@@ -42,10 +43,38 @@ export default function FormCadFamilia() {
         }
     }, [location.state]);
 
+    async function carregarAlunos() {
+        try {
+            const response = await fetch("http://localhost:3000/alunos", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+            });
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                setAlunos(data);
+            }
+            else {
+                console.error("Resposta inválida de alunos:", data);
+                setAlunos([]);
+            }
+
+        } catch (error) {
+            console.error("Erro ao carregar alunos:", error);
+            setAlunos([]);
+        }
+    }
+
+    useEffect(() => {
+        carregarAlunos();
+    }, []);
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (!nome.trim() || !sexo.trim() || !dataNascimento.trim() || !grauParentesco.trim() || !profissao.trim() || !escolaridade.trim() || !irmaos.trim() || !temContato.trim()) {
+        if (!alunoSelecionado || !nome.trim() || !sexo.trim() || !dataNascimento.trim() || !grauParentesco.trim() || !profissao.trim() || !escolaridade.trim() || !irmaos.trim() || !temContato.trim()) {
             setMensagem("Preencha todos os campos!");
             setTimeout(() => setMensagem(""), 5000);
             return;
@@ -53,13 +82,15 @@ export default function FormCadFamilia() {
 
         const familia = {
             nome,
+            alunoId: parseInt(alunoSelecionado),
             sexo,
             dataNascimento,
             grauParentesco,
             profissao,
             escolaridade,
             irmaos,
-            temContato
+            temContato,
+            
         };
 
 
@@ -91,6 +122,7 @@ export default function FormCadFamilia() {
 
                 setTimeout(() => {
                     setId(null);
+                    setAlunoSelecionado("");
                     setNome("");
                     setSexo("");
                     setDataNascimento("");
@@ -176,32 +208,32 @@ export default function FormCadFamilia() {
                             <Form.Group>
                                 <Form.Label>Data de nascimento</Form.Label>
                                 <Form.Control
-    type="date"
-    value={dataNascimento}
-    onChange={(e) => {
-        const data = e.target.value;
-        setDataNascimento(data);
+                                    type="date"
+                                    value={dataNascimento}
+                                    onChange={(e) => {
+                                        const data = e.target.value;
+                                        setDataNascimento(data);
 
-        const nascimento = new Date(data);
-        const hoje = new Date();
-        const idade = hoje.getFullYear() - nascimento.getFullYear();
-        const mes = hoje.getMonth() - nascimento.getMonth();
-        const dia = hoje.getDate() - nascimento.getDate();
+                                        const nascimento = new Date(data);
+                                        const hoje = new Date();
+                                        const idade = hoje.getFullYear() - nascimento.getFullYear();
+                                        const mes = hoje.getMonth() - nascimento.getMonth();
+                                        const dia = hoje.getDate() - nascimento.getDate();
 
-        const ehMaior =
-            idade > 18 || (idade === 18 && (mes > 0 || (mes === 0 && dia >= 0)));
+                                        const ehMaior =
+                                            idade > 18 || (idade === 18 && (mes > 0 || (mes === 0 && dia >= 0)));
 
-        setEhMaiorDeIdade(ehMaior);
-    }}
-    max={new Date().toISOString().split("T")[0]}
-    isInvalid={mensagem && (!ehMaiorDeIdade || dataNascimento.trim() === "")}
-    className="inputFamilia"
-/>
-<Form.Control.Feedback type="invalid">
-    {dataNascimento.trim() === ""
-        ? "A data de nascimento é obrigatória."
-        : "A pessoa precisa ter 18 anos ou mais."}
-</Form.Control.Feedback>
+                                        setEhMaiorDeIdade(ehMaior);
+                                    }}
+                                    max={new Date().toISOString().split("T")[0]}
+                                    isInvalid={mensagem && (!ehMaiorDeIdade || dataNascimento.trim() === "")}
+                                    className="inputFamilia"
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {dataNascimento.trim() === ""
+                                        ? "A data de nascimento é obrigatória."
+                                        : "A pessoa precisa ter 18 anos ou mais."}
+                                </Form.Control.Feedback>
 
 
                             </Form.Group>
@@ -311,6 +343,32 @@ export default function FormCadFamilia() {
                             </Form.Group>
                         </Col>
                     </Row>
+
+                    <Row className="mb-3">
+                        <Col md={6}>
+                            <Form.Group>
+                                <Form.Label>Aluno vinculado</Form.Label>
+                                <Form.Select
+                                    value={alunoSelecionado}
+                                    onChange={(e) => setAlunoSelecionado(e.target.value)}
+                                    isInvalid={mensagem && alunoSelecionado === ""}
+                                    className="inputFamilia"
+                                >
+                                    <option value="">Selecione um aluno</option>
+                                    {alunos.map((aluno) => (
+                                        <option key={aluno.id} value={aluno.id}>
+                                            {aluno.nome}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                                <Form.Control.Feedback type="invalid">
+                                    O aluno vinculado é obrigatório.
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+
+
 
                     <div className="d-flex justify-content-between mt-4">
                         <Button as={Link} to={rotaVoltar} variant="secondary" className="botaoPesquisaFamilia">

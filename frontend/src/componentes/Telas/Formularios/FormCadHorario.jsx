@@ -168,11 +168,11 @@ export default function FormCadHorario() {
 
         // Monta objeto para enviar, agora com turmaId e materiaId (simples)
         const horario = {
-  turma: { id: parseInt(turma) },
-  materia: { id: parseInt(materia) },
-  hora,
-  semana,
-};
+            turma: { id: parseInt(turma) },
+            materia: { id: parseInt(materia) },
+            hora,
+            semana,
+        };
 
 
 
