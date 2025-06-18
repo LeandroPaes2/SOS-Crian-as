@@ -78,7 +78,13 @@ export default function FormCadListaEspera() {
 
     async function buscarAluno(nome, rg) {
         try {
-            const resposta = await fetch("http://localhost:3000/alunos");
+            const resposta = await fetch("http://localhost:3000/alunos", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
 
             if (!resposta.ok) throw new Error('Erro ao consultar o servidor.');
 
@@ -109,7 +115,14 @@ export default function FormCadListaEspera() {
 
     async function buscarListaEsperaPorAluno(idAluno) {
         try {
-            const resposta = await fetch("http://localhost:3000/listasEspera");
+            //const resposta = await fetch("http://localhost:3000/listasEspera");
+            const resposta = await fetch("http://localhost:3000/listasEspera", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
 
             if (!resposta.ok) throw new Error('Erro ao consultar o servidor.');
 

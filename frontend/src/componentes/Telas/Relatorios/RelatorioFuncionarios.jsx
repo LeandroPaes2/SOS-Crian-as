@@ -48,7 +48,10 @@ export default function RelatorioFuncionarios() {
 
             try {
                 const response = await fetch("http://localhost:3000/funcionarios/" + funcionario.cpf, {
-                    method: "DELETE"
+                    method: "DELETE",
+                    headers: { "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
+                        "Content-Type": "application/json" },
+                    body: JSON.stringify(funcionario),
                 });
 
                 if (response.ok) {

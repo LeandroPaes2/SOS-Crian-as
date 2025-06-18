@@ -44,7 +44,12 @@ export default function RelatorioListaEspera() {
     useEffect(() => {
         const buscarListaEspera = async () => {
             try {
-                const response = await fetch("http://localhost:3000/listasEspera");
+                const response = await fetch("http://localhost:3000/listasEspera",{
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                 },
+                });
                 if (!response.ok) throw new Error("Erro ao buscar listaEspera");
 
                 const dados = await response.json();
