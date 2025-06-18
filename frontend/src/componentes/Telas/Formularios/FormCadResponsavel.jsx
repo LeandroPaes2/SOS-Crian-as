@@ -164,10 +164,10 @@ export default function FormCadResponsavel(props) {
     return (
         <div className="cadastroResponsavel">
             <PaginaGeral >
-                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
+                <Alert className="alert-custom" style={{ marginTop: '200px', marginLeft: '100px' }} variant="dark">
                     <h2 className="titulo-alert">Responsavel</h2>
                 </Alert>
-                <h2 className=" mb-3" style={{ position: 'absolute', marginLeft: '220px', marginTop: '50px' }}>
+                <h2 className=" mb-3" style={{marginLeft: '100px', marginTop: '50px', justifyItems: 'center' }}>
                     {editando ? 'Editar' : 'Cadastrar'}
                 </h2>
 
@@ -182,7 +182,7 @@ export default function FormCadResponsavel(props) {
                     </div>
                 )}
 
-                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '100px', gap: '45px'}}>
+                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginLeft: '400px', position: 'absolute' }}>
                     <Row className="mb-3">
                         <Col md={6}>
                             <Form.Group id="cpf">
@@ -305,21 +305,217 @@ export default function FormCadResponsavel(props) {
                         </Col>
                     </Row>
 
-                    {/* Continue com esse padrão para os demais grupos: situTrabalho, escolaridade, rendaFamiliar, etc. */}
+                    <Row className="mb-3">
+                        <Col md={6}>
+                            <Form.Group controlId="situTrabalho">
+                                <Form.Label>Situação de trabalho</Form.Label>
+                                <Form.Select value={situTrabalho} onChange={(e) => setSituTrabalho(e.target.value)} className="inputResponsavel">
+                                    <option value="">Selecione uma resposta</option>
+                                    <option value="Empregado">Empregado</option>
+                                    <option value="Desempregado">Desempregado</option>
+                                    <option value="Bicos esporadicos">Bicos esporádicos</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
+                    {situTrabalho === "Empregado" && (
+                        <Row className="mb-3">
+                            <Col md={12}>
+                                <Form.Group controlId="profissao">
+                                    <Form.Label>Profissão</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Digite a profissão"
+                                        value={profissao}
+                                        onChange={(e) => setProfissao(e.target.value)}
+                                        className="inputResponsavel"
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                    )}
+
+                    <Row className="mb-3">
+                        <Col md={6}>
+                            <Form.Group controlId="escolaridade">
+                                <Form.Label>Escolaridade</Form.Label>
+                                <Form.Select value={escolaridade} onChange={(e) => setEscolaridade(e.target.value)} className="inputResponsavel">
+                                    <option value="">Selecione uma escolaridade</option>
+                                    <option value="Ensino fundamemntal incompleto">Ensino fundamental incompleto</option>
+                                    <option value="Ensino fundamental completo">Ensino fundamental completo</option>
+                                    <option value="Ensino medio incompleto">Ensino médio incompleto</option>
+                                    <option value="Ensino medio completo">Ensino médio completo</option>
+                                    <option value="Superior incompleto">Superior incompleto</option>
+                                    <option value="Superior completo">Superior completo</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+
+                        <Col md={6}>
+                            <Form.Group controlId="rendaFamiliar">
+                                <Form.Label>Renda familiar</Form.Label>
+                                <Form.Select value={rendaFamiliar} onChange={(e) => setRendaFamiliar(e.target.value)} className="inputResponsavel">
+                                    <option value="">Selecione uma opção</option>
+                                    <option value="Nao possui renda">Não possui renda</option>
+                                    <option value="1/2 salario">1/2 salário</option>
+                                    <option value="1 salario minimo">1 salário mínimo</option>
+                                    <option value="1 a 3 salarios minimos">1 a 3 salários mínimos</option>
+                                    <option value="4 a 5 salarios minimos">4 a 5 salários mínimos</option>
+                                    <option value="Acima de 6 salarios minimos">Acima de 6 salários mínimos</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+
+                    {rendaFamiliar !== "Nao possui renda" && (
+                        <Row className="mb-3">
+                            <Col md={6}>
+                                <Form.Group controlId="valorRenda">
+                                    <Form.Label>Valor da renda familiar</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="Digite o valor"
+                                        value={valorRenda}
+                                        onChange={(e) => setValorRenda(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                        className="inputResponsavel"
+                                    />
+                                </Form.Group>
+                            </Col>
+
+                            <Col md={6}>
+                                <Form.Group controlId="qtdeTrabalhadores">
+                                    <Form.Label>Quantos trabalham?</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        placeholder="Digite a quantidade"
+                                        value={qtdeTrabalhadores}
+                                        onChange={(e) => setQtdeTrabalhadores(e.target.value === "" ? null : parseInt(e.target.value))}
+                                        className="inputResponsavel"
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                    )}
+
+                    <Row className="mb-3">
+                        <Col md={6}>
+                            <Form.Group controlId="pensaoAlimenticia">
+                                <Form.Label>Possui pensão alimentícia?</Form.Label>
+                                <Form.Select value={pensaoAlimenticia} onChange={(e) => setPensaoAlimenticia(e.target.value)} className="inputResponsavel">
+                                    <option value="">Selecione uma resposta</option>
+                                    <option value="Sim">Sim</option>
+                                    <option value="Nao">Não</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+
+                    {pensaoAlimenticia === "Sim" && (
+                        <Row className="mb-3">
+                            <Col md={4}>
+                                <Form.Group controlId="valorPensao">
+                                    <Form.Label>Valor da pensão</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="Digite o valor"
+                                        value={valorPensao}
+                                        onChange={(e) => setValorPensao(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                        className="inputResponsavel"
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col md={8}>
+                                <Form.Group controlId="pagadorPensao">
+                                    <Form.Label>Quem fornece a pensão?</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Digite o nome"
+                                        value={pagadorPensao}
+                                        onChange={(e) => setPagadorPensao(e.target.value)}
+                                        className="inputResponsavel"
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                    )}
+
+                    <Row className="mb-3">
+                        <Col md={6}>
+                            <Form.Group controlId="beneficioSocial">
+                                <Form.Label>Possui algum benefício social?</Form.Label>
+                                <Form.Select value={beneficioSocial} onChange={(e) => setBeneficioSocial(e.target.value)} className="inputResponsavel">
+                                    <option value="">Selecione uma resposta</option>
+                                    <option value="Sim">Sim</option>
+                                    <option value="Nao">Não</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+
+                    {beneficioSocial === "Sim" && (
+                        <Row className="mb-3">
+                            <Col md={4}>
+                                <Form.Group controlId="tipoBeneficio">
+                                    <Form.Label>Qual o benefício?</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Digite o nome"
+                                        value={tipoBeneficio}
+                                        onChange={(e) => setTipoBeneficio(e.target.value)}
+                                        className="inputResponsavel"
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group controlId="valorBeneficio">
+                                    <Form.Label>Valor do benefício</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        step="0.01"
+                                        placeholder="Digite o valor"
+                                        value={valorBeneficio}
+                                        onChange={(e) => setValorBeneficio(e.target.value === "" ? null : parseFloat(e.target.value))}
+                                        className="inputResponsavel"
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group controlId="beneficiario">
+                                    <Form.Label>Beneficiário</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Digite o beneficiário"
+                                        value={beneficiario}
+                                        onChange={(e) => setBeneficiario(e.target.value)}
+                                        className="inputResponsavel"
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                    )}
+
+                    {/* Botões */}
                     <Row className="mt-4">
-                        <Col className="d-flex justify-content-between">
-                            <Button as={Link} to="/telaMenu" variant="secondary" className="botaoPesquisa">
+                        <Col md={4}>
+                            <Button as={Link} to="/telaMenu" className="w-100 botaoPesquisa" variant="secondary">
                                 Voltar
                             </Button>
-                            <Button as={Link} to="/relatorioResponsavel" variant="secondary" className="botaoPesquisa">
+                        </Col>
+                        <Col md={4}>
+                            <Button as={Link} to="/relatorioResponsavel" className="w-100 botaoPesquisa" variant="secondary">
                                 Relatório
                             </Button>
-                            <Button variant="primary" type="submit" className="botaoPesquisa">
+                        </Col>
+                        <Col md={4}>
+                            <Button className="w-100 botaoPesquisa" variant="primary" type="submit">
                                 {editando ? "Atualizar" : "Cadastrar"}
                             </Button>
                         </Col>
                     </Row>
+
                 </Form>
 
             </PaginaGeral>
