@@ -177,13 +177,14 @@ export default class ResponsavelDAO {
     async excluir(responsavel, conexao) {
         if (responsavel instanceof Responsavel) {
             try {
-                const sql = `DELETE FROM responsavel WHERE resp_cpf = $1`;
+                let sql = "";
+                sql = `DELETE FROM responsavel WHERE resp_cpf = $1`;
                 let parametros = [
                     responsavel.cpf
                 ];
-                await conexao.query(sql, parametros);
+                return await conexao.query(sql, parametros);
             } catch (e) {
-                throw new Error("Erro ao excluir funcionário: " + e.message);
+                throw new Error("Erro ao excluir responsavel: " + e.message);
             }
         }
     }

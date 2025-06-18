@@ -33,18 +33,6 @@ function validarCPF(cpf) {
     return true;
 }
 
-function validarRG(rg) {
-    if (!rg) return false;
-
-    rg = rg.toUpperCase().replace(/[^0-9X]/g, ''); // permite números e o X
-
-    if (rg.length < 7 || rg.length > 9) return false;
-
-    // Só uma validação simples, pode ser melhorada conforme regras específicas estaduais
-
-    return true;
-}
-
 function validarDataNascimento(dtNascimento) {
     if (!dtNascimento) return false;
 
@@ -99,23 +87,12 @@ export default class ResponsavelCtrl {
             console.log("Controle responsavel:"+JSON.stringify(requisicao.body, null, 2));
 
             if (!validarCPF(cpf)) {
-                return resposta.status(400).json({
-                    status: false,
-                    mensagem: "CPF inválido."
-                });
+                throw new Error("CPF inválido");
             }
 
-            if (!validarRG(rg)) {
-                return resposta.status(400).json({
-                    status: false,
-                    mensagem: "RG inválido."
-                });
-            }
+           
             if (!validarDataNascimento(dtNascimento)) {
-                return resposta.status(400).json({
-                    status: false,
-                    mensagem: "Data de nascimento no futuro ou responsavel menor que 18 anos."
-                });
+                throw new Error("Não é possível cadastrar um menor de idade.");
             }
 
             if (cpf && rg && nome && telefone && email && sexo && dtNascimento && conjuge && estCivil && situTrabalho && escolaridade && rendaFamiliar && qtdeTrabalhadores>=0 && pensaoAlimenticia && beneficioSocial)
@@ -189,12 +166,33 @@ export default class ResponsavelCtrl {
                     }
                 }catch(erro){
                     await conexao.query("ROLLBACK");
-                    resposta.status(500).json({
-                        "status":false,
-                        "mensagem":"Não foi possível incluir o responsavel: " + erro.message
+
+                    let statusCode = 500;
+                    let tipoErro = "ErroDesconhecido";
+
+                    if (erro.message.includes("CPF inválido")) {
+                        statusCode = 400;
+                        tipoErro = "ErroValidacao";
+                    } else if (erro.message.includes("RG inválido")) {
+                        statusCode = 400;
+                        tipoErro = "ErroValidacao";
+                    } else if (erro.message.includes("Não é possível cadastrar um menor de idade.")) {
+                        statusCode = 400;
+                        tipoErro = "ErroValidacao";
+                    } else if (erro.message.includes("Erro ao incluir")) {
+                        statusCode = 500;
+                        tipoErro = "ErroBancoDeDados";
+                    }
+                    // Pode adicionar outros ifs para outros erros que quiser
+
+                    resposta.status(statusCode).json({
+                        status: false,
+                        tipo: tipoErro,
+                        mensagem: erro.message
                     });
                 }finally {
-                    conexao.release();
+                    if(conexao)
+                        conexao.release();
                 }
             }
             else
@@ -350,9 +348,9 @@ export default class ResponsavelCtrl {
                     conexao = await conectar()
                     await conexao.query("BEGIN");
                     //const resultado = await responsavel.excluir(conexao);
+                    const resultado = await responsavel.excluir(conexao);
                 
-                
-                    if(responsavel.excluir(conexao)){
+                    if(resultado){
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
                             "status": true,
@@ -367,7 +365,8 @@ export default class ResponsavelCtrl {
                         });
                     }
                 }catch(erro) {
-                    await conexao.query("ROLLBACK");
+                    if(conexao)
+                        await conexao.query("ROLLBACK");
                     resposta.status(500).json({
                         "status": false,
                         "mensagem": "Não foi possível excluir o responsavel: " + erro.message

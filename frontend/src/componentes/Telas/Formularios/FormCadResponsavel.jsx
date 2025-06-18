@@ -87,30 +87,6 @@ export default function FormCadResponsavel(props) {
                     return;
                 }
             }
-            console.log("Enviando dados:", {
-                nome,
-                cpf,
-                rg,
-                telefone,
-                email,
-                sexo,
-                dtNascimento,
-                estCivil,
-                conjuge,
-                situTrabalho,
-                profissao,
-                escolaridade,
-                rendaFamiliar,
-                valorRenda,
-                qtdeTrabalhadores,
-                pensaoAlimenticia,
-                valorPensao,
-                pagadorPensao,
-                beneficioSocial,
-                tipoBeneficio,
-                valorBeneficio,
-                beneficiario
-            });
             const response = await fetch(url, {
                 method: method,
                 headers: {
@@ -119,6 +95,8 @@ export default function FormCadResponsavel(props) {
                 },
                 body: JSON.stringify(responsavel),
             });
+
+            console.log(JSON.stringify(responsavel));
 
             if (response.ok) {
                 setMensagem(editando ? "Responsavel atualizado com sucesso!" : "Responsavel cadastrado com sucesso!");
@@ -146,14 +124,15 @@ export default function FormCadResponsavel(props) {
                 setTimeout(() => setBeneficiario(""), 3000);
                 setTimeout(() => setMensagem(""), 3000);
 
-                if (editando) {
                     setTimeout(() => {
                         navigate("/relatorioResponsavel");
                     }, 3000);
-                }
+                
                 setEditando(false);
             } else {
-                setMensagem(editando ? "Erro ao atualizar responsavel!" : "Erro ao cadastrar o responsavel.");
+                    const erroResposta = await response.json(); // 👈 Lê o JSON de erro
+                    const mensagemErro = erroResposta?.mensagem || "Erro inesperado no servidor.";
+                    setMensagem(mensagemErro);
             }
         } catch (error) {
             console.error("Erro ao conectar com o backend:", error);
@@ -164,10 +143,6 @@ export default function FormCadResponsavel(props) {
     return (
         <PaginaGeral >
             <div className="TelaD">
-
-
-
-
                 <div className="divTitulo">
                     <h2 className="titulo-alert">Responsavel</h2>
                 </div>
@@ -203,8 +178,7 @@ export default function FormCadResponsavel(props) {
                                 <Form.Label>RG</Form.Label>
                                 <Cleave
                                     className="form-control inputResponsavel"
-                                    placeholder="00.000.000-0"
-                                    options={{ delimiters: ['.', '.', '-'], blocks: [2, 3, 3, 1] }}
+                                    placeholder="RG"
                                     value={rg}
                                     onChange={(e) => setRg(e.target.value)}
                                     disabled={editando}
