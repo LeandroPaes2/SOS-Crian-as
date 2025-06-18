@@ -1,5 +1,6 @@
-import Matricula from '../Modelo/matricula.js';
 import Aluno from '../Modelo/aluno.js';
+import Matricula from '../Modelo/Matricula.js';
+
 
 export default class MatriculaDAO {
 
@@ -9,9 +10,9 @@ export default class MatriculaDAO {
     async incluir(matricula, conexao) {
         if (matricula instanceof Matricula) {
             try {
-                let alunoConsultado = new Aluno(matricula.aluno.id);
-                alunoConsultado = await alunoConsultado.consultar(matricula.aluno.id, 3, conexao);
-                alunoConsultado = alunoConsultado[0];
+                let alunoConsultado = matricula.aluno
+                // alunoConsultado = await alunoConsultado.consultar(matricula.aluno.id, 3, conexao);
+                // alunoConsultado = alunoConsultado[0];
 
 
                 alunoConsultado.status = 1; 
@@ -75,6 +76,46 @@ export default class MatriculaDAO {
             throw new Error("Erro ao consultar matricula: " + e.message);
         }
         return matriculas;
+    }
+
+    async alterar(matricula,conexao)
+    {
+        const sql=`UPDATE matricula SET mat_alu_id=$1, mat_turm_id=$2, mat_data_inclusao_projeto=$3, mat_data_matricula=$4, mat_data_vencimento=$5, mat_motivo_desligamento=$6, mat_status=$7 WHERE mat_id=$8`;
+        const parametros=[
+            matricula.aluno.id,
+            matricula.turma.id,
+            matricula.dataInclusaoProjeto,
+            matricula.dataMatricula,
+            matricula.dataVencimento,
+            matricula.motivoDesligamento,
+            matricula.status,
+            matricula.id
+        ]
+        const resp = await conexao.query(sql, parametros);
+        return resp;
+    }
+
+    async excluir(matricula,conexao)
+    {
+        const sql=`UPDATE matricula SET mat_alu_id=$1, mat_turm_id=$2, mat_data_inclusao_projeto=$3, mat_data_matricula=$4, mat_data_vencimento=$5, mat_motivo_desligamento=$6, mat_status=$7 WHERE mat_id=$8`;
+        const parametros=[
+            matricula.dataDesligamento,
+            matricula.motivoDesligamento,
+            0,
+            matricula.id
+        ]
+        const resp = await conexao.query(sql, parametros);
+        return resp;
+    }
+
+    async excluirFisicamente(matricula,conexao)
+    {
+        const sql=`DELETE FROM matricula WHERE mat_id=$1`;
+        const parametros=[
+            matricula.id
+        ]
+        const resp = await conexao.query(sql, parametros);
+        return resp;
     }
 
 }
