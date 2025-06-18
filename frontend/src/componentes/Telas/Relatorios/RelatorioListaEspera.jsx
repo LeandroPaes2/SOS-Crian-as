@@ -320,9 +320,7 @@ export default function RelatorioListaEspera() {
             </Form>
 
             <div className="mt-4">
-                <Button as={Link} to="/telaListaEspera" variant="secondary" className="me-2">Voltar</Button>
                 <Button as={Link} to="/cadastroListaEspera" variant="secondary">Cadastrar</Button>
-                <Button variant="info" onClick={gerarPdfEImprimir}>Imprimir</Button>
             </div>
             <p>Quantidade de crianças cadastradas na lista de espera: {listaFiltrada.length}</p>
             <div className="bg-white p-3 rounded shadow-sm">
