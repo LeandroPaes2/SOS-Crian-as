@@ -133,6 +133,7 @@ export default function FormCadResponsavel(props) {
                     const erroResposta = await response.json(); // 👈 Lê o JSON de erro
                     const mensagemErro = erroResposta?.mensagem || "Erro inesperado no servidor.";
                     setMensagem(mensagemErro);
+                    setTimeout(() => setMensagem(""), 5000);
             }
         } catch (error) {
             console.error("Erro ao conectar com o backend:", error);
@@ -154,11 +155,6 @@ export default function FormCadResponsavel(props) {
 
 
                 <Form onSubmit={handleSubmit}  >
-
-
-
-
-
                     <Row className="mb-3">
                         <Col md={6}>
                             <Form.Group id="cpf">

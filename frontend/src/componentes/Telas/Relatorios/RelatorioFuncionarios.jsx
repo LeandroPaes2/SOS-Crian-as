@@ -55,11 +55,14 @@ export default function RelatorioFuncionarios() {
                 });
 
                 if (response.ok) {
-                    setMensagem("Funcionario excluida com sucesso!");
+                    setMensagem("Funcionario excluido com sucesso!");
                     // Remove da lista sem recarregar
                     setListaDeFuncionarios(listaDeFuncionarios.filter(t => t.cpf !== funcionario.cpf));
+                    setTimeout(() => setMensagem(""), 5000);
                 } else {
-                    setMensagem("Erro ao excluir a funcionario.");
+                    const erro = await response.json(); 
+                    setMensagem(erro.mensagem || "Erro ao excluir a funcionária.");
+                    setTimeout(() => setMensagem(""), 5000);
                 }
             } catch (error) {
                 console.error("Erro ao conectar com o backend:", error);
@@ -95,7 +98,7 @@ export default function RelatorioFuncionarios() {
                 });
 
             if (response.ok) {
-                setMensagem("Funcionario salva com sucesso!");
+                setMensagem("Funcionario salvo com sucesso!");
                 setNome("");
                 setCPF("");
                 setCargo("");
@@ -104,10 +107,12 @@ export default function RelatorioFuncionarios() {
                 setSenha("");
             } else {
                 setMensagem("Erro ao salvar a funcionario.");
+            
             }
         } catch (error) {
             console.error("Erro ao conectar com o backend:", error);
             setMensagem("Erro de conexão com o servidor.");
+            setTimeout(() => setMensagem(""), 5000);
         }
     };
 
@@ -142,6 +147,20 @@ export default function RelatorioFuncionarios() {
                     <Button as={Link} to="/cadastroFuncionario" className="botaoPesquisa" variant="secondary">
                         Cadastrar
                     </Button>
+                    {mensagem && (
+                        <Alert
+                            className="text-center"
+                            variant={
+                                mensagem.toLowerCase().includes("sucesso")
+                                    ? "success"
+                                    : mensagem.toLowerCase().includes("erro")
+                                    ? "danger"
+                                    : "warning"
+                            }
+                        >
+                            {mensagem}
+                        </Alert>
+                    )}
                 </div>
                 <div className="bg-white p-3 rounded shadow-sm">
                     <div className="table-responsive">

@@ -258,7 +258,7 @@ export default class FuncionarioDAO {
                 const sql = `DELETE FROM funcionario WHERE func_cpf = $1`;
                 await conexao.query(sql, [funcionario.cpf]);
             } catch (e) {
-                throw new Error("Erro ao excluir funcionário: " + e.message);
+                throw e;
             }
         }
     }

@@ -21,13 +21,13 @@ export default function RelatorioEventos() {
     const navigate = useNavigate();
     const location = useLocation();
     const [editando, setEditando] = useState(false);
-    const [id, setId] = useState("");
-    const [nome, setNome] = useState("");
-    const [data, setData] = useState("");
-    const [periodo, setPeriodo] = useState("");
-    const [horaInicio, setHoraInicio] = useState("");
-    const [horaFim, setHoraFim] = useState("");
     const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    const [filtroStatus, setFiltroStatus] = useState("todos");
+    const [filtros, setFiltros] = useState({
+    dataInicio: '',
+    dataFim: ''
+});
+    const [ordenarPor, setOrdenarPor] = useState("nome");
 
     useEffect(() => {  //é executado uma única vez quando o componente monta, ou seja, quando a página/carregamento do componente acontece pela primeira vez.
         //Ele serve pra carregar os elementos que você precisa assim que a página abrir, como buscar dados no backend
@@ -104,10 +104,76 @@ export default function RelatorioEventos() {
         });
     };
 
+    const handleFiltroChange = (e) => {
+        const { name, value } = e.target;
+        setFiltros(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
-    const eventosFiltrados = pesquisaNome
-        ? listaDeEventos.filter((evento) => evento.nome.toLowerCase().includes(pesquisaNome.toLowerCase()))
-        : listaDeEventos;
+    const ordenarOptions = [
+        { name: 'Nome', value: 'nome' },
+        { name: 'Data de Início', value: 'dataInicio' },
+    ];
+
+    const statusOptions = [
+        { name: 'Futuros', value: '2' },
+        { name: 'Passados', value: '0' },
+        { name: 'Todos', value: 'todos' },
+        // Adicione novos status aqui no futuro
+    ];
+
+    const getStatus = (status) => {
+        if (status === 0) return "PASSADOS";
+        if (status === 2) return "FUTUROS";
+        return status;
+    };
+
+    const eventosFiltrados = listaDeEventos.filter((evento) => {
+    const nomeCorresponde = evento.nome.toLowerCase().includes(pesquisaNome.toLowerCase());
+
+    const dataEvento = evento.dataInicio.split("T")[0]; // formato YYYY-MM-DD
+    const dataInicioFiltro = filtros.dataInicio;
+    const dataFimFiltro = filtros.dataFim;
+
+    const hoje = new Date().toISOString().split("T")[0]; // data atual (só a parte da data)
+
+    let dataCorresponde = true;
+    if (dataInicioFiltro && !dataFimFiltro) {
+        dataCorresponde = dataEvento === dataInicioFiltro;
+    } else if (!dataInicioFiltro && dataFimFiltro) {
+        dataCorresponde = dataEvento <= dataFimFiltro;
+    } else if (dataInicioFiltro && dataFimFiltro) {
+        dataCorresponde = dataEvento >= dataInicioFiltro && dataEvento <= dataFimFiltro;
+    }
+
+    // Filtra por status (passado, futuro, todos)
+    let statusCorresponde = true;
+    if (filtroStatus === "0") {
+        statusCorresponde = dataEvento < hoje; // eventos passados
+    } else if (filtroStatus === "2") {
+        statusCorresponde = dataEvento >= hoje; // eventos futuros
+    }
+
+    return nomeCorresponde && dataCorresponde && statusCorresponde;
+});
+
+
+
+    const eventosOrdenados = [...eventosFiltrados].sort((a, b) => {
+    if (ordenarPor === "nome") {
+        return a.nome.toLowerCase().localeCompare(b.nome.toLowerCase());
+    } else if (ordenarPor === "dataInicio") {
+    const dataA = new Date(a.dataInicio);
+    const dataB = new Date(b.dataInicio);
+    return dataA - dataB; // ordena do mais antigo para o mais novo
+
+    }
+    return 0;
+});
+
+
 
     return (
         <PaginaGeral>
@@ -118,19 +184,108 @@ export default function RelatorioEventos() {
                         <h2 className="text-center mb-0">📄 Relatório de Eventos</h2>
                     </div>
                 <div className="bg-white p-3 rounded shadow-sm mb-4">
-                        <Row className="gy-3">
-                            
-                            <Col md={4} sm={12}>
-                                <Form.Label><strong>Pesquisar por nome:</strong></Form.Label>
-                                <InputGroup>
-                                    <Form.Control
-                                        placeholder="Digite o nome do evento"
-                                        value={pesquisaNome}
-                                        onChange={(e) => setPesquisaNome(e.target.value)}
-                                    />
-                                </InputGroup>
+                    <Form>
+                            <Row className="gy-3 align-items-end">
+    {/* Pesquisar por nome */}
+    <Col md={4} sm={12}>
+        <Form.Group controlId="pesquisaNome">
+            <Form.Label><strong>Pesquisar por nome:</strong></Form.Label>
+            <Form.Control
+                placeholder="Digite o nome do evento"
+                value={pesquisaNome}
+                onChange={(e) => setPesquisaNome(e.target.value)}
+            />
+        </Form.Group>
+    </Col>
+
+    {/* Agrupamento de período (Data Início e Fim) */}
+    <Col md={8} sm={12}>
+        <Form.Label><strong>Busque pelo período do evento:</strong></Form.Label>
+        <Row>
+            <Col md={5} sm={6}>
+                <Form.Group controlId="filtroDataInicio">
+                    <Form.Label className="mb-1">Data Início:</Form.Label>
+                    <Form.Control
+                        type="date"
+                        name="dataInicio"
+                        value={filtros.dataInicio}
+                        onChange={handleFiltroChange}
+                    />
+                    <div className="mt-2">
+                        <Button
+                            variant="outline-secondary"
+                            size="sm"
+                            onClick={() => setFiltros(prev => ({ ...prev, dataInicio: '' }))}
+                        >
+                            Limpar Início
+                        </Button>
+                    </div>
+                </Form.Group>
+            </Col>
+
+            <Col md={5} sm={6}>
+                <Form.Group controlId="filtroDataFim">
+                    <Form.Label className="mb-1">Data Fim:</Form.Label>
+                    <Form.Control
+                        type="date"
+                        name="dataFim"
+                        value={filtros.dataFim}
+                        onChange={handleFiltroChange}
+                    />
+                    <div className="mt-2">
+                        <Button
+                            variant="outline-secondary"
+                            size="sm"
+                            onClick={() => setFiltros(prev => ({ ...prev, dataFim: '' }))}
+                        >
+                            Limpar Fim
+                        </Button>
+                    </div>
+                </Form.Group>
+            </Col>
+            
+        </Row>
+    </Col>
+    <Col md={4} sm={12}>
+                                <Form.Label><strong>Status:</strong></Form.Label>
+                                <ButtonGroup className="w-100">
+                                    {statusOptions.map((option, idx) => (
+                                        <ToggleButton
+                                            key={idx}
+                                            id={`status-${idx}`}
+                                            type="radio"
+                                            variant="outline-primary"
+                                            name="status"
+                                            value={option.value}
+                                            checked={filtroStatus === option.value}
+                                            onChange={(e) => setFiltroStatus(e.currentTarget.value)}
+                                        >
+                                            {option.name}
+                                        </ToggleButton>
+                                    ))}
+                                </ButtonGroup>
                             </Col>
-                        </Row>
+</Row>
+                            <Col md={4} sm={12}>
+                                <Form.Label><strong>Ordenar por:</strong></Form.Label>
+                                <ButtonGroup className="w-100">
+                                    {ordenarOptions.map((option, idx) => (
+                                        <ToggleButton
+                                            key={idx}
+                                            id={`ordenar-${idx}`}
+                                            type="radio"
+                                            variant="outline-success"
+                                            name="ordenar"
+                                            value={option.value}
+                                            checked={ordenarPor === option.value}
+                                            onChange={(e) => setOrdenarPor(e.currentTarget.value)}
+                                        >
+                                            {option.name}
+                                        </ToggleButton>
+                                    ))}
+                                </ButtonGroup>
+                            </Col>
+                        </Form>
                     </div>
                 <br />
                 {mensagem && <Alert className="mt-02 mb-02 green text-center" variant={
@@ -159,7 +314,7 @@ export default function RelatorioEventos() {
                         </thead>
                         <tbody>
                             {
-                                eventosFiltrados?.map((evento) => {
+                                eventosOrdenados?.map((evento) => {
 
                                     return (
                                         <tr>

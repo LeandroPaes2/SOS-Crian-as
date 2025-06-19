@@ -107,7 +107,10 @@ export default class FuncionarioCtrl {
                     });
                 } catch (e) {
                     await conexao.query('ROLLBACK');
-                    resposta.status(500).json({ status: false, mensagem: e.message });
+                    resposta.status(400).json({ 
+                    status: false, 
+                    mensagem: e.message // Manda a mensagem exata pro front
+                });
                 } finally {
                     conexao.release();
                 }
