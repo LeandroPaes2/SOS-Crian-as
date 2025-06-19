@@ -1,4 +1,6 @@
-
+import Turma from "../Modelo/turma.js";
+import Evento from "../Modelo/evento.js";
+import EventoTurmas from "../Controle/eventoTurmasCtrl.js";
 
 export default class EventoTurmasDAO{
     /*
@@ -67,7 +69,7 @@ export default class EventoTurmasDAO{
     
                 if (tipo === 2) {
     
-                    sql = `SELECT alu_id FROM alunoresponsavel WHERE resp_cpf = $1`;
+                    sql = `SELECT eve_id FROM eventoTurmas WHERE turm_id = $1`;
                     
                     parametros = [termo];
     
@@ -83,27 +85,27 @@ export default class EventoTurmasDAO{
                     let respostaFinal = [];
                     let i;
                     for (i = 0; i < listaId.length; i++) {
-                        const aluno = new Aluno(listaId[i].alu_id);
-                        const listaAlunos = await aluno.consultar(listaId[i].alu_id, 3, conexao);
-                        respostaFinal.push(listaAlunos[0]);
+                        const evento = new Evento(listaId[i].eve_id);
+                        const listaEventos = await evento.consultar(listaId[i].eve_id, 3, conexao);
+                        respostaFinal.push(listaEventos[0]);
                     }
                     return respostaFinal;
                 }
                 else {
                     if (tipo === 1) {
-                        sql = `SELECT resp_cpf FROM alunoresponsavel WHERE alu_id = $1`;
+                        sql = `SELECT turm_id FROM eventoTurmas WHERE eve_id = $1`;
     
     
                         parametros = [termo];                    
                         const resposta = await conexao.query(sql, parametros);
-                        const listaCPF = resposta.rows;
+                        const listaId = resposta.rows;
     
                         let respostaFinal = [];
                         let i;
                         for (i = 0; i < listaCPF.length; i++) {
-                            const responsavel = new Responsavel(listaCPF[i].resp_cpf);
-                            const listaResponsaveis = await responsavel.consultar(listaCPF[i].resp_cpf, conexao);
-                            respostaFinal.push(listaResponsaveis[0]);
+                            const turma = new Turma(listaId[i].turm_id);
+                            const listaTurmas = await turma.consultar(listaId[i].turm_id, conexao);
+                            respostaFinal.push(listaTurmas[0]);
                         }
                         return respostaFinal;
                     }
