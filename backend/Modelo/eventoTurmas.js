@@ -1,9 +1,9 @@
 
-import EventosTurmaDAO from "../Persistencia/eventoTurmasDAO.js";
+import EventoTurmaDAO from "../Persistencia/eventoTurmasDAO.js";
 import Evento from "./evento.js";
 import Turma from "./turma.js";
 
-export default class AlunoResponsavel{
+export default class EventoTurmas{
 
     #evento
     #turma
@@ -41,7 +41,7 @@ export default class AlunoResponsavel{
     }
 
     async incluir(conexao) {
-            const eventoTurmasDAO = new EventosTurmaDAO();
+            const eventoTurmasDAO = new EventoTurmaDAO();
             return eventoTurmasDAO.incluir(this, conexao);
         }
     
@@ -53,18 +53,18 @@ export default class AlunoResponsavel{
     
     
         async excluir(conexao) {
-            const eventoTurmasDAO = new EventosTurmaDAO();
+            const eventoTurmasDAO = new EventoTurmaDAO();
            return eventoTurmasDAO.excluir(this, conexao);
         }
 
-        async excluirPorCPF(conexao) {
-            const eventoTurmasDAO = new EventosTurmaDAO();
+        async excluirPorTurma(conexao) {
+            const eventoTurmasDAO = new EventoTurmaDAO();
             return eventoTurmasDAO.excluirPorTurma(this, conexao);
         }
     
     
         async consultar(termo,tipo ,conexao) {
-            const eventoTurmasDAO = new EventosTurmaDAO();
+            const eventoTurmasDAO = new EventoTurmaDAO();
             return eventoTurmasDAO.consultar(termo, tipo ,conexao);
         }
 

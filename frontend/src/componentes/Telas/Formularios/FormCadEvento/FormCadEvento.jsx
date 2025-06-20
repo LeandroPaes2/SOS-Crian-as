@@ -1,12 +1,15 @@
 import { Alert, Form, Button, Row, Col } from "react-bootstrap";
-import "../../css/telaTurma.css";
-import { useState, useEffect } from "react";
-import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
+import "../../../css/telaTurma.css";
+import { useState, useEffect, useRef } from "react";
+import PaginaGeral from "../../../layouts/PaginaGeral";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "../../css/alerts.css";
-import { useLogin } from "../../../LoginContext";
+import "../../../css/alerts.css";
+import TabelaTurma from "./TabelaTurma";
+import TabelaFuncionario from "./TabelaFuncionario";
+import Swal from 'sweetalert2';
 
 export default function FormCadEvento(props) {
+
     const [periodo, setPeriodo] = useState("");
     const [nome, setNome] = useState("");
     const [tipoEvento, setTipoEvento] = useState("");
@@ -17,11 +20,15 @@ export default function FormCadEvento(props) {
     const [mensagem, setMensagem] = useState("");
     const [id, setId] = useState(0);
     const [editando, setEditando] = useState(false);
-    const [evento, setEvento] = useState(id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim);
+
     const location = useLocation();
     const navigate = useNavigate();
     const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-    const rotaVoltar = editando ? "/relatorioEvento" : "/telaEvento";
+    const [dadosTurma, setDadosTurma] = useState([]);
+    const [objTurma, setObjsTurma] = useState([]);
+    const [dadosFunc, setDadosFunc] = useState([]);
+    const [objFunc, setObjsFunc] = useState([]);
+    const timeoutRef = useRef(null);
 
     useEffect(() => {
         if (location.state && location.state.id && location.state.nome && location.state.tipoEvento && location.state.dataInicio && location.state.dataFim && location.state.periodo && location.state.horaFim && location.state.horaInicio) {
@@ -35,9 +42,95 @@ export default function FormCadEvento(props) {
             setHoraFim(location.state.horaFim);
             setHoraInicio(location.state.horaInicio);
             setEditando(true);
-            console.log("Data recebida do location.state:", location.state.dataInicio);
+            if (location.state.listaTurmas && Array.isArray(location.state.listaTurmas)) {
+            
+                const turmasFormatadas = location.state.listaTurmas.map(turma => ({
+                    disabled: true,     
+                    status: 1,          
+                    Turma: turma        
+                }));
+                setObjsTurma(turmasFormatadas);
+            }
+            if (location.state.listaFuncionario && Array.isArray(location.state.listaFuncionario)) {
+            
+                const funcFormatadas = location.state.listaFuncionario.map(func => ({
+                    disabled: true,     
+                    status: 1,          
+                    Funcionario: func        
+                }));
+                setObjsFunc(funcFormatadas);
+            }
         }
     }, [location.state]);
+    
+
+    useEffect(() => {
+        async function carregarDadosTurma() {
+
+            try {
+                const res = await fetch("http://localhost:3000/turmas", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (res.ok) {
+                    const vetorTurmas = await res.json();
+                    let lista2 = [];
+                    let i;
+                    for (i = 0; i < vetorTurmas.length; i++) {
+                        lista2.push(vetorTurmas[i]);
+
+                    }
+                    setDadosTurma(lista2);
+                } else {
+                    throw new Error("Erro ao buscar turmas");
+                }
+            } catch (error) {
+                console.error("Erro ao carregar as Turmas:", error);
+                // Se tiver um setMensagem ou algo parecido, pode usar aqui:
+                // setMensagem("Erro ao carregar os Responsáveis.");
+            }
+        }
+
+        carregarDadosTurma();
+    }, []);
+
+    useEffect(() => {
+        async function carregarDadosFuncionario() {
+
+            try {
+                const res = await fetch("http://localhost:3000/funcionarios", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (res.ok) {
+                    const vetorFunc = await res.json();
+                    let lista2 = [];
+                    let i;
+                    for (i = 0; i < vetorFunc.length; i++) {
+                        lista2.push(vetorFunc[i]);
+
+                    }
+                    setDadosFunc(lista2);
+                } else {
+                    throw new Error("Erro ao buscar funcionarios");
+                }
+            } catch (error) {
+                console.error("Erro ao carregar as funcionarios:", error);
+                // Se tiver um setMensagem ou algo parecido, pode usar aqui:
+                // setMensagem("Erro ao carregar os Responsáveis.");
+            }
+        }
+
+        carregarDadosFuncionario();
+    }, []);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -48,8 +141,19 @@ export default function FormCadEvento(props) {
             setTimeout(() => setMensagem(""), 3000);
             return;
         }
+        if(objTurma.length==0){
+            setMensagem("Selecione ao menos um participante!");
+            setTimeout(() => setMensagem(""), 3000);
+            return;
+        }
 
-        const evento = { id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim };
+        const turmasValidas = objTurma.filter(t => t.Turma && t.Turma.id && t.Turma.id !== 0);
+        const listaTurmasId = turmasValidas.map(t => t.Turma.id);
+
+        const funcValidas = objFunc.filter(f => f.Funcionario && f.Funcionario.cpf && f.Funcionario.cpf !== "");
+        const listaFuncCpf = funcValidas.map(f => f.Funcionario.cpf);
+
+        const evento = {id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim, listaTurmas: listaTurmasId, listaFuncionario: listaFuncCpf};
         const url = editando ? `http://localhost:3000/eventos/${id}` : "http://localhost:3000/eventos";
         const method = editando ? "PUT" : "POST";
 
@@ -85,15 +189,20 @@ export default function FormCadEvento(props) {
                     setMensagem("");
                 }, 1000);
 
-                if (editando) {
                     setTimeout(() => {
                         navigate("/relatorioEvento");
                     }, 3000);
-                }
 
                 setEditando(false);
             } else {
                 setMensagem(resultado.mensagem || "Erro ao salvar evento.");
+                if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
+                }
+                timeoutRef.current = setTimeout(() => {
+                    setMensagem("");
+                    timeoutRef.current = null;
+                }, 5000);
             }
         } catch (error) {
             console.error("Erro ao conectar com o backend:", error);
@@ -101,16 +210,36 @@ export default function FormCadEvento(props) {
         }
     };
 
-    return (
-        <div className="cadastroTurma">
-            <PaginaGeral>
-                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
-                    <h2 className="titulo-alert">Eventos</h2>
-                </Alert>
+    const mudarPeriodo = (novoPeriodo) => {
+    if (objTurma.length > 0) {
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: "As turmas selecionadas serão removidas. Você não poderá reverter isso!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sim, mudar!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setPeriodo(novoPeriodo);
+                setObjsTurma([]);
+                Swal.fire('Alterado!', 'O período foi atualizado.', 'success');
+            }
+        });
+    } else {
+        setPeriodo(novoPeriodo); // Se não tem turma selecionada, muda direto
+    }
+};
 
-                <h2 className="mb-3" style={{ position: 'absolute', marginLeft: '220px', marginTop: '50px' }}>
-                    {editando ? 'Editar' : 'Cadastrar'}
-                </h2>
+
+    return (
+            <PaginaGeral>
+                 <div className="TelaD">
+                <Alert className="alert-custom" style={{ marginTop: '70px' }} variant="dark">
+                    <h2 className="mb-3 text-center mt-4">Eventos</h2>
+                </Alert>
 
                 {mensagem && (
                     <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
@@ -125,8 +254,8 @@ export default function FormCadEvento(props) {
                         </Alert>
                     </div>
                 )}
-
-                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '100px', gap: '45px' }}>
+                <div className="form-wrapper">
+                <Form onSubmit={handleSubmit} className="formEvento">
                     {/* Identificação */}
                     <Form.Group className="mb-3" id="id">
                         <Form.Label>ID</Form.Label>
@@ -194,7 +323,7 @@ export default function FormCadEvento(props) {
                                 <Form.Label>Período</Form.Label>
                                 <Form.Select
                                     value={periodo}
-                                    onChange={(e) => setPeriodo(e.target.value)}
+                                    onChange={(e) => mudarPeriodo(e.target.value)}
                                     className="inputEvento"
                                     style={{ width: '100%' }}
                                 >
@@ -204,6 +333,7 @@ export default function FormCadEvento(props) {
                                 </Form.Select>
                             </Form.Group>
                         </Col>
+
                         <Col md={4}>
                             <Form.Group className="mb-3" id="horaInicio">
                                 <Form.Label>Hora Início</Form.Label>
@@ -217,7 +347,7 @@ export default function FormCadEvento(props) {
                             </Form.Group>
                         </Col>
                         <Col md={4} >
-                            <Form.Group className="mb-3" id="horaFim" style={{marginLeft: '-100px', position: 'absolute' }}>
+                            <Form.Group className="mb-3" id="horaFim">
                                 <Form.Label >Hora Fim</Form.Label>
                                 <Form.Control
                                     type="time"
@@ -229,22 +359,51 @@ export default function FormCadEvento(props) {
                             </Form.Group>
                         </Col>
                     </Row>
+                    {periodo && (
+                    <Row>
+                        <div className="divResp">
+                            <TabelaTurma
+                                dadosTurma={dadosTurma.filter(turma => turma.periodo.toLowerCase() === periodo.toLowerCase())}
+                                objTurma={objTurma}
+                                setObjsTurma={setObjsTurma}
+                                periodoSelecionado={periodo}
+                            />
 
+                        </div>
+                    </Row>
+                    )}
+                    <Row>
+                        <div className="divResp">
+                            <TabelaFuncionario
+                                dadosFunc={dadosFunc}
+                                objFunc={objFunc}
+                                setObjsFunc={setObjsFunc}
+                            />
+
+                        </div>
+                    </Row>
                     {/* Botões */}
-                    <div className="d-flex gap-3 mt-4">
+                    <Row className="mt-4">
+                         <Col md={4}>
                         <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
                             Voltar
                         </Button>
+                        </Col>
+                        <Col md={4}>
                         <Button as={Link} to="/relatorioEvento" className="botaoPesquisa" variant="secondary">
                             Eventos Agendados
                         </Button>
+                        </Col>
+                        <Col md={4}>
                         <Button className="botaoPesquisa" variant="primary" type="submit">
                             {editando ? "Atualizar" : "Cadastrar"}
                         </Button>
-                    </div>
+                        </Col>
+                    </Row>
                 </Form>
+                </div>
+                </div>
             </PaginaGeral>
-        </div>
     );
 
 }

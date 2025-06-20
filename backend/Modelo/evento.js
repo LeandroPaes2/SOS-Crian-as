@@ -10,6 +10,8 @@ export default class Evento{
     #periodo;
     #horaInicio;
     #horaFim;
+    #listaTurmas
+    #listaFuncionario
 
     get id(){
         return this.#id;
@@ -75,8 +77,23 @@ export default class Evento{
         this.#horaFim = novoHoraFim;
     }
 
+    get listaTurmas(){
+        return this.#listaTurmas
+    }
 
-    constructor(id=0, nome="", tipoEvento="", dataInicio="", dataFim="", periodo="", horaInicio="", horaFim=""){
+    set listaTurmas(novaLista){
+        this.#listaTurmas = novaLista
+    }
+
+    get listaFuncionario(){
+        return this.#listaFuncionario
+    }
+
+    set listaFuncionario(novaListaF){
+        this.#listaFuncionario = novaListaF
+    }
+
+    constructor(id=0, nome="", tipoEvento="", dataInicio="", dataFim="", periodo="", horaInicio="", horaFim="", listaTurmas=[], listaFuncionario=[]){
         this.#id = id;
         this.#nome=nome;
         this.#tipoEvento=tipoEvento;
@@ -85,6 +102,8 @@ export default class Evento{
         this.#periodo=periodo;
         this.#horaInicio=horaInicio;
         this.#horaFim=horaFim;
+        this.#listaTurmas=listaTurmas;
+        this.#listaFuncionario = listaFuncionario;
     }
 
     toJSON(){
@@ -96,7 +115,9 @@ export default class Evento{
             "dataFim":this.#dataFim,
             "periodo":this.#periodo,
             "horaInicio":this.#horaInicio,
-            "horaFim":this.#horaFim
+            "horaFim":this.#horaFim,
+            "listaTurmas":this.#listaTurmas,
+            "listaFuncionario": this.#listaFuncionario
         }
     }
 

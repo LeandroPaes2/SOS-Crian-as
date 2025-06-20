@@ -1,7 +1,6 @@
 import { Router } from "express";
 import EventoTurmasCtrl from "../Controle/eventoTurmasCtrl.js";
 import autenticarToken from "../middleware/autenticarToken.js";
-import autorizarNivel from "../middleware/autorizarNivel.js";
 
 const eventoTurmasCtrl = new EventoTurmasCtrl();
 const rotaEventoTurmas = Router();

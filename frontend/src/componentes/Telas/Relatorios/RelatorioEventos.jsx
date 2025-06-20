@@ -28,6 +28,8 @@ export default function RelatorioEventos() {
     dataFim: ''
 });
     const [ordenarPor, setOrdenarPor] = useState("nome");
+    const [listaTurmas, setListaTurmas] = useState([]);
+    const [listaFunc, setListaFunc] = useState([]);
 
     useEffect(() => {  //é executado uma única vez quando o componente monta, ou seja, quando a página/carregamento do componente acontece pela primeira vez.
         //Ele serve pra carregar os elementos que você precisa assim que a página abrir, como buscar dados no backend
@@ -90,6 +92,30 @@ export default function RelatorioEventos() {
     };
 
     const editarEventos = async (evento) => {
+        const resposta = await fetch("http://localhost:3000/eventoTurmas/" + evento.id, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+        if (!resposta.ok) 
+            throw new Error("Erro ao buscar turmas do evento");
+        const resp = await fetch("http://localhost:3000/eventoFuncionario/" + evento.id, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+        if (!resp.ok) 
+            throw new Error("Erro ao buscar organizadores do evento");
+        const dados = await resposta.json();
+        setListaTurmas(dados);
+
+        const dadosFunc = await resp.json();
+        setListaFunc(dadosFunc);
+        
         navigate("/cadastroEvento", {
             state: {
                 id: evento.id,
@@ -99,7 +125,9 @@ export default function RelatorioEventos() {
                 dataFim: evento.dataFim.split("T")[0],
                 periodo: evento.periodo,
                 horaInicio: evento.horaInicio,
-                horaFim: evento.horaFim
+                horaFim: evento.horaFim,
+                listaTurmas: dados,
+                listaFunc, dadosFunc
             }
         });
     };
@@ -288,6 +316,9 @@ export default function RelatorioEventos() {
                         </Form>
                     </div>
                 <br />
+                <Button as={Link} to="/cadastroEvento" className="botaoPesquisa" variant="secondary">
+                        Cadastrar
+                    </Button>
                 {mensagem && <Alert className="mt-02 mb-02 green text-center" variant={
                     mensagem.includes("sucesso")
                         ? "success"

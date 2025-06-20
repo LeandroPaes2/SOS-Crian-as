@@ -1,36 +1,36 @@
-import Turma from "../Modelo/turma.js";
+import Funcionario from "../Modelo/funcionario.js";
 import Evento from "../Modelo/evento.js";
-import EventoTurmas from "../Modelo/eventoTurmas.js";
+import EventoFuncionario from "../Modelo/eventoFuncionario.js";
 
-export default class EventoTurmasDAO{
+export default class EventoFuncionarioDAO{
     /*
-    CREATE TABLE IF NOT EXISTS eventoTurmas(
+    CREATE TABLE IF NOT EXISTS eventoFuncionario(
         eve_id INT NOT NULL,
-        turm_id INT NOT NULL,
+        func_cpf VARCHAR(14) NOT NULL,
         CONSTRAINT fk_evento FOREIGN KEY (eve_id) 
             REFERENCES evento(eve_id)
             ON UPDATE CASCADE
             ON DELETE RESTRICT,
-        CONSTRAINT fk_turma FOREIGN KEY (turm_id) 
-            REFERENCES turma(turm_id)
+        CONSTRAINT fk_funcionario FOREIGN KEY (func_cpf) 
+            REFERENCES funcionario(func_cpf)
             ON UPDATE CASCADE
             ON DELETE RESTRICT,
-        CONSTRAINT pk_eventoTurmas PRIMARY KEY (eve_id, turm_id)
+        CONSTRAINT pk_eventoFuncionario PRIMARY KEY (eve_id, func_cpf)
     )
     */
 
-    async incluir(eventoTurmas, conexao) {
-        console.log(eventoTurmas instanceof EventoTurmas);
-            if (eventoTurmas instanceof EventoTurmas) {
+    async incluir(eventoFuncionario, conexao) {
+      
+            if (eventoFuncionario instanceof EventoFuncionario) {
                 const sql = `
-                INSERT INTO eventoTurmas
-                (eve_id, turm_id)
+                INSERT INTO eventoFuncionario
+                (eve_id, func_cpf)
                 VALUES ($1, $2);
             `;
     
                 const parametros = [
-                    eventoTurmas.evento.id,
-                    eventoTurmas.turma.id
+                    eventoFuncionario.evento.id,
+                    eventoFuncionario.funcionario.cpf
                 ];
     
     
@@ -39,7 +39,7 @@ export default class EventoTurmasDAO{
                     await conexao.query(sql, parametros);
                     return true;
                 } catch (e) {
-                    console.log("Erro ao inserir EventoTurmas: ", e);
+                    console.log("Erro ao inserir EventoFuncionario: ", e);
                     throw e;
                 }
             } else {
@@ -47,18 +47,18 @@ export default class EventoTurmasDAO{
             }
         }
     
-        async excluir(eventoTurmas, conexao) {
-            if (eventoTurmas instanceof EventoTurmas) {
-                const sql = `DELETE FROM eventoTurmas WHERE eve_id = $1`;
-                const parametros = [eventoTurmas.evento.id];
+        async excluir(eventoFuncionario, conexao) {
+            if (eventoFuncionario instanceof EventoFuncionario) {
+                const sql = `DELETE FROM eventoFuncionario WHERE eve_id = $1`;
+                const parametros = [eventoFuncionario.evento.id];
                 await conexao.query(sql, parametros);
             }
         }
     
-        async excluirPorTurma(eventoTurmas, conexao) {
-            if (eventoTurmas instanceof EventoTurmas) {
-                const sql = `DELETE FROM eventoTurmas WHERE turm_id = $1`;
-                const parametros = [eventoTurmas.turma.id];
+        async excluirPorFuncionario(eventoFuncionario, conexao) {
+            if (eventoFuncionario instanceof EventoFuncionario) {
+                const sql = `DELETE FROM eventoFuncionario WHERE func_cpf = $1`;
+                const parametros = [eventoFuncionario.funcionario.cpf];
                 await conexao.query(sql, parametros);
             }
         }
@@ -70,7 +70,7 @@ export default class EventoTurmasDAO{
     
                 if (tipo === 2) {
     
-                    sql = `SELECT eve_id FROM eventoTurmas WHERE turm_id = $1`;
+                    sql = `SELECT eve_id FROM eventoFuncionario WHERE func_cpf = $1`;
                     
                     parametros = [termo];
     
@@ -94,19 +94,19 @@ export default class EventoTurmasDAO{
                 }
                 else {
                     if (tipo === 1) {
-                        sql = `SELECT turm_id FROM eventoTurmas WHERE eve_id = $1`;
+                        sql = `SELECT func_cpf FROM eventoFuncionario WHERE eve_id = $1`;
     
     
                         parametros = [termo];                    
                         const resposta = await conexao.query(sql, parametros);
-                        const listaId = resposta.rows;
+                        const listaCpf = resposta.rows;
     
                         let respostaFinal = [];
                         let i;
-                        for (i = 0; i < listaId.length; i++) {
-                            const turma = new Turma(listaId[i].turm_id);
-                            const listaTurmas = await turma.consultar(listaId[i].turm_id, conexao);
-                            respostaFinal.push(listaTurmas[0]);
+                        for (i = 0; i < listaCpf.length; i++) {
+                            const funcionario = new Funcionario(listaCpf[i].func_cpf);
+                            const listaFuncionario = await funcionario.consultar(listaCpf[i].func_cpf, conexao);
+                            respostaFinal.push(listaFuncionario[0]);
                         }
                         return respostaFinal;
                     }

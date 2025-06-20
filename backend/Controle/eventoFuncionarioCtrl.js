@@ -1,32 +1,32 @@
-import Turma from "../Modelo/turma.js";
+import Funcionario from "../Modelo/funcionario.js";
 import Evento from "../Modelo/evento.js";
-import EventoTurmas from "../Modelo/eventoTurmas.js";
+import EventoFuncionario from "../Modelo/eventoFuncionario.js";
 import conectar from "../Persistencia/Conexao.js";
 
-export default class EventoTurmasCtrl {
+export default class EventoFuncionarioCtrl {
     async gravar(req, res) {
         res.type("application/json");
 
         if (req.method === "POST" && req.is("application/json")) {
-            const { evento, turma } = req.body;
-            const dadosValidos = evento && evento.id && turma && turma.id;
+            const { evento, funcionario } = req.body;
+            const dadosValidos = evento && evento.id && funcionario && funcionario.cpf;
             if (dadosValidos) {
                 let conexao;
                 try {
                     conexao = await conectar();
-                    let eventoTurmas = new EventoTurmas();
+                    let eventoFuncionario = new EventoFuncionario();
                     const evento = new Evento();
                     let objEvento = await new evento.consultar(evento.id, conexao);
-                    const turma = new Turma();
-                    let objTurma = await turma.consultar(turma.id, conexao);
+                    const funcionario = new Funcionario();
+                    let objFuncionario = await funcionario.consultar(funcionario.cpf, conexao);
 
-                    const eveTurmaCompleto = new EventoTurmas(
+                    const eveFuncionarioCompleto = new EventoFuncionario(
                         objEvento,
-                        objTurma);
+                        objFuncionario);
 
                     await conexao.query("BEGIN");
                     try {
-                        await eveTurmaCompleto.incluir(conexao);
+                        await eveFuncionarioCompleto.incluir(conexao);
                         await conexao.query("COMMIT");
                         res.status(200).json({
                             status: true,
@@ -65,12 +65,12 @@ export default class EventoTurmasCtrl {
         if (requisicao.method == 'DELETE') {
             const evento = parseInt(requisicao.params.evento);
             if (!isNaN(id)) {
-                const eventoTurmas = new EventoTurmas(evento);
+                const eventoFuncionario = new EventoFuncionario(evento);
                 let conexao;
                 try {
                     conexao = await conectar();
                     await conexao.query("BEGIN");
-                    const resultado = await eventoTurmas.excluir(conexao);
+                    const resultado = await eventoFuncionario.excluir(conexao);
                     if (resultado) {
                         await conexao.query("COMMIT");
                         res.status(200).json({ status: true, mensagem: "EventoTurmas desligado com sucesso!" });
@@ -108,9 +108,9 @@ export default class EventoTurmasCtrl {
 
             let conexao;
             try {
-                const eventoTurmas = new EventoTurmas();
+                const eventoFuncionario = new EventoFuncionario();
                 conexao = await conectar();
-                const resultado = await eventoTurmas.consultar(termo, 1, conexao);
+                const resultado = await eventoFuncionario.consultar(termo, 1, conexao);
                 if (Array.isArray(resultado)) {
                     resposta.status(200).json(resultado);
                 }
@@ -139,9 +139,9 @@ export default class EventoTurmasCtrl {
             let conexao;
             try {
                 
-                const eventoTurmas = new EventoTurmas();
+                const eventoFuncionario = new EventoFuncionario();
                 conexao = await conectar();
-                const resultado = await eventoTurmas.consultar(termo, 2, conexao);
+                const resultado = await eventoFuncionario.consultar(termo, 2, conexao);
                 if (Array.isArray(resultado) && resultado.length > 0) {
                     resposta.status(200).json(resultado);
                 }

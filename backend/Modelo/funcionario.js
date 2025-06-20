@@ -59,14 +59,13 @@ export default class Funcionario {
     }
 
 
-    constructor(nome = "", cpf = 0, cargo = "", nivel = 0, email = "", senha = "") {
+    constructor(nome = "", cpf = "", cargo = "", nivel = 0, email = "", senha = "") {
         this.#nome = nome;
         this.#cpf = cpf;
         this.#cargo = cargo;
         this.#nivel = nivel;
         this.#email = email;
         this.#senha = senha;
-
     }
 
     toJSON() {
