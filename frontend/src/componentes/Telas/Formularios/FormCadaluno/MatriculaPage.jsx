@@ -1,3 +1,4 @@
+import "./css/alunoForm.css"
 import React, { useState } from "react";
 
 export default function MatriculaPage() {
@@ -15,22 +16,24 @@ export default function MatriculaPage() {
     const gravarMatricula = async () => {
         try {
 
-           
 
 
-
+            let dadosMat = {
+                aluno:{id:parseInt(alunoId)},
+                turma: { id: parseInt(turmaId) },
+                dataAtualMatricula: dataMatricula,
+            };
+        
             const resposta = await fetch(urlBackend, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": ` Bearer ${token}`
                 },
-                body: JSON.stringify({
-                    aluno: { id: parseInt(alunoId) },
-                    turma: { id: parseInt(turmaId) },
-                    dataAtualMatricula: dataMatricula,
-                }),
+                body: JSON.stringify(dadosMat),
             });
+            console.log(JSON.stringify(dadosMat));
+
             const dados = await resposta.json();
             setResultado(JSON.stringify(dados, null, 2));
         } catch (error) {
@@ -79,7 +82,7 @@ export default function MatriculaPage() {
     };
 
     return (
-        <div className="container">
+        <div className="formularioD">
             <h1>Gestão de Matrícula</h1>
 
             <div className="card">

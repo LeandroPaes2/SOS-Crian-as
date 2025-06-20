@@ -46,7 +46,7 @@ import TelaCadastroFamilia from './componentes/Telas/telaCadastroFamilia';
 import FormCadFamilia from './componentes/Telas/Formularios/FormCadFamilia';
 import RelatorioFamilia from './componentes/Telas/Relatorios/RelatorioFamilia';
 import RelatorioFaltas from './componentes/Telas/Relatorios/RelatorioFaltas';
-import MatriculaPage from './componentes/Telas/MatriculaPage';
+import MatriculaPage from './componentes/Telas/Formularios/FormCadaluno/MatriculaPage';
 function AppRoutes() {
     const { isLogado, loading } = useLogin();
 
