@@ -207,6 +207,9 @@ export default class AlunoDAO {
 
 
                 const listaResponsaveisAluno = aluno.listaResponsaveis;
+                if(listaResponsaveisAluno === undefined) {
+                    throw new Error("Erro ao alterar aluno sem Responsaveis");
+                }
 
                 // console.log("LISTARESPALUNO:");
                 // console.log(listaResponsaveisAluno);
@@ -247,7 +250,8 @@ export default class AlunoDAO {
                 if (Array.isArray(listaResponsaveisAluno)) {
                     for (let i = 0; i < listaResponsaveisAluno.length; i++) {
                         const objRespAux = new Responsavel(listaResponsaveisAluno[i]);
-                        // console.log("respcpf: ", objRespAux.cpf);
+                        // console.log("OBJRESPAUX: ");
+                        // console.log(listaResponsaveisAluno[i].cpf);
                         const alunoResponsavel = new AlunoResponsavel(aluno, objRespAux);
                         await alunoResponsavel.incluir(conexao);
                     }

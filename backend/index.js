@@ -21,6 +21,7 @@ import FuncionarioCtrl from './Controle/funcionarioCtrl.js';
 import supabase from './Persistencia/Conexao.js';
 import rotaEventoTurmas from './Rotas/rotaEventoTurmas.js';
 import rotaEventoFuncionario from "./Rotas/rotaEventoFuncionario.js";
+import rotaMatricula from './Rotas/rotaMatricula.js';
 
 dotenv.config();
 
@@ -106,6 +107,7 @@ app.use("/alunoResponsavel", rotaAlunoResponsavel);
 app.use("/eventoTurmas", rotaEventoTurmas);
 app.use("/eventoFuncionario", rotaEventoFuncionario);
 app.use("/familias", rotaFamilia);
+app.use("/matriculas", rotaMatricula);
 
 // Teste de conexão
 app.get('/teste-conexao', async (req, res) => {

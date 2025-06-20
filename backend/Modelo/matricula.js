@@ -1,22 +1,22 @@
-import MatriculaDAO from "../Persistencia/matriculaDAO";
+import MatriculaDAO from "../Persistencia/matriculaDAO.js";
 export default class Matricula {
     #id;
     #aluno;
     #turma;
     #dataInclusaoProjeto;
-    #dataMAtricula;
+    #dataAtualMatricula;
     #dataVencimento;
     #dataDesligamento;
     #motivoDesligamento
     #status;
 
 
-    constructor(id = 0, aluno = {}, turma = {}, dataInclusaoProjeto = "", dataMatricula = "", dataVencimento = "", motivoDesligamento = "", status = 0) {
+    constructor(id = 0, aluno = {}, turma = {}, dataInclusaoProjeto = "", dataAtualMatricula = "", dataVencimento = "",dataDesligamento = "", motivoDesligamento = "", status = 0) {
         this.#id = id;
         this.#aluno = aluno;
         this.#turma = turma;
         this.#dataInclusaoProjeto = dataInclusaoProjeto;
-        this.#dataMAtricula = dataMatricula;
+        this.#dataAtualMatricula = dataAtualMatricula;
         this.#dataVencimento = dataVencimento;
         this.#dataDesligamento = dataDesligamento;
         this.#motivoDesligamento = motivoDesligamento;
@@ -35,8 +35,8 @@ export default class Matricula {
     get dataInclusaoProjeto() { return this.#dataInclusaoProjeto; }
     set dataInclusaoProjeto(novaDataInclusaoProjeto) { this.#dataInclusaoProjeto = novaDataInclusaoProjeto; }
 
-    get dataMatricula() { return this.#dataMAtricula; }
-    set dataMatricula(novaDataMatricula) { this.#dataMAtricula = novaDataMatricula; }
+    get dataAtualMatricula() { return this.#dataAtualMatricula; }
+    set dataAtualMatricula(novadataAtualMatricula) { this.#dataAtualMatricula = novadataAtualMatricula; }
 
     get dataVencimento() { return this.#dataVencimento; }
     set dataVencimento(novaDataVencimento) { this.#dataVencimento = novaDataVencimento; }
@@ -58,7 +58,7 @@ export default class Matricula {
             aluno: this.#aluno,
             turma: this.#turma,
             dataInclusaoProjeto: this.#dataInclusaoProjeto,
-            dataMatricula: this.#dataMAtricula,
+            dataAtualMatricula: this.#dataAtualMatricula,
             dataVencimento: this.#dataVencimento,
             motivoDesligamento: this.#motivoDesligamento,
             status: this.#status
@@ -71,19 +71,24 @@ export default class Matricula {
         return matriculaDAO.incluir(this,conexao);
     }
 
-    async excluir(conexao) {
-        const matriculaDAO = new MatriculaDAO(conexao);
-        return matriculaDAO.excluir(this,conexao);
-    }
-
+    
     async alterar(conexao) {
         const matriculaDAO = new MatriculaDAO(conexao);
         return matriculaDAO.alterar(this,conexao);
     }
-
+    async excluir(conexao) {
+        const matriculaDAO = new MatriculaDAO(conexao);
+        return matriculaDAO.excluir(this,conexao);
+    }
+    
     async consultar(termo,conexao) {
         const matriculaDAO = new MatriculaDAO(conexao);
         return matriculaDAO.consultar(termo,conexao);
+    }
+
+     async consultarMatAluno(termo,conexao) {
+        const matriculaDAO = new MatriculaDAO(conexao);
+        return matriculaDAO.consultarMatAluno(termo,conexao);
     }
 
 
