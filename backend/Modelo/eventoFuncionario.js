@@ -59,7 +59,7 @@ export default class EventoFuncionario{
 
         async excluirPorCPF(conexao) {
             const eventoFuncionarioDAO = new EventoFuncionarioDAO();
-            return eventoFuncionarioDAO.excluirPorTurma(this, conexao);
+            return eventoFuncionarioDAO.excluirPorFuncionario(this, conexao);
         }
     
     

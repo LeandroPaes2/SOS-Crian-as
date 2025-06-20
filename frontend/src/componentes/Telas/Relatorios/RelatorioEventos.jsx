@@ -49,7 +49,28 @@ export default function RelatorioEventos() {
                 }
 
                 const dados = await response.json();
-                setListaDeEventos(dados); // Atualiza o estado com os dados do backend
+
+                const eventosComDetalhes = await Promise.all(dados.map(async (evento) => {
+                    const [turmasRes, funcsRes] = await Promise.all([
+                    fetch(`http://localhost:3000/eventoTurmas/${evento.id}`, {
+                        headers: { "Authorization": `Bearer ${token}` }
+                    }),
+                    fetch(`http://localhost:3000/eventoFuncionario/${evento.id}`, {
+                        headers: { "Authorization": `Bearer ${token}` }
+                    })
+                    ]);
+
+                    if (!turmasRes.ok || !funcsRes.ok) throw new Error("Erro ao buscar detalhes do evento");
+
+                    const turmas = await turmasRes.json();
+                    const funcionarios = await funcsRes.json();
+
+                    return { ...evento, turmas, funcionarios };
+                }));
+
+                setListaDeEventos(eventosComDetalhes); // Atualiza o estado com os dados do backend
+
+                
             } catch (error) {
                 console.error("Erro ao buscar eventos:", error);
                 setMensagem("Erro ao carregar os eventos.");
@@ -78,9 +99,10 @@ export default function RelatorioEventos() {
                     setMensagem("Evento excluido com sucesso!");
                     setTimeout(() => setMensagem(""), 3000);
                     setListaDeEventos(listaDeEventos.filter((e) => e.id !== evento.id));
+                    window.location.reload();
                 }
                 else {
-                    setMensagem("Erro ao excluir o evento.");
+                    setMensagem(response.error || "Erro ao excluir o evento.");
                     setTimeout(() => setMensagem(""), 3000);
                 }
             } catch (e) {
@@ -88,7 +110,6 @@ export default function RelatorioEventos() {
                 setMensagem("Erro de conexão com o servidor.");
             }
         }
-        window.location.reload();
     };
 
     const editarEventos = async (evento) => {
@@ -127,7 +148,7 @@ export default function RelatorioEventos() {
                 horaInicio: evento.horaInicio,
                 horaFim: evento.horaFim,
                 listaTurmas: dados,
-                listaFunc, dadosFunc
+                listaFuncionario: dadosFunc
             }
         });
     };
@@ -213,107 +234,112 @@ export default function RelatorioEventos() {
                     </div>
                 <div className="bg-white p-3 rounded shadow-sm mb-4">
                     <Form>
-                            <Row className="gy-3 align-items-end">
-    {/* Pesquisar por nome */}
-    <Col md={4} sm={12}>
-        <Form.Group controlId="pesquisaNome">
-            <Form.Label><strong>Pesquisar por nome:</strong></Form.Label>
+  <Row className="gy-3 align-items-end">
+    {/* Pesquisa por nome */}
+    <Col xs={12} md={4}>
+      <Form.Group controlId="pesquisaNome">
+        <Form.Label><strong>Pesquisar por nome:</strong></Form.Label>
+        <Form.Control
+          placeholder="Digite o nome do evento"
+          value={pesquisaNome}
+          onChange={(e) => setPesquisaNome(e.target.value)}
+        />
+      </Form.Group>
+    </Col>
+
+    {/* Período do evento */}
+    <Col xs={12} md={8}>
+      <Form.Label><strong>Busque pelo período do evento:</strong></Form.Label>
+      <Row className="gx-3">
+        <Col xs={12} sm={6} md={5}>
+          <Form.Group controlId="filtroDataInicio">
+            <Form.Label className="mb-1">Data Início:</Form.Label>
             <Form.Control
-                placeholder="Digite o nome do evento"
-                value={pesquisaNome}
-                onChange={(e) => setPesquisaNome(e.target.value)}
+              type="date"
+              name="dataInicio"
+              value={filtros.dataInicio}
+              onChange={handleFiltroChange}
             />
-        </Form.Group>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              className="mt-2"
+              onClick={() => setFiltros(prev => ({ ...prev, dataInicio: '' }))}
+              block="true"
+            >
+              Limpar Início
+            </Button>
+          </Form.Group>
+        </Col>
+
+        <Col xs={12} sm={6} md={5}>
+          <Form.Group controlId="filtroDataFim">
+            <Form.Label className="mb-1">Data Fim:</Form.Label>
+            <Form.Control
+              type="date"
+              name="dataFim"
+              value={filtros.dataFim}
+              onChange={handleFiltroChange}
+            />
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              className="mt-2"
+              onClick={() => setFiltros(prev => ({ ...prev, dataFim: '' }))}
+              block="true"
+            >
+              Limpar Fim
+            </Button>
+          </Form.Group>
+        </Col>
+      </Row>
     </Col>
 
-    {/* Agrupamento de período (Data Início e Fim) */}
-    <Col md={8} sm={12}>
-        <Form.Label><strong>Busque pelo período do evento:</strong></Form.Label>
-        <Row>
-            <Col md={5} sm={6}>
-                <Form.Group controlId="filtroDataInicio">
-                    <Form.Label className="mb-1">Data Início:</Form.Label>
-                    <Form.Control
-                        type="date"
-                        name="dataInicio"
-                        value={filtros.dataInicio}
-                        onChange={handleFiltroChange}
-                    />
-                    <div className="mt-2">
-                        <Button
-                            variant="outline-secondary"
-                            size="sm"
-                            onClick={() => setFiltros(prev => ({ ...prev, dataInicio: '' }))}
-                        >
-                            Limpar Início
-                        </Button>
-                    </div>
-                </Form.Group>
-            </Col>
-
-            <Col md={5} sm={6}>
-                <Form.Group controlId="filtroDataFim">
-                    <Form.Label className="mb-1">Data Fim:</Form.Label>
-                    <Form.Control
-                        type="date"
-                        name="dataFim"
-                        value={filtros.dataFim}
-                        onChange={handleFiltroChange}
-                    />
-                    <div className="mt-2">
-                        <Button
-                            variant="outline-secondary"
-                            size="sm"
-                            onClick={() => setFiltros(prev => ({ ...prev, dataFim: '' }))}
-                        >
-                            Limpar Fim
-                        </Button>
-                    </div>
-                </Form.Group>
-            </Col>
-            
-        </Row>
+    {/* Filtro Status */}
+    <Col xs={12} md={4}>
+      <Form.Label><strong>Status:</strong></Form.Label>
+      <ButtonGroup className="w-100">
+        {statusOptions.map((option, idx) => (
+          <ToggleButton
+            key={idx}
+            id={`status-${idx}`}
+            type="radio"
+            variant="outline-primary"
+            name="status"
+            value={option.value}
+            checked={filtroStatus === option.value}
+            onChange={(e) => setFiltroStatus(e.currentTarget.value)}
+            className="text-center"
+          >
+            {option.name}
+          </ToggleButton>
+        ))}
+      </ButtonGroup>
     </Col>
-    <Col md={4} sm={12}>
-                                <Form.Label><strong>Status:</strong></Form.Label>
-                                <ButtonGroup className="w-100">
-                                    {statusOptions.map((option, idx) => (
-                                        <ToggleButton
-                                            key={idx}
-                                            id={`status-${idx}`}
-                                            type="radio"
-                                            variant="outline-primary"
-                                            name="status"
-                                            value={option.value}
-                                            checked={filtroStatus === option.value}
-                                            onChange={(e) => setFiltroStatus(e.currentTarget.value)}
-                                        >
-                                            {option.name}
-                                        </ToggleButton>
-                                    ))}
-                                </ButtonGroup>
-                            </Col>
-</Row>
-                            <Col md={4} sm={12}>
-                                <Form.Label><strong>Ordenar por:</strong></Form.Label>
-                                <ButtonGroup className="w-100">
-                                    {ordenarOptions.map((option, idx) => (
-                                        <ToggleButton
-                                            key={idx}
-                                            id={`ordenar-${idx}`}
-                                            type="radio"
-                                            variant="outline-success"
-                                            name="ordenar"
-                                            value={option.value}
-                                            checked={ordenarPor === option.value}
-                                            onChange={(e) => setOrdenarPor(e.currentTarget.value)}
-                                        >
-                                            {option.name}
-                                        </ToggleButton>
-                                    ))}
-                                </ButtonGroup>
-                            </Col>
-                        </Form>
+
+    {/* Ordenar por */}
+    <Col xs={12} md={4}>
+      <Form.Label><strong>Ordenar por:</strong></Form.Label>
+      <ButtonGroup className="w-100">
+        {ordenarOptions.map((option, idx) => (
+          <ToggleButton
+            key={idx}
+            id={`ordenar-${idx}`}
+            type="radio"
+            variant="outline-success"
+            name="ordenar"
+            value={option.value}
+            checked={ordenarPor === option.value}
+            onChange={(e) => setOrdenarPor(e.currentTarget.value)}
+            className="text-center"
+          >
+            {option.name}
+          </ToggleButton>
+        ))}
+      </ButtonGroup>
+    </Col>
+  </Row>
+</Form>
                     </div>
                 <br />
                 <Button as={Link} to="/cadastroEvento" className="botaoPesquisa" variant="secondary">
@@ -340,6 +366,8 @@ export default function RelatorioEventos() {
                                 <th>DATA FIM</th>
                                 <th>HORA INICIO</th>
                                 <th>HORA FIM</th>
+                                <th>TURMAS</th>
+                                <th>ORGANIZADORES</th>
                                 <th>AÇÕES</th>
                             </tr>
                         </thead>
@@ -356,6 +384,18 @@ export default function RelatorioEventos() {
                                             <td>{dataNova(evento.dataFim)}</td>
                                             <td>{evento.horaInicio}</td>
                                             <td>{evento.horaFim}</td>
+                                            <td>
+                                                {evento.turmas?.map((turma, index) => (
+                                                    <div key={index}>{turma.cor}</div>
+                                                ))}
+                                            </td>
+
+                                            {/* ORGANIZADORES */}
+                                            <td>
+                                                {evento.funcionarios?.map((func, index) => (
+                                                    <div key={index}>{func.nome}</div>
+                                                ))}
+                                            </td>
                                             <td>
                                                 <div className="d-flex justify-content-center gap-2">
                                                     <Button

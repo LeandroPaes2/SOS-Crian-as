@@ -155,7 +155,7 @@ export default class EventoDAO {
             if (Array.isArray(listaEventoFuncionario)) {
                                 for (let i = 0; i < listaEventoFuncionario.length; i++) {
                                     
-                                    const objFuncAux = new Funcionario(listaEventoFuncionario[i]);
+                                    const objFuncAux = new Funcionario("",listaEventoFuncionario[i]);
                                     console.log("respcpf: ", objFuncAux.cpf);
                                     const eventoFuncionario = new EventoFuncionario(evento, objFuncAux);
                                     await eventoFuncionario.incluir(conexao);
@@ -212,12 +212,17 @@ export default class EventoDAO {
     async excluir(evento, conexao) {
         if (evento instanceof Evento) {
             try{
-            const sql = `DELETE FROM evento WHERE eve_id = $1`;
-            let parametros = [
-                evento.id
-            ]; 
-            await conexao.query(sql, parametros);
-            }catch(e){
+                const eventoTurmas = new EventoTurmas(evento, {});
+                await eventoTurmas.excluir(conexao);
+
+                const eventoFuncionario = new EventoFuncionario(evento, {});
+                await eventoFuncionario.excluir(conexao);
+
+                const sql = `DELETE FROM evento WHERE eve_id = $1`;
+                let parametros = [evento.id];
+                return await conexao.query(sql, parametros);
+            } catch (e) {
+                
                 throw new Error("Erro ao excluir evento: " + e.message);
             }
         }

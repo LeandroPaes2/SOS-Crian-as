@@ -48,12 +48,14 @@ export default class EventoFuncionarioDAO{
         }
     
         async excluir(eventoFuncionario, conexao) {
-            if (eventoFuncionario instanceof EventoFuncionario) {
-                const sql = `DELETE FROM eventoFuncionario WHERE eve_id = $1`;
-                const parametros = [eventoFuncionario.evento.id];
-                await conexao.query(sql, parametros);
-            }
-        }
+    if (eventoFuncionario instanceof EventoFuncionario) {
+        const sql = `DELETE FROM eventoFuncionario WHERE eve_id = $1`;
+        const parametros = [eventoFuncionario.evento.id];
+        const resultado = await conexao.query(sql, parametros);
+        console.log(`EventoFuncionario deletadas: ${resultado.rowCount}`);
+        return resultado;
+    }
+}
     
         async excluirPorFuncionario(eventoFuncionario, conexao) {
             if (eventoFuncionario instanceof EventoFuncionario) {

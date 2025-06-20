@@ -71,6 +71,7 @@ export default function TabelaFuncionario({ dadosFunc, objFunc, setObjsFunc }) {
         <div>
             <div className="divTitulo">
                 <h4>Organizadores</h4>
+                <small style={{ color: 'gray', fontSize: '0.8rem' }}>Campo não obrigatório</small>
             </div>
 
                 <div className="container-tabela">
@@ -134,7 +135,7 @@ export default function TabelaFuncionario({ dadosFunc, objFunc, setObjsFunc }) {
                                             value={linha.Funcionario.cargo}
                                             selecionado={linha.status === 1}
                                             dadosFunc={dadosFunc.filter(funcionario => {
-                                                const idSelecionado = linha.Funcionario.cargo;
+                                                const idSelecionado = linha.Funcionario.cpf;
                                                 const idsJaSelecionados = objFunc
                                                     .filter((_, i) => i !== index) // exclui a linha atual
                                                     .map(l => l.Funcionario.cpf);

@@ -47,13 +47,15 @@ export default class EventoTurmasDAO{
             }
         }
     
-        async excluir(eventoTurmas, conexao) {
-            if (eventoTurmas instanceof EventoTurmas) {
-                const sql = `DELETE FROM eventoTurmas WHERE eve_id = $1`;
-                const parametros = [eventoTurmas.evento.id];
-                await conexao.query(sql, parametros);
-            }
-        }
+       async excluir(eventoTurmas, conexao) {
+    if (eventoTurmas instanceof EventoTurmas) {
+        const sql = `DELETE FROM eventoTurmas WHERE eve_id = $1`;
+        const parametros = [eventoTurmas.evento.id];
+        const resultado = await conexao.query(sql, parametros);
+        console.log(`EventoTurmas deletadas: ${resultado.rowCount}`);
+        return resultado;
+    }
+}
     
         async excluirPorTurma(eventoTurmas, conexao) {
             if (eventoTurmas instanceof EventoTurmas) {
