@@ -241,19 +241,7 @@ export default function FormCadEvento(props) {
                     <h2 className="mb-3 text-center mt-4">Eventos</h2>
                 </Alert>
 
-                {mensagem && (
-                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
-                        <Alert
-                            className="alert-animado mt-2 mb-2"
-                            variant={
-                                mensagem.toLowerCase().includes("sucesso") ? "success" :
-                                    mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
-                            }
-                        >
-                            {mensagem}
-                        </Alert>
-                    </div>
-                )}
+            
                 <div className="form-wrapper">
                 <Form onSubmit={handleSubmit} className="formEvento">
                     {/* Identificação */}
@@ -382,6 +370,16 @@ export default function FormCadEvento(props) {
 
                         </div>
                     </Row>
+                    {mensagem && (
+                                            <div style={{ }}>
+                                                <Alert className="alert-animado mt-2 mb-2" variant={
+                                                    mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                                        mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                                                }>
+                                                    {mensagem}
+                                                </Alert>
+                                            </div>
+                                        )}
                     {/* Botões */}
                     <Row className="mt-4">
                          <Col md={4}>
