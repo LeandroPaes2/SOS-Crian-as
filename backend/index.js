@@ -19,6 +19,8 @@ import rotaFormularioSaude from './Rotas/rotaFormularioSaude.js';
 import rotaAlunoResponsavel from './Rotas/rotaAlunoResponsavel.js';
 import FuncionarioCtrl from './Controle/funcionarioCtrl.js';
 import supabase from './Persistencia/Conexao.js';
+import rotaEventoTurmas from './Rotas/rotaEventoTurmas.js';
+import rotaEventoFuncionario from "./Rotas/rotaEventoFuncionario.js";
 import rotaMatricula from './Rotas/rotaMatricula.js';
 
 dotenv.config();
@@ -102,10 +104,10 @@ app.use("/horarios", rotaHorario);
 app.use("/presencas", rotaPresenca);
 app.use("/formulariosSaude",rotaFormularioSaude);
 app.use("/alunoResponsavel", rotaAlunoResponsavel);
-app.use("/matriculas", rotaMatricula);
-
-
+app.use("/eventoTurmas", rotaEventoTurmas);
+app.use("/eventoFuncionario", rotaEventoFuncionario);
 app.use("/familias", rotaFamilia);
+app.use("/matriculas", rotaMatricula);
 
 // Teste de conexão
 app.get('/teste-conexao', async (req, res) => {

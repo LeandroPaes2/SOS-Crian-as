@@ -18,7 +18,7 @@ rotaFuncionario.delete("/:cpf", autenticarToken, autorizarNivel("1", "5", "3", "
 rotaFuncionario.post("/login", funcCtrl.autenticar);
 rotaFuncionario.get("/:cpf", autenticarToken, autorizarNivel("1", "5", "3", "2"), funcCtrl.consultar);
 rotaFuncionario.get("/email/:email", funcCtrl.consultarEmail);
-rotaFuncionario.get("/", autenticarToken, autorizarNivel("1", "5", "3", "2"), funcCtrl.consultar);
+rotaFuncionario.get("/", autenticarToken, /*autorizarNivel("1", "5", "3", "2"),*/ funcCtrl.consultar);
 
 /*
 rotaFuncionario.post("/", funcCtrl.gravar);

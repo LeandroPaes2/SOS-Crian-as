@@ -11,7 +11,7 @@ export default class ResponsavelDAO {
                 resp_cpf VARCHAR(14) NOT NULL,
                 resp_rg VARCHAR(12) NOT NULL UNIQUE,
                 resp_nome VARCHAR(50) NOT NULL,
-                resp_telefone VARCHAR(15) NOT NULL UNIQUE,
+                resp_telefone VARCHAR(15) NOT NULL,
                 resp_email VARCHAR(100) NOT NULL UNIQUE,
                 resp_sexo VARCHAR(10) NOT NULL CHECK (resp_sexo IN ('Masculino', 'Feminino', 'Outro')),
                 resp_dtNascimento DATE NOT NULL,
@@ -32,7 +32,6 @@ export default class ResponsavelDAO {
                 resp_beneficiario VARCHAR(100) NULL,
                 CONSTRAINT pk_responsavel PRIMARY KEY(resp_cpf),
                 CONSTRAINT cpf_format CHECK (resp_cpf ~ '^\d{3}\.\d{3}\.\d{3}-\d{2}$'),
-                CONSTRAINT rg_format CHECK (resp_rg ~ '^\d{2}\.\d{3}\.\d{3}-[\dXx]$'),
                 CONSTRAINT telefone_format CHECK (resp_telefone ~ '^\(?\d{2}\)?[- ]?\d{4,5}-?\d{4}$'),
                 CONSTRAINT email_format CHECK (resp_email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
@@ -82,6 +81,17 @@ export default class ResponsavelDAO {
                 console.log(parametros);
                 return true; 
             } catch (e) {
+                if (e.code === '23505') { // Violação de unique/PK
+                    if (e.constraint === 'pk_responsavel') {
+                        throw new Error("CPF já cadastrado.");
+                    } else if (e.constraint === 'responsavel_resp_email_key') {
+                        throw new Error("Email já cadastrado.");
+                    } else if (e.constraint === 'responsavel_resp_rg_key') {
+                        throw new Error("RG já cadastrado.");
+                    } else {
+                        throw new Error("Violação de chave única: " + e.detail);
+                    }
+                }
                 throw new Error("Erro ao incluir responsavel: " + e.message);
             }
         }

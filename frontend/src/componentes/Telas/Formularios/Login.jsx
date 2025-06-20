@@ -6,6 +6,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useLogin } from "../../../LoginContext.js";
 import logo2 from "../../imagens/logo2.PNG";
 import Navbar from 'react-bootstrap/Navbar';
+import { useRef } from "react";
+
 export default function Login(props) {
 
     const [email, setEmail] = useState("");
@@ -16,6 +18,7 @@ export default function Login(props) {
     const [mostrarSenha, setMostrarSenha] = useState(false);
     const { login } = useLogin();
     const [manterConectado, setManterConectado] = useState(false);
+    const timeoutRef = useRef(null);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -31,8 +34,15 @@ export default function Login(props) {
             const resultado = await response.json();
 
             if (!response.ok) {
-            setMensagem(resultado.erro || "Erro no login.");
-            return;
+                setMensagem(resultado.erro || "Erro no login.");
+                if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
+                }
+                timeoutRef.current = setTimeout(() => {
+                    setMensagem("");
+                    timeoutRef.current = null;
+                }, 5000);
+                return;
             }
 
             const funcionarioComToken = {

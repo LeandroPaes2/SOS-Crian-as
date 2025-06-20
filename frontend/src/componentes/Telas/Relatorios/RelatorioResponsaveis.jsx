@@ -56,39 +56,42 @@ export default function RelatorioResponsaveis() {
     }, []);
 
     const excluirResponsavel = async (responsavel) => {
-
-        if (window.confirm("Deseja realmente excluir o responsavel " + responsavel.nome + responsavel.cpf)) {
-            if (!responsavel || !responsavel.cpf || !responsavel.rg || !responsavel.nome || !responsavel.telefone || !responsavel.email || !responsavel.sexo || !responsavel.dtNascimento || !responsavel.estCivil || !responsavel.conjuge || !responsavel.situTrabalho || !responsavel.escolaridade || !responsavel.rendaFamiliar || !responsavel.qtdeTrabalhadores || !responsavel.pensaoAlimenticia || !responsavel.beneficioSocial) {
-                //console.log(responsavel.cpf, responsavel.nome, responsavel.telefone);
-                setMensagem("Erro: responsavel inválido!");
-                setTimeout(() => setMensagem(""), 5000);
-                return;
-            }
-
-            try {
-                const response = await fetch("http://localhost:3000/responsaveis/" + responsavel.cpf, {
-                    method: "DELETE",
-                    headers: {
-                        "Authorization": `Bearer ${token}`, // envia o token no cabeçalho
-                        "Content-Type": "application/json"
-                    }
-                });
-
-                if (response.ok) {
-                    setMensagem("Responsavel excluido com sucesso!");
-                    setTimeout(() => setMensagem(""), 3000);
-                    setListaDeResponsaveis(listaDeResponsaveis.filter(r => r.cpf !== responsavel.cpf));
-                } else {
-                    setMensagem("Erro ao excluir o responsavel.");
-                    setTimeout(() => setMensagem(""), 3000);
-                }
-            } catch (error) {
-                console.error("Erro ao conectar com o backend:", error);
-                setMensagem("Erro de conexão com o servidor.");
-            }
+    if (window.confirm("Deseja realmente excluir o responsável " + responsavel.nome + " (" + responsavel.cpf + ")?")) {
+        if (!responsavel || !responsavel.cpf || !responsavel.nome) {
+            setMensagem("Erro: responsável inválido!");
+            setTimeout(() => setMensagem(""), 5000);
+            return;
         }
-        window.location.reload();
-    };
+
+        try {
+            const response = await fetch("http://localhost:3000/responsaveis/" + responsavel.cpf, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const data = await response.json(); // sempre tenta ler a resposta
+
+            setMensagem(data.mensagem); // exibe a mensagem do backend
+            setTimeout(() => setMensagem(""), 5000);
+
+            if (response.ok) {
+                setListaDeResponsaveis(listaDeResponsaveis.filter(r => r.cpf !== responsavel.cpf));
+                // Se quiser recarregar, pode fazer isso após um pequeno delay
+                // setTimeout(() => window.location.reload(), 1000);
+            }
+
+        } catch (error) {
+            console.error("Erro ao conectar com o backend:", error);
+            setMensagem("Erro de conexão com o servidor.");
+            setTimeout(() => setMensagem(""), 3000);
+        }
+        setTimeout(() => window.location.reload(), 3000);
+    }
+};
+
 
     const editarResponsaveis = async (responsavel) => {
         navigate("/cadastroResponsavel", {

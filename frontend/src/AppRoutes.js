@@ -19,7 +19,7 @@ import RelatorioResponsaveis from './componentes/Telas/Relatorios/RelatorioRespo
 import TelaCadastroResponsavel from './componentes/Telas/TelaCadastroResponsavel';
 import FormCadResponsavel from './componentes/Telas/Formularios/FormCadResponsavel';
 import TelaEvento from './componentes/Telas/TelaEvento';
-import FormCadEvento from './componentes/Telas/Formularios/FormCadEvento';
+import FormCadEvento from './componentes/Telas/Formularios/FormCadEvento/FormCadEvento';
 import RelatorioEventos from './componentes/Telas/Relatorios/RelatorioEventos';
 import RelatorioAlunos from './componentes/Telas/Relatorios/RelatorioAluno/RelatorioAlunos';
 import TelaCadastroHorario from './componentes/Telas/telaCadastroHorario';

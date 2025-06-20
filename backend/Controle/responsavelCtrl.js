@@ -179,7 +179,17 @@ export default class ResponsavelCtrl {
                     } else if (erro.message.includes("Não é possível cadastrar um menor de idade.")) {
                         statusCode = 400;
                         tipoErro = "ErroValidacao";
-                    } else if (erro.message.includes("Erro ao incluir")) {
+                    } 
+                    else if (erro.message.includes("CPF já cadastrado.")) {
+                        statusCode = 400;
+                        tipoErro = "ErroDuplicado";
+                    } else if (erro.message.includes("RG já cadastrado.")) {
+                        statusCode = 400;
+                        tipoErro = "ErroDuplicado";
+                    }else if (erro.message.includes("Email já cadastrado.")) {
+                        statusCode = 400;
+                        tipoErro = "ErroDuplicado";
+                    }else if (erro.message.includes("Erro ao incluir")) {
                         statusCode = 500;
                         tipoErro = "ErroBancoDeDados";
                     }
@@ -332,67 +342,69 @@ export default class ResponsavelCtrl {
     }
 
     async excluir(requisicao, resposta) {
-        
-        resposta.type("application/json");
-        //Verificando se o método da requisição é POST e conteúdo é JSON
-        if (requisicao.method == 'DELETE') {
-            //o código será extraída da URL (padrão REST)
-            const cpf = requisicao.params.cpf;
-            //pseudo validação
-            if (cpf) {
-                let conexao;
-                
-                const responsavel = new Responsavel(cpf);
-                try{
-                   
-                    conexao = await conectar()
-                    await conexao.query("BEGIN");
-                    //const resultado = await responsavel.excluir(conexao);
-                    const resultado = await responsavel.excluir(conexao);
-                
-                    if(resultado){
-                        await conexao.query("COMMIT");
-                        resposta.status(200).json({
-                            "status": true,
-                            "mensagem": "Responsável excluído com sucesso!",
-                        });
-                    }
-                    else{
-                        await conexao.query("ROLLBACK");
-                        resposta.status(500).json({
-                            "status": false,
-                            "mensagem": "Não foi possível excluir o responsavel: " + erro.message
-                        });
-                    }
-                }catch(erro) {
-                    if(conexao)
-                        await conexao.query("ROLLBACK");
-                    resposta.status(500).json({
-                        "status": false,
-                        "mensagem": "Não foi possível excluir o responsavel: " + erro.message
+    resposta.type("application/json");
+
+    if (requisicao.method == 'DELETE') {
+        const cpf = requisicao.params.cpf;
+
+        if (cpf) {
+            let conexao;
+            const responsavel = new Responsavel(cpf);
+
+            try {
+                conexao = await conectar();
+                await conexao.query("BEGIN");
+
+                const resultado = await responsavel.excluir(conexao);
+
+                // Verifica se houve alguma linha afetada
+                if (resultado.rowCount > 0) {
+                    await conexao.query("COMMIT");
+                    resposta.status(200).json({
+                        status: true,
+                        mensagem: "Responsável excluído com sucesso!",
                     });
-                }finally{
-                    conexao.release();
+                } else {
+                    await conexao.query("ROLLBACK");
+                    resposta.status(404).json({
+                        status: false,
+                        mensagem: "Responsável não encontrado.",
+                    });
                 }
-            }
-            else {
-                resposta.status(400).json(
-                    {
-                        "status": false,
-                        "mensagem": "Informe um cpf válido de um responsavel conforme documentação da API."
-                    }
-                );
-            }
 
-        }
-        else {
+            } catch (erro) {
+                if (conexao) await conexao.query("ROLLBACK");
+
+                // Verifica se a mensagem de erro contém violação de chave estrangeira
+                if (erro.message.includes("violates foreign key constraint")) {
+                    resposta.status(400).json({
+                        status: false,
+                        mensagem: "Não é possível excluir o responsável pois ele está vinculado a um atendido.",
+                    });
+                } else {
+                    resposta.status(500).json({
+                        status: false,
+                        mensagem: "Erro ao excluir responsável: " + erro.message,
+                    });
+                }
+
+            } finally {
+                if (conexao) conexao.release();
+            }
+        } else {
             resposta.status(400).json({
-                "status": false,
-                "mensagem": "Requisição inválida! Consulte a documentação da API."
+                status: false,
+                mensagem: "Informe um CPF válido de um responsável conforme documentação da API.",
             });
-
         }
+    } else {
+        resposta.status(400).json({
+            status: false,
+            mensagem: "Requisição inválida! Consulte a documentação da API.",
+        });
     }
+}
+
 
     async consultar(requisicao, resposta) {
         

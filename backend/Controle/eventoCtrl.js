@@ -96,14 +96,17 @@ export default class EventoCtrl {
             const periodo = requisicao.body.periodo;
             const horaInicio = requisicao.body.horaInicio;
             const horaFim = requisicao.body.horaFim;
+            const listaTurmas = requisicao.body.listaTurmas || [];
+            const listaFuncionario = requisicao.body.listaFuncionario || [];
             
-            if (nome && tipoEvento && dataInicio && dataFim && periodo && horaInicio && horaFim)
+            
+            if (nome && tipoEvento && dataInicio && dataFim && periodo && horaInicio && horaFim && listaTurmas.length>0)
             {
                 let conexao;
                 try{
                     conexao = await conectar();
                     await conexao.query("BEGIN");
-                    const evento = new Evento(0, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim);
+                    const evento = new Evento(0, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim, listaTurmas, listaFuncionario);
                     const conflito = await verificarConflito(evento, conexao);
                     if (conflito) {
                         await conexao.query("ROLLBACK");
@@ -115,6 +118,7 @@ export default class EventoCtrl {
                     }
 
                     const resultado = await evento.incluir(conexao);
+
                     if(resultado){
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
@@ -177,15 +181,19 @@ export default class EventoCtrl {
             const periodo = requisicao.body.periodo;
             const horaInicio = requisicao.body.horaInicio;
             const horaFim = requisicao.body.horaFim;
+            const listaTurmas = requisicao.body.listaTurmas || [];
+            const listaFuncionario = requisicao.body.listaFuncionario || [];
+
+            
         
-            if (id > 0 && nome && tipoEvento && dataInicio && dataFim && periodo && horaInicio && horaFim)
+            if (id > 0 && nome && tipoEvento && dataInicio && dataFim && periodo && horaInicio && horaFim && listaTurmas.length>0)
             {
                 let conexao;
 
                 try{
                     conexao = await conectar();
                     await conexao.query("BEGIN");
-                    const evento = new Evento(id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim);
+                    const evento = new Evento(id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim, listaTurmas, listaFuncionario);
                     const conflito = await verificarConflito(evento, conexao);
                     if (conflito) {
                         await conexao.query("ROLLBACK");
@@ -196,7 +204,7 @@ export default class EventoCtrl {
                         return;
                     }
 
-                    const resultado = evento.alterar(conexao);
+                    const resultado = await evento.alterar(conexao);
                     if(resultado){
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
@@ -255,8 +263,10 @@ export default class EventoCtrl {
                 try{
                     conexao = await conectar();
                     await conexao.query("BEGIN");
-                
-                    if(evento.excluir(conexao)){
+            
+
+                    const resultado = await evento.excluir(conexao);
+                    if(resultado){
                         await conexao.query("COMMIT");
                         resposta.status(200).json({
                             "status": true,
@@ -314,7 +324,9 @@ export default class EventoCtrl {
             try{
                 conexao = await conectar();
                 await conexao.query("BEGIN");
+                
                 const listaEvento = await evento.consultar(id, conexao);
+
                 
                 if(Array.isArray(listaEvento)){
                     await conexao.query('COMMIT');
