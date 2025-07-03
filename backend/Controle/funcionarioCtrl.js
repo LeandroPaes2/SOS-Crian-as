@@ -107,10 +107,10 @@ export default class FuncionarioCtrl {
                     });
                 } catch (e) {
                     await conexao.query('ROLLBACK');
-                    resposta.status(400).json({ 
-                    status: false, 
-                    mensagem: e.message // Manda a mensagem exata pro front
-                });
+                    resposta.status(400).json({
+                        status: false,
+                        mensagem: e.message // Manda a mensagem exata pro front
+                    });
                 } finally {
                     conexao.release();
                 }
@@ -129,7 +129,7 @@ export default class FuncionarioCtrl {
     }
 
     async consultar(requisicao, resposta) {
-    
+
         resposta.type("application/json");
 
         if (requisicao.method == "GET") {
@@ -145,7 +145,7 @@ export default class FuncionarioCtrl {
             } catch (e) {
                 resposta.status(500).json({ status: false, mensagem: e.message });
             } finally {
-                if(conexao)
+                if (conexao)
                     conexao.release();
             }
         } else {
@@ -155,9 +155,9 @@ export default class FuncionarioCtrl {
             });
         }
     }
-    
+
     async consultarEmail(requisicao, resposta) {
-    
+
         resposta.type("application/json");
 
         if (requisicao.method == "GET") {
@@ -173,7 +173,7 @@ export default class FuncionarioCtrl {
             } catch (e) {
                 resposta.status(500).json({ status: false, mensagem: e.message });
             } finally {
-                if(conexao)
+                if (conexao)
                     conexao.release();
             }
         } else {
@@ -188,13 +188,13 @@ export default class FuncionarioCtrl {
         let conexao;
         try {
             conexao = await conectar();
-        
+
             const resultado = await conexao.query(
                 'SELECT * FROM funcionario WHERE func_email = $1',
                 [email]
             );
 
-            if(conexao)
+            if (conexao)
                 conexao.release();
 
             if (resultado.rows.length === 0) {
@@ -224,25 +224,25 @@ export default class FuncionarioCtrl {
                     return res.status(401).json({ erro: funcSenhaCorreta.error || "Email incorreto" });
                 }
 
-               
-                    const token = jwt.sign(
+
+                const token = jwt.sign(
                     {
                         email: funcSenhaCorreta.email,
                         nivel: funcSenhaCorreta.nivel
                     },
-                        process.env.JWT_SECRET,
-                        { expiresIn: "8h" } // você pode ajustar esse tempo
-                    );
-                    res.status(200).json({
-                        mensagem: `Login do funcionario ${funcSenhaCorreta.nome} realizado com sucesso`,
-                        funcionario: funcSenhaCorreta,
-                        token: token
-                    });
-                
+                    process.env.JWT_SECRET,
+                    { expiresIn: "8h" } // você pode ajustar esse tempo
+                );
+                res.status(200).json({
+                    mensagem: `Login do funcionario ${funcSenhaCorreta.nome} realizado com sucesso`,
+                    funcionario: funcSenhaCorreta,
+                    token: token
+                });
+
             } catch (e) {
                 res.status(500).json({ status: false, mensagem: e.message });
             } finally {
-                if(conexao)
+                if (conexao)
                     conexao.release();
             }
         } else {
@@ -277,10 +277,10 @@ export default class FuncionarioCtrl {
 
     async atualizarSenhaFuncionario(req, res) {
         if (req.method !== "PUT") {
-        return res.status(400).json({
-            status: false,
-            mensagem: "Requisição inválida! Consulte a documentação da API."
-        });
+            return res.status(400).json({
+                status: false,
+                mensagem: "Requisição inválida! Consulte a documentação da API."
+            });
         }
         const { email, novaSenha } = req.body;
         let conexao;
@@ -312,12 +312,12 @@ export default class FuncionarioCtrl {
     }
 
     async alterarSenhaFuncionario(req, res) {
-    
+
         if (req.method !== "PUT") {
-        return res.status(400).json({
-            status: false,
-            mensagem: "Requisição inválida! Consulte a documentação da API."
-        });
+            return res.status(400).json({
+                status: false,
+                mensagem: "Requisição inválida! Consulte a documentação da API."
+            });
         }
 
         const { email, senhaAtual, novaSenha } = req.body;

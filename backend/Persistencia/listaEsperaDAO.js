@@ -112,74 +112,74 @@ export default class ListaEsperaDAO {
 
         return listaListaEspera;
     }
-/*
-    async consultarAluno(alu_id, conexao) {
-        const sql = `SELECT * FROM aluno WHERE alu_id = $1`;
-        const parametros = [alu_id];
-        const resultado = await conexao.query(sql, parametros);
-
-        const alunos = [];
-
-        for (const registro of resultado.rows) {
-            const responsavel = await this.consultarResponsavel(registro.alu_responsavel_cpf, conexao);
-
-            // o lele precisa consertar isso
-            // const escola = await this.consultarEscola(registro.alu_escola_id, conexao);
-            const escola = {};
-
-            alunos.push({
-                id: registro.alu_id,
-                nome: registro.alu_nome,
-                dataNascimento: registro.alu_data_nascimento,
-                responsavel: responsavel[0],
-                cidade: registro.alu_cidade,
-                rua: registro.alu_rua,
-                bairro: registro.alu_bairro,
-                numero: registro.alu_numero,
-                escola: escola[0],
-                telefone: registro.alu_telefone,
-                periodoEscola: registro.alu_periodo_escola,
-                realizaAcompanhamento: registro.alu_realiza_acompanhamento,
-                possuiSindrome: registro.alu_possui_sindrome,
-                descricao: registro.alu_descricao,
-                rg: registro.rg,
-                formularioSaude: null,
-                ficha: null,
-                dataInsercaoProjeto: registro.alu_dataInsercao_projeto,
-                status: registro.alu_status,
-                periodoProjeto: registro.alu_periodo_projeto,
-                cep: registro.alu_cep
-            });
+    /*
+        async consultarAluno(alu_id, conexao) {
+            const sql = `SELECT * FROM aluno WHERE alu_id = $1`;
+            const parametros = [alu_id];
+            const resultado = await conexao.query(sql, parametros);
+    
+            const alunos = [];
+    
+            for (const registro of resultado.rows) {
+                const responsavel = await this.consultarResponsavel(registro.alu_responsavel_cpf, conexao);
+    
+                // o lele precisa consertar isso
+                // const escola = await this.consultarEscola(registro.alu_escola_id, conexao);
+                const escola = {};
+    
+                alunos.push({
+                    id: registro.alu_id,
+                    nome: registro.alu_nome,
+                    dataNascimento: registro.alu_data_nascimento,
+                    responsavel: responsavel[0],
+                    cidade: registro.alu_cidade,
+                    rua: registro.alu_rua,
+                    bairro: registro.alu_bairro,
+                    numero: registro.alu_numero,
+                    escola: escola[0],
+                    telefone: registro.alu_telefone,
+                    periodoEscola: registro.alu_periodo_escola,
+                    realizaAcompanhamento: registro.alu_realiza_acompanhamento,
+                    possuiSindrome: registro.alu_possui_sindrome,
+                    descricao: registro.alu_descricao,
+                    rg: registro.rg,
+                    formularioSaude: null,
+                    ficha: null,
+                    dataInsercaoProjeto: registro.alu_dataInsercao_projeto,
+                    status: registro.alu_status,
+                    periodoProjeto: registro.alu_periodo_projeto,
+                    cep: registro.alu_cep
+                });
+            }
+    
+            return alunos;
         }
-
-        return alunos;
-    }
-
-    async consultarEscola(esc_id, conexao) {
-        const sql = `SELECT * FROM escola WHERE esc_id = $1`;
-        const parametros = [esc_id];
-        const resultado = await conexao.query(sql, parametros);
-
-        return resultado.rows.map(linha => ({
-            id: linha.esc_id,
-            nome: linha.esc_nome,
-            endereco: linha.esc_endereco,
-            telefone: linha.esc_telefone,
-            tipo: linha.esc_tipo
-        }));
-    }
-
-    async consultarResponsavel(cpf, conexao) {
-        const sql = `SELECT * FROM responsavel WHERE resp_cpf = $1`;
-        const parametros = [cpf];
-        const resultado = await conexao.query(sql, parametros);
-
-        return resultado.rows.map(linha => ({
-            cpf: linha.resp_cpf,
-            nome: linha.resp_nome,
-            telefone: linha.resp_telefone
-        }));
-    }*/
+    
+        async consultarEscola(esc_id, conexao) {
+            const sql = `SELECT * FROM escola WHERE esc_id = $1`;
+            const parametros = [esc_id];
+            const resultado = await conexao.query(sql, parametros);
+    
+            return resultado.rows.map(linha => ({
+                id: linha.esc_id,
+                nome: linha.esc_nome,
+                endereco: linha.esc_endereco,
+                telefone: linha.esc_telefone,
+                tipo: linha.esc_tipo
+            }));
+        }
+    
+        async consultarResponsavel(cpf, conexao) {
+            const sql = `SELECT * FROM responsavel WHERE resp_cpf = $1`;
+            const parametros = [cpf];
+            const resultado = await conexao.query(sql, parametros);
+    
+            return resultado.rows.map(linha => ({
+                cpf: linha.resp_cpf,
+                nome: linha.resp_nome,
+                telefone: linha.resp_telefone
+            }));
+        }*/
 
     async excluir(listaEspera, conexao) {
         const sql = `DELETE FROM listaespera WHERE lista_espera_num = $1`;

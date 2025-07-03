@@ -60,8 +60,9 @@ app.post('/recuperarSenha', async (req, res) => {
     try {
         const funcionario = await funcionarioCtrl.consultarPorEmail(email);
         if (!funcionario) {
-            return res.status(404).json({ 
-            mensagem: "Funcionário não encontrado." });
+            return res.status(404).json({
+                mensagem: "Funcionário não encontrado."
+            });
         }
 
         const codigo = Math.floor(100000 + Math.random() * 900000).toString(); // Gera código de 6 dígitos
@@ -102,7 +103,7 @@ app.use("/funcionarios", rotaFuncionario);
 app.use("/listasEspera", rotaListaEspera);
 app.use("/horarios", rotaHorario);
 app.use("/presencas", rotaPresenca);
-app.use("/formulariosSaude",rotaFormularioSaude);
+app.use("/formulariosSaude", rotaFormularioSaude);
 app.use("/alunoResponsavel", rotaAlunoResponsavel);
 app.use("/eventoTurmas", rotaEventoTurmas);
 app.use("/eventoFuncionario", rotaEventoFuncionario);
@@ -113,7 +114,7 @@ app.use("/matriculas", rotaMatricula);
 app.get('/teste-conexao', async (req, res) => {
     try {
         const conexao = await supabase();
-        conexao.release(); 
+        conexao.release();
         res.json({ mensagem: 'Conexão bem-sucedida!' });
     } catch (erro) {
         res.status(500).json({ erro: 'Falha ao conectar no banco de dados', detalhes: erro.message });
@@ -123,6 +124,6 @@ app.get('/teste-conexao', async (req, res) => {
 app.get('/', (req, res) => {
     res.send('🚀 API rodando com Express e CORS!');
 });
- app.listen(porta, () => {
-     console.log(`🚀 Servidor rodando na porta ${porta}`);
+app.listen(porta, () => {
+    console.log(`🚀 Servidor rodando na porta ${porta}`);
 });
