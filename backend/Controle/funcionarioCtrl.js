@@ -2,6 +2,7 @@ import Funcionario from "../Modelo/funcionario.js";
 import conectar from "../Persistencia/Conexao.js";
 import jwt from "jsonwebtoken";
 import sgMail from '@sendgrid/mail';
+import { gerarToken } from "../utils/jwt.js";
 
 export default class FuncionarioCtrl {
     constructor() {
@@ -225,18 +226,11 @@ export default class FuncionarioCtrl {
                 }
 
                
-                    const token = jwt.sign(
-                    {
-                        email: funcSenhaCorreta.email,
-                        nivel: funcSenhaCorreta.nivel
-                    },
-                        process.env.JWT_SECRET,
-                        { expiresIn: "8h" } // você pode ajustar esse tempo
-                    );
+                    const token = gerarToken(funcSenhaCorreta);
                     res.status(200).json({
-                        mensagem: `Login do funcionario ${funcSenhaCorreta.nome} realizado com sucesso`,
-                        funcionario: funcSenhaCorreta,
-                        token: token
+                    mensagem: `Login do funcionario ${funcSenhaCorreta.nome} realizado com sucesso`,
+                    funcionario: funcSenhaCorreta,
+                    token: token
                     });
                 
             } catch (e) {
