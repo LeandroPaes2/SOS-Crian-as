@@ -36,6 +36,8 @@ app.use(cors({ origin: '*', "Access-Control-Allow-Origin": "*" }));
 app.use(express.static('./publico'));
 app.use(helmet());
 
+console.log("Chave atual:", process.env.SENDGRID_API_KEY);
+
 // Configura SendGrid
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
