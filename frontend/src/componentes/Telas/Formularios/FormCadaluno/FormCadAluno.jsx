@@ -1,4 +1,3 @@
-import Swal from 'sweetalert2';
 import { Alert, Form, Button, Col, Row, OverlayTrigger, Popover } from "react-bootstrap";
 import { useState, useEffect, use } from "react";
 import PaginaGeral from "../../../layouts/PaginaGeral";
@@ -8,6 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import { FaQuestionCircle } from "react-icons/fa"; // Ícone de interrogação
 import TabelaResponsavel from "./TabelaResponsavel";
 import AutoCompleteNome from "./AutoCompleteNome";
+import { IoArrowBackCircle } from "react-icons/io5";
+import { TbSend } from "react-icons/tb";
+import { TbReportSearch } from "react-icons/tb";
 
 export default function FormCadAluno(props) {
     const location = useLocation();
@@ -259,7 +261,7 @@ export default function FormCadAluno(props) {
 
 
 
-                    
+
 
 
 
@@ -663,58 +665,63 @@ export default function FormCadAluno(props) {
                         className={`inputAluno ${erros.telefone === 1 ? 'input-error' : ''}`}
                     />
                 </Form.Group>
-
-                <Form.Group className="mb-3">
-                    <Form.Label style={{ fontWeight: '500' }}>Período Escolar:</Form.Label>
-                    <Form.Select
-                        name="periodoEscola"
-                        value={dados.periodoEscola}
-                        onChange={handleChange}
-                        className={`inputAluno ${erros.periodoEscola === 1 ? 'input-error' : ''}`}
-                    >
-                        <option value="">Selecione o período escolar</option>
-                        <option value="Manhã">Manhã</option>
-                        <option value="Tarde">Tarde</option>
-                    </Form.Select>
-                </Form.Group>
-
-                {/* Período do Projeto com Ajuda */}
-                <Form.Group className="mb-3">
-                    <Row className="align-items-center">
-                        <Col xs="auto">
-                            <Form.Label className="mb-0" style={{ fontWeight: '500' }}>Período do Projeto</Form.Label>
-                        </Col>
-                        <Col xs="auto">
-                            <OverlayTrigger
-                                trigger="click"
-                                placement="auto"
-                                rootClose
-                                overlay={
-                                    <Popover id="popover-info" className="popover-custom">
-                                        <Popover.Header as="h3">O que este campo faz?</Popover.Header>
-                                        <Popover.Body>
-                                            O Período do Projeto sempre será no contraturno do Período Escolar.
-                                        </Popover.Body>
-                                    </Popover>
-                                }
+                <Row>
+                    <Col md={6}>
+                        <Form.Group className="mb-3">
+                            <Form.Label style={{ fontWeight: '500' }}>Período Escolar:</Form.Label>
+                            <Form.Select
+                                name="periodoEscola"
+                                value={dados.periodoEscola}
+                                onChange={handleChange}
+                                className={`inputAluno ${erros.periodoEscola === 1 ? 'input-error' : ''}`}
                             >
-                                <Button variant="link" className="help-button p-0">
-                                    <FaQuestionCircle size={20} />
-                                </Button>
-                            </OverlayTrigger>
-                        </Col>
-                    </Row>
-                    <Form.Select
-                        name="periodoProjeto"
-                        value={dados.periodoProjeto}
-                        className="inputAluno"
-                        disabled
-                    >
-                        <option value="">Selecione o período</option>
-                        <option value="Manhã">Manhã</option>
-                        <option value="Tarde">Tarde</option>
-                    </Form.Select>
-                </Form.Group>
+                                <option value="">Selecione o período escolar</option>
+                                <option value="Manhã">Manhã</option>
+                                <option value="Tarde">Tarde</option>
+                            </Form.Select>
+                        </Form.Group>
+                    </Col>
+
+                    <Col md={6}>
+                        {/* Período do Projeto com Ajuda */}
+                        <Form.Group className="mb-3">
+                            <Row className="align-items-center">
+                                <Col xs="auto">
+                                    <Form.Label style={{ fontWeight: '500' }}>Período do Projeto:</Form.Label>
+                                </Col>
+                                <Col xs="auto">
+                                    <OverlayTrigger
+                                        trigger="click"
+                                        placement="auto"
+                                        rootClose
+                                        overlay={
+                                            <Popover id="popover-info" className="popover-custom">
+                                                <Popover.Header as="h3">O que este campo faz?</Popover.Header>
+                                                <Popover.Body>
+                                                    O Período do Projeto sempre será no contraturno do Período Escolar.
+                                                </Popover.Body>
+                                            </Popover>
+                                        }
+                                    >
+                                        <Button variant="link" className="help-button">
+                                            <FaQuestionCircle size={20} />
+                                        </Button>
+                                    </OverlayTrigger>
+                                </Col>
+                            </Row>
+                            <Form.Select
+                                name="periodoProjeto"
+                                value={dados.periodoProjeto}
+                                className="inputAluno"
+                                disabled
+                            >
+                                <option value="">Selecione o período</option>
+                                <option value="Manhã">Manhã</option>
+                                <option value="Tarde">Tarde</option>
+                            </Form.Select>
+                        </Form.Group>
+                    </Col>
+                </Row>
 
                 <Form.Group className="mb-3" id="realizaAcompanhamento">
                     <Form.Label style={{ fontWeight: '500' }}>Realiza Acompanhamento em outra Instituição:</Form.Label>
@@ -891,7 +898,7 @@ export default function FormCadAluno(props) {
                         value={dados.escola.nome}
                         className="inputAluno"
                     />
-                
+
                 </Form.Group>
                 <Form.Group className="mb-3" id="escola.endereco">
                     <Form.Label style={{ fontWeight: '500' }}>Endereco:</Form.Label>
@@ -930,11 +937,18 @@ export default function FormCadAluno(props) {
                     />
                 </Form.Group>
                 <div className="d-flex justify-content-between mt-4 margintop">
-                    <Button as={Link} to={rotaVoltar} variant="secondary">
-                        ⬅️  Voltar
+                    
+                    <Button as={Link} to={rotaVoltar} variant="secondary" className="botaoAluno">
+                        <IoArrowBackCircle  size={20}/>  Voltar
                     </Button>
-                    <Button variant="secondary" type="submit" >
-                        {editando ? "Atualizar" : "Cadastrar"}
+
+                    <Button as={Link} to="/relatorioAluno" className="botaoAluno" style={{ backgroundColor: '#642ca9', borderColor: '#4f2f7fff'}}>
+                        <TbReportSearch size={20}/>  Relatórios
+                    </Button>
+
+                    <Button type="submit" className="botaoAluno" style={{ backgroundColor: '#ffba49', borderColor: '#e09722ff'}}>
+                        <TbSend />
+                        {editando ? " Atualizar" : " Cadastrar"}
                     </Button>
                 </div>
             </Form>

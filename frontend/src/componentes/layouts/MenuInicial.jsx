@@ -12,6 +12,7 @@ import horarios from '../imagens/horario.png';
 import { useLogin } from "../../LoginContext.js";
 import familia from '../imagens/familia.png';
 import presenca from '../imagens/presenca.png';
+import lista from '../imagens/lista_espera.png';
 export default function MenuInicial() {
 
     const { funcionario } = useLogin();
@@ -46,7 +47,7 @@ export default function MenuInicial() {
                         </Button>
                         {(funcionario?.nivel === 4) && (
                             <Button as={Link} to="/telaListaEspera" className='botaoMenu' variant="primary" size="lg">
-                                <img src={funcionarios} style={{ width: '100px' }} />
+                                <img src={lista} style={{ width: '100px' }} />
                                 <br />
                                 Lista Espera
                             </Button>)}

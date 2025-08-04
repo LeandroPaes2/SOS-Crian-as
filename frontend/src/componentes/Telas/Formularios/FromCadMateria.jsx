@@ -1,9 +1,12 @@
-import { Alert, Form, Button } from "react-bootstrap";
+import { Alert, Form, Button, Row, Col } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import "../../css/telaTurma.css";
+import "../../css/telaOficinas.css";
+import { IoArrowBackCircle } from "react-icons/io5";
+import { TbSend } from "react-icons/tb";
+import { TbReportSearch } from "react-icons/tb";
 
 export default function FormCadmateria() {
     const [id, setId] = useState(""); // novo estado para id
@@ -34,15 +37,15 @@ export default function FormCadmateria() {
 
         const materia = { id, nome, descricao }; // inclui o id no objeto (mesmo que esteja vazio em inclusão)
         // Se estiver editando, utiliza a URL com o id; caso contrário, a URL normal de cadastro
-        const url = editando 
-                      ? `http://localhost:3000/materias/${id}` 
-                      : "http://localhost:3000/materias";
+        const url = editando
+            ? `http://localhost:3000/materias/${id}`
+            : "http://localhost:3000/materias";
         const method = editando ? "PUT" : "POST";
 
         try {
             const response = await fetch(url, {
                 method: method,
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`},
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
                 body: JSON.stringify(materia),
             });
 
@@ -58,55 +61,80 @@ export default function FormCadmateria() {
     };
 
     return (
-        <div className="cadastroTurma">
+        <div style={{ height: '100vh', overflow: 'hidden' }}>
             <PaginaGeral>
-                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
-                    <h2 className="titulo-alert">Oficinas</h2>
-                </Alert>
-                <h2 className=" mb-3" style={{ position: 'absolute',marginLeft: '220px', marginTop: '50px' }}>
-                    {editando ? 'Editar' : 'Cadastrar'}
-                </h2>
+                <Form onSubmit={handleSubmit} className="cadastroOficinas">
+                    <div className="TituloO">
+                        <strong> <h2>Oficinas</h2>  </strong>
+                    </div>
 
-                {mensagem && (
-                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
-                        <Alert className="alert-animado mt-2 mb-2"  variant={
-                            mensagem.toLowerCase().includes("sucesso") ? "success" :
-                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
-                        }>
-                            {mensagem}
-                        </Alert>
+                    {mensagem && (
+                        <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                            <Alert className="alert-animado mt-2 mb-2" variant={
+                                mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                    mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                            }>
+                                {mensagem}
+                            </Alert>
                         </div>
                     )}
 
-                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '170px', gap: '45px'}}>
-                    <Form.Group className="mb-3">
-                        <Form.Label style={{ fontWeight: '500' }}>Nome</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite o nome"
-                            value={nome}
-                            onChange={(e) => setNome(e.target.value)}
-                            className="inputOficina"
-                        />
-                    </Form.Group>
+                    <Row>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ fontWeight: '500' }}>Nome</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Digite o nome"
+                                    value={nome}
+                                    onChange={(e) => setNome(e.target.value)}
+                                    className="inputOficinas"
+                                />
+                            </Form.Group>
+                        </Col>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label style={{ fontWeight: '500' }}>Descrição</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite a descrição"
-                            value={descricao}
-                            onChange={(e) => setDescricao(e.target.value)}
-                            className="inputOficina"
-                        />
-                    </Form.Group>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ fontWeight: '500' }}>Descrição</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Digite a descrição"
+                                    value={descricao}
+                                    onChange={(e) => setDescricao(e.target.value)}
+                                    className="inputOficinas"
+                                />
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                    <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
-                        Voltar
-                    </Button>
-                    <Button className="botaoPesquisa" variant="primary" type="submit">
-                        {editando ? "Atualizar" : "Cadastrar"}
-                    </Button>
+                    <div className="d-flex justify-content-between mt-4 margintop">
+                        <Button
+                            as={Link}
+                            to="/telaMenu"
+                            className="botaoPesquisa"
+                            variant="secondary">
+                            <IoArrowBackCircle size={20} />  Voltar
+                        </Button>
+
+                        <Button
+                            as={Link}
+                            to="/relatorioMateria"
+                            className="botaoPesquisa"
+                            variant="secondary"
+                            style={{ backgroundColor: '#642ca9', borderColor: '#4f2f7fff' }}>
+                            <TbReportSearch size={20} />  Relatórios
+                        </Button>
+
+                        <Button
+                            className="botaoPesquisa"
+                            variant="primary"
+                            type="submit"
+                            style={{ backgroundColor: '#ffba49', borderColor: '#e09722ff' }}>
+                            <TbSend />
+                            {editando ? "  Atualizar" : "  Cadastrar"}
+                        </Button>
+                    </div>
+
                 </Form>
             </PaginaGeral>
         </div>

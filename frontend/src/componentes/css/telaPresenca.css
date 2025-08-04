@@ -1,16 +1,4 @@
-.inputHorario {
-    max-width: 1000px;
-    padding: 0.875rem;
-    font-size: 1rem;
-    border: 1.5px solid #000;
-    border-radius: 0.5rem;
-    box-shadow: 2.5px 3px 0 #000;
-    outline: none;
-    transition: ease 0.25s;
-
-}
-
-.cadastroHorario {
+.cadastroPresenca {
     background-color: rgba(255, 255, 255, 0.9);
     max-width: 80%;
     width: 100%;
@@ -22,7 +10,19 @@
     
 }
 
-.TituloH {
+.inputPresenca {
+    max-width: 1000px;
+    padding: 0.875rem;
+    font-size: 1rem;
+    border: 1.5px solid #000;
+    border-radius: 0.5rem;
+    box-shadow: 2.5px 3px 0 #000;
+    outline: none;
+    transition: ease 0.25s;
+
+}
+
+.TituloP {
     margin: 2%;
     padding-top: 10%;
     display: flex;
@@ -33,7 +33,7 @@
     gap: 10px;
 }
 
-.botaoHorario {
+.botaoPre {
     width: 400px;
     background-color: #d94062;
     border-color: #81233b;

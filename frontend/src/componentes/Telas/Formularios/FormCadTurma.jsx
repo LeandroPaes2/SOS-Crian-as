@@ -1,9 +1,13 @@
-import { Alert, Form, Button } from "react-bootstrap";
+import { Alert, Form, Button, Row, Col } from "react-bootstrap";
 import "../../css/telaTurma.css";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
 import { Link, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { IoArrowBackCircle } from "react-icons/io5";
+import { TbSend } from "react-icons/tb";
+import { TbReportSearch } from "react-icons/tb";
+
 
 export default function FormCadTurma() {
     const [cor, setCor] = useState("");
@@ -84,58 +88,80 @@ export default function FormCadTurma() {
     };
 
     return (
-        <div className="cadastroTurma">
+        <div style={{ height: '100vh', overflow: 'hidden' }}>
             <PaginaGeral>
-                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
-                    <h2 className="titulo-alert">Turmas</h2>
-                </Alert>
-                <h2 className=" mb-3" style={{ position: 'absolute',marginLeft: '220px', marginTop: '50px' }}>
-                    {editando ? 'Editar' : 'Cadastrar'}
-                </h2>
+                <Form onSubmit={handleSubmit} className="cadastroTurma">
 
-                {mensagem && (
-                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
-                        <Alert className="alert-animado mt-2 mb-2"  variant={
-                            mensagem.toLowerCase().includes("sucesso") ? "success" :
-                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
-                        }>
-                            {mensagem}
-                        </Alert>
+                    <div className="TituloT">
+                        <strong> <h2>Turmas</h2>  </strong>
+                    </div>
+
+                    {mensagem && (
+                        <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                            <Alert className="alert-animado mt-2 mb-2" variant={
+                                mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                    mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                            }>
+                                {mensagem}
+                            </Alert>
                         </div>
                     )}
 
-                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '170px', gap: '45px'}}>
-                    <Form.Group className="mb-3">
-                        <Form.Label style={{ fontWeight: '500' }}>Cor</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite a cor"
-                            value={turma.cor}
-                            onChange={(e) => setCor(e.target.value)}
-                            disabled={editando}
-                            className="inputTurma"
-                        />
-                    </Form.Group>
+                    <Row>
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ fontWeight: '500' }}>Cor</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Digite a cor"
+                                    value={turma.cor}
+                                    onChange={(e) => setCor(e.target.value)}
+                                    disabled={editando}
+                                    className="inputTurma"
+                                />
+                            </Form.Group>
+                        </Col>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label style={{ fontWeight: '500' }}>Período</Form.Label>
-                        <Form.Select
-                            value={turma.periodo}
-                            onChange={(e) => setPeriodo(e.target.value)}
-                            className="inputTurma"
-                        >
-                            <option value="">Selecione um período</option>
-                            <option value="manha">Manhã</option>
-                            <option value="tarde">Tarde</option>
-                        </Form.Select>
-                    </Form.Group>
-
-                    <div className="d-flex justify-content-between">
-                        <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
-                            Voltar
+                        <Col md={6}>
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ fontWeight: '500' }}>Período</Form.Label>
+                                <Form.Select
+                                    value={turma.periodo}
+                                    onChange={(e) => setPeriodo(e.target.value)}
+                                    className="inputTurma"
+                                >
+                                    <option value="">Selecione um período</option>
+                                    <option value="manha">Manhã</option>
+                                    <option value="tarde">Tarde</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <div className="d-flex justify-content-between mt-4 margintop">
+                        <Button
+                            as={Link}
+                            to="/telaMenu"
+                            className="botaoPesquisa"
+                            variant="secondary">
+                            <IoArrowBackCircle size={20} />  Voltar
                         </Button>
-                        <Button className="botaoPesquisa" variant="primary" type="submit">
-                            {editando ? "Atualizar" : "Cadastrar"}
+
+                        <Button
+                            as={Link}
+                            to="/relatorioTurma"
+                            className="botaoPesquisa"
+                            variant="secondary"
+                            style={{ backgroundColor: '#642ca9', borderColor: '#4f2f7fff' }}>
+                            <TbReportSearch size={20} />  Relatórios
+                        </Button>
+
+                        <Button
+                            className="botaoPesquisa"
+                            variant="primary"
+                            type="submit"
+                            style={{ backgroundColor: '#ffba49', borderColor: '#e09722ff' }}>
+                            <TbSend />
+                            {editando ? "  Atualizar" : "  Cadastrar"}
                         </Button>
                     </div>
                 </Form>

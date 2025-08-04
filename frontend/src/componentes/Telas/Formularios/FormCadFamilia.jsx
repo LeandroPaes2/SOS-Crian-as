@@ -3,6 +3,9 @@ import { useState, useEffect, use } from "react";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../../css/telaFamilia.css";
+import { IoArrowBackCircle} from "react-icons/io5";
+import { TbSend } from "react-icons/tb";
+import { TbReportSearch } from "react-icons/tb";
 
 export default function FormCadFamilia() {
     const [id, setId] = useState("");
@@ -147,26 +150,24 @@ export default function FormCadFamilia() {
 
 
     return (
-        <div className="cadastroFamilia">
+        <div style={{ height: '100vh', overflow: 'hidden' }}>
             <PaginaGeral>
-                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
-                    <h2 className="titulo-alert">Familias</h2>
-                </Alert>
-                <h2 className=" mb-3" style={{ position: 'absolute', marginLeft: '220px', marginTop: '50px' }}>
-                    {editando ? 'Editar' : 'Cadastrar'}
-                </h2>
-
-                {mensagem && (
-                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
-                        <Alert className="alert-animado mt-2 mb-2" variant={
-                            mensagem.toLowerCase().includes("sucesso") ? "success" :
-                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
-                        }>
-                            {mensagem}
-                        </Alert>
+                <Form onSubmit={handleSubmit} className="cadastroFamilia">
+                    <div className="TituloF">
+                        <strong> <h2>Famílias</h2>  </strong>
                     </div>
-                )}
-                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '100px' }}>
+
+                    {mensagem && (
+                        <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                            <Alert className="alert-animado mt-2 mb-2" variant={
+                                mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                    mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                            }>
+                                {mensagem}
+                            </Alert>
+                        </div>
+                    )}
+
                     <Row className="mb-3">
                         <Col md={4}>
                             <Form.Group>
@@ -372,11 +373,30 @@ export default function FormCadFamilia() {
 
 
                     <div className="d-flex justify-content-between mt-4">
-                        <Button as={Link} to={rotaVoltar} variant="secondary" className="botaoPesquisaFamilia">
-                            Voltar
+                        <Button
+                            as={Link}
+                            to={rotaVoltar}
+                            variant="secondary"
+                            className="botaoPesquisaFamilia">
+                            <IoArrowBackCircle size={20} /> Voltar
                         </Button>
-                        <Button className="botaoPesquisaFamilia" variant="primary" type="submit">
-                            {editando ? "Editar" : "Cadastrar"}
+
+                        <Button
+                            as={Link}
+                            to="/relatorioFamilia"
+                            variant="secondary"
+                            className="botaoPesquisaFamilia"
+                            style={{ backgroundColor: '#642ca9', borderColor: '#4f2f7fff' }}>
+                            <TbReportSearch size={20} /> Relatórios
+                        </Button>
+
+                        <Button
+                            className="botaoPesquisaFamilia"
+                            variant="primary"
+                            type="submit"
+                            style={{ backgroundColor: '#ffba49', borderColor: '#e09722ff' }}>
+                            <TbSend />
+                            {editando ? "  Editar" : "  Cadastrar"}
                         </Button>
                     </div>
                 </Form>

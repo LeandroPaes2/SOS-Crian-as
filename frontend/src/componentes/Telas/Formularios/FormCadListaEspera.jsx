@@ -1,8 +1,11 @@
-import { Alert, Form, Button } from "react-bootstrap";
+import { Alert, Form, Button, Row, Col } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../../css/listaEsperaForm.css";
+import { IoArrowBackCircle } from "react-icons/io5";
+import { TbSend } from "react-icons/tb";
+import { TbReportSearch } from "react-icons/tb";
 
 export default function FormCadListaEspera() {
     const navigate = useNavigate();
@@ -79,12 +82,12 @@ export default function FormCadListaEspera() {
     async function buscarAluno(nome, rg) {
         try {
             const resposta = await fetch("http://localhost:3000/alunos", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    }
-                });
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
 
             if (!resposta.ok) throw new Error('Erro ao consultar o servidor.');
 
@@ -117,12 +120,12 @@ export default function FormCadListaEspera() {
         try {
             //const resposta = await fetch("http://localhost:3000/listasEspera");
             const resposta = await fetch("http://localhost:3000/listasEspera", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    }
-                });
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            });
 
             if (!resposta.ok) throw new Error('Erro ao consultar o servidor.');
 
@@ -187,8 +190,10 @@ export default function FormCadListaEspera() {
         try {
             const response = await fetch(url, {
                 method: method,
-                headers: { "Content-Type": "application/json", 
-                "Authorization": `Bearer ${token}` },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify(novaListaEspera)
             });
 
@@ -206,89 +211,115 @@ export default function FormCadListaEspera() {
     };
 
     return (
-
-        <div className="cadastroListaEspera">
+        <div style={{ height: '100vh', overflow: 'hidden' }}>
             <PaginaGeral>
-                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
-                    <h2 className="titulo-alert">Lista de Espera</h2>
-                </Alert>
-                <h2 className=" mb-3" style={{ position: 'absolute',marginLeft: '220px', marginTop: '50px' }}>
-                    {editando ? 'Editar' : 'Cadastrar'}
-                </h2>
+                <Form onSubmit={handleSubmit} className="cadastroListaEspera">
+                    <div className="TituloLP">
+                        <strong> <h2>Lista de Espera</h2>  </strong>
+                    </div>
 
-                {mensagem && (
-                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
-                        <Alert className="alert-animado mt-2 mb-2"  variant={
-                            mensagem.toLowerCase().includes("sucesso") ? "success" :
-                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
-                        }>
-                            {mensagem}
-                        </Alert>
+                    {mensagem && (
+                        <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                            <Alert className="alert-animado mt-2 mb-2" variant={
+                                mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                    mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                            }>
+                                {mensagem}
+                            </Alert>
                         </div>
                     )}
 
 
-                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '170px', gap: '45px'}}>
+                    <Row className="mb-3">
+                        <Col md={6}>
+                            <Form.Group>
+                                <Form.Label>Numero do Protocolo</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    value={listaEspera.aluno.id}
+                                    readOnly
+                                    className="inputListadeEspera"
+                                />
+                            </Form.Group>
+                        </Col>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                        <Form.Group>
-                            <Form.Label>Numero do Protocolo</Form.Label>
-                            <Form.Control
-                                type="number"
-                                value={listaEspera.aluno.id}
-                                readOnly
-                                className="inputListadeEspera"
-                            />
-                        </Form.Group>
+                        <Col md={6}>
+                            <Form.Group>
+                                <Form.Label>Nome da Criança</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="nome"
+                                    value={listaEspera.aluno.nome}
+                                    onChange={manipularMudancaAluno}
+                                    className="inputListadeEspera"
+                                />
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                        <Form.Group>
-                            <Form.Label>Nome da Criança</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="nome"
-                                value={listaEspera.aluno.nome}
-                                onChange={manipularMudancaAluno}
-                                className="inputListadeEspera"
-                            />
-                        </Form.Group>
 
-                        <Form.Group>
-                            <Form.Label>RG da Criança</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="rg"
-                                value={listaEspera.aluno.rg}
-                                onChange={manipularMudancaAluno}
-                                className="inputListadeEspera"
-                            />
-                        </Form.Group>
+                    <Row className="mb-3">
+                        <Col md={6}>
+                            <Form.Group>
+                                <Form.Label>RG da Criança</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="rg"
+                                    value={listaEspera.aluno.rg}
+                                    onChange={manipularMudancaAluno}
+                                    className="inputListadeEspera"
+                                />
+                            </Form.Group>
+                        </Col>
 
-                        <Form.Group>
-                            <Form.Label>Cor Atribuida a Criança</Form.Label>
-                            <Form.Select
-                                value={listaEspera.cor}
-                                name="cor"
-                                onChange={manipularMudanca}
-                                className="inputListadeEspera"
-                            >
-                                <option value="">Selecione uma cor</option>
-                                <option value="AMARELO">AMARELO</option>
-                                <option value="AZUL">AZUL</option>
-                                <option value="VERMELHO">VERMELHO</option>
-                                <option value="ROXO">ROXO</option>
-                                <option value="VERDE">VERDE</option>
-                                <option value="LARANJA">LARANJA</option>
-                                <option value="CINZA">CINZA</option>
-                            </Form.Select>
-                        </Form.Group>
-                        <div className="d-flex justify-content-between">
-                            <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
-                                Voltar
-                            </Button>
-                            <Button className="botaoPesquisa" variant="primary" type="submit">
-                                {editando ? "Atualizar" : "Cadastrar"}
-                            </Button>
-                        </div>
+                        <Col md={6}>
+                            <Form.Group>
+                                <Form.Label>Cor Atribuida a Criança</Form.Label>
+                                <Form.Select
+                                    value={listaEspera.cor}
+                                    name="cor"
+                                    onChange={manipularMudanca}
+                                    className="inputListadeEspera"
+                                >
+                                    <option value="">Selecione uma cor</option>
+                                    <option value="AMARELO">AMARELO</option>
+                                    <option value="AZUL">AZUL</option>
+                                    <option value="VERMELHO">VERMELHO</option>
+                                    <option value="ROXO">ROXO</option>
+                                    <option value="VERDE">VERDE</option>
+                                    <option value="LARANJA">LARANJA</option>
+                                    <option value="CINZA">CINZA</option>
+                                </Form.Select>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+
+                    <div className="d-flex justify-content-between mt-4 margintop">
+                        <Button
+                            as={Link}
+                            to="/telaMenu"
+                            className="botaoPesquisa"
+                            variant="secondary">
+                            <IoArrowBackCircle size={20} />  Voltar
+                        </Button>
+
+                        <Button
+                            as={Link}
+                            to="/relatorioListaEspera"
+                            className="botaoPesquisa"
+                            variant="secondary"
+                            style={{ backgroundColor: '#642ca9', borderColor: '#4f2f7fff' }}>
+                            <TbReportSearch size={20} />  Relatórios
+                        </Button>
+
+                        <Button
+                            className="botaoPesquisa"
+                            variant="primary"
+                            type="submit"
+                            style={{ backgroundColor: '#ffba49', borderColor: '#e09722ff' }}>
+                            <TbSend size={20} />
+                            {editando ? "  Atualizar" : "  Cadastrar"}
+                        </Button>
                     </div>
                 </Form>
             </PaginaGeral>

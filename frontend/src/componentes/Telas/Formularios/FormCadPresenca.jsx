@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { Form, Button, Alert, Table } from "react-bootstrap";
+import { Form, Button, Alert, Table, Row, Col, Overlay } from "react-bootstrap";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import "../../css/telaTurma.css";
+import "../../css/telaPresenca.css";
+import { IoArrowBackCircle } from "react-icons/io5";
+import { BiSave } from "react-icons/bi";
+import { TbReportSearch } from "react-icons/tb";
 
 export default function FormCadPresenca() {
     const [materias, setMaterias] = useState([]);
@@ -64,9 +67,9 @@ export default function FormCadPresenca() {
         async function carregarTurmas() {
             if (selectedMateria) {
                 try {
-                    const res = await fetch(`http://localhost:3000/presencas/materia/${selectedMateria}/turmas`,{
+                    const res = await fetch(`http://localhost:3000/presencas/materia/${selectedMateria}/turmas`, {
                         method: "GET",
-                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}`}
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
                     });
                     const data = await res.json();
                     setTurmas(data);
@@ -160,7 +163,7 @@ export default function FormCadPresenca() {
                 throw new Error(editando
                     ? 'Erro ao atualizar presenças'
                     : 'Erro ao registrar presenças');
-                    setTimeout(() => setMensagem(""), 3000);
+                setTimeout(() => setMensagem(""), 3000);
             }
 
             setMensagem(editando
@@ -176,30 +179,27 @@ export default function FormCadPresenca() {
     };
 
     return (
-        <div className="cadastroTurma">
+        <div style={{ height: '100vh', overflow: 'hidden' }}>
             <PaginaGeral>
+                <Form onSubmit={handleSubmit} className="cadastroPresenca">
+                    <div className="TituloP">
+                        <strong> <h2>Presenças</h2>  </strong>
+                    </div>
 
-                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
-                    <h2 className="titulo-alert">Presenças</h2>
-                </Alert>
-                <h2 className=" mb-3" style={{ position: 'absolute',marginLeft: '220px', marginTop: '50px' }}>
-                    {editando ? 'Editar' : 'Cadastrar'}
-                </h2>
-
-                {mensagem && (
-                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
-                        <Alert className="alert-animado mt-2 mb-2"  variant={
-                            mensagem.toLowerCase().includes("sucesso") ? "success" :
-                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
-                        }>
-                            {mensagem}
-                        </Alert>
+                    {mensagem && (
+                        <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                            <Alert className="alert-animado mt-2 mb-2" variant={
+                                mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                    mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                            }>
+                                {mensagem}
+                            </Alert>
                         </div>
                     )}
 
-                <Form onSubmit={handleSubmit}>
-                    <div className="row mb-4" style={{ marginTop: '190px', marginRight: '170px', gap: '45px'}}>
-                        <div className="col-md-4" style={{}}>
+
+                    <Row>
+                        <Col md={6}>
                             <Form.Group controlId="formMateria" >
                                 <Form.Label style={{ fontWeight: '500' }}>Oficina</Form.Label>
                                 <Form.Select
@@ -217,9 +217,10 @@ export default function FormCadPresenca() {
                                     ))}
                                 </Form.Select>
                             </Form.Group>
-                        </div>
+                        </Col>
 
-                        <div className="col-md-4">
+
+                        <Col md={6}>
                             <Form.Group controlId="formTurma">
                                 <Form.Label style={{ fontWeight: '500' }}>Turma</Form.Label>
                                 <Form.Select
@@ -240,9 +241,9 @@ export default function FormCadPresenca() {
                                     )}
                                 </Form.Select>
                             </Form.Group>
-                        </div>
-                    </div>
+                        </Col>
 
+                    </Row>
                     {alunos.length > 0 && (
                         <>
                             <h4 className="mt-4 mb-3">Registro de Presenças</h4>
@@ -276,23 +277,33 @@ export default function FormCadPresenca() {
                         </>
                     )}
 
-                    <div className="d-flex mt-3" style={{ gap: '85px' }}>
+                    <div className="d-flex justify-content-between mt-4 margintop">
                         <Button
                             as={Link}
                             to="/telaMenu"
-                            className="botaoPesquisa"
+                            className="botaoPre"
                             variant="danger"
                         >
-                            Voltar
+                            <IoArrowBackCircle size={20} />  Voltar
+                        </Button>
+
+                        <Button
+                            as={Link}
+                            to="/relatorioPresenca"
+                            className="botaoPre"
+                            variant="primary"
+                            style={{ backgroundColor: '#642ca9', borderColor: '#4f2f7fff' }}>
+                            <TbReportSearch size={20} />  Relatórios
                         </Button>
 
                         <Button
                             type="submit"
-                            className="botaoPesquisa"
-                            variant="primary"
+                            className="botaoPre"
                             disabled={alunos.length === 0}
+                            style={{ backgroundColor: '#ffba49', borderColor: '#e09722ff' }}
                         >
-                            {editando ? 'Atualizar' : 'Salvar'}
+                            <BiSave size={20} />
+                            {editando ? '  Atualizar' : '  Salvar'}
                         </Button>
                     </div>
                 </Form>

@@ -1,8 +1,12 @@
-import { Alert, Form, Button } from "react-bootstrap";
+import { Alert, Form, Button, Row, Col } from "react-bootstrap";
 import "../../css/telaEscola.css";
 import { useEffect, useState } from "react";
 import PaginaGeral from "../../../componentes/layouts/PaginaGeral";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { IoArrowBackCircle, IoSave } from "react-icons/io5";
+import { TbSend } from "react-icons/tb";
+import { TbReportSearch } from "react-icons/tb";
+
 
 export default function FormCadEscola() {
     const [nome, setNome] = useState("");
@@ -115,42 +119,64 @@ export default function FormCadEscola() {
 
 
     return (
-        <div className="cadastroEscola" >
+        <div style={{ height: "100vh", overflow: "hidden" }}>
             <PaginaGeral>
-                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
-                    <h2 className="titulo-alert">Escolas</h2>
-                </Alert>
-                <h2 className=" mb-3" style={{ position: 'absolute', marginLeft: '220px', marginTop: '50px' }}>
-                    {editando ? 'Editar' : 'Cadastrar'}
-                </h2>
-
-                {mensagem && (
-                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
-                        <Alert className="alert-animado mt-2 mb-2" variant={
-                            mensagem.toLowerCase().includes("sucesso") ? "success" :
-                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
-                        }>
-                            {mensagem}
-                        </Alert>
+                <Form onSubmit={handleSubmit} className="cadastroEscola">
+                    <div className="TituloF">
+                        <strong> <h2>Escolas</h2>  </strong>
                     </div>
-                )}
-                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '270px' }}>
-                    {/* Nome */}
-                    <Form.Group className="mb-3">
-                        <Form.Label style={{ fontWeight: '500' }}>Nome</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Digite o nome"
-                            value={nome}
-                            onChange={(e) => setNome(e.target.value)}
-                            isInvalid={mensagem && nome.trim() === ""}
-                            className="inputEscola"
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            O nome é obrigatório.
-                        </Form.Control.Feedback>
-                    </Form.Group>
 
+                    {mensagem && (
+                        <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                            <Alert className="alert-animado mt-2 mb-2" variant={
+                                mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                    mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                            }>
+                                {mensagem}
+                            </Alert>
+                        </div>
+                    )}
+                    <Row>
+                        <Col md={6}>
+                            {/* Nome */}
+                            <Form.Group className="mb-3">
+                                <Form.Label style={{ fontWeight: '500' }}>Nome</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Digite o nome"
+                                    value={nome}
+                                    onChange={(e) => setNome(e.target.value)}
+                                    isInvalid={mensagem && nome.trim() === ""}
+                                    className="inputEscola"
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    O nome é obrigatório.
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+
+                        <Col md={6}>
+                            {/* Tipo */}
+                            <Form.Group className="mb-4">
+                                <Form.Label >Tipo</Form.Label>
+                                <Form.Select
+                                    value={tipo}
+                                    onChange={(e) => setTipo(e.target.value)}
+                                    isInvalid={mensagem && tipo.trim() === ""}
+                                    className="inputEscola"
+                                >
+                                    <option value="">Selecione o tipo</option>
+                                    <option value="Pública">Pública</option>
+                                    <option value="Privada">Privada</option>
+                                    <option value="Filantrópica">Filantrópica</option>
+                                </Form.Select>
+                                <Form.Control.Feedback type="invalid">
+                                    O tipo é obrigatório.
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+
+                    </Row>
                     {/* Endereço */}
                     <Form.Group className="mb-3">
                         <Form.Label style={{ fontWeight: '500' }}>Endereço</Form.Label>
@@ -183,32 +209,33 @@ export default function FormCadEscola() {
                         </Form.Control.Feedback>
                     </Form.Group>
 
-                    {/* Tipo */}
-                    <Form.Group className="mb-4">
-                        <Form.Label style={{ fontWeight: '500' }}>Tipo</Form.Label>
-                        <Form.Select
-                            value={tipo}
-                            onChange={(e) => setTipo(e.target.value)}
-                            isInvalid={mensagem && tipo.trim() === ""}
-                            className="inputEscola"
-                        >
-                            <option value="">Selecione o tipo</option>
-                            <option value="Pública">Pública</option>
-                            <option value="Privada">Privada</option>
-                            <option value="Filantrópica">Filantrópica</option>
-                        </Form.Select>
-                        <Form.Control.Feedback type="invalid">
-                            O tipo é obrigatório.
-                        </Form.Control.Feedback>
-                    </Form.Group>
 
                     {/* Botões */}
-                    <div className="d-flex justify-content-between">
-                        <Button as={Link} to={rotaVoltar} className="botaoPesquisa" variant="secondary">
-                            Voltar
+                    <div className="d-flex justify-content-between mt-4 margintop">
+                        <Button
+                            as={Link}
+                            to={rotaVoltar}
+                            className="botaoPesquisa"
+                            variant="secondary">
+                            <IoArrowBackCircle size={20} />  Voltar
                         </Button>
-                        <Button type="submit" className="botaoPesquisa" variant="primary">
-                            {editando ? "Atualizar" : "Cadastrar"}
+
+                        <Button
+                            as={Link}
+                            to="/relatorioEscola"
+                            className="botaoPesquisa"
+                            variant="secondary"
+                            style={{ backgroundColor: '#642ca9', borderColor: '#4f2f7fff' }}>
+                            <TbReportSearch size={20} />  Relatórios
+                        </Button>
+
+                        <Button
+                            type="submit"
+                            className="botaoPesquisa"
+                            variant="primary"
+                            style={{ backgroundColor: '#ffba49', borderColor: '#e09722ff' }}>
+                            <TbSend />
+                            {editando ? "  Atualizar" : "  Cadastrar"}
                         </Button>
                     </div>
                 </Form>

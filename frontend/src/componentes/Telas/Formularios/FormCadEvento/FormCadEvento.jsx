@@ -1,5 +1,5 @@
 import { Alert, Form, Button, Row, Col } from "react-bootstrap";
-import "../../../css/telaTurma.css";
+import "../../../css/telaEvento.css";
 import { useState, useEffect, useRef } from "react";
 import PaginaGeral from "../../../layouts/PaginaGeral";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -7,6 +7,9 @@ import "../../../css/alerts.css";
 import TabelaTurma from "./TabelaTurma";
 import TabelaFuncionario from "./TabelaFuncionario";
 import Swal from 'sweetalert2';
+import { IoArrowBackCircle } from "react-icons/io5";
+import { TbSend } from "react-icons/tb";
+import { TbReportSearch } from "react-icons/tb";
 
 export default function FormCadEvento(props) {
 
@@ -43,26 +46,26 @@ export default function FormCadEvento(props) {
             setHoraInicio(location.state.horaInicio);
             setEditando(true);
             if (location.state.listaTurmas && Array.isArray(location.state.listaTurmas)) {
-            
+
                 const turmasFormatadas = location.state.listaTurmas.map(turma => ({
-                    disabled: true,     
-                    status: 1,          
-                    Turma: turma        
+                    disabled: true,
+                    status: 1,
+                    Turma: turma
                 }));
                 setObjsTurma(turmasFormatadas);
             }
             if (location.state.listaFuncionario && Array.isArray(location.state.listaFuncionario)) {
-            
+
                 const funcFormatadas = location.state.listaFuncionario.map(func => ({
-                    disabled: true,     
-                    status: 1,          
-                    Funcionario: func        
+                    disabled: true,
+                    status: 1,
+                    Funcionario: func
                 }));
                 setObjsFunc(funcFormatadas);
             }
         }
     }, [location.state]);
-    
+
 
     useEffect(() => {
         async function carregarDadosTurma() {
@@ -141,7 +144,7 @@ export default function FormCadEvento(props) {
             setTimeout(() => setMensagem(""), 3000);
             return;
         }
-        if(objTurma.length==0){
+        if (objTurma.length == 0) {
             setMensagem("Selecione ao menos um participante!");
             setTimeout(() => setMensagem(""), 3000);
             return;
@@ -153,7 +156,7 @@ export default function FormCadEvento(props) {
         const funcValidas = objFunc.filter(f => f.Funcionario && f.Funcionario.cpf && f.Funcionario.cpf !== "");
         const listaFuncCpf = funcValidas.map(f => f.Funcionario.cpf);
 
-        const evento = {id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim, listaTurmas: listaTurmasId, listaFuncionario: listaFuncCpf};
+        const evento = { id, nome, tipoEvento, dataInicio, dataFim, periodo, horaInicio, horaFim, listaTurmas: listaTurmasId, listaFuncionario: listaFuncCpf };
         const url = editando ? `http://localhost:3000/eventos/${id}` : "http://localhost:3000/eventos";
         const method = editando ? "PUT" : "POST";
 
@@ -189,9 +192,9 @@ export default function FormCadEvento(props) {
                     setMensagem("");
                 }, 1000);
 
-                    setTimeout(() => {
-                        navigate("/relatorioEvento");
-                    }, 3000);
+                setTimeout(() => {
+                    navigate("/relatorioEvento");
+                }, 3000);
 
                 setEditando(false);
             } else {
@@ -211,143 +214,139 @@ export default function FormCadEvento(props) {
     };
 
     const mudarPeriodo = (novoPeriodo) => {
-    if (objTurma.length > 0) {
-        Swal.fire({
-            title: 'Tem certeza?',
-            text: "As turmas selecionadas serão removidas. Você não poderá reverter isso!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sim, mudar!',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                setPeriodo(novoPeriodo);
-                setObjsTurma([]);
-                Swal.fire('Alterado!', 'O período foi atualizado.', 'success');
-            }
-        });
-    } else {
-        setPeriodo(novoPeriodo); // Se não tem turma selecionada, muda direto
-    }
-};
+        if (objTurma.length > 0) {
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: "As turmas selecionadas serão removidas. Você não poderá reverter isso!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, mudar!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setPeriodo(novoPeriodo);
+                    setObjsTurma([]);
+                    Swal.fire('Alterado!', 'O período foi atualizado.', 'success');
+                }
+            });
+        } else {
+            setPeriodo(novoPeriodo); // Se não tem turma selecionada, muda direto
+        }
+    };
 
 
     return (
-            <PaginaGeral>
-                 <div className="TelaD">
-                <Alert className="alert-custom" style={{ marginTop: '70px' }} variant="dark">
-                    <h2 className="mb-3 text-center mt-4">Eventos</h2>
-                </Alert>
+        <PaginaGeral>
+            <Form onSubmit={handleSubmit} className="cadastroEvento">
 
-            
-                <div className="form-wrapper">
-                <Form onSubmit={handleSubmit} className="formEvento">
-                    {/* Identificação */}
-                    <Form.Group className="mb-3" id="id">
-                        <Form.Label>ID</Form.Label>
-                        <Form.Control type="text" value={id} readOnly className="inputEvento" />
-                    </Form.Group>
-                    <Row className="mb-3">
-                        <Col md={6}>
-                            <Form.Group className="mb-3" id="nome">
-                                <Form.Label>Nome/Descrição do Evento</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Digite o nome"
-                                    value={nome}
-                                    onChange={(e) => setNome(e.target.value)}
-                                    className="inputEvento"
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Group className="mb-3" id="tipoEvento">
-                                <Form.Label>Tipo do Evento</Form.Label>
-                                <Form.Select
-                                    value={tipoEvento}
-                                    onChange={(e) => setTipoEvento(e.target.value)}
-                                    className="inputEvento"
-                                >
-                                    <option value="">Selecione o tipo</option>
-                                    <option value="Festa">Festa</option>
-                                    <option value="Passeio">Passeio</option>
-                                    <option value="Outro">Outro</option>
-                                </Form.Select>
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                    {/* Datas */}
-                    <Row>
-                        <Col md={6}>
-                            <Form.Group className="mb-3" id="dataInicio">
-                                <Form.Label>Data Início</Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    value={dataInicio}
-                                    onChange={(e) => setDataInicio(e.target.value)}
-                                    className="inputEvento"
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Group className="mb-3" id="dataFim">
-                                <Form.Label>Data Fim</Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    value={dataFim}
-                                    onChange={(e) => setDataFim(e.target.value)}
-                                    className="inputEvento"
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Row>
+                <div className="TituloE">
+                    <strong> <h2>Eventos</h2>  </strong>
+                </div>
 
-                    {/* Período e Horários */}
-                    <Row>
-                        <Col md={4}>
-                            <Form.Group className="mb-3" id="periodo">
-                                <Form.Label>Período</Form.Label>
-                                <Form.Select
-                                    value={periodo}
-                                    onChange={(e) => mudarPeriodo(e.target.value)}
-                                    className="inputEvento"
-                                    style={{ width: '100%' }}
-                                >
-                                    <option value="">Selecione o período</option>
-                                    <option value="manha">Manhã</option>
-                                    <option value="tarde">Tarde</option>
-                                </Form.Select>
-                            </Form.Group>
-                        </Col>
+                {/* Identificação */}
+                <Form.Group className="mb-3" id="id">
+                    <Form.Label>ID</Form.Label>
+                    <Form.Control type="text" value={id} readOnly className="inputEvento" />
+                </Form.Group>
+                <Row className="mb-3">
+                    <Col md={6}>
+                        <Form.Group className="mb-3" id="nome">
+                            <Form.Label>Nome/Descrição do Evento</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Digite o nome"
+                                value={nome}
+                                onChange={(e) => setNome(e.target.value)}
+                                className="inputEvento"
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                        <Form.Group className="mb-3" id="tipoEvento">
+                            <Form.Label>Tipo do Evento</Form.Label>
+                            <Form.Select
+                                value={tipoEvento}
+                                onChange={(e) => setTipoEvento(e.target.value)}
+                                className="inputEvento"
+                            >
+                                <option value="">Selecione o tipo</option>
+                                <option value="Festa">Festa</option>
+                                <option value="Passeio">Passeio</option>
+                                <option value="Outro">Outro</option>
+                            </Form.Select>
+                        </Form.Group>
+                    </Col>
+                </Row>
+                {/* Datas */}
+                <Row>
+                    <Col md={6}>
+                        <Form.Group className="mb-3" id="dataInicio">
+                            <Form.Label>Data Início</Form.Label>
+                            <Form.Control
+                                type="date"
+                                value={dataInicio}
+                                onChange={(e) => setDataInicio(e.target.value)}
+                                className="inputEvento"
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                        <Form.Group className="mb-3" id="dataFim">
+                            <Form.Label>Data Fim</Form.Label>
+                            <Form.Control
+                                type="date"
+                                value={dataFim}
+                                onChange={(e) => setDataFim(e.target.value)}
+                                className="inputEvento"
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
 
-                        <Col md={4}>
-                            <Form.Group className="mb-3" id="horaInicio">
-                                <Form.Label>Hora Início</Form.Label>
-                                <Form.Control
-                                    type="time"
-                                    value={horaInicio}
-                                    onChange={(e) => setHoraInicio(e.target.value)}
-                                    className="inputEvento"
-                                    style={{ width: '50%' }}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={4} >
-                            <Form.Group className="mb-3" id="horaFim">
-                                <Form.Label >Hora Fim</Form.Label>
-                                <Form.Control
-                                    type="time"
-                                    value={horaFim}
-                                    onChange={(e) => setHoraFim(e.target.value)}
-                                    className="inputEvento"
-                                    style={{ width: '100%'}}
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                    {periodo && (
+                {/* Período e Horários */}
+                <Row>
+                    <Col md={4}>
+                        <Form.Group className="mb-3" id="periodo">
+                            <Form.Label>Período</Form.Label>
+                            <Form.Select
+                                value={periodo}
+                                onChange={(e) => mudarPeriodo(e.target.value)}
+                                className="inputEvento"
+                                style={{ width: '100%' }}
+                            >
+                                <option value="">Selecione o período</option>
+                                <option value="manha">Manhã</option>
+                                <option value="tarde">Tarde</option>
+                            </Form.Select>
+                        </Form.Group>
+                    </Col>
+
+                    <Col md={4}>
+                        <Form.Group className="mb-3" id="horaInicio">
+                            <Form.Label>Hora Início</Form.Label>
+                            <Form.Control
+                                type="time"
+                                value={horaInicio}
+                                onChange={(e) => setHoraInicio(e.target.value)}
+                                className="inputEvento"
+                            />
+                        </Form.Group>
+                    </Col>
+                    <Col md={4} >
+                        <Form.Group className="mb-3" id="horaFim">
+                            <Form.Label >Hora Fim</Form.Label>
+                            <Form.Control
+                                type="time"
+                                value={horaFim}
+                                onChange={(e) => setHoraFim(e.target.value)}
+                                className="inputEvento"
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
+                {periodo && (
                     <Row>
                         <div className="divResp">
                             <TabelaTurma
@@ -359,49 +358,63 @@ export default function FormCadEvento(props) {
 
                         </div>
                     </Row>
-                    )}
-                    <Row>
-                        <div className="divResp">
-                            <TabelaFuncionario
-                                dadosFunc={dadosFunc}
-                                objFunc={objFunc}
-                                setObjsFunc={setObjsFunc}
-                            />
+                )}
+                <Row>
+                    <div className="divResp">
+                        <TabelaFuncionario
+                            dadosFunc={dadosFunc}
+                            objFunc={objFunc}
+                            setObjsFunc={setObjsFunc}
+                        />
 
-                        </div>
-                    </Row>
-                    {mensagem && (
-                                            <div style={{ }}>
-                                                <Alert className="alert-animado mt-2 mb-2" variant={
-                                                    mensagem.toLowerCase().includes("sucesso") ? "success" :
-                                                        mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
-                                                }>
-                                                    {mensagem}
-                                                </Alert>
-                                            </div>
-                                        )}
-                    {/* Botões */}
-                    <Row className="mt-4">
-                         <Col md={4}>
-                        <Button as={Link} to="/telaMenu" className="botaoPesquisa" variant="secondary">
-                            Voltar
-                        </Button>
-                        </Col>
-                        <Col md={4}>
-                        <Button as={Link} to="/relatorioEvento" className="botaoPesquisa" variant="secondary">
-                            Eventos Agendados
-                        </Button>
-                        </Col>
-                        <Col md={4}>
-                        <Button className="botaoPesquisa" variant="primary" type="submit">
-                            {editando ? "Atualizar" : "Cadastrar"}
-                        </Button>
-                        </Col>
-                    </Row>
-                </Form>
+                    </div>
+                </Row>
+                {mensagem && (
+                    <div style={{}}>
+                        <Alert className="alert-animado mt-2 mb-2" variant={
+                            mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                        }>
+                            {mensagem}
+                        </Alert>
+                    </div>
+                )}
+                {/* Botões */}
+                <div className="d-flex justify-content-between mt-4 margintop">
+
+                    <Button
+                        as={Link}
+                        to="/telaMenu"
+                        className="botaoPesquisa"
+                        variant="secondary">
+                        <IoArrowBackCircle size={20} />  Voltar
+                    </Button>
+
+
+                    <Button
+                        as={Link}
+                        to="/relatorioEvento"
+                        className="botaoPesquisa"
+                        variant="secondary"
+                        style={{ backgroundColor: '#642ca9', borderColor: '#4f2f7fff' }}>
+                        <TbReportSearch size={20} />  Relatórios
+                    </Button>
+
+
+                    <Button
+                        className="botaoPesquisa"
+                        variant="primary"
+                        type="submit"
+                        style={{ backgroundColor: '#ffba49', borderColor: '#e09722ff' }}>
+                        <TbSend />
+                        {editando ? "  Atualizar" : "  Cadastrar"}
+                    </Button>
+
                 </div>
-                </div>
-            </PaginaGeral>
+            </Form>
+
+
+        </PaginaGeral>
     );
 
 }

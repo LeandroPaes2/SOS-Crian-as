@@ -13,3 +13,10 @@ html, body, #root {
     background-attachment: fixed; /* Fixa a imagem de fundo */
     min-height: 100vh; /* Garante que o layout ocupe toda a altura da tela */
 }
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Cera Round Pro', sans-serif;
+}

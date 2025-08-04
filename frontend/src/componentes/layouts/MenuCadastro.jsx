@@ -12,6 +12,7 @@ import { useLogin } from "../../LoginContext.js";
 import familia from '../imagens/familia.png';
 import presenca from '../imagens/presenca.png';
 import faltas from '../imagens/faltas.png';
+import lista from '../imagens/lista_espera.png';
 
 export default function MenuCadastro() {
     const { funcionario } = useLogin();
@@ -51,7 +52,7 @@ export default function MenuCadastro() {
 
                             <Link to="/cadastroListaEspera" style={{ textDecoration: 'none' }}>
                                 <button className="button1">
-                                    <img src={funcionarios} style={{ width: '100px' }} />
+                                    <img src={lista} style={{ width: '100px' }} />
     
                                     <span style={{ color: 'white' }}>Lista Espera</span>
                                 </button>

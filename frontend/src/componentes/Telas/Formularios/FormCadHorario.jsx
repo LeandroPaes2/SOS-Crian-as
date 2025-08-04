@@ -1,8 +1,12 @@
-import { Alert, Form, Button } from "react-bootstrap";
+import { Alert, Form, Button, Row, Col } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import PaginaGeral from "../../layouts/PaginaGeral";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../../css/horario.css"
+import { IoArrowBackCircle } from "react-icons/io5";
+import { TbSend } from "react-icons/tb";
+import { TbReportSearch } from "react-icons/tb";
+
 export default function FormCadHorario() {
     const [id, setId] = useState("");
     const [turma, setTurma] = useState("");
@@ -230,121 +234,148 @@ export default function FormCadHorario() {
     };
 
     return (
-        <div className="cadastroEscola">
+        <div style={{ height: "100vh", overflow: "hidden" }}>
             <PaginaGeral>
-                <Alert className="alert-custom" style={{ marginTop: '200px' }} variant="dark">
-                    <h2 className="titulo-alert">Horarios</h2>
-                </Alert>
-                <h2 className=" mb-3" style={{ position: 'absolute',marginLeft: '220px', marginTop: '50px' }}>
-                    {editando ? 'Editar' : 'Cadastrar'}
-                </h2>
+                <Form onSubmit={handleSubmit} className="cadastroHorario">
+                    <div className="TituloH">
+                        <strong> <h2>Horários</h2>  </strong>
+                    </div>
 
-                {mensagem && (
-                    <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
-                        <Alert className="alert-animado mt-2 mb-2"  variant={
-                            mensagem.toLowerCase().includes("sucesso") ? "success" :
-                                mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
-                        }>
-                            {mensagem}
-                        </Alert>
+                    {mensagem && (
+                        <div style={{ position: 'absolute', marginTop: '100px', marginLeft: '230px' }}>
+                            <Alert className="alert-animado mt-2 mb-2" variant={
+                                mensagem.toLowerCase().includes("sucesso") ? "success" :
+                                    mensagem.toLowerCase().includes("erro") || mensagem.toLowerCase().includes("preencha") ? "danger" : "warning"
+                            }>
+                                {mensagem}
+                            </Alert>
                         </div>
                     )}
 
-                <Form onSubmit={handleSubmit} style={{ marginTop: '190px', marginRight: '170px', gap: '45px'}}>
-                    <Form.Group className="mb-3" controlId="formTurma">
-                        <Form.Label style={{ fontWeight: '500' }}>Turma</Form.Label>
-                        <Form.Select
-                            value={turma}
-                            onChange={(e) => setTurma(e.target.value)}
-                            isInvalid={erros.turma}
-                            className="inputHorario"
-                        >
-                            <option value="">Selecione a turma</option>
-                            {turmas.map((t) => (
-                                <option key={t.id} value={t.id}>
-                                    {t.cor}
-                                </option>
-                            ))}
-                        </Form.Select>
-                        <Form.Control.Feedback type="invalid">
-                            Por favor, selecione uma turma.
-                        </Form.Control.Feedback>
-                    </Form.Group>
+                    <Row>
+                        <Col md={6}>
+                            <Form.Group className="mb-3" controlId="formTurma">
+                                <Form.Label style={{ fontWeight: '500' }}>Turma</Form.Label>
+                                <Form.Select
+                                    value={turma}
+                                    onChange={(e) => setTurma(e.target.value)}
+                                    isInvalid={erros.turma}
+                                    className="inputHorario"
+                                >
+                                    <option value="">Selecione a turma</option>
+                                    {turmas.map((t) => (
+                                        <option key={t.id} value={t.id}>
+                                            {t.cor}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                                <Form.Control.Feedback type="invalid">
+                                    Por favor, selecione uma turma.
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
 
-                    <Form.Group className="mb-3" controlId="formMateria">
-                        <Form.Label style={{ fontWeight: '500' }}>Matéria</Form.Label>
-                        <Form.Select
-                            value={materia}
-                            onChange={(e) => setMateria(e.target.value)}
-                            isInvalid={erros.materia}
-                            className="inputHorario"
-                        >
-                            <option value="">Selecione a matéria</option>
-                            {materias.map((m) => (
-                                <option key={m.id} value={m.id}>
-                                    {m.nome}
-                                </option>
-                            ))}
-                        </Form.Select>
-                        <Form.Control.Feedback type="invalid">
-                            Por favor, selecione uma matéria.
-                        </Form.Control.Feedback>
-                    </Form.Group>
+                        <Col md={6}>
+                            <Form.Group className="mb-3" controlId="formMateria">
+                                <Form.Label style={{ fontWeight: '500' }}>Matéria</Form.Label>
+                                <Form.Select
+                                    value={materia}
+                                    onChange={(e) => setMateria(e.target.value)}
+                                    isInvalid={erros.materia}
+                                    className="inputHorario"
+                                >
+                                    <option value="">Selecione a matéria</option>
+                                    {materias.map((m) => (
+                                        <option key={m.id} value={m.id}>
+                                            {m.nome}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                                <Form.Control.Feedback type="invalid">
+                                    Por favor, selecione uma matéria.
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                    <Form.Group className="mb-3" controlId="formHora">
-                        <Form.Label style={{ fontWeight: '500' }}>Hora</Form.Label>
-                        <Form.Select
-                            value={hora}
-                            onChange={(e) => setHora(e.target.value)}
-                            isInvalid={erros.hora}
-                            className="inputHorario"
-                        >
-                            <option value="">Selecione o horário</option>
-                            <option>07:00 às 08:00</option>
-                            <option>08:00 às 09:00</option>
-                            <option>09:00 às 10:00</option>
-                            <option>10:00 às 11:00</option>
-                            <option>11:00 às 12:00</option>
-                            <option>13:00 às 14:00</option>
-                            <option>14:00 às 15:00</option>
-                            <option>15:00 às 16:00</option>
-                        </Form.Select>
-                        <Form.Control.Feedback type="invalid">
-                            Por favor, selecione um horário.
-                        </Form.Control.Feedback>
-                    </Form.Group>
+                    <Row>
+                        <Col md={6}>
+                            <Form.Group className="mb-3" controlId="formHora">
+                                <Form.Label style={{ fontWeight: '500' }}>Hora</Form.Label>
+                                <Form.Select
+                                    value={hora}
+                                    onChange={(e) => setHora(e.target.value)}
+                                    isInvalid={erros.hora}
+                                    className="inputHorario"
+                                >
+                                    <option value="">Selecione o horário</option>
+                                    <option>07:00 às 08:00</option>
+                                    <option>08:00 às 09:00</option>
+                                    <option>09:00 às 10:00</option>
+                                    <option>10:00 às 11:00</option>
+                                    <option>11:00 às 12:00</option>
+                                    <option>13:00 às 14:00</option>
+                                    <option>14:00 às 15:00</option>
+                                    <option>15:00 às 16:00</option>
+                                </Form.Select>
+                                <Form.Control.Feedback type="invalid">
+                                    Por favor, selecione um horário.
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
 
-                    <Form.Group className="mb-3" controlId="formSemana">
-                        <Form.Label style={{ fontWeight: '500' }}>Dia da Semana</Form.Label>
-                        <Form.Select
-                            value={semana}
-                            onChange={(e) => setSemana(e.target.value)}
-                            isInvalid={erros.semana}
-                            className="inputHorario"
-                        >
-                            <option value="">Selecione o dia</option>
-                            <option>Segunda-feira</option>
-                            <option>Terça-feira</option>
-                            <option>Quarta-feira</option>
-                            <option>Quinta-feira</option>
-                            <option>Sexta-feira</option>
-                        </Form.Select>
-                        <Form.Control.Feedback type="invalid">
-                            Por favor, selecione um dia da semana.
-                        </Form.Control.Feedback>
-                    </Form.Group>
+                        <Col md={6}>
+                            <Form.Group className="mb-3" controlId="formSemana">
+                                <Form.Label style={{ fontWeight: '500' }}>Dia da Semana</Form.Label>
+                                <Form.Select
+                                    value={semana}
+                                    onChange={(e) => setSemana(e.target.value)}
+                                    isInvalid={erros.semana}
+                                    className="inputHorario"
+                                >
+                                    <option value="">Selecione o dia</option>
+                                    <option>Segunda-feira</option>
+                                    <option>Terça-feira</option>
+                                    <option>Quarta-feira</option>
+                                    <option>Quinta-feira</option>
+                                    <option>Sexta-feira</option>
+                                </Form.Select>
+                                <Form.Control.Feedback type="invalid">
+                                    Por favor, selecione um dia da semana.
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Col>
+                    </Row>
 
-                    <Button
-                        as={Link}
-                        to={rotaVoltar}
-                        className="botaoPesquisa"
-                        variant="secondary"
-                    >
-                        Voltar
-                    </Button>
-                    <Button className="botaoPesquisa" variant="primary" type="submit">
-                        {editando ? "Atualizar" : "Cadastrar"}
-                    </Button>
+
+                    <div className="d-flex justify-content-between mt-4 margintop">
+                        <Button
+                            as={Link}
+                            to={rotaVoltar}
+                            className="botaoPesquisa"
+                            variant="secondary"
+                        >
+                            <IoArrowBackCircle size={20} />  Voltar
+                        </Button>
+
+                        <Button
+                            as={Link}
+                            to="/relatorioHorario"
+                            className="botaoPesquisa"
+                            variant="secondary"
+                            style={{ backgroundColor: '#642ca9', borderColor: '#4f2f7fff' }}>
+                            <TbReportSearch size={20} />  Relatórios
+                        </Button>
+
+                        <Button
+                            className="botaoPesquisa"
+                            variant="primary"
+                            type="submit"
+                            style={{ backgroundColor: '#ffba49', borderColor: '#e09722ff' }}>
+                            <TbSend />
+                            {editando ? "  Atualizar" : "  Cadastrar"}
+                        </Button>
+                    </div>
                 </Form>
             </PaginaGeral>
         </div>
